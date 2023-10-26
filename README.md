@@ -1,0 +1,3 @@
+# DEBUG_SmartCar_main
+DEBUG实验室19届智能视觉工程
+硬件用嘉立创eda专业版打开
