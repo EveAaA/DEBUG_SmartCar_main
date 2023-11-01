@@ -1,4 +1,5 @@
-./objects/main.o: ..\user\src\main.c \
+./objects/motor.o: ..\code\MyDrivers\Src\Motor.c \
+  ..\code\MyDrivers\Inc\Motor.h \
   ..\..\libraries\zf_common\zf_common_headfile.h \
   D:\keil5\ARM\ARMCLANG\Bin\..\include\stdio.h \
   D:\keil5\ARM\ARMCLANG\Bin\..\include\stdint.h \
@@ -102,4 +103,4 @@
   ..\..\libraries\sdk\drives\fsl_usdhc.h \
   ..\..\libraries\components\sdmmc\common\fsl_sdmmc_spec.h \
   ..\..\libraries\components\sdmmc\sdmmc_config.h \
-  ..\..\libraries\sdk\board\clock_config.h ..\code\MyDrivers\Inc\Motor.h
+  ..\..\libraries\sdk\board\clock_config.h
