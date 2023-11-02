@@ -2019,6 +2019,21 @@
               <FileType>1</FileType>
               <FilePath>..\code\MyDrivers\Src\Motor.c</FilePath>
             </File>
+            <File>
+              <FileName>Button.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\MyDrivers\Src\Button.c</FilePath>
+            </File>
+            <File>
+              <FileName>Gyro.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\MyDrivers\Src\Gyro.c</FilePath>
+            </File>
+            <File>
+              <FileName>Encoder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\MyDrivers\Src\Encoder.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
