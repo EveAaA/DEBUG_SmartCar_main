@@ -5,7 +5,7 @@
   * @brief   PID驱动
   * @date    09/6/2023
     @verbatim
-        位置式PID 增量式PID
+    位置式PID 增量式PID
     @endverbatim
   * @{
 **/
@@ -32,8 +32,8 @@
 -- @param     double Kd 设定的Kd
 -- @param     double outPutMin 限幅
 -- @param     double outPutMax 限幅
--- @auther  	庄文标
--- @date    	2023/9/6
+-- @auther    庄文标
+-- @date      2023/9/6
 **/
 void PIDInit(Pid_TypeDef *PID, double Kp, double Ki, double Kd, double OutputMax, double OutputMin)
 {
@@ -48,9 +48,9 @@ void PIDInit(Pid_TypeDef *PID, double Kp, double Ki, double Kd, double OutputMax
 /**@brief     位置式PID获取值
 -- @param     Pid_TypeDef *PID PID结构体
 -- @param     double error 误差值
--- @return  	double outPut 输出
--- @auther  	庄文标
--- @date    	2023/9/6
+-- @return    double outPut 输出
+-- @auther    庄文标
+-- @date      2023/9/6
 **/
 double GetPIDValue(Pid_TypeDef *PID, double error)
 {
@@ -69,13 +69,13 @@ double GetPIDValue(Pid_TypeDef *PID, double error)
 		I = 0;
 	}	
 	if(PID->Output > PID->OutputMax)
-		{
-			PID->Output = PID->OutputMax;
-		}
+	{
+		PID->Output = PID->OutputMax;
+	}
 	else if(PID->Output < PID->OutputMin)
-		{
-			PID->Output = PID->OutputMin;
-		}
+	{
+		PID->Output = PID->OutputMin;
+	}
 
 	return PID->Output;
 }
@@ -88,7 +88,7 @@ double GetPIDValue(Pid_TypeDef *PID, double error)
 -- @param     double Kd 设定的Kd
 -- @param     double outPutMin 限幅
 -- @param     double outPutMax 限幅
--- @auther  	庄文标
+-- @auther    庄文标
 -- @date      2023/9/12
 **/
 void Incremental_PID_Init(Incremental_PID_TypeDef *PID, double Kp, double Ki, double Kd, double Out_Put_Max, double Out_Put_Min)
@@ -107,14 +107,14 @@ void Incremental_PID_Init(Incremental_PID_TypeDef *PID, double Kp, double Ki, do
 -- @param     Incremental_PID_TypeDef *PID PID结构体
 -- @param     double Target_Value 目标值
 -- @param     double Current_Value 当前值
--- @return  	double Output 输出
--- @auther  	庄文标
+-- @return    double Output 输出
+-- @auther    庄文标
 -- @date   	  2023/9/12
 **/
 double Get_Incremental_PID_Value(Incremental_PID_TypeDef *PID, double Error)
 {
 	double P = 0.0, I=0.0 , D=0.0;
-	static double Increment = 0;
+	static double Increment = 0;//增量
 	
 	PID->Error = Error;//获取误差
 		
@@ -138,33 +138,13 @@ double Get_Incremental_PID_Value(Incremental_PID_TypeDef *PID, double Error)
 	PID->Output = PID->Output + Increment;
 	//限幅
 	if(PID->Output > PID->Out_Put_Max)
-		{
-			PID->Output = PID->Out_Put_Max;
-		}
+	{
+		PID->Output = PID->Out_Put_Max;
+	}
 	else if(PID->Output < PID->Out_Put_Min)
-		{
-			PID->Output = PID->Out_Put_Min;
-		}
+	{
+		PID->Output = PID->Out_Put_Min;
+	}
 
 	return PID->Output;
-}
-
-static double Factor(double Error,double Error_Max,double Error_Min)
-{
-	double Factor = 0;
-
-	if(fabs(Error) <= Error_Min)
-	{
-		Factor = 1.0;
-	}
-	else if(fabs(Error) >= Error_Max)
-	{
-		Factor = 0.0;
-	}
-	else
-	{
-		Factor=(Error_Max-fabs(Error))/(Error_Max-Error_Min);
-	}
-
-	return Factor;
 }

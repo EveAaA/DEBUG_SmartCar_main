@@ -3,6 +3,7 @@
         "zf_common_headfile.h": "c",
         "zf_driver_adc.h": "c",
         "stdio.h": "c",
-        "motor.h": "c"
+        "motor.h": "c",
+        "pid.h": "c"
     }
 }
