@@ -35,6 +35,8 @@
 
 #include "zf_common_headfile.h"
 #include "Motor.h"
+#include "Bluetooth.h"
+#include "math.h"
 // 打开新的工程或者工程移动了位置务必执行以下操作
 // 第一步 关闭上面所有打开的文件
 // 第二步 project->clean  等待下方进度条走完
@@ -50,14 +52,24 @@ int main(void)
 
     // 此处编写用户代码 例如外设初始化代码等
     Motor_Init();
+    Bluetooth_Init();
+    float test_1 = 1.0f;
+    float test_2 = 2.0f;
+    float test_3 = 20.0f;
+    Bluetooth_Set_Watch_Variable(Num_Address, CH1, &test_1);
+    Bluetooth_Set_Watch_Variable(Num_Address, CH2, &test_2);
+    Bluetooth_Set_Watch_Variable(Num_Address, CH3, &test_3);
     // 此处编写用户代码 例如外设初始化代码等
     while(1)
     {
+        test_1 += 0.002;
+        test_2 = 20 * sin(test_1*10);
+        Bluetooth_Send_Float(Num_Address);
         // 此处编写需要循环执行的代码
-        Set_Motor_Speed(LMotor_F,10);
-        Set_Motor_Speed(LMotor_B,-10);
-        Set_Motor_Speed(RMotor_B,10);
-        Set_Motor_Speed(RMotor_F,-10);
+        //Set_Motor_Speed(LMotor_F,10);
+        //Set_Motor_Speed(LMotor_B,-10);
+        //Set_Motor_Speed(RMotor_B,10);
+        //Set_Motor_Speed(RMotor_F,-10);
         // 此处编写需要循环执行的代码
     }
 }
