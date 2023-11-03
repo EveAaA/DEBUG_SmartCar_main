@@ -94,5 +94,5 @@ ReceiveData Bluetooth_Analyse_Data(void)
         }
     }
     //0号地址存储标识符，1之后存储需要传入数据
-    return Data
+    return Data;
 }
