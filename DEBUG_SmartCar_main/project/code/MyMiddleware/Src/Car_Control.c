@@ -3,7 +3,7 @@
   * @file    Car_Control.c
   * @author  庄文标
   * @brief   小车姿态控制
-  *
+  * @date    11/5/2023
     @verbatim
     无
     @endverbatim
@@ -27,6 +27,12 @@ Incremental_PID_TypeDef RMotor_B_Speed;
  *  @defgroup 外部调用
  *  @brief
  *
+**/
+
+/**@brief   所有PID参数初始化
+-- @param   无
+-- @auther  庄文标
+-- @date    2023/11/5
 **/
 void All_PID_Init()
 {

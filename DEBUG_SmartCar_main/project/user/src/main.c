@@ -46,7 +46,7 @@
 
 
 uint16 Start = 0;
-
+int a = 0;
 int main(void)
 {
     clock_init(SYSTEM_CLOCK_600M);  // 不可删除
@@ -55,50 +55,17 @@ int main(void)
     // 此处编写用户代码 例如外设初始化代码等
     User_Init();
     gpio_init(B14,GPI,0,GPI_PULL_UP);
+    gpio_init(C26,GPO,1,GPO_PUSH_PULL);
     float test_1;
     float test_2 = 10;
     // float test_3 = 20.0f;
     Bluetooth_Set_Watch_Variable(Num_Address, CH1, &test_1);
-
-
     Bluetooth_Set_Watch_Variable(Num_Address, CH2, &test_2);
     // Bluetooth_Set_Watch_Variable(Num_Address, CH3, &test_3);
     // 此处编写用户代码 例如外设初始化代码等
     while(1)
     {
-        test_1 = Get_LB_Speed();
-        tft180_show_float(0,0,Get_LF_Speed(),5,2);
-        tft180_show_float(0,20,Get_RF_Speed(),5,2);
-        tft180_show_float(0,40,Get_LB_Speed(),5,2);
-        tft180_show_float(0,60,Get_RB_Speed(),5,2);
-        
-        // Set_Motor_Speed(RMotor_B,20);
-        // test_2 = 20 * sin(test_1*10);
-        Bluetooth_Send_Float(Num_Address);
-        if(gpio_get_level(B14) == 0)
-        {
-            system_delay_ms(70);
-            if(gpio_get_level(B14) == 0)
-            {
-                Start = 1;
-            }
-        }
-        // if(gpio_get_level(B11) == 0)
-        // {
-        //     system_delay_ms(70);
-        //     if(gpio_get_level(B11) == 0)
-        //     {
-        //         Speed += 10;
-        //     }
-        // }
-        // if(gpio_get_level(B10) == 0)
-        // {
-        //     system_delay_ms(70);
-        //     if(gpio_get_level(B10) == 0)
-        //     {
-        //         Speed -= 10;
-        //     }
-        // }
+        // test_1 = Get_LB_Speed();
         // 此处编写需要循环执行的代码
 
         // 此处编写需要循环执行的代码

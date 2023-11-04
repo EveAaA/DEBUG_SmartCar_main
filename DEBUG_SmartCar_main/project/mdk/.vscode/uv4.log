@@ -1,2 +1,8 @@
-Load "d:\\Desktop\\DEBUG_SmartCar_main\\DEBUG_SmartCar_main\\project\\mdk\\Objects\\DEBUG_SmartCar_main.axf" 
-Erase Done.Programming Done.Verify OK.Flash Load finished at 00:42:55
+*** Using Compiler 'V6.19', folder: 'D:\keil5\ARM\ARMCLANG\Bin'
+Build target 'DEBUG_SmartCar_main'
+compiling Button.c...
+compiling main.c...
+linking...
+Program Size: Code=62952 RO-data=15912 RW-data=256 ZI-data=11676  
+".\Objects\DEBUG_SmartCar_main.axf" - 0 Error(s), 0 Warning(s).
+Build Time Elapsed:  00:00:02

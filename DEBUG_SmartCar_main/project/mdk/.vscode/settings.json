@@ -13,7 +13,8 @@
         "zf_device_tft180.h": "c",
         "encoder.h": "c",
         "math.h": "c",
-        "car_control.h": "c"
+        "car_control.h": "c",
+        "button.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

@@ -39,6 +39,7 @@ void User_Init()
     Gyro_Offset_Init();
     All_Encoder_Init();
     All_PID_Init();
+    All_Button_Init();
     Sensor_Handler_Init();
 }
 
@@ -50,5 +51,5 @@ void User_Init()
 **/
 void User_Loop()
 {
-
+  
 }
