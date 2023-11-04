@@ -156,6 +156,9 @@
 ".\objects\encoder.o"
 ".\objects\bluetooth.o"
 ".\objects\pid.o"
+".\objects\car_control.o"
+".\objects\usermain.o"
+".\objects\call_back_action.o"
 --library_type=microlib --diag_suppress 6314,6329 --strict --scatter ".\scf\MIMXRT1064xxxxx_flexspi_nor.scf"
 --remove --entry=Reset_Handler --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

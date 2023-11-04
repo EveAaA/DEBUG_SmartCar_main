@@ -34,16 +34,18 @@
 ********************************************************************************************************************/
 
 #include "zf_common_headfile.h"
+#include "UserMain.h"
 #include "Motor.h"
 #include "Bluetooth.h"
 #include "math.h"
 // 打开新的工程或者工程移动了位置务必执行以下操作
 // 第一步 关闭上面所有打开的文件
 // 第二步 project->clean  等待下方进度条走完
-
 // 本例程是开源库移植用空工程
 
 
+
+uint16 Start = 0;
 
 int main(void)
 {
@@ -51,25 +53,54 @@ int main(void)
     debug_init();                   // 调试端口初始化
 
     // 此处编写用户代码 例如外设初始化代码等
-    Motor_Init();
-    Bluetooth_Init();
-    float test_1 = 1.0f;
-    float test_2 = 2.0f;
-    float test_3 = 20.0f;
+    User_Init();
+    gpio_init(B14,GPI,0,GPI_PULL_UP);
+    float test_1;
+    float test_2 = 10;
+    // float test_3 = 20.0f;
     Bluetooth_Set_Watch_Variable(Num_Address, CH1, &test_1);
+
+
     Bluetooth_Set_Watch_Variable(Num_Address, CH2, &test_2);
-    Bluetooth_Set_Watch_Variable(Num_Address, CH3, &test_3);
+    // Bluetooth_Set_Watch_Variable(Num_Address, CH3, &test_3);
     // 此处编写用户代码 例如外设初始化代码等
     while(1)
     {
-        test_1 += 0.002;
-        test_2 = 20 * sin(test_1*10);
+        test_1 = Get_LB_Speed();
+        tft180_show_float(0,0,Get_LF_Speed(),5,2);
+        tft180_show_float(0,20,Get_RF_Speed(),5,2);
+        tft180_show_float(0,40,Get_LB_Speed(),5,2);
+        tft180_show_float(0,60,Get_RB_Speed(),5,2);
+        
+        // Set_Motor_Speed(RMotor_B,20);
+        // test_2 = 20 * sin(test_1*10);
         Bluetooth_Send_Float(Num_Address);
+        if(gpio_get_level(B14) == 0)
+        {
+            system_delay_ms(70);
+            if(gpio_get_level(B14) == 0)
+            {
+                Start = 1;
+            }
+        }
+        // if(gpio_get_level(B11) == 0)
+        // {
+        //     system_delay_ms(70);
+        //     if(gpio_get_level(B11) == 0)
+        //     {
+        //         Speed += 10;
+        //     }
+        // }
+        // if(gpio_get_level(B10) == 0)
+        // {
+        //     system_delay_ms(70);
+        //     if(gpio_get_level(B10) == 0)
+        //     {
+        //         Speed -= 10;
+        //     }
+        // }
         // 此处编写需要循环执行的代码
-        //Set_Motor_Speed(LMotor_F,10);
-        //Set_Motor_Speed(LMotor_B,-10);
-        //Set_Motor_Speed(RMotor_B,10);
-        //Set_Motor_Speed(RMotor_F,-10);
+
         // 此处编写需要循环执行的代码
     }
 }

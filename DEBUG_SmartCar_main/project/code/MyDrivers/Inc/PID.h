@@ -1,6 +1,6 @@
 #ifndef _PID_H
 #define _PID_H
-#include "math.h"
+
 typedef struct
 {
 	double Kp;//±ÈÀıÏµÊı

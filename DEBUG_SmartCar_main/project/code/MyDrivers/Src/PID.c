@@ -13,7 +13,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "PID.h"
-
+#include "math.h"
 
 /* Define\Declare ------------------------------------------------------------*/
 
@@ -123,14 +123,16 @@ double Get_Incremental_PID_Value(Incremental_PID_TypeDef *PID, double Error)
 	D = PID->Error - 2*PID->Error_Last + PID->Error_Pre;
 		
 	
-	if(fabs(Error) > 1)
-	{
-		Increment = PID->Kp*P + PID->Ki*I + PID->Kd*D;
-	}
-	else
-	{
-		Increment = 0;
-	}
+	// if(fabs(Error) > 1)
+	// {
+	// 	Increment = PID->Kp*P + PID->Ki*I + PID->Kd*D;
+	// }
+	// else
+	// {
+	// 	Increment = 0;
+	// }
+
+	Increment = PID->Kp*P + PID->Ki*I + PID->Kd*D;
 
 	PID->Error_Pre = PID->Error_Last;
 	PID->Error_Last = PID->Error;

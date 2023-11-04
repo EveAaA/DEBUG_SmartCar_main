@@ -2048,9 +2048,28 @@
         </Group>
         <Group>
           <GroupName>MyMiddleware</GroupName>
+          <Files>
+            <File>
+              <FileName>Car_Control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\MyMiddleware\Src\Car_Control.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>MyFiles</GroupName>
+          <Files>
+            <File>
+              <FileName>UserMain.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\MyFiles\Src\UserMain.c</FilePath>
+            </File>
+            <File>
+              <FileName>Call_Back_Action.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\MyFiles\Src\Call_Back_Action.c</FilePath>
+            </File>
+          </Files>
         </Group>
       </Groups>
     </Target>

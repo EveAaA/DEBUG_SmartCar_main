@@ -1,4 +1,5 @@
-./objects/main.o: ..\user\src\main.c \
+./objects/usermain.o: ..\code\MyFiles\Src\UserMain.c \
+  ..\code\MyFiles\Inc\UserMain.h ..\code\MyDrivers\Inc\Motor.h \
   ..\..\libraries\zf_common\zf_common_headfile.h \
   D:\keil5\ARM\ARMCLANG\Bin\..\include\stdio.h \
   D:\keil5\ARM\ARMCLANG\Bin\..\include\stdint.h \
@@ -103,9 +104,7 @@
   ..\..\libraries\components\sdmmc\common\fsl_sdmmc_spec.h \
   ..\..\libraries\components\sdmmc\sdmmc_config.h \
   ..\..\libraries\sdk\board\clock_config.h \
-  ..\code\MyFiles\Inc\UserMain.h ..\code\MyDrivers\Inc\Motor.h \
   ..\code\MyDrivers\Inc\Button.h ..\code\MyDrivers\Inc\Gyro.h \
   ..\code\MyDrivers\Inc\Encoder.h ..\code\MyDrivers\Inc\Bluetooth.h \
   ..\code\MyDrivers\Inc\PID.h ..\code\MyMiddleware\Inc\Car_Control.h \
-  ..\code\MyFiles\Inc\Call_Back_Action.h \
-  D:\keil5\ARM\ARMCLANG\Bin\..\include\math.h
+  ..\code\MyFiles\Inc\Call_Back_Action.h

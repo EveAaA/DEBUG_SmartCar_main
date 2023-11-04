@@ -1,6 +1,8 @@
 #ifndef _MOTOR_H
 #define _MOTOR_H
 
+#include "zf_common_headfile.h"
+
 typedef enum
 {
   LMotor_F,

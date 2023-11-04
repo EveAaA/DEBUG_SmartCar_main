@@ -44,7 +44,9 @@
                 "d:\\Desktop\\DEBUG_SmartCar_main\\DEBUG_SmartCar_main\\project\\user\\src",
                 "d:\\Desktop\\DEBUG_SmartCar_main\\DEBUG_SmartCar_main\\libraries\\doc",
                 "d:\\Desktop\\DEBUG_SmartCar_main\\DEBUG_SmartCar_main\\libraries\\components\\sdmmc\\host\\usdhc\\non_blocking",
-                "d:\\Desktop\\DEBUG_SmartCar_main\\DEBUG_SmartCar_main\\project\\code\\MyDrivers\\Src"
+                "d:\\Desktop\\DEBUG_SmartCar_main\\DEBUG_SmartCar_main\\project\\code\\MyDrivers\\Src",
+                "d:\\Desktop\\DEBUG_SmartCar_main\\DEBUG_SmartCar_main\\project\\code\\MyMiddleware\\Src",
+                "d:\\Desktop\\DEBUG_SmartCar_main\\DEBUG_SmartCar_main\\project\\code\\MyFiles\\Src"
             ],
             "defines": [
                 "CPU_MIMXRT1064DVL6A",
