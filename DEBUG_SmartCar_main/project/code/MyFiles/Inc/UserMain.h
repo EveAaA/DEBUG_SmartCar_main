@@ -8,6 +8,7 @@
 #include "Encoder.h"
 #include "Bluetooth.h"
 #include "PID.h"
+#include "Manipulator.h"
 /*-----------------------MyMiddleware------------------------------*/
 #include "Car_Control.h"
 /*-----------------------MyFiles-----------------------------------*/

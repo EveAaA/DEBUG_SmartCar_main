@@ -55,7 +55,7 @@ int main(void)
     // 此处编写用户代码 例如外设初始化代码等
     User_Init();
     gpio_init(B14,GPI,0,GPI_PULL_UP);
-    gpio_init(C26,GPO,1,GPO_PUSH_PULL);
+    
     float test_1;
     float test_2 = 10;
     // float test_3 = 20.0f;
@@ -67,7 +67,7 @@ int main(void)
     {
         // test_1 = Get_LB_Speed();
         // 此处编写需要循环执行的代码
-
+        User_Loop();
         // 此处编写需要循环执行的代码
     }
 }
