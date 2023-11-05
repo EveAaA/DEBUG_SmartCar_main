@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\DEBUG_SmartCar_main.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\DEBUG_SmartCar_main.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6190004: Last Updated: Sun Nov  5 01:56:55 2023
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6180002: Last Updated: Sun Nov  5 11:00:04 2023
 <BR><P>
 <H3>Maximum Stack Usage =       1088 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -516,11 +516,11 @@ Global Symbols
 <P><STRONG><a name="[a8]"></a>DefaultISR</STRONG> (Thumb, 4 bytes, Stack size unknown bytes, startup_mimxrt1064.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ACMP1_IRQHandler
 </UL>
-<BR>[Address Reference Count : 5]<UL><LI> fsl_csi.o(.data.s_csiIsr)
+<BR>[Address Reference Count : 5]<UL><LI> startup_mimxrt1064.o(.isr_vector)
+<LI> fsl_csi.o(.data.s_csiIsr)
 <LI> fsl_usdhc.o(.data.s_usdhcIsr)
 <LI> fsl_flexcan.o(.data.s_flexcanIsr)
 <LI> fsl_lpuart.o(.data.s_lpuartIsr)
-<LI> startup_mimxrt1064.o(.isr_vector)
 </UL>
 <P><STRONG><a name="[8b]"></a>ENC1_IRQHandler</STRONG> (Thumb, 4 bytes, Stack size unknown bytes, startup_mimxrt1064.o(.text))
 <BR>[Address Reference Count : 1]<UL><LI> startup_mimxrt1064.o(.isr_vector)
@@ -985,6 +985,7 @@ Global Symbols
 <LI><a href="#[16e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPT_GetDefaultConfig
 <LI><a href="#[1ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fifo_clear
 <LI><a href="#[1e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;debug_output
+<LI><a href="#[115]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Bluetooth_Get_Message
 <LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPUART_GetDefaultConfig
 <LI><a href="#[187]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_MasterGetDefaultConfig
 </UL>
@@ -1169,10 +1170,11 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[1de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clock_init
 </UL>
 
-<P><STRONG><a name="[115]"></a>Bluetooth_Get_Message</STRONG> (Thumb, 28 bytes, Stack size 8 bytes, bluetooth.o(.text.Bluetooth_Get_Message))
-<BR><BR>[Stack]<UL><LI>Max Depth = 800<LI>Call Chain = Bluetooth_Get_Message &rArr; bluetooth_ch9141_read_buffer &rArr; fifo_read_buffer &rArr; fifo_used &rArr; debug_assert_handler &rArr; debug_protective_handler &rArr; pwm_set_duty &rArr;  debug_assert_handler (Cycle)
+<P><STRONG><a name="[115]"></a>Bluetooth_Get_Message</STRONG> (Thumb, 46 bytes, Stack size 16 bytes, bluetooth.o(.text.Bluetooth_Get_Message))
+<BR><BR>[Stack]<UL><LI>Max Depth = 808<LI>Call Chain = Bluetooth_Get_Message &rArr; bluetooth_ch9141_read_buffer &rArr; fifo_read_buffer &rArr; fifo_used &rArr; debug_assert_handler &rArr; debug_protective_handler &rArr; pwm_set_duty &rArr;  debug_assert_handler (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bluetooth_ch9141_read_buffer
+<LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;memset
 </UL>
 <BR>[Called By]<UL><LI><a href="#[25]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPUART8_IRQHandler
 </UL>
@@ -1761,10 +1763,10 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[179]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;imu660ra_get_gyro
 <LI><a href="#[178]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;imu660ra_get_acc
+<LI><a href="#[17b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IMU_AHRS_update
 <LI><a href="#[17a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IMU_Get_Values
 <LI><a href="#[17d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan2
 <LI><a href="#[17c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_asin
-<LI><a href="#[17b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IMU_AHRS_update
 </UL>
 <BR>[Called By]<UL><LI><a href="#[1ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Sensor_Handler
 </UL>
@@ -1936,6 +1938,11 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 728<LI>Call Chain = LPSPI_MasterTransferBlocking &rArr; LPSPI_CheckTransferArgument &rArr; __aeabi_assert &rArr; DbgConsole_Printf &rArr; DbgConsole_Vprintf &rArr; DbgConsole_PrintfFormattedData &rArr; DbgConsole_ConvertFloatRadixNumToString &rArr; __hardfp_pow &rArr; sqrt
 </UL>
 <BR>[Calls]<UL><LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_assert
+<LI><a href="#[198]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_WriteData
+<LI><a href="#[184]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_CombineWriteData
+<LI><a href="#[196]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_TxFifoReady
+<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_GetRxFifoSize
+<LI><a href="#[193]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_FlushFifo
 <LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_ClearStatusFlags
 <LI><a href="#[192]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_GetStatusFlags
 <LI><a href="#[197]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_GetTxFifoCount
@@ -1945,11 +1952,6 @@ Global Symbols
 <LI><a href="#[18d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_Enable
 <LI><a href="#[183]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_CheckTransferArgument
 <LI><a href="#[186]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_GetInstance
-<LI><a href="#[198]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_WriteData
-<LI><a href="#[184]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_CombineWriteData
-<LI><a href="#[196]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_TxFifoReady
-<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_GetRxFifoSize
-<LI><a href="#[193]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_FlushFifo
 </UL>
 <BR>[Called By]<UL><LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spi_write
 </UL>
@@ -2059,7 +2061,7 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> startup_mimxrt1064.o(.text)
 </UL>
 <P><STRONG><a name="[25]"></a>LPUART8_IRQHandler</STRONG> (Thumb, 76 bytes, Stack size 16 bytes, isr.o(.text.LPUART8_IRQHandler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 816<LI>Call Chain = LPUART8_IRQHandler &rArr; Bluetooth_Get_Message &rArr; bluetooth_ch9141_read_buffer &rArr; fifo_read_buffer &rArr; fifo_used &rArr; debug_assert_handler &rArr; debug_protective_handler &rArr; pwm_set_duty &rArr;  debug_assert_handler (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 824<LI>Call Chain = LPUART8_IRQHandler &rArr; Bluetooth_Get_Message &rArr; bluetooth_ch9141_read_buffer &rArr; fifo_read_buffer &rArr; fifo_used &rArr; debug_assert_handler &rArr; debug_protective_handler &rArr; pwm_set_duty &rArr;  debug_assert_handler (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[115]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Bluetooth_Get_Message
 <LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPUART_ClearStatusFlags
@@ -2333,10 +2335,10 @@ Global Symbols
 <P><STRONG><a name="[1ad]"></a>Set_Car_Speed</STRONG> (Thumb, 104 bytes, Stack size 32 bytes, car_control.o(.text.Set_Car_Speed))
 <BR><BR>[Stack]<UL><LI>Max Depth = 744<LI>Call Chain = Set_Car_Speed &rArr; Set_Motor_Speed &rArr; pwm_set_duty &rArr;  debug_assert_handler (Cycle)
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Motor_Speed
-<LI><a href="#[1c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_Incremental_PID_Value
-<LI><a href="#[1c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_RB_Speed
+<BR>[Calls]<UL><LI><a href="#[1c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_RB_Speed
 <LI><a href="#[1c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_LF_Speed
+<LI><a href="#[1c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Motor_Speed
+<LI><a href="#[1c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_Incremental_PID_Value
 </UL>
 <BR>[Called By]<UL><LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PIT_IRQHandler
 </UL>
@@ -2403,15 +2405,15 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 1056<LI>Call Chain = User_Init &rArr; tft180_init &rArr; tft180_clear &rArr; tft180_set_region &rArr; tft180_write_index &rArr; spi_write_8bit &rArr; spi_write_8bit_array &rArr; spi_write &rArr; LPSPI_MasterTransferBlocking &rArr; LPSPI_CheckTransferArgument &rArr; __aeabi_assert &rArr; DbgConsole_Printf &rArr; DbgConsole_Vprintf &rArr; DbgConsole_PrintfFormattedData &rArr; DbgConsole_ConvertFloatRadixNumToString &rArr; __hardfp_pow &rArr; sqrt
 </UL>
 <BR>[Calls]<UL><LI><a href="#[17f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;system_delay_ms
-<LI><a href="#[1d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;imu660ra_init
 <LI><a href="#[1d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
+<LI><a href="#[1d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;imu660ra_init
+<LI><a href="#[117]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Bluetooth_Init
+<LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;All_Encoder_Init
 <LI><a href="#[17e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Gyro_Offset_Init
 <LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;All_Button_Init
 <LI><a href="#[1a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Motor_Init
 <LI><a href="#[1bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Sensor_Handler_Init
 <LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;All_PID_Init
-<LI><a href="#[117]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Bluetooth_Init
-<LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;All_Encoder_Init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
@@ -2449,6 +2451,7 @@ Global Symbols
 <LI><a href="#[155]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ENET_GetInstance
 <LI><a href="#[148]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EDMA_HandleIRQ
 <LI><a href="#[147]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EDMA_GetChannelStatusFlags
+<LI><a href="#[184]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_CombineWriteData
 <LI><a href="#[19b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_SeparateReadData
 <LI><a href="#[11e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CLOCK_ControlGate
 <LI><a href="#[11c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CLOCK_ControlGate
@@ -2474,7 +2477,6 @@ Global Symbols
 <LI><a href="#[190]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_MasterSetDelayScaler
 <LI><a href="#[18b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_MasterSetBaudRate
 <LI><a href="#[186]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_GetInstance
-<LI><a href="#[184]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_CombineWriteData
 <LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CLOCK_ControlGate
 <LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CLOCK_SetDiv
 <LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CLOCK_SetMux
@@ -2551,6 +2553,8 @@ Global Symbols
 <LI><a href="#[1c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pwm_set_duty
 <LI><a href="#[1dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fifo_write_buffer
 <LI><a href="#[1db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fifo_read_buffer
+<LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_show_string
+<LI><a href="#[21b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_show_char
 <LI><a href="#[216]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_set_region
 <LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bluetooth_ch9141_read_buffer
 <LI><a href="#[21c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uart_iomuxc
@@ -2559,8 +2563,6 @@ Global Symbols
 <LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spi_write_8bit_registers
 <LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spi_write
 <LI><a href="#[208]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spi_iomuxc
-<LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_show_string
-<LI><a href="#[21b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_show_char
 </UL>
 
 <P><STRONG><a name="[1e5]"></a>debug_init</STRONG> (Thumb, 80 bytes, Stack size 40 bytes, zf_common_debug.o(.text.debug_init))
@@ -2691,9 +2693,9 @@ Global Symbols
 <LI><a href="#[1f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gpio_iomuxc
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<LI><a href="#[1d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
 <LI><a href="#[1d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;imu660ra_init
 <LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bluetooth_ch9141_init
-<LI><a href="#[1d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
 <LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;All_Button_Init
 </UL>
 
@@ -2876,8 +2878,8 @@ Global Symbols
 <LI><a href="#[144]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CLOCK_SetDiv
 <LI><a href="#[145]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CLOCK_SetMux
 </UL>
-<BR>[Called By]<UL><LI><a href="#[1d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;imu660ra_init
-<LI><a href="#[1d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
+<BR>[Called By]<UL><LI><a href="#[1d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
+<LI><a href="#[1d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;imu660ra_init
 </UL>
 
 <P><STRONG><a name="[208]"></a>spi_iomuxc</STRONG> (Thumb, 1508 bytes, Stack size 32 bytes, zf_driver_spi.o(.text.spi_iomuxc))
@@ -2925,9 +2927,9 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[210]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spi_write_8bit_array
 </UL>
-<BR>[Called By]<UL><LI><a href="#[21a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_write_index
+<BR>[Called By]<UL><LI><a href="#[1d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
+<LI><a href="#[21a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_write_index
 <LI><a href="#[216]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_set_region
-<LI><a href="#[1d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
 </UL>
 
 <P><STRONG><a name="[210]"></a>spi_write_8bit_array</STRONG> (Thumb, 38 bytes, Stack size 40 bytes, zf_driver_spi.o(.text.spi_write_8bit_array))
@@ -2976,9 +2978,9 @@ Global Symbols
 <LI><a href="#[173]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPT_SetOutputCompareValue
 </UL>
 <BR>[Called By]<UL><LI><a href="#[1d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;User_Init
+<LI><a href="#[1d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
 <LI><a href="#[1d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;imu660ra_init
 <LI><a href="#[1f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;imu660ra_self_check
-<LI><a href="#[1d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
 <LI><a href="#[17e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Gyro_Offset_Init
 </UL>
 
@@ -2999,15 +3001,15 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[17f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;system_delay_ms
 <LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gpio_init
+<LI><a href="#[219]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_set_color
+<LI><a href="#[218]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_set_dir
+<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_clear
 <LI><a href="#[217]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_debug_init
 <LI><a href="#[21a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_write_index
 <LI><a href="#[16a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetPinsOutput
 <LI><a href="#[160]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ClearPinsOutput
 <LI><a href="#[1f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spi_init
 <LI><a href="#[211]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spi_write_8bit
-<LI><a href="#[219]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_set_color
-<LI><a href="#[218]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_set_dir
-<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_clear
 </UL>
 <BR>[Called By]<UL><LI><a href="#[1d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;User_Init
 </UL>
@@ -3654,10 +3656,10 @@ Local Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[161]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_PortClear
 </UL>
-<BR>[Called By]<UL><LI><a href="#[21a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_write_index
-<LI><a href="#[1d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
+<BR>[Called By]<UL><LI><a href="#[1d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
 <LI><a href="#[21b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_show_char
 <LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_clear
+<LI><a href="#[21a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_write_index
 </UL>
 
 <P><STRONG><a name="[216]"></a>tft180_set_region</STRONG> (Thumb, 394 bytes, Stack size 56 bytes, zf_device_tft180.o(.text.tft180_set_region))
@@ -3676,10 +3678,10 @@ Local Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[16b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_PortSet
 </UL>
-<BR>[Called By]<UL><LI><a href="#[21a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_write_index
-<LI><a href="#[1d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
+<BR>[Called By]<UL><LI><a href="#[1d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
 <LI><a href="#[21b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_show_char
 <LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_clear
+<LI><a href="#[21a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_write_index
 </UL>
 
 <P><STRONG><a name="[161]"></a>GPIO_PortClear</STRONG> (Thumb, 18 bytes, Stack size 8 bytes, zf_device_tft180.o(.text.GPIO_PortClear))
@@ -3695,8 +3697,8 @@ Local Symbols
 <LI><a href="#[160]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ClearPinsOutput
 <LI><a href="#[211]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spi_write_8bit
 </UL>
-<BR>[Called By]<UL><LI><a href="#[216]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_set_region
-<LI><a href="#[1d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
+<BR>[Called By]<UL><LI><a href="#[1d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
+<LI><a href="#[216]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_set_region
 </UL>
 
 <P><STRONG><a name="[16b]"></a>GPIO_PortSet</STRONG> (Thumb, 18 bytes, Stack size 8 bytes, zf_device_tft180.o(.text.GPIO_PortSet))
@@ -3928,8 +3930,8 @@ Local Symbols
 <P><STRONG><a name="[185]"></a>LPSPI_IsMaster</STRONG> (Thumb, 16 bytes, Stack size 4 bytes, fsl_lpspi.o(.text.LPSPI_IsMaster))
 <BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = LPSPI_IsMaster
 </UL>
-<BR>[Called By]<UL><LI><a href="#[18b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_MasterSetBaudRate
-<LI><a href="#[182]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_CommonIRQHandler
+<BR>[Called By]<UL><LI><a href="#[182]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_CommonIRQHandler
+<LI><a href="#[18b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_MasterSetBaudRate
 </UL>
 
 <P><STRONG><a name="[199]"></a>LPSPI_GetRxFifoCount</STRONG> (Thumb, 16 bytes, Stack size 4 bytes, fsl_lpspi.o(.text.LPSPI_GetRxFifoCount))
