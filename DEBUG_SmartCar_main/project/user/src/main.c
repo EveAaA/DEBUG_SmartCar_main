@@ -49,6 +49,7 @@ uint16 Start = 0;
 int a = 0;
 extern float test_3;
 extern float test_4;
+extern float test_5;
 
 
 int main(void)
@@ -59,21 +60,20 @@ int main(void)
     // 此处编写用户代码 例如外设初始化代码等
     User_Init();
     gpio_init(B14,GPI,0,GPI_PULL_UP);
-    gpio_init(C26,GPO,1,GPO_PUSH_PULL);
-    float test_1;
+    float test_1 = 0;
     float test_2 = 10;
     // float test_3 = 20.0f;
-    //Bluetooth_Set_Watch_Variable(Num_Address, CH1, &test_1);
-    //Bluetooth_Set_Watch_Variable(Num_Address, CH2, &test_2);
+    Bluetooth_Set_Watch_Variable(Num_Address, CH1, &test_1);
+    Bluetooth_Set_Watch_Variable(Num_Address, CH2, &test_2);
     Bluetooth_Set_Watch_Variable(Num_Address, CH3, &test_3);
     Bluetooth_Set_Watch_Variable(Num_Address, CH4, &test_4);
+	Bluetooth_Set_Watch_Variable(Num_Address, CH4, &test_5);
     // 此处编写用户代码 例如外设初始化代码等
     while(1)
     {
-        Bluetooth_Store_Data(); 
         // test_1 = Get_LB_Speed();
         // 此处编写需要循环执行的代码
-
+        User_Loop();
         // 此处编写需要循环执行的代码
     }
 }

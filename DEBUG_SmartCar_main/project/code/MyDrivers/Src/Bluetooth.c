@@ -10,18 +10,15 @@
 **/
 
 #include "Bluetooth.h"
-        
+
 ReceiveData After_Analyze_Data;        // 创建After_Analyze_Data存储标志位变量，以及数值
 float *Num_Address[CH_COUNT] = {NULL}; // 存储需要观察变量的地址
 uint8 data_buffer[32];                 // 存储上位机接收到数据
 uint8 data_len;                        // 存储接收到的数据长度
-HashNode hashTable[1024];              
-float test_1 = 0.0;
-float test_2 = 0.0;
+HashNode hashTable[1024];
 float test_3 = 0.0f;
 float test_4 = 0.0f;
-
-
+float test_5 = 0.0f;
 
 /**@brief     蓝牙初始化(统一封装初始化函数)
 -- @param     None
@@ -125,7 +122,7 @@ ReceiveData Bluetooth_Analyse_Data(void)
 **/
 void Bluetooth_Store_Data(void)
 {
-    system_delay_ms(10);
+    system_delay_ms(50);
     // 获取缓存当中得数据存入data_buffer当中
     Bluetooth_Get_Message();
     // 如果有数据则解析数据
@@ -141,6 +138,10 @@ void Bluetooth_Store_Data(void)
         bluetooth_ch9141_send_string(test2);
         */
         Process_Hash(After_Analyze_Data.address);
+    }
+    else
+    {
+        Bluetooth_Send_Float(Num_Address);
     }
 }
 
@@ -212,7 +213,6 @@ void Process_Hash(char *inputAddress)
 void Handle_LFP_Case(void)
 {
     test_3 = After_Analyze_Data.num;
-    Bluetooth_Send_Float(Num_Address);
 }
 
 /**@brief     处理LFI函数(改变LF轮ki数值)
@@ -223,7 +223,6 @@ void Handle_LFP_Case(void)
 void Handle_LFI_Case(void)
 {
     test_4 = After_Analyze_Data.num;
-    Bluetooth_Send_Float(Num_Address);
 }
 
 /**@brief     处理RFP函数(改变RF轮kp数值)
@@ -251,7 +250,6 @@ void Handle_RFI_Case(void)
 **/
 void Handle_RBP_Case(void)
 {
-
 }
 
 /**@brief     处理RBI函数(改变RB轮ki数值)
@@ -270,7 +268,6 @@ void Handle_RBI_Case(void)
 **/
 void Handle_LBP_Case(void)
 {
-
 }
 
 /**@brief     处理LBI函数(改变LB轮ki数值)
@@ -280,7 +277,6 @@ void Handle_LBP_Case(void)
 **/
 void Handle_LBI_Case(void)
 {
-
 }
 
 /**@brief     处理GYP函数(改变角度环kp数值)
@@ -290,7 +286,6 @@ void Handle_LBI_Case(void)
 **/
 void Handle_GYP_Case(void)
 {
-
 }
 
 /**@brief     处理GYI函数(改变角度环ki数值)
@@ -300,7 +295,6 @@ void Handle_GYP_Case(void)
 **/
 void Handle_GYI_Case(void)
 {
-
 }
 
 /**@brief     处理GYD函数(改变角度环kd数值)
@@ -310,7 +304,6 @@ void Handle_GYI_Case(void)
 **/
 void Handle_GYD_Case(void)
 {
-
 }
 
 /**@brief     处理GYK函数(改变角度环K数值)
@@ -320,5 +313,4 @@ void Handle_GYD_Case(void)
 **/
 void Handle_GYK_Case(void)
 {
-
 }

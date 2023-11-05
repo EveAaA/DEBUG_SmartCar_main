@@ -90,15 +90,9 @@ double Gyro_YawAngle_Get(void)
 {
     double YawAngle = 0;
 
-    if(Gyro_Angle.YawAngle < 0)
-    {
-        YawAngle = 72 + Gyro_Angle.YawAngle;
-    }
-    else
-    {
-        YawAngle = Gyro_Angle.YawAngle;
-    }
-    YawAngle = (YawAngle / 72) * 360.0;
+    YawAngle = Gyro_Angle.YawAngle;
+
+    YawAngle = (YawAngle / 32) * 180.0;
 
     return YawAngle;
 }

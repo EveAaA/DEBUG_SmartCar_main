@@ -14,7 +14,8 @@
         "encoder.h": "c",
         "math.h": "c",
         "car_control.h": "c",
-        "button.h": "c"
+        "button.h": "c",
+        "zf_device_bluetooth_ch9141.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

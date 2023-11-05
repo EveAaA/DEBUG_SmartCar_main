@@ -41,6 +41,7 @@ void User_Init()
     All_PID_Init();
     All_Button_Init();
     Sensor_Handler_Init();
+	interrupt_global_enable(0);
 }
 
 
@@ -51,5 +52,6 @@ void User_Init()
 **/
 void User_Loop()
 {
-  
+  	Bluetooth_Store_Data();
+	
 }

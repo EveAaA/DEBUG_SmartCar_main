@@ -106,6 +106,7 @@
   ..\code\MyFiles\Inc\UserMain.h ..\code\MyDrivers\Inc\Motor.h \
   ..\code\MyDrivers\Inc\Button.h ..\code\MyDrivers\Inc\Gyro.h \
   ..\code\MyDrivers\Inc\Encoder.h ..\code\MyDrivers\Inc\Bluetooth.h \
-  ..\code\MyDrivers\Inc\PID.h ..\code\MyMiddleware\Inc\Car_Control.h \
+  ..\code\MyDrivers\Inc\PID.h ..\code\MyDrivers\Inc\Manipulator.h \
+  ..\code\MyMiddleware\Inc\Car_Control.h \
   ..\code\MyFiles\Inc\Call_Back_Action.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\math.h

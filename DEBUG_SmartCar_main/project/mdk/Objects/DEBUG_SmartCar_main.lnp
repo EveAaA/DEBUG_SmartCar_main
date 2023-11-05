@@ -156,6 +156,7 @@
 ".\objects\encoder.o"
 ".\objects\bluetooth.o"
 ".\objects\pid.o"
+".\objects\manipulator.o"
 ".\objects\car_control.o"
 ".\objects\usermain.o"
 ".\objects\call_back_action.o"
