@@ -47,6 +47,10 @@
 
 uint16 Start = 0;
 int a = 0;
+extern float test_3;
+extern float test_4;
+
+
 int main(void)
 {
     clock_init(SYSTEM_CLOCK_600M);  // 不可删除
@@ -59,12 +63,14 @@ int main(void)
     float test_1;
     float test_2 = 10;
     // float test_3 = 20.0f;
-    Bluetooth_Set_Watch_Variable(Num_Address, CH1, &test_1);
-    Bluetooth_Set_Watch_Variable(Num_Address, CH2, &test_2);
-    // Bluetooth_Set_Watch_Variable(Num_Address, CH3, &test_3);
+    //Bluetooth_Set_Watch_Variable(Num_Address, CH1, &test_1);
+    //Bluetooth_Set_Watch_Variable(Num_Address, CH2, &test_2);
+    Bluetooth_Set_Watch_Variable(Num_Address, CH3, &test_3);
+    Bluetooth_Set_Watch_Variable(Num_Address, CH4, &test_4);
     // 此处编写用户代码 例如外设初始化代码等
     while(1)
     {
+        Bluetooth_Store_Data(); 
         // test_1 = Get_LB_Speed();
         // 此处编写需要循环执行的代码
 

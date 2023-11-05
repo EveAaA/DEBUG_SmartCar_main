@@ -160,15 +160,7 @@ void LPUART8_IRQHandler(void)
     {
         // 接收中断
         wireless_module_uart_handler();
-        Bluetooth_Get_Message();
-        ReceiveData After_Analyze_Data;
-        //如果有数据则解析数据
-        if(data_len > 0)
-        {
-            
-        }
-    }
-        
+    }  
     LPUART_ClearStatusFlags(LPUART8, kLPUART_RxOverrunFlag);    // 不允许删除
 }
 
