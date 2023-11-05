@@ -2044,6 +2044,11 @@
               <FileType>1</FileType>
               <FilePath>..\code\MyDrivers\Src\PID.c</FilePath>
             </File>
+            <File>
+              <FileName>Manipulator.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\MyDrivers\Src\Manipulator.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
