@@ -63,17 +63,22 @@ int main(void)
     float test_1 = 0;
     float test_2 = 10;
     // float test_3 = 20.0f;
-    Bluetooth_Set_Watch_Variable(Num_Address, CH1, &test_1);
-    Bluetooth_Set_Watch_Variable(Num_Address, CH2, &test_2);
-    Bluetooth_Set_Watch_Variable(Num_Address, CH3, &test_3);
-    Bluetooth_Set_Watch_Variable(Num_Address, CH4, &test_4);
-	Bluetooth_Set_Watch_Variable(Num_Address, CH4, &test_5);
+    Bluetooth_Set_Watch_Variable(Num_Address, CH1, &LF_Parameter[KP]);
+    Bluetooth_Set_Watch_Variable(Num_Address, CH2, &LF_Parameter[KI]);
+    Bluetooth_Set_Watch_Variable(Num_Address, CH3, &RF_Parameter[KP]);
+    Bluetooth_Set_Watch_Variable(Num_Address, CH4, &RF_Parameter[KI]);
+    Bluetooth_Set_Watch_Variable(Num_Address, CH5, &LB_Parameter[KP]);
+    Bluetooth_Set_Watch_Variable(Num_Address, CH6, &LB_Parameter[KI]);
+    Bluetooth_Set_Watch_Variable(Num_Address, CH7, &RB_Parameter[KP]);
+    Bluetooth_Set_Watch_Variable(Num_Address, CH8, &RB_Parameter[KI]);
+	Bluetooth_Set_Watch_Variable(Num_Address, CH9, &test_5);
     // 此处编写用户代码 例如外设初始化代码等
     while(1)
     {
         // test_1 = Get_LB_Speed();
         // 此处编写需要循环执行的代码
         User_Loop();
+        test_5 += 0.005;
         // 此处编写需要循环执行的代码
     }
 }

@@ -37,10 +37,10 @@ Incremental_PID_TypeDef RMotor_B_Speed;
 void All_PID_Init()
 {
     //速度环
-    Incremental_PID_Init(&LMotor_F_Speed,0.65,0.52,0,40,-40);
-    Incremental_PID_Init(&RMotor_F_Speed,0,0.01,0,40,-40);//有问题
-    Incremental_PID_Init(&LMotor_B_Speed,0,0.3,0,40,-40);
-    Incremental_PID_Init(&RMotor_B_Speed,0.5,0.45,0,40,-40);
+    Incremental_PID_Init(&LMotor_F_Speed, LF_Parameter[KP], LF_Parameter[KI], 0, 40, -40);            // kp: 0.65 ki: 0.52 
+    Incremental_PID_Init(&RMotor_F_Speed, RF_Parameter[KP], RF_Parameter[KI], 0, 40, -40);//有问题     // kp: 0.00 ki: 0.01
+    Incremental_PID_Init(&LMotor_B_Speed, LB_Parameter[KP], LB_Parameter[KI], 0, 40, -40);             // kp: 0.00 ki: 0.01
+    Incremental_PID_Init(&RMotor_B_Speed, RB_Parameter[KP], RB_Parameter[KI], 0, 40, -40);             // kp: 0.50 ki: 0.45
 }
 
 void Set_Car_Speed(double Target_Speed)

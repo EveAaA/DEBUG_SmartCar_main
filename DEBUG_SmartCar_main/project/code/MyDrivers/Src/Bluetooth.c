@@ -46,6 +46,16 @@ void Bluetooth_Send_Float(float *float_add[])
     f_num_buffer[CH3] = *float_add[CH3];
     f_num_buffer[CH4] = *float_add[CH4];
     f_num_buffer[CH5] = *float_add[CH5];
+    f_num_buffer[CH6] = *float_add[CH6];
+    f_num_buffer[CH7] = *float_add[CH7];
+    f_num_buffer[CH8] = *float_add[CH8];
+    f_num_buffer[CH9] = *float_add[CH9];
+    f_num_buffer[CH10] = *float_add[CH10];
+    f_num_buffer[CH11] = *float_add[CH11];
+    f_num_buffer[CH12] = *float_add[CH12];
+    f_num_buffer[CH13] = *float_add[CH13];
+    f_num_buffer[CH14] = *float_add[CH14];
+    f_num_buffer[CH15] = *float_add[CH15];
     // 发送f_num_buffer当中存储的所有变量数据于指定通道
     bluetooth_ch9141_send_buffer((uint8 *)(f_num_buffer), sizeof(float) * CH_COUNT);
     // 发送帧尾
@@ -212,7 +222,7 @@ void Process_Hash(char *inputAddress)
 **/
 void Handle_LFP_Case(void)
 {
-    test_3 = After_Analyze_Data.num;
+    LF_Parameter[KP] = After_Analyze_Data.num;
 }
 
 /**@brief     处理LFI函数(改变LF轮ki数值)
@@ -222,7 +232,7 @@ void Handle_LFP_Case(void)
 **/
 void Handle_LFI_Case(void)
 {
-    test_4 = After_Analyze_Data.num;
+    LF_Parameter[KI] = After_Analyze_Data.num;
 }
 
 /**@brief     处理RFP函数(改变RF轮kp数值)
@@ -232,6 +242,7 @@ void Handle_LFI_Case(void)
 **/
 void Handle_RFP_Case(void)
 {
+    RF_Parameter[KP] = After_Analyze_Data.num;
 }
 
 /**@brief     处理RFI函数(改变RF轮kI数值)
@@ -241,6 +252,7 @@ void Handle_RFP_Case(void)
 **/
 void Handle_RFI_Case(void)
 {
+    RF_Parameter[KI] = After_Analyze_Data.num;
 }
 
 /**@brief     处理RBP函数(改变RB轮kp数值)
@@ -250,6 +262,7 @@ void Handle_RFI_Case(void)
 **/
 void Handle_RBP_Case(void)
 {
+    RB_Parameter[KP] = After_Analyze_Data.num;
 }
 
 /**@brief     处理RBI函数(改变RB轮ki数值)
@@ -259,6 +272,7 @@ void Handle_RBP_Case(void)
 **/
 void Handle_RBI_Case(void)
 {
+    RB_Parameter[KI] = After_Analyze_Data.num;
 }
 
 /**@brief     处理LBP函数(改变LB轮kp数值)
@@ -268,6 +282,7 @@ void Handle_RBI_Case(void)
 **/
 void Handle_LBP_Case(void)
 {
+    LB_Parameter[KP] = After_Analyze_Data.num;
 }
 
 /**@brief     处理LBI函数(改变LB轮ki数值)
@@ -277,6 +292,7 @@ void Handle_LBP_Case(void)
 **/
 void Handle_LBI_Case(void)
 {
+    LB_Parameter[KI] = After_Analyze_Data.num;
 }
 
 /**@brief     处理GYP函数(改变角度环kp数值)

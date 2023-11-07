@@ -1,9 +1,10 @@
 #ifndef _BLUETOOTH_H
 #define _BLUETOOTH_H
-#define CH_COUNT 5
+#define CH_COUNT 15
 
 /* Includes ------------------------------------------------------------------*/
 #include "zf_common_headfile.h"
+#include "UserMain.h"
 /* ---------------------------------------------------------------------------*/
 typedef enum{
     CH1 = 0,
@@ -11,11 +12,21 @@ typedef enum{
     CH3,
     CH4,
     CH5,
+    CH6,
+    CH7,
+    CH8,
+    CH9,
+    CH10,
+    CH11,
+    CH12,
+    CH13,
+    CH14,
+    CH15
 }CH_NUM;
 
 typedef struct{
     char address[3];   // 存储标志位
-    float num;         // 存储数值
+    double num;         // 存储数值
 }ReceiveData;
 
 // 定义哈希表节点结构
@@ -29,6 +40,7 @@ extern ReceiveData After_Analyze_Data;
 extern float *Num_Address[CH_COUNT];
 extern uint8 data_buffer[32];
 extern uint8 data_len;
+
 /*函数声明--------------------------------------------------------------------*/
 void Bluetooth_Init(void);
 void Bluetooth_Send_Float(float *float_add[]);
