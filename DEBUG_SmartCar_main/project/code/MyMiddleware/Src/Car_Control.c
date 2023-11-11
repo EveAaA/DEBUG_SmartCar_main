@@ -37,14 +37,25 @@ Incremental_PID_TypeDef RMotor_B_Speed;
 void All_PID_Init()
 {
     //速度环
-    Incremental_PID_Init(&LMotor_F_Speed,0.65,0.52,0,40,-40);
-    Incremental_PID_Init(&RMotor_F_Speed,0,0.01,0,40,-40);//有问题
-    Incremental_PID_Init(&LMotor_B_Speed,0,0.3,0,40,-40);
-    Incremental_PID_Init(&RMotor_B_Speed,0.5,0.45,0,40,-40);
+    Incremental_PID_Init(&LMotor_F_Speed,0.6,0.2,0.4,40,-40);
+    Incremental_PID_Init(&RMotor_F_Speed,0.5,0.25,0.35,40,-40);
+    Incremental_PID_Init(&LMotor_B_Speed,0.7,0.3,0.5,40,-40);
+    Incremental_PID_Init(&RMotor_B_Speed,0.5,0.35,0.5,40,-40);
 }
 
-void Set_Car_Speed(double Target_Speed)
+void Set_Car_Speed(double Speed_X,double Speed_Y,double Speed_Z)
 {
-    Set_Motor_Speed(RMotor_B,Get_Incremental_PID_Value(&RMotor_B_Speed,Target_Speed-Get_RB_Speed()));
-    Set_Motor_Speed(LMotor_F,Get_Incremental_PID_Value(&LMotor_F_Speed,Target_Speed-Get_LF_Speed()));
+    double LF_Speed,LB_Speed,RF_Spped,RB_Speed;
+
+//运动解算
+    LF_Speed = Speed_Y + Speed_X + Speed_Z;
+    LB_Speed = Speed_Y - Speed_X + Speed_Z;
+    RF_Spped = Speed_Y - Speed_X - Speed_Z;
+    RB_Speed = Speed_Y + Speed_X - Speed_Z;
+
+//速度环
+    Set_Motor_Speed(LMotor_F,Get_Incremental_PID_Value(&LMotor_F_Speed,LF_Speed-Get_LF_Speed()));
+    Set_Motor_Speed(LMotor_B,Get_Incremental_PID_Value(&LMotor_B_Speed,LB_Speed-Get_LB_Speed()));
+    Set_Motor_Speed(RMotor_F,Get_Incremental_PID_Value(&RMotor_F_Speed,RF_Spped-Get_RF_Speed()));
+    Set_Motor_Speed(RMotor_B,Get_Incremental_PID_Value(&RMotor_B_Speed,RB_Speed-Get_RB_Speed()));
 }

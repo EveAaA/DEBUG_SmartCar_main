@@ -78,11 +78,12 @@ void Get_Encoder_Speed()
 -- @auther  庄文标
 -- @date    2023/11/4
 **/
+double Filter;
 double Get_LF_Speed()
 {
-    double Speed = 0;
-    Speed = (Encoder_Pules_Buffer[0] / 3000.0)*100.0;
-    return Speed;
+    double New_Spped = (Encoder_Pules_Buffer[0] / 3000.0)*100.0;
+    Filter = 0.25*New_Spped + Filter*0.75;
+    return Filter;
 }
 
 /**@brief   获取右前轮速度

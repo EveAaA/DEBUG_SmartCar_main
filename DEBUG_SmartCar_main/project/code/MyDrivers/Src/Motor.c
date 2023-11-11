@@ -17,14 +17,14 @@
 
 /* Define\Declare ------------------------------------------------------------*/
 #define PWM_Freq 17000
-#define Motor_LF_1 PWM1_MODULE0_CHB_D13//前进
-#define Motor_LF_2 PWM1_MODULE1_CHB_D15
-#define Motor_RF_1 PWM1_MODULE1_CHA_D14//前进
-#define Motor_RF_2 PWM1_MODULE0_CHA_D12
-#define Motor_LB_1 PWM1_MODULE3_CHA_D0 //前进
-#define Motor_LB_2 PWM2_MODULE3_CHA_D2
-#define Motor_RB_1 PWM2_MODULE3_CHB_D3 //前进
-#define Motor_RB_2 PWM1_MODULE3_CHB_D1
+#define Motor_LF PWM1_MODULE1_CHB_D15
+#define Motor_RF PWM1_MODULE0_CHB_D13//前进
+#define Motor_RB PWM2_MODULE3_CHB_D3 //前进
+#define Motor_LB PWM1_MODULE3_CHB_D1
+#define Motor_Dir_LF D14
+#define Motor_Dir_RF D12
+#define Motor_Dir_LB D0
+#define Motor_Dir_RB D2
 
 /**
  ******************************************************************************
@@ -41,15 +41,15 @@
 void Motor_Init()
 {
     //前面两个电机
-    pwm_init(Motor_LF_1,PWM_Freq,0);
-    pwm_init(Motor_LF_2,PWM_Freq,0);
-    pwm_init(Motor_RF_1,PWM_Freq,0);
-    pwm_init(Motor_RF_2,PWM_Freq,0);
-    //后面两个电机
-    pwm_init(Motor_LB_1,PWM_Freq,0);
-    pwm_init(Motor_LB_2,PWM_Freq,0);
-    pwm_init(Motor_RB_1,PWM_Freq,0);
-    pwm_init(Motor_RB_2,PWM_Freq,0);
+    pwm_init(Motor_LF,PWM_Freq,0);
+    pwm_init(Motor_LB,PWM_Freq,0);
+    pwm_init(Motor_RF,PWM_Freq,0);
+    pwm_init(Motor_RB,PWM_Freq,0);
+
+    gpio_init(Motor_Dir_LF,GPO,1,GPO_PUSH_PULL);
+    gpio_init(Motor_Dir_RF,GPO,1,GPO_PUSH_PULL);
+    gpio_init(Motor_Dir_LB,GPO,1,GPO_PUSH_PULL);
+    gpio_init(Motor_Dir_RB,GPO,1,GPO_PUSH_PULL);
 }
 
 /**@brief     电机速度设置
@@ -60,6 +60,7 @@ void Motor_Init()
 **/
 void Set_Motor_Speed(MotorHandle Motor, float PWMDuty)
 {
+    
     int Forward = 0;
     double Pwm_Temp = 0;
     double Pwm_Set = 0;
@@ -87,52 +88,58 @@ void Set_Motor_Speed(MotorHandle Motor, float PWMDuty)
         case LMotor_F:
             if(Forward)
             {
-                pwm_set_duty(Motor_LF_1,Pwm_Set);
-                pwm_set_duty(Motor_LF_2,0);
+                pwm_set_duty(Motor_LF,Pwm_Set);
+                gpio_set_level(Motor_Dir_LF,0);
             }
             else if(!Forward)
             {
-                pwm_set_duty(Motor_LF_1,0);
-                pwm_set_duty(Motor_LF_2,Pwm_Set);
+                pwm_set_duty(Motor_LF,Pwm_Set);
+                gpio_set_level(Motor_Dir_LF,1);
             }
         break;
         case RMotor_B:
             if(Forward)
             {
-                pwm_set_duty(Motor_LB_1,Pwm_Set);
-                pwm_set_duty(Motor_LB_2,0);
+                pwm_set_duty(Motor_RB,Pwm_Set);
+                gpio_set_level(Motor_Dir_RB,0);
             }
             else if(!Forward)
             {
-                pwm_set_duty(Motor_LB_1,0);
-                pwm_set_duty(Motor_LB_2,Pwm_Set);
+                pwm_set_duty(Motor_RB,Pwm_Set);
+                gpio_set_level(Motor_Dir_RB,1);
             }
         break;
         case RMotor_F:
             if(Forward)
             {
-                pwm_set_duty(Motor_RF_1,Pwm_Set);
-                pwm_set_duty(Motor_RF_2,0);
+                pwm_set_duty(Motor_RF,Pwm_Set);
+                gpio_set_level(Motor_Dir_RF,0);
             }
             else if(!Forward)
             {
-                pwm_set_duty(Motor_RF_1,0);
-                pwm_set_duty(Motor_RF_2,Pwm_Set);
+                pwm_set_duty(Motor_RF,Pwm_Set);
+                gpio_set_level(Motor_Dir_RF,1);
             }
         break;
         case LMotor_B:
             if(Forward)
             {
-                pwm_set_duty(Motor_RB_1,Pwm_Set);
-                pwm_set_duty(Motor_RB_2,0);
+                pwm_set_duty(Motor_LB,Pwm_Set);
+                gpio_set_level(Motor_Dir_LB,1);
             }
             else if(!Forward)
             {
-                pwm_set_duty(Motor_RB_1,0);
-                pwm_set_duty(Motor_RB_2,Pwm_Set);
+                pwm_set_duty(Motor_LB,Pwm_Set);
+                gpio_set_level(Motor_Dir_LB,0);
             }
         break;
         default:
         break;
     }
+}
+
+void Test()
+{
+    pwm_set_duty(PWM1_MODULE0_CHB_D13,5000);
+    gpio_set_level(D0,1);
 }
