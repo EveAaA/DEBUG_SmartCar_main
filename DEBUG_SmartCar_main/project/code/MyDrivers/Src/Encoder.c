@@ -78,11 +78,12 @@ void Get_Encoder_Speed()
 -- @auther  庄文标
 -- @date    2023/11/4
 **/
-double Filter;
+
 double Get_LF_Speed()
 {
-    double New_Spped = (Encoder_Pules_Buffer[0] / 3000.0)*100.0;
-    Filter = 0.25*New_Spped + Filter*0.75;
+    static double Filter;
+    double Speed = (Encoder_Pules_Buffer[0] / 3000.0)*100.0;
+    Filter = 0.25*Speed + Filter*0.75;
     return Filter;
 }
 
@@ -93,9 +94,10 @@ double Get_LF_Speed()
 **/
 double Get_RF_Speed()
 {
-    double Speed = 0;
-    Speed = (Encoder_Pules_Buffer[1] / 3000.0)*100.0;
-    return -Speed;
+    static double Filter;
+    double Speed = (Encoder_Pules_Buffer[1] / 3000.0)*100.0;
+    Filter = 0.25*Speed + Filter*0.75;
+    return -Filter;
 }
 
 /**@brief   获取左后轮速度
@@ -105,9 +107,10 @@ double Get_RF_Speed()
 **/
 double Get_LB_Speed()
 {
-    double Speed = 0;
-    Speed = (Encoder_Pules_Buffer[2] / 3000.0)*100.0;
-    return Speed;
+    static double Filter;
+    double Speed = (Encoder_Pules_Buffer[2] / 3000.0)*100.0;
+    Filter = 0.25*Speed + Filter*0.75;
+    return Filter;
 }
 
 /**@brief   获取右后轮速度
@@ -117,7 +120,8 @@ double Get_LB_Speed()
 **/
 double Get_RB_Speed()
 {
-    double Speed = 0;
-    Speed = (Encoder_Pules_Buffer[3] / 3000.0)*100.0;
-    return -Speed;
+    static double Filter;
+    double Speed = (Encoder_Pules_Buffer[3] / 3000.0)*100.0;
+    Filter = 0.25*Speed + Filter*0.75;
+    return -Filter;
 }

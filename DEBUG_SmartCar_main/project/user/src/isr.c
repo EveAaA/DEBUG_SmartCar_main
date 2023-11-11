@@ -40,10 +40,7 @@
 #include "Call_Back_Action.h"
 #include "UserMain.h"
 extern uint16 Start;
-extern Incremental_PID_TypeDef LMotor_F_Speed;
-extern Incremental_PID_TypeDef RMotor_F_Speed;
-extern Incremental_PID_TypeDef LMotor_B_Speed;
-extern Incremental_PID_TypeDef RMotor_B_Speed;
+extern Pid_TypeDef Angle_PID;
 
 void CSI_IRQHandler(void)
 {
@@ -64,7 +61,7 @@ void PIT_IRQHandler(void)
         Get_Encoder_Speed();
         if(Start)
         {
-            Set_Car_Speed(0,0,5);
+            Set_Car_Speed(5,0,0-GetPIDValue(&Angle_PID,Gyro_YawAngle_Get()));
             // Set_Motor_Speed(LMotor_B,Get_Incremental_PID_Value(&LMotor_B_Speed,10-Get_LB_Speed()));
         }
         pit_flag_clear(PIT_CH1);

@@ -16,8 +16,8 @@
 
 /* Define\Declare ------------------------------------------------------------*/
 uint16 Start = 0;
-float test_1;
-float test_2;
+extern float test_1;
+extern float test_2;
 /**
  ******************************************************************************
  *  @defgroup 外部调用
@@ -35,8 +35,8 @@ void User_Init()
     system_delay_ms(300);
     Motor_Init();
     Bluetooth_Init();
-    // Bluetooth_Set_Watch_Variable(Num_Address, CH1, &test_1);
-    // Bluetooth_Set_Watch_Variable(Num_Address, CH2, &test_2);
+    Bluetooth_Set_Watch_Variable(Num_Address, CH1, &test_1);
+    Bluetooth_Set_Watch_Variable(Num_Address, CH2, &test_2);
     tft180_init();
     imu660ra_init();
     Gyro_Offset_Init();
@@ -54,10 +54,10 @@ void User_Init()
 **/
 void User_Loop()
 {
-    // tft180_show_float(0,0,Get_RB_Speed(),2,1);
-    // test_1 = Get_RB_Speed();
-    // test_2 = 10;
-    // Bluetooth_Send_Float(Num_Address);
+    tft180_show_float(0,0,Gyro_YawAngle_Get(),2,1);
+    test_1 = Gyro_YawAngle_Get();
+    test_2 = 0;
+    Bluetooth_Send_Float(Num_Address);
     All_Button_Scan();
     if(Button_Value[2] == 1)
     {
