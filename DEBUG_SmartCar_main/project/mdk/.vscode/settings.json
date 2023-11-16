@@ -15,7 +15,9 @@
         "math.h": "c",
         "car_control.h": "c",
         "button.h": "c",
-        "filter.h": "c"
+        "filter.h": "c",
+        "beep.h": "c",
+        "meau.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

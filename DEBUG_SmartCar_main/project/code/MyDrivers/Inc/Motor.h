@@ -13,6 +13,5 @@ typedef enum
 
 void Motor_Init();
 void Set_Motor_Speed(MotorHandle Motor, float PWMDuty);
-void Test();
 
 #endif

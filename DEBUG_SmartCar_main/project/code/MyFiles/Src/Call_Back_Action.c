@@ -27,16 +27,16 @@
  *
 **/
 
-/**@brief   传感器定时器初始化
+/**@brief   定时器初始化
 -- @param   无
 -- @auther  庄文标
 -- @date    2023/11/4
 **/
-void Sensor_Handler_Init()
+void Handler_Init()
 {
     pit_ms_init(Sensor_CH, 5);                                                  // 初始化 PIT_CH0 为周期中断 5ms 周期
     interrupt_set_priority(Sensor_PRIORITY, 0); 
-    pit_ms_init(PIT_CH1, 20);                                                  // 初始化 PIT_CH0 为周期中断 5ms 周期
+    pit_ms_init(PIT_CH1, 20);                                                  // 初始化 PIT_CH0 为周期中断 20ms 周期
     interrupt_set_priority(PIT_IRQn, 0);    
 }
 

@@ -107,5 +107,5 @@
   ..\code\MyDrivers\Inc\Button.h ..\code\MyDrivers\Inc\Gyro.h \
   ..\code\MyDrivers\Inc\Encoder.h ..\code\MyDrivers\Inc\Bluetooth.h \
   ..\code\MyDrivers\Inc\PID.h ..\code\MyDrivers\Inc\Manipulator.h \
-  ..\code\MyMiddleware\Inc\Car_Control.h \
-  ..\code\MyFiles\Inc\Call_Back_Action.h
+  ..\code\MyDrivers\Inc\Beep.h ..\code\MyMiddleware\Inc\Car_Control.h \
+  ..\code\MyMiddleware\Inc\Meau.h ..\code\MyFiles\Inc\Call_Back_Action.h

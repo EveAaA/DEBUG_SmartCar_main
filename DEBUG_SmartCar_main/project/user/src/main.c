@@ -45,7 +45,7 @@
 
 
 
-int a = 0;
+
 int main(void)
 {
     clock_init(SYSTEM_CLOCK_600M);  // ²»¿ÉÉ¾³ý

@@ -137,9 +137,3 @@ void Set_Motor_Speed(MotorHandle Motor, float PWMDuty)
         break;
     }
 }
-
-void Test()
-{
-    pwm_set_duty(PWM1_MODULE0_CHB_D13,5000);
-    gpio_set_level(D0,1);
-}

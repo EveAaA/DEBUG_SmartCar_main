@@ -2049,6 +2049,11 @@
               <FileType>1</FileType>
               <FilePath>..\code\MyDrivers\Src\Manipulator.c</FilePath>
             </File>
+            <File>
+              <FileName>Beep.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\MyDrivers\Src\Beep.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2058,6 +2063,11 @@
               <FileName>Car_Control.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\code\MyMiddleware\Src\Car_Control.c</FilePath>
+            </File>
+            <File>
+              <FileName>Meau.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\MyMiddleware\Src\Meau.c</FilePath>
             </File>
           </Files>
         </Group>

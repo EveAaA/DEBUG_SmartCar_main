@@ -27,6 +27,8 @@ float test_3 = 0.0f;
 void Bluetooth_Init(void)
 {
     bluetooth_ch9141_init();
+    Bluetooth_Set_Watch_Variable(Num_Address, CH1, &test_1);
+    Bluetooth_Set_Watch_Variable(Num_Address, CH2, &test_2);
 }
 
 /**@brief     发送浮点数(通信协议遵守VOFA+ <JustFloat>, 多通道)
