@@ -11,14 +11,13 @@
 
 #include "Bluetooth.h"
 
-ReceiveData After_Analyze_Data;        // 创建After_Analyze_Data存储标志位变量，以及数值
 float *Num_Address[CH_COUNT] = {NULL}; // 存储需要观察变量的地址
 uint8 data_buffer[32];                 // 存储上位机接收到数据
 uint8 data_len;                        // 存储接收到的数据长度
-HashNode hashTable[1024];
+HashNode hashTable[1024];              
+float test_1 = 0.0;
+float test_2 = 0.0;
 float test_3 = 0.0f;
-float test_4 = 0.0f;
-float test_5 = 0.0f;
 
 /**@brief     蓝牙初始化(统一封装初始化函数)
 -- @param     None
@@ -28,6 +27,8 @@ float test_5 = 0.0f;
 void Bluetooth_Init(void)
 {
     bluetooth_ch9141_init();
+    Bluetooth_Set_Watch_Variable(Num_Address, CH1, &test_1);
+    Bluetooth_Set_Watch_Variable(Num_Address, CH2, &test_2);
 }
 
 /**@brief     发送浮点数(通信协议遵守VOFA+ <JustFloat>, 多通道)
@@ -46,16 +47,6 @@ void Bluetooth_Send_Float(float *float_add[])
     f_num_buffer[CH3] = *float_add[CH3];
     f_num_buffer[CH4] = *float_add[CH4];
     f_num_buffer[CH5] = *float_add[CH5];
-    f_num_buffer[CH6] = *float_add[CH6];
-    f_num_buffer[CH7] = *float_add[CH7];
-    f_num_buffer[CH8] = *float_add[CH8];
-    f_num_buffer[CH9] = *float_add[CH9];
-    f_num_buffer[CH10] = *float_add[CH10];
-    f_num_buffer[CH11] = *float_add[CH11];
-    f_num_buffer[CH12] = *float_add[CH12];
-    f_num_buffer[CH13] = *float_add[CH13];
-    f_num_buffer[CH14] = *float_add[CH14];
-    f_num_buffer[CH15] = *float_add[CH15];
     // 发送f_num_buffer当中存储的所有变量数据于指定通道
     bluetooth_ch9141_send_buffer((uint8 *)(f_num_buffer), sizeof(float) * CH_COUNT);
     // 发送帧尾
@@ -132,12 +123,14 @@ ReceiveData Bluetooth_Analyse_Data(void)
 **/
 void Bluetooth_Store_Data(void)
 {
-    system_delay_ms(50);
+    system_delay_ms(10);
     // 获取缓存当中得数据存入data_buffer当中
     Bluetooth_Get_Message();
     // 如果有数据则解析数据
     if (data_len != 0)
     {
+        // 创建After_Analyze_Data存储标志位变量，以及数值
+        ReceiveData After_Analyze_Data;
         After_Analyze_Data = Bluetooth_Analyse_Data();
         /*
         bluetooth_ch9141_send_byte('\n');
@@ -148,10 +141,6 @@ void Bluetooth_Store_Data(void)
         bluetooth_ch9141_send_string(test2);
         */
         Process_Hash(After_Analyze_Data.address);
-    }
-    else
-    {
-        Bluetooth_Send_Float(Num_Address);
     }
 }
 
@@ -222,7 +211,7 @@ void Process_Hash(char *inputAddress)
 **/
 void Handle_LFP_Case(void)
 {
-    LF_Parameter[KP] = After_Analyze_Data.num;
+
 }
 
 /**@brief     处理LFI函数(改变LF轮ki数值)
@@ -232,7 +221,6 @@ void Handle_LFP_Case(void)
 **/
 void Handle_LFI_Case(void)
 {
-    LF_Parameter[KI] = After_Analyze_Data.num;
 }
 
 /**@brief     处理RFP函数(改变RF轮kp数值)
@@ -242,7 +230,6 @@ void Handle_LFI_Case(void)
 **/
 void Handle_RFP_Case(void)
 {
-    RF_Parameter[KP] = After_Analyze_Data.num;
 }
 
 /**@brief     处理RFI函数(改变RF轮kI数值)
@@ -252,7 +239,6 @@ void Handle_RFP_Case(void)
 **/
 void Handle_RFI_Case(void)
 {
-    RF_Parameter[KI] = After_Analyze_Data.num;
 }
 
 /**@brief     处理RBP函数(改变RB轮kp数值)
@@ -262,7 +248,7 @@ void Handle_RFI_Case(void)
 **/
 void Handle_RBP_Case(void)
 {
-    RB_Parameter[KP] = After_Analyze_Data.num;
+
 }
 
 /**@brief     处理RBI函数(改变RB轮ki数值)
@@ -272,7 +258,6 @@ void Handle_RBP_Case(void)
 **/
 void Handle_RBI_Case(void)
 {
-    RB_Parameter[KI] = After_Analyze_Data.num;
 }
 
 /**@brief     处理LBP函数(改变LB轮kp数值)
@@ -282,7 +267,7 @@ void Handle_RBI_Case(void)
 **/
 void Handle_LBP_Case(void)
 {
-    LB_Parameter[KP] = After_Analyze_Data.num;
+
 }
 
 /**@brief     处理LBI函数(改变LB轮ki数值)
@@ -292,7 +277,7 @@ void Handle_LBP_Case(void)
 **/
 void Handle_LBI_Case(void)
 {
-    LB_Parameter[KI] = After_Analyze_Data.num;
+
 }
 
 /**@brief     处理GYP函数(改变角度环kp数值)
@@ -302,6 +287,7 @@ void Handle_LBI_Case(void)
 **/
 void Handle_GYP_Case(void)
 {
+
 }
 
 /**@brief     处理GYI函数(改变角度环ki数值)
@@ -311,6 +297,7 @@ void Handle_GYP_Case(void)
 **/
 void Handle_GYI_Case(void)
 {
+
 }
 
 /**@brief     处理GYD函数(改变角度环kd数值)
@@ -320,6 +307,7 @@ void Handle_GYI_Case(void)
 **/
 void Handle_GYD_Case(void)
 {
+
 }
 
 /**@brief     处理GYK函数(改变角度环K数值)
@@ -329,4 +317,5 @@ void Handle_GYD_Case(void)
 **/
 void Handle_GYK_Case(void)
 {
+
 }

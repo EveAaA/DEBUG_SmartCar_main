@@ -15,8 +15,9 @@
 #include "zf_common_headfile.h"
 
 /* Define\Declare ------------------------------------------------------------*/
-
-
+uint16 Start = 0;
+extern float test_1;
+extern float test_2;
 /**
  ******************************************************************************
  *  @defgroup 外部调用
@@ -31,17 +32,20 @@
 **/
 void User_Init()
 {
-    system_delay_ms(300);
-    Motor_Init();
-    Bluetooth_Init();
+    system_delay_ms(100);
+    Beep_Init();
     tft180_init();
+    // Bluetooth_Init();
     imu660ra_init();
     Gyro_Offset_Init();
     All_Encoder_Init();
     All_PID_Init();
     All_Button_Init();
-    Sensor_Handler_Init();
-	interrupt_global_enable(0);
+    Motor_Init();
+    Handler_Init();
+    Beep(On);
+    system_delay_ms(100);
+    Beep(Off);
 }
 
 
@@ -52,7 +56,9 @@ void User_Init()
 **/
 void User_Loop()
 {
-  	Bluetooth_Store_Data();
-    
-	
+//  test_1 = Gyro_YawAngle_Get();
+//  test_2 = 0;
+//  Bluetooth_Send_Float(Num_Address);
+    All_Button_Scan();
+    Meau_Display();
 }

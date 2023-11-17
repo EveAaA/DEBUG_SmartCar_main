@@ -1,8 +1,5 @@
 #ifndef _PID_H
 #define _PID_H
-#define KP 0
-#define KI 1
-#define KD 2
 
 typedef struct
 {
@@ -33,11 +30,6 @@ typedef struct
 	
 	double Output;
 }Incremental_PID_TypeDef;
-
-extern float LF_Parameter[3];
-extern float RF_Parameter[3];
-extern float LB_Parameter[3];
-extern float RB_Parameter[3];
 
 void PIDInit(Pid_TypeDef *PID, double Kp, double Ki, double Kd, double OutputMax, double OutputMin);
 double GetPIDValue(Pid_TypeDef *PID, double error);
