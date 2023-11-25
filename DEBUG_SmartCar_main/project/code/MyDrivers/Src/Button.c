@@ -16,7 +16,9 @@
 /* Define\Declare ------------------------------------------------------------*/
 int8 Button_Value[5] = {0,0,0,0,0};//键值
 int8 Switch_Button_Value[2] = {0,0};
-
+uint8 Key_Mode = 0;
+uint8 Key_Time = 0;
+#define Key_Sleep_Time 28
 //按键管脚定义
 #define Button_0 B11
 #define Button_1 B15
@@ -52,7 +54,7 @@ void All_Button_Init()
 /**@brief    所有按键扫描
 -- @param    无
 -- @auther   庄文标
--- @verbatim 包括轻触按键和拨码按键，注意不可放在定时器中断中
+-- @verbatim 包括轻触按键和拨码按键
 -- @verbatim 需要具体获取哪个按键的状态就判断对应的键值，例如按键0就判断Button_Value[0],判断完记得清零
 -- @date     2023/11/5
 **/
@@ -80,6 +82,7 @@ void All_Button_Scan()
 /**@brief    获取轻触按键键值
 -- @param    无
 -- @auther   庄文标
+-- @verbatim 采用状态机的方法
 -- @date     2023/11/5
 **/
 void Get_Button_Value(int8 KeyNum)
@@ -87,53 +90,133 @@ void Get_Button_Value(int8 KeyNum)
     switch(KeyNum)
     {
         case 0:
-            if(gpio_get_level(Button_0) == 0)
+            switch(Key_Mode)
             {
-                system_delay_ms(80);//消抖，使用的按键抖动有点久
-                if(gpio_get_level(Button_0) == 0)//二次判断
-                {
-                    Button_Value[0] = 1;
-                }
+                case 0:
+                    if(gpio_get_level(Button_0) == 0)
+                    {
+                        Key_Mode = 1;
+                        Key_Time = 1;
+                    }
+                break;
+                case 1:
+                    if(Key_Time >= Key_Sleep_Time)
+                    {
+                        Key_Mode = 2;
+                        Key_Time = 0;
+                    }
+                break;
+                case 2:
+                    if(gpio_get_level(Button_0) == 0)
+					{
+                        Button_Value[0] = 1;
+                        Key_Mode = 0;
+                    }
+                break;										
             }
         break;
         case 1:
-            if(gpio_get_level(Button_1) == 0)
+            switch(Key_Mode)
             {
-                system_delay_ms(80);
-                if(gpio_get_level(Button_1) == 0)
-                {
-                    Button_Value[1] = 1;
-                }
+                case 0:
+                    if(gpio_get_level(Button_1) == 0)
+                    {
+                        Key_Mode = 1;
+                        Key_Time = 1;
+                    }
+                break;
+                case 1:
+                    if(Key_Time >= Key_Sleep_Time)
+                    {
+                        Key_Mode = 2;
+                        Key_Time = 0;
+                    }
+                break;
+                case 2:
+                    if(gpio_get_level(Button_1) == 0)
+					{
+                        Button_Value[1] = 1;
+                        Key_Mode = 0;
+                    }
+                break;										
             }
         break;
         case 2:
-            if(gpio_get_level(Button_2) == 0)
+            switch(Key_Mode)
             {
-                system_delay_ms(80);
-                if(gpio_get_level(Button_2) == 0)
-                {
-                    Button_Value[2] = 1;
-                }
+                case 0:
+                    if(gpio_get_level(Button_2) == 0)
+                    {
+                        Key_Mode = 1;
+                        Key_Time = 1;
+                    }
+                break;
+                case 1:
+                    if(Key_Time >= Key_Sleep_Time)
+                    {
+                        Key_Mode = 2;
+                        Key_Time = 0;
+                    }
+                break;
+                case 2:
+                    if(gpio_get_level(Button_2) == 0)
+					{
+                        Button_Value[2] = 1;
+                        Key_Mode = 0;
+                    }
+                break;										
             }
         break;
         case 3:
-            if(gpio_get_level(Button_3) == 0)
+            switch(Key_Mode)
             {
-                system_delay_ms(80);
-                if(gpio_get_level(Button_3) == 0)
-                {
-                    Button_Value[3] = 1;
-                }
+                case 0:
+                    if(gpio_get_level(Button_3) == 0)
+                    {
+                        Key_Mode = 1;
+                        Key_Time = 1;
+                    }
+                break;
+                case 1:
+                    if(Key_Time >= Key_Sleep_Time)
+                    {
+                        Key_Mode = 2;
+                        Key_Time = 0;
+                    }
+                break;
+                case 2:
+                    if(gpio_get_level(Button_3) == 0)
+					{
+                        Button_Value[3] = 1;
+                        Key_Mode = 0;
+                    }
+                break;										
             }
         break;
         case 4:
-            if(gpio_get_level(Button_4) == 0)
+            switch(Key_Mode)
             {
-                system_delay_ms(80);
-                if(gpio_get_level(Button_4) == 0)
-                {
-                    Button_Value[4] = 1;
-                }
+                case 0:
+                    if(gpio_get_level(Button_4) == 0)
+                    {
+                        Key_Mode = 1;
+                        Key_Time = 1;
+                    }
+                break;
+                case 1:
+                    if(Key_Time >= Key_Sleep_Time)
+                    {
+                        Key_Mode = 2;
+                        Key_Time = 0;
+                    }
+                break;
+                case 2:
+                    if(gpio_get_level(Button_4) == 0)
+					{
+                        Button_Value[4] = 1;
+                        Key_Mode = 0;
+                    }
+                break;										
             }
         break;
 

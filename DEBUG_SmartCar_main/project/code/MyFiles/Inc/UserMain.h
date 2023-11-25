@@ -10,6 +10,7 @@
 #include "PID.h"
 #include "Manipulator.h"
 #include "Beep.h"
+#include "Image.h"
 /*-----------------------MyMiddleware------------------------------*/
 #include "Car_Control.h"
 #include "Meau.h"
