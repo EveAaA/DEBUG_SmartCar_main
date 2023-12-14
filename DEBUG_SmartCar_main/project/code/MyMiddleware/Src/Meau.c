@@ -79,9 +79,11 @@ void Meau_Display()
     {
         Page = 2;
     }
-
-    Arrow_Display(Set_Line);
-
+    if(Show_Mode !=2)
+    {
+        Arrow_Display(Set_Line);
+    }
+    
     switch(Page)
     {
         case 0:
@@ -90,8 +92,8 @@ void Meau_Display()
                 tft180_show_string(Row_1,Line_0,"Gyro_Value");//陀螺仪的值
                 tft180_show_string(Row_1,Line_1,"Encoder_Value");//编码器的值
                 tft180_show_string(Row_1,Line_2,"Image_Value");//图像的误差
-                tft180_show_string(Row_1,Line_3,"Image_Picture");//灰度图
-                tft180_show_string(Row_1,Line_4,"Image_Bin_Picture");//二值化图
+                tft180_show_string(Row_1,Line_3,"Car_Run");//发车选择
+                tft180_show_string(Row_1,Line_4,"Distance");//发车选择
             }
             if(Button_Value[2])
             {
@@ -104,8 +106,18 @@ void Meau_Display()
                     case 1:
                         Show_Mode = 1;
                     break;
+                    case 2:
+                        Show_Mode = 2;
+                    break;
+                    case 3:
+                        Show_Mode = 3;
+                    break;
+                    case 4:
+                        Show_Mode = 4;
+                    break;
                 }
                 tft180_clear();
+                Set_Line = 0;
             }
             switch (Show_Mode)
             {
@@ -115,13 +127,40 @@ void Meau_Display()
                 break;
                 case 1:
                     tft180_show_string(Row_1,Line_0,"LF_Speed:");
-                    tft180_show_float(Row_11,Line_0,Get_LF_Speed(),3,1);
+                    tft180_show_float(Row_11,Line_0,Encoer_Speed[0],3,1);
                     tft180_show_string(Row_1,Line_1,"LB_Speed:");
-                    tft180_show_float(Row_11,Line_1,Get_LB_Speed(),3,1);
+                    tft180_show_float(Row_11,Line_1,Encoer_Speed[2],3,1);
                     tft180_show_string(Row_1,Line_2,"RF_Speed:");
-                    tft180_show_float(Row_11,Line_2,Get_RF_Speed(),3,1);
+                    tft180_show_float(Row_11,Line_2,Encoer_Speed[1],3,1);
                     tft180_show_string(Row_1,Line_3,"RB_Speed:");
-                    tft180_show_float(Row_11,Line_3,Get_RB_Speed(),3,1);
+                    tft180_show_float(Row_11,Line_3,Encoer_Speed[3],3,1);
+                break;
+                case 2:
+                    tft180_show_gray_image(0, 0, (const uint8 *)(Original_Image), MT9V03X_W, MT9V03X_H, (Row_18), (Line_5), Image_Thereshold);
+                    tft180_show_string(Row_1,Line_6,"Image_Erro:");
+                    tft180_show_float(Row_11,Line_6,Image_Erro_,3,1);
+                    tft180_show_string(Row_1,Line_7,"Angle:");
+                    tft180_show_float(Row_7,Line_7,Gyro_YawAngle_Get(),3,1);
+                break;
+                case 3:
+                    if(Button_Value[3] && Set_Line == 0)
+                    {
+                        Button_Value[3] = 0;
+                        Start = 1;
+                    }
+                    if(Button_Value[3] && Set_Line == 1)
+                    {
+                        Button_Value[3] = 0;
+                        Start = 0;
+                    }
+                    tft180_show_string(Row_1,Line_0,"Start");
+                    tft180_show_string(Row_1,Line_1,"Stop");
+                break;
+                case 4:
+                    tft180_show_string(Row_1,Line_0,"Distance_X:");
+                    tft180_show_float(Row_12,Line_0,Get_X_Distance(),3,1);
+                    tft180_show_string(Row_1,Line_1,"Distance_Y:");
+                    tft180_show_float(Row_12,Line_1,Get_Y_Distance(),3,1);
                 break;
             }
         break;

@@ -18,13 +18,13 @@ int8 Button_Value[5] = {0,0,0,0,0};//键值
 int8 Switch_Button_Value[2] = {0,0};
 uint8 Key_Mode = 0;
 uint8 Key_Time = 0;
-#define Key_Sleep_Time 28
+#define Key_Sleep_Time 24
 //按键管脚定义
-#define Button_0 B11
-#define Button_1 B15
-#define Button_2 B14
-#define Button_3 B9
-#define Button_4 B10
+#define Button_0 B9
+#define Button_1 B10
+#define Button_2 B11
+#define Button_3 B14
+#define Button_4 B15
 #define Switch_Button_0 B16
 #define Switch_Button_1 B17
 
@@ -99,14 +99,14 @@ void Get_Button_Value(int8 KeyNum)
                         Key_Time = 1;
                     }
                 break;
-                case 1:
+                case 1://按键消抖
                     if(Key_Time >= Key_Sleep_Time)
                     {
                         Key_Mode = 2;
                         Key_Time = 0;
                     }
                 break;
-                case 2:
+                case 2://二次判断
                     if(gpio_get_level(Button_0) == 0)
 					{
                         Button_Value[0] = 1;

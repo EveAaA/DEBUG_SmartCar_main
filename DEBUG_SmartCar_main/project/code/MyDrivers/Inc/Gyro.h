@@ -5,31 +5,31 @@
 
 typedef struct
 {
-    double RollAngle;   //¹ö¶¯½Ç
+    double RollAngle;   
 
-    double PitchAngle;  //¸©Ñö½Ç
+    double PitchAngle;  
 
-    double YawAngle;    //Æ«º½½Ç
+    double YawAngle;    
 
 }Gyro_AngleTypeDef;
 
 typedef struct
 {
-    double Xdata ;   //¹ö¶¯½Ç
+    double Xdata ;   
 
-    double Ydata ;  //¸©Ñö½Ç
+    double Ydata ;  
 
-    double Zdata;    //Æ«º½½Ç
+    double Zdata;   
 
 }Gyro_Param_t;
 
 typedef struct
 {
-    double acc_x ;   //¹ö¶¯½Ç
+    double acc_x ;   
 
-    double acc_y ;  //¸©Ñö½Ç
+    double acc_y ;  
 
-    double acc_z;    //Æ«º½½Ç
+    double acc_z;    
 
     double gyro_x;
 
@@ -48,7 +48,6 @@ typedef struct
 
 }Quater_Param_t;
 
-void GyroInit();
 double Gyro_RollAngle_Get(void);
 double Gyro_PitchAngle_Get(void);
 double Gyro_YawAngle_Get(void);

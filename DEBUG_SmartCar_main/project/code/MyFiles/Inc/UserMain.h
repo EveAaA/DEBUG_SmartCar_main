@@ -14,10 +14,13 @@
 /*-----------------------MyMiddleware------------------------------*/
 #include "Car_Control.h"
 #include "Meau.h"
+#include "Inertial_Navigation.h"
 /*-----------------------MyFiles-----------------------------------*/
 #include "Call_Back_Action.h"
 
 void User_Init();
 void User_Loop();
+
+extern uint16 Start;
 
 #endif  
