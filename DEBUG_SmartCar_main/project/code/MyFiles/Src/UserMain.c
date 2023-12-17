@@ -15,7 +15,8 @@
 #include "zf_common_headfile.h"
 
 /* Define\Declare ------------------------------------------------------------*/
-uint16 Start = 0;
+uint16 Start = 2;
+uint16 count = 0;
 extern float test_1;
 extern float test_2;
 /**
@@ -35,19 +36,21 @@ void User_Init()
     system_delay_ms(100);
     Beep_Init();
     tft180_init();
-    // Bluetooth_Init();
+    Bluetooth_Init();
     imu660ra_init();
     Gyro_Offset_Init();
     All_Encoder_Init();
     All_PID_Init();
+    Pid_Init();
     All_Button_Init();
     Motor_Init();
+    mt9v03x_init();
     Handler_Init();
+    Manipulator_Init();
     Beep(On);
     system_delay_ms(100);
     Beep(Off);
 }
-
 
 /**@brief   所有主循环内容
 -- @param   无
@@ -56,9 +59,11 @@ void User_Init()
 **/
 void User_Loop()
 {
-//  test_1 = Gyro_YawAngle_Get();
-//  test_2 = 0;
-//  Bluetooth_Send_Float(Num_Address);
     All_Button_Scan();
     Meau_Display();
+    if(mt9v03x_finish_flag)
+    {
+      Image_Process();
+      mt9v03x_finish_flag = 0;
+    }
 }

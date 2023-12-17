@@ -17,14 +17,14 @@
 
 /* Define\Declare ------------------------------------------------------------*/
 #define PWM_Freq 17000
-#define Motor_LF PWM1_MODULE1_CHB_D15
+#define Motor_LF PWM1_MODULE0_CHA_D12 
 #define Motor_RF PWM1_MODULE0_CHB_D13//前进
-#define Motor_RB PWM2_MODULE3_CHB_D3 //前进
-#define Motor_LB PWM1_MODULE3_CHB_D1
-#define Motor_Dir_LF D14
-#define Motor_Dir_RF D12
-#define Motor_Dir_LB D0
-#define Motor_Dir_RB D2
+#define Motor_RB PWM1_MODULE1_CHA_D14 //
+#define Motor_LB PWM1_MODULE1_CHB_D15 
+#define Motor_Dir_LF D27
+#define Motor_Dir_RF C27
+#define Motor_Dir_LB B23 
+#define Motor_Dir_RB D4
 
 /**
  ******************************************************************************
@@ -89,24 +89,24 @@ void Set_Motor_Speed(MotorHandle Motor, float PWMDuty)
             if(Forward)
             {
                 pwm_set_duty(Motor_LF,Pwm_Set);
-                gpio_set_level(Motor_Dir_LF,0);
+                gpio_set_level(Motor_Dir_LF,1);
             }
             else if(!Forward)
             {
                 pwm_set_duty(Motor_LF,Pwm_Set);
-                gpio_set_level(Motor_Dir_LF,1);
+                gpio_set_level(Motor_Dir_LF,0);
             }
         break;
         case RMotor_B:
             if(Forward)
             {
                 pwm_set_duty(Motor_RB,Pwm_Set);
-                gpio_set_level(Motor_Dir_RB,0);
+                gpio_set_level(Motor_Dir_RB,1);
             }
             else if(!Forward)
             {
                 pwm_set_duty(Motor_RB,Pwm_Set);
-                gpio_set_level(Motor_Dir_RB,1);
+                gpio_set_level(Motor_Dir_RB,0);
             }
         break;
         case RMotor_F:
@@ -125,12 +125,12 @@ void Set_Motor_Speed(MotorHandle Motor, float PWMDuty)
             if(Forward)
             {
                 pwm_set_duty(Motor_LB,Pwm_Set);
-                gpio_set_level(Motor_Dir_LB,1);
+                gpio_set_level(Motor_Dir_LB,0);
             }
             else if(!Forward)
             {
                 pwm_set_duty(Motor_LB,Pwm_Set);
-                gpio_set_level(Motor_Dir_LB,0);
+                gpio_set_level(Motor_Dir_LB,1);
             }
         break;
         default:

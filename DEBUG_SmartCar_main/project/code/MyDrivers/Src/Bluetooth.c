@@ -31,6 +31,17 @@ void Bluetooth_Init(void)
     Bluetooth_Set_Watch_Variable(Num_Address, CH2, &test_2);
 }
 
+/**@brief     printf重定向
+-- @param     None
+-- @auther    庄文标
+-- @date      2023/12/6
+**/
+int32_t fputc (int32_t ch, FILE* f)
+{
+    bluetooth_ch9141_send_byte((ch & 0xFF));
+    return ch;
+}
+
 /**@brief     发送浮点数(通信协议遵守VOFA+ <JustFloat>, 多通道)
 -- @param     f_num:需要传输的浮点数
 -- @auther    戴骐阳

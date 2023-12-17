@@ -2,10 +2,10 @@
   ******************************************************************************
   * @file    Gyro.c
   * @author  庄文标
-  * @brief   陀螺仪驱动
+  * @brief   姿态解算，速度解算
   * @date    11/04/2023
     @verbatim
-    陀螺仪姿态解算
+    姿态、速度解算
     @endverbatim
   * @{
 **/
@@ -16,7 +16,7 @@
 #include "math.h"
 
 /* Define\Declare ------------------------------------------------------------*/
-#define delta_T     0.001f  // 采样周期1ms 即频率1KHZ
+#define delta_T     0.005f  // 采样周期1ms 即频率1KHZ
 #define  pI  3.1415926f
 float I_ex, I_ey, I_ez;  // 误差积分
 float IMU_kp= 0.17;    // 加速度计的收敛速率比例增益
@@ -24,8 +24,9 @@ float IMU_ki= 0.004;   // 陀螺仪收敛速率的积分增益
 Quater_Param_t Q_info = {1, 0, 0, 0};  // 四元数初始化
 Gyro_AngleTypeDef Gyro_Angle;
 Gyro_Param_t GyroOffset;
+Gyro_Param_t AccOffset;
 IMU_Param_t IMU_Data;
-
+double YawAngle_Trans = 0;//转换后的偏航角，归到0-360
 /**
  ******************************************************************************
  *  @defgroup 外部调用
@@ -88,11 +89,7 @@ double Gyro_PitchAngle_Get(void)
 **/
 double Gyro_YawAngle_Get(void)
 {
-    double YawAngle = 0;
-
-    YawAngle = (Gyro_Angle.YawAngle / 72) * 360.0;
-
-    return YawAngle;
+    return YawAngle_Trans;
 }
 
 /**@brief   获取陀螺仪数据
@@ -102,9 +99,11 @@ double Gyro_YawAngle_Get(void)
 **/
 void Gyro_Get_All_Angles()
 {
+    static double Yaw_Angle_Old = 0;
     imu660ra_get_acc();
     imu660ra_get_gyro();
     IMU_Get_Values();
+    // printf("X_Distant = %lf\r\n",IMU_Data.acc_x*0.005f);
     IMU_AHRS_update(&IMU_Data);
     float q0 = Q_info.q0;
     float q1 = Q_info.q1;
@@ -114,6 +113,17 @@ void Gyro_Get_All_Angles()
     Gyro_Angle.PitchAngle = asin(2 * q0 * q2 - 2 * q1 * q3) * 180 / pI;
     Gyro_Angle.RollAngle = atan2(2 * q2 * q3 + 2 * q0 * q1, -2 * q1 * q1 - 2 * q2 * q2 + 1) * 180 / pI;
     Gyro_Angle.YawAngle = -atan2(2 * q1 * q2 + 2 * q0 * q3, -2 * q2 * q2 - 2 * q3 * q3 + 1) * 180 / pI;
+    double i = Gyro_Angle.YawAngle - Yaw_Angle_Old;
+    if (i < -180) 
+    {
+        i += 360;
+    }
+    else if (i > 180) 
+    {
+        i -= 360;
+    }
+    YawAngle_Trans += i;
+    Yaw_Angle_Old = Gyro_Angle.YawAngle;
 
 }
 
@@ -161,6 +171,8 @@ void IMU_Get_Values(void)
     IMU_Data.gyro_y = ((float) imu660ra_gyro_y - GyroOffset.Ydata) * pI / 180 / 16.4f;
     IMU_Data.gyro_z = ((float) imu660ra_gyro_z - GyroOffset.Zdata) * pI / 180 / 16.4f;
 }
+
+
 
 /**@brief   六轴四原数的获取
 -- @param   无

@@ -17,7 +17,11 @@
         "button.h": "c",
         "filter.h": "c",
         "beep.h": "c",
-        "meau.h": "c"
+        "meau.h": "c",
+        "image.h": "c",
+        "zf_device_mt9v03x.h": "c",
+        "ios": "c",
+        "inertial_navigation.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

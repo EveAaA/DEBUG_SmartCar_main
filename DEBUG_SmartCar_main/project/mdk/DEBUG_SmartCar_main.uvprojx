@@ -2054,6 +2054,11 @@
               <FileType>1</FileType>
               <FilePath>..\code\MyDrivers\Src\Beep.c</FilePath>
             </File>
+            <File>
+              <FileName>Image.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\MyDrivers\Src\Image.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2068,6 +2073,11 @@
               <FileName>Meau.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\code\MyMiddleware\Src\Meau.c</FilePath>
+            </File>
+            <File>
+              <FileName>Inertial_Navigation.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\MyMiddleware\Src\Inertial_Navigation.c</FilePath>
             </File>
           </Files>
         </Group>

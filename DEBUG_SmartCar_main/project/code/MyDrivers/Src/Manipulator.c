@@ -14,12 +14,12 @@
 #include "Manipulator.h"
 
 /* Define\Declare ------------------------------------------------------------*/
-#define Servo_FREQ 50
-#define Up_Servo_PWM PWM4_MODULE2_CHA_C30
-#define Down_Servo_PWM PWM4_MODULE3_CHA_C31
+#define Servo_FREQ 330
+#define Up_Servo_PWM PWM4_MODULE3_CHA_C31
+#define Down_Servo_PWM PWM1_MODULE3_CHA_D0
 #define Solenoid C26
 
-#define Up_Servo_Init ((float)PWM_DUTY_MAX / (1000.0 / (float)Servo_FREQ) * (0.5 + (float)(90) / 90.0))
+#define Up_Servo_Init ((float)PWM_DUTY_MAX / (1000.0 / (float)Servo_FREQ) * (0.5 + (float)(100) / 90.0))
 #define Dowm_Servo_Init ((float)PWM_DUTY_MAX / (1000.0 / (float)Servo_FREQ) * (0.5 + (float)(0) / 90.0))
 /**
  ******************************************************************************
