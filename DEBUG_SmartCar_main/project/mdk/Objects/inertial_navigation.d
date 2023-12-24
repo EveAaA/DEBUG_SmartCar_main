@@ -110,6 +110,6 @@
   ..\code\MyDrivers\Inc\Encoder.h ..\code\MyDrivers\Inc\Bluetooth.h \
   ..\code\MyDrivers\Inc\PID.h ..\code\MyDrivers\Inc\Manipulator.h \
   ..\code\MyDrivers\Inc\Beep.h ..\code\MyDrivers\Inc\Image.h \
-  ..\code\MyMiddleware\Inc\Car_Control.h ..\code\MyMiddleware\Inc\Meau.h \
-  ..\code\MyFiles\Inc\Call_Back_Action.h \
+  ..\code\MyDrivers\Inc\Uart.h ..\code\MyMiddleware\Inc\Car_Control.h \
+  ..\code\MyMiddleware\Inc\Meau.h ..\code\MyFiles\Inc\Call_Back_Action.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\math.h

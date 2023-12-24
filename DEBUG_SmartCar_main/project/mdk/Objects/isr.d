@@ -109,5 +109,6 @@
   ..\code\MyDrivers\Inc\Gyro.h ..\code\MyDrivers\Inc\Encoder.h \
   ..\code\MyDrivers\Inc\PID.h ..\code\MyDrivers\Inc\Manipulator.h \
   ..\code\MyDrivers\Inc\Beep.h ..\code\MyDrivers\Inc\Image.h \
-  ..\code\MyMiddleware\Inc\Car_Control.h ..\code\MyMiddleware\Inc\Meau.h \
+  ..\code\MyDrivers\Inc\Uart.h ..\code\MyMiddleware\Inc\Car_Control.h \
+  ..\code\MyMiddleware\Inc\Meau.h \
   ..\code\MyMiddleware\Inc\Inertial_Navigation.h

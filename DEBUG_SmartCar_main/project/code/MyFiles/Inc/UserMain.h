@@ -11,6 +11,7 @@
 #include "Manipulator.h"
 #include "Beep.h"
 #include "Image.h"
+#include "Uart.h"
 /*-----------------------MyMiddleware------------------------------*/
 #include "Car_Control.h"
 #include "Meau.h"

@@ -72,6 +72,10 @@ void PIT_IRQHandler(void)
         {
             Set_Car_Speed(0,0,0);
         }
+        else if(Start == 2)
+        {
+            Change_Direction();
+        }
         
         pit_flag_clear(PIT_CH1);
     }
@@ -94,9 +98,10 @@ void LPUART1_IRQHandler(void)
     if(kLPUART_RxDataRegFullFlag & LPUART_GetStatusFlags(LPUART1))
     {
         // 接收中断
-    #if DEBUG_UART_USE_INTERRUPT                        // 如果开启 debug 串口中断
-        debug_interrupr_handler();                      // 调用 debug 串口接收处理函数 数据会被 debug 环形缓冲区读取
-    #endif                                              // 如果修改了 DEBUG_UART_INDEX 那这段代码需要放到对应的串口中断去
+    // #if DEBUG_UART_USE_INTERRUPT                        // 如果开启 debug 串口中断
+    //     debug_interrupr_handler();                      // 调用 debug 串口接收处理函数 数据会被 debug 环形缓冲区读取
+    // #endif                                              // 如果修改了 DEBUG_UART_INDEX 那这段代码需要放到对应的串口中断去
+        Uart_Findborder_Receive();
     }
         
     LPUART_ClearStatusFlags(LPUART1, kLPUART_RxOverrunFlag);    // 不允许删除
@@ -107,7 +112,7 @@ void LPUART2_IRQHandler(void)
     if(kLPUART_RxDataRegFullFlag & LPUART_GetStatusFlags(LPUART2))
     {
         // 接收中断
-        
+        Uart_Fine_Tuning_Receive();
     }
         
     LPUART_ClearStatusFlags(LPUART2, kLPUART_RxOverrunFlag);    // 不允许删除

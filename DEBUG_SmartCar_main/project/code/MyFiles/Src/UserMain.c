@@ -45,6 +45,7 @@ void User_Init()
     All_Button_Init();
     Motor_Init();
     mt9v03x_init();
+    UART_Init();
     Handler_Init();
     Manipulator_Init();
     Beep(On);
@@ -60,7 +61,11 @@ void User_Init()
 void User_Loop()
 {
     All_Button_Scan();
-    Meau_Display();
+    // Meau_Display();
+    Direction_Err = UART_ReadBuffer(&_UART_FINDBORDER);
+    uart_write_byte(_UART_FINDBORDER.UART_INDEX, Direction_Err);
+    tft180_show_string(30, 30, "Direction_Err:");
+    tft180_show_float(30, 50, Direction_Err, 3, 1);
     if(mt9v03x_finish_flag)
     {
       Image_Process();
