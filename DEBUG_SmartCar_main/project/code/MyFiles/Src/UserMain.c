@@ -45,7 +45,7 @@ void User_Init()
     All_Button_Init();
     Motor_Init();
     mt9v03x_init();
-    Handler_Init();
+    // Handler_Init();
     Manipulator_Init();
     Beep(On);
     system_delay_ms(100);

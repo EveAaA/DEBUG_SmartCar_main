@@ -5,7 +5,7 @@
   * @brief   图像部分
   *
     @verbatim
-    移植的程序
+    
     @endverbatim
   * @{
 **/
