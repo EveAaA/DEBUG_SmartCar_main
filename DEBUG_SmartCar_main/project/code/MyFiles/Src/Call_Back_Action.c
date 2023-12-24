@@ -19,7 +19,7 @@
 /* Define\Declare ------------------------------------------------------------*/
 #define Sensor_CH                  (PIT_CH0 )// 使用的周期中断编号 如果修改 需要同步对应修改周期中断编号与 isr.c 中的调用
 #define Sensor_PRIORITY            (PIT_IRQn)// 对应周期中断的中断编号 
-
+fifo_struct uart_data_fifo;
 /**
  ******************************************************************************
  *  @defgroup 外部调用
@@ -50,4 +50,26 @@ void Sensor_Handler()
 {
     Gyro_Get_All_Angles();
     Encoder_Process();
+}
+
+/**@brief   找目标板openart串口
+-- @param   无
+-- @auther  戴骐阳
+-- @date    2023/12/23
+**/
+void Uart_Findborder_Receive(void)
+{
+    uart_query_byte(UART_1, &_UART_FINDBORDER.get_data);
+    fifo_write_buffer(&uart_data_fifo, &_UART_FINDBORDER.get_data, 1);
+}
+
+/**@brief   微调openart串口
+-- @param   无
+-- @auther  戴骐阳
+-- @date    2023/12/23
+**/
+void Uart_Fine_Tuning_Receive(void)
+{
+    uart_query_byte(UART_2, &_UART_FINE_TUNING.get_data);
+    fifo_write_buffer(&uart_data_fifo, &_UART_FINE_TUNING.get_data, 1);
 }

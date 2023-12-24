@@ -19,6 +19,11 @@ Incremental_PID_TypeDef RMotor_F_Speed;
 Incremental_PID_TypeDef LMotor_B_Speed;
 Incremental_PID_TypeDef RMotor_B_Speed;
 Pid_TypeDef Image_PID;
+Pid_TypeDef BorderPlace_PID;
+
+//串口获取的像素偏差
+double Direction_Err = 0.0;
+
 /**
  ******************************************************************************
  *  @defgroup 外部调用
@@ -40,6 +45,7 @@ void All_PID_Init()
     Incremental_PID_Init(&RMotor_B_Speed,0.5,0.35,0.5,40,-40);
     // PIDInit(&Angle_PID,0.44,0,2,2,-2);
     PIDInit(&Image_PID,5,0,0,1.5,-1.5);
+    PIDInit(&BorderPlace_PID,5,0,0,1.5,-1.5);
 }
 
 
@@ -75,3 +81,17 @@ void Car_run()
   // Angle_Erro_ = GetPIDValue(&Angle_PID,Gyro_YawAngle_Get() - Image_Erro);
   Set_Car_Speed(0,3,-Image_Erro_);
 }
+
+
+/**@brief   改变小车行进方向朝向为目标板方向
+-- @param   无
+-- @auther  戴骐阳
+-- @date    2023/12/23
+**/
+void Change_Direction(void)
+{
+  double DirectionPidErr = 0.0;
+  DirectionPidErr = GetPIDValue(&BorderPlace_PID, Direction_Err);
+  Set_Car_Speed(0, 0, -DirectionPidErr);
+}
+
