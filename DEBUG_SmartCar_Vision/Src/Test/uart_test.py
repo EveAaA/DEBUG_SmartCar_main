@@ -10,7 +10,7 @@ sensor.skip_frames(time = 2000)
 clock = time.clock()
 
 uart = UART(2, 115200)
-send_num = 150
+send_num = -1
 
 def limit(num):
     if num >= 127:
@@ -30,6 +30,7 @@ while(True):
     if uart_num:
         data = uart.read(uart_num)
         print("获取到的数据:",data)
+    time.sleep_ms(10)
 
 
 

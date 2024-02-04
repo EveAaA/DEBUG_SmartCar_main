@@ -9,7 +9,7 @@ sensor.set_pixformat(sensor.RGB565)
 sensor.set_framesize(sensor.QVGA)
 sensor.skip_frames(time = 2000)
 sensor.set_auto_gain(False) # 颜色跟踪必须自动增益
-sensor.set_brightness(80)  # 光线现场调试,暂时未找到合适方法规避光线影响
+sensor.set_brightness(800)  # 光线现场调试,暂时未找到合适方法规避光线影响
 sensor.set_auto_whitebal(True, (0,0,0)) # 颜色跟踪必须关闭白平衡
 clock = time.clock()
 
@@ -40,6 +40,8 @@ def findBesideRoadTarget():
     global leastY_right
     while True:
         img = sensor.snapshot()
+        # 绘制图像中心线
+        img.draw_line(160, 0, 160, 320, color=(255, 0, 0))
         # 使用模型进行识别
         for obj in tf.detect(object_net,img):
             x1,y1,x2,y2,label,scores = obj
@@ -93,12 +95,15 @@ def findBesideRoadTarget():
             img.draw_line(leastY_left[0], leastY_left[1], 160, leastY_left[1], color=(255, 0, 0))
             print("dx_left:",dx)
             uart.write(dx.to_bytes(1, "little"))
-        # 绘制图像中心线
-        img.draw_line(160, 0, 160, 320, color=(255, 0, 0))
-
-
+        # 若都不存在
+        else:
+            print("None")
+            continue
         # 对列表进行清空
+        leastY_left.clear()
+        leastY_right.clear()
         object_coordinate_left.clear()
         object_coordinate_right.clear()
+
 
 findBesideRoadTarget()
