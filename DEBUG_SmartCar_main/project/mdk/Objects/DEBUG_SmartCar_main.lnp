@@ -159,6 +159,7 @@
 ".\objects\manipulator.o"
 ".\objects\beep.o"
 ".\objects\image.o"
+".\objects\uart.o"
 ".\objects\car_control.o"
 ".\objects\meau.o"
 ".\objects\inertial_navigation.o"

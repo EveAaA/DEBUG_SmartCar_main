@@ -1,4 +1,4 @@
-Load "d:\\Desktop\\DEBUG_SmartCar_main\\DEBUG_SmartCar_main\\project\\mdk\\Objects\\DEBUG_SmartCar_main.axf" 
-Erase Done.Programming Done.Verify OK.Application running ...
+Load "c:\\Users\\G15\\Desktop\\DEBUG_SmartCar_main\\DEBUG_SmartCar_main\\project\\mdk\\Objects\\DEBUG_SmartCar_main.axf" 
 RDDI-DAP Error
-Flash Load finished at 22:11:35
+Error: Flash Download failed  -  Target DLL has been cancelled
+Flash Load finished at 12:26:16

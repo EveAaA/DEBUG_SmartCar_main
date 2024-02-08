@@ -1,6 +1,5 @@
-./objects/meau.o: ..\code\MyMiddleware\Src\Meau.c \
-  ..\code\MyMiddleware\Inc\Meau.h ..\code\MyFiles\Inc\UserMain.h \
-  ..\code\MyDrivers\Inc\Motor.h \
+./objects/uart.o: ..\code\MyDrivers\Src\Uart.c \
+  ..\code\MyDrivers\Inc\Uart.h \
   ..\..\libraries\zf_common\zf_common_headfile.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdio.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdint.h \
@@ -104,11 +103,4 @@
   ..\..\libraries\sdk\drives\fsl_usdhc.h \
   ..\..\libraries\components\sdmmc\common\fsl_sdmmc_spec.h \
   ..\..\libraries\components\sdmmc\sdmmc_config.h \
-  ..\..\libraries\sdk\board\clock_config.h \
-  ..\code\MyDrivers\Inc\Button.h ..\code\MyDrivers\Inc\Gyro.h \
-  ..\code\MyDrivers\Inc\Encoder.h ..\code\MyDrivers\Inc\Bluetooth.h \
-  ..\code\MyDrivers\Inc\PID.h ..\code\MyDrivers\Inc\Manipulator.h \
-  ..\code\MyDrivers\Inc\Beep.h ..\code\MyDrivers\Inc\Image.h \
-  ..\code\MyDrivers\Inc\Uart.h ..\code\MyMiddleware\Inc\Car_Control.h \
-  ..\code\MyMiddleware\Inc\Inertial_Navigation.h \
-  ..\code\MyFiles\Inc\Call_Back_Action.h
+  ..\..\libraries\sdk\board\clock_config.h

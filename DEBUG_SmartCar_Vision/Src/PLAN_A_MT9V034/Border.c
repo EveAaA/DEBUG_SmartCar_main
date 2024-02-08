@@ -4,6 +4,8 @@
     @date: 2024-01-28
 */
 #include "Border.h"
+#define Threshold_Max 100 // 此参数可根据自己的需求调节
+#define Threshold_Min 20 // 此参数可根据自己的需求调节
 
 AT_SDRAM_SECTION_ALIGN(double M1[IMAGE_H][IMAGE_W], 64);
 AT_SDRAM_SECTION_ALIGN(double M2[IMAGE_H][IMAGE_W], 64);
@@ -60,6 +62,7 @@ void DrawCorner(uint8_t (*img)[IMAGE_W], int i, int j)
  * @param image 图像结构体指针
  * @param mt9v03x_image 图像数组指针
  */
+/*
 void Get_Image(ImageTypeDef *image, uint8_t (*mt9v03x_image)[IMAGE_W])
 {
     uint8 i = 0, j = 0, Row = 0, Line = 0;
@@ -72,6 +75,7 @@ void Get_Image(ImageTypeDef *image, uint8_t (*mt9v03x_image)[IMAGE_W])
         }
     }
 }
+*/
 
 /**
  * @brief : Harris高斯滤波
@@ -273,11 +277,11 @@ void NMS(uint8_t (*img)[IMAGE_W], double (*Theata)[IMAGE_W])
 
 /**
  * @brief : 形态学腐蚀算法
- * @param : 图像结构体指针
+ * @param : 图像数组
  * @param : 腐蚀核大小
  * @return: none
  */
-static void dilate(ImageTypeDef *image, uint8_t size)
+static void dilate(uint8_t (*image)[IMAGE_W], uint8_t size)
 {
     uint8_t structElmentHalf = size / 2;
     uint8_t tempImage[IMAGE_H][IMAGE_W]; // 临时图像
@@ -290,16 +294,16 @@ static void dilate(ImageTypeDef *image, uint8_t size)
             {
                 for (uint8_t l = j - structElmentHalf; l < j + structElmentHalf; l++)
                 {
-                    if (image->OutImage[k][l] < min)
+                    if (image[k][l] < min)
                     {
-                        min = image->OutImage[k][l];
+                        min = image[k][l];
                     }
                 }
             }
             tempImage[i][j] = min;
         }
     }
-    memcpy(image->OutImage, tempImage, sizeof(tempImage));
+    memcpy(image, tempImage, sizeof(tempImage));
 }
 
 /**
@@ -307,7 +311,7 @@ static void dilate(ImageTypeDef *image, uint8_t size)
     @param: 图像结构体指针
     @param: 上下限阈值
 */
-void SobelfindBorderEdge(ImageTypeDef *image, double (*M1)[IMAGE_W], double (*M2)[IMAGE_W], double (*M3)[IMAGE_W])
+void SobelfindBorderEdge(ImageTypeDef *image, double (*M1)[IMAGE_W], double (*M2)[IMAGE_W], double (*M3)[IMAGE_W], int16_t k)
 {
     double P; // x方向偏导
     double Q; // y方向偏导
@@ -331,20 +335,14 @@ void SobelfindBorderEdge(ImageTypeDef *image, double (*M1)[IMAGE_W], double (*M2
             // Theata[i][j] = atan(Q / P);
             // 梯度
             Gradient = 1.0f / Q_rsqrt(P * P + Q * Q);
-// 不使用canny边缘检测
-#if CannyMode == 0
-            if (Gradient < Threshold)
+            if (Gradient < k)
             {
                 image->OutImage[i][j] = 0;
             }
             else
             {
-                image->OutImage[i][j] = 255;
+                image->OutImage[i][j] = Gradient * 1.5;
             }
-// 使用canny边缘检测
-#else
-            image->OutImage[i][j] = Gradient;
-#endif
         }
     }
 }
@@ -409,6 +407,85 @@ void GetHarrisPoint(double (*R)[IMAGE_W], double (*M1)[IMAGE_W], double (*M2)[IM
     }
 }
 
+/**
+ * @brief : FAST角点检测
+ * @param : 图像数组
+ * @return : none
+ *
+ */
+bool FASTCorner(uint8_t (*image)[IMAGE_W], uint8_t i, uint8_t j, int16_t Threshold)
+{
+    uint8_t count = 0;
+    int16_t xx, yy;
+    int offsets[16][2] = {
+        {-3, 0}, {-3, 1}, {-2, 2}, {-1, 3}, {0, 3}, {1, 3}, {2, 2}, {3, 1}, {3, 0}, {3, -1}, {2, -2}, {1, -3}, {0, -3}, {-1, -3}, {-2, -2}, {-3, -1}};
+
+    for (uint8_t m = 0; m < 16; m++)
+    {
+        xx = i + offsets[m][0];
+        yy = j + offsets[m][1];
+        if (xx < 0 || xx >= IMAGE_H || yy < 0 || yy >= IMAGE_W)
+        {
+            return false;
+        }
+        else
+        {
+            uint8_t pixel = image[xx][yy];
+            if (pixel < image[i][j] - Threshold || pixel > image[i][j] + Threshold)
+            {
+                count++;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        xx = 0;
+        yy = 0;
+    }
+
+    // 是否周围有大于等于9个较亮的点
+    if (count >= 9)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+/**@brief   形态学滤波
+-- @param   uint8(*Bin_Image)[Image_W] 二值化图像
+-- @auther  none
+-- @date    2023/10/3
+**/
+void Image_Filter(uint8 (*Bin_Image)[IMAGE_W]) // 形态学滤波，简单来说就是膨胀和腐蚀的思想
+{
+    uint16 i, j;
+    uint32 num = 0;
+
+    for (i = 1; i < IMAGE_H - 1; i++)
+    {
+        for (j = 1; j < (IMAGE_W - 1); j++)
+        {
+            // 统计八个方向的像素值
+            num =
+                Bin_Image[i - 1][j - 1] + Bin_Image[i - 1][j] + Bin_Image[i - 1][j + 1] + Bin_Image[i][j - 1] + Bin_Image[i][j + 1] + Bin_Image[i + 1][j - 1] + Bin_Image[i + 1][j] + Bin_Image[i + 1][j + 1];
+
+            if (num >= Threshold_Max && Bin_Image[i][j] == 0)
+            {
+                Bin_Image[i][j] = 255; // 白  可以搞成宏定义，方便更改
+            }
+            if (num <= Threshold_Min && Bin_Image[i][j] == 255)
+            {
+
+                Bin_Image[i][j] = 0; // 黑
+            }
+        }
+    }
+}
+
 /*************外部调用函数************/
 /*
     @brief: 寻找目标板
@@ -426,20 +503,38 @@ void FindBorder(double k, double Threshold)
     // 2. 对图像高斯模糊
     GussianFilter(&img, GaussianKernel);
     // 3. 边缘检测
-    SobelfindBorderEdge(&img, M1, M2, M3);
+    SobelfindBorderEdge(&img, M1, M2, M3, k);
+    // 4. 腐蚀
+#if FAST_CORNER
+    for (uint8_t i = 0; i < IMAGE_H - 1; i++)
+    {
+        for (uint8_t j = 0; j < IMAGE_W - 1; j++)
+        {
+            if (FASTCorner(img.OutImage, i, j, Threshold))
+            {
+                DrawCorner(img.GrayImage, i, j);
+            }
+        }
+    }
+#endif
+
 #if CannyMode == 1
     // 4. 非极大值抑制
     NMS(&img, Theata);
     // 5. 双阈值过滤
     DoubleThreshold(&img, min, max);
 #endif
+
+#if HARRS_CORNER
     // 4. 对M矩阵高斯滤波
     HarrisGussianFilter(M1, M2, M3, GaussianKernel);
     // // 5. 获取Harris响应数值
     GetHarrisPoint(R, M1, M2, M3, k);
     // 6. 非极大值抑制
     HarrisNMS(&img, R, IMAGE_H, IMAGE_W, 3, Threshold);
-    // dilate(&img, 3);
+#endif
+
+    //
     tft180_displayimage03x((const uint8 *)img.GrayImage, IMAGE_W, IMAGE_H);
 }
 

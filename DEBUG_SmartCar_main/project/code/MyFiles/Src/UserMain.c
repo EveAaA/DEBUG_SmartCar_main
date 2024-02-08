@@ -47,9 +47,9 @@ void User_Init()
     mt9v03x_init();
     // Handler_Init();
     Manipulator_Init();
-    Beep(On);
-    system_delay_ms(100);
-    Beep(Off);
+    // Beep(On);
+    // system_delay_ms(100);
+    // Beep(Off);
 }
 
 /**@brief   所有主循环内容
@@ -59,8 +59,8 @@ void User_Init()
 **/
 void User_Loop()
 {
-    All_Button_Scan();
-    Meau_Display();
+    //All_Button_Scan();
+    //Meau_Display();
     if(mt9v03x_finish_flag)
     {
       Image_Process();
