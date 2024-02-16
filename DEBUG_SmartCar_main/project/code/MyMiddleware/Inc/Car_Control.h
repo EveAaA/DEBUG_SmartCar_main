@@ -3,11 +3,11 @@
 
 #include "zf_common_headfile.h"
 
-extern double Direction_Err;
+extern float Direction_Err;
 
 void All_PID_Init();
-void Set_Car_Speed(double Speed_X,double Speed_Y,double Speed_Z);
-extern double Image_Erro_;
+void Set_Car_Speed(float Speed_X,float Speed_Y,float Speed_Z);
+extern float Image_Erro_;
 void Car_run();
 void Change_Direction(void);
 #endif

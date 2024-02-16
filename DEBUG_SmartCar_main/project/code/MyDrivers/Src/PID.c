@@ -27,19 +27,19 @@
 
 /**@brief     位置式PID初始化
 -- @param     Pid_TypeDef *PID PID结构体
--- @param     double Kp 设定的Kp
--- @param     double Ki 设定的Ki
--- @param     double Kd 设定的Kd
--- @param     double outPutMin 限幅
--- @param     double outPutMax 限幅
+-- @param     float Kp 设定的Kp
+-- @param     float Ki 设定的Ki
+-- @param     float Kd 设定的Kd
+-- @param     float outPutMin 限幅
+-- @param     float outPutMax 限幅
 -- @auther    庄文标
 -- @date      2023/9/6
 **/
-void PIDInit(Pid_TypeDef *PID, double Kp, double Ki, double Kd, double OutputMax, double OutputMin)
+void PIDInit(Pid_TypeDef *PID, float Kp, float Ki, float Kd, float OutputMax, float OutputMin)
 {
-	PID->Kp = Kp;
-	PID->Ki = Ki;
-	PID->Kd = Kd;
+	PID->Pid_Par->Kp = Kp;
+	PID->Pid_Par->Ki = Ki;
+	PID->Pid_Par->Kd = Kd;
 	PID->previousError = 0;
 	PID->OutputMin = OutputMin;
 	PID->OutputMax = OutputMax;
@@ -47,24 +47,24 @@ void PIDInit(Pid_TypeDef *PID, double Kp, double Ki, double Kd, double OutputMax
 
 /**@brief     位置式PID获取值
 -- @param     Pid_TypeDef *PID PID结构体
--- @param     double error 误差值
--- @return    double outPut 输出
+-- @param     float error 误差值
+-- @return    float outPut 输出
 -- @auther    庄文标
 -- @date      2023/9/6
 **/
-double GetPIDValue(Pid_TypeDef *PID, double error)
+float GetPIDValue(Pid_TypeDef *PID, float error)
 {
-	double P = 0.0, D=0.0;
-	static double I=0.0;
+	float P = 0.0f, D=0.0f;
+	static float I=0.0f;
 
 	P = error;
 	I = I + error;
 	D = error - PID->previousError;
 
-	PID->Output = PID->Kp * P+ PID->Ki * I+ PID->Kd * D;
+	PID->Output = PID->Pid_Par->Kp * P+ PID->Pid_Par->Ki * I+ PID->Pid_Par->Kd * D;
 	PID->previousError = error;
 	
-	if(fabs(I) > 1000000)
+	if(fabs(I) > 100)
 	{
 		I = 0;
 	}	
@@ -83,19 +83,19 @@ double GetPIDValue(Pid_TypeDef *PID, double error)
 
 /**@brief     增量式PID初始化
 -- @param     Incremental_PID_TypeDef *PID  PID结构体
--- @param     double Kp 设定的Kp
--- @param     double Ki 设定的Ki
--- @param     double Kd 设定的Kd
--- @param     double outPutMin 限幅
--- @param     double outPutMax 限幅
+-- @param     float Kp 设定的Kp
+-- @param     float Ki 设定的Ki
+-- @param     float Kd 设定的Kd
+-- @param     float outPutMin 限幅
+-- @param     float outPutMax 限幅
 -- @auther    庄文标
 -- @date      2023/9/12
 **/
-void Incremental_PID_Init(Incremental_PID_TypeDef *PID, double Kp, double Ki, double Kd, double Out_Put_Max, double Out_Put_Min)
+void Incremental_PID_Init(Incremental_PID_TypeDef *PID, float Kp, float Ki, float Kd, float Out_Put_Max, float Out_Put_Min)
 {
-	PID->Kp = Kp;
-	PID->Ki = Ki;
-	PID->Kd = Kd;
+	PID->Inc_PID_Par->Kp = Kp;
+	PID->Inc_PID_Par->Ki = Ki;
+	PID->Inc_PID_Par->Kd = Kd;
 	PID->Error = 0;
 	PID->Error_Last= 0;
 	PID->Error_Pre= 0;
@@ -105,34 +105,24 @@ void Incremental_PID_Init(Incremental_PID_TypeDef *PID, double Kp, double Ki, do
 
 /**@brief     增量式PID获取值
 -- @param     Incremental_PID_TypeDef *PID PID结构体
--- @param     double Target_Value 目标值
--- @param     double Current_Value 当前值
--- @return    double Output 输出
+-- @param     float Target_Value 目标值
+-- @param     float Error 误差
+-- @return    float Output 输出
 -- @auther    庄文标
 -- @date   	  2023/9/12
 **/
-double Get_Incremental_PID_Value(Incremental_PID_TypeDef *PID, double Error)
+float Get_Incremental_PID_Value(Incremental_PID_TypeDef *PID, float Error)
 {
-	double P = 0.0, I=0.0 , D=0.0;
-	static double Increment = 0;//增量
+	float P = 0.0f, I=0.0f, D=0.0f;
+	static float Increment = 0;//增量
 	
 	PID->Error = Error;//获取误差
 		
 	P = PID->Error - PID->Error_Last;//当前误差-上一次误差
 	I = PID->Error;
 	D = PID->Error - 2*PID->Error_Last + PID->Error_Pre;
-		
 	
-	// if(fabs(Error) > 1)
-	// {
-	// 	Increment = PID->Kp*P + PID->Ki*I + PID->Kd*D;
-	// }
-	// else
-	// {
-	// 	Increment = 0;
-	// }
-
-	Increment = PID->Kp*P + PID->Ki*I + PID->Kd*D;
+	Increment = PID->Inc_PID_Par->Kp*P + PID->Inc_PID_Par->Ki*I + PID->Inc_PID_Par->Kd*D;
 
 	PID->Error_Pre = PID->Error_Last;
 	PID->Error_Last = PID->Error;

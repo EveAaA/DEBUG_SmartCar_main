@@ -26,7 +26,7 @@ Gyro_AngleTypeDef Gyro_Angle;
 Gyro_Param_t GyroOffset;
 Gyro_Param_t AccOffset;
 IMU_Param_t IMU_Data;
-double YawAngle_Trans = 0;//转换后的偏航角，归到0-360
+float YawAngle_Trans = 0;//转换后的偏航角，归到0-360
 /**
  ******************************************************************************
  *  @defgroup 外部调用
@@ -65,7 +65,7 @@ void Gyro_Offset_Init(void)
 -- @return  Gyro_Angle->RollAngle 滚动角
 -- @date    2023/6/29
 **/
-double Gyro_RollAngle_Get(void)
+float Gyro_RollAngle_Get(void)
 {
     return Gyro_Angle.RollAngle;
 }
@@ -76,7 +76,7 @@ double Gyro_RollAngle_Get(void)
 -- @return  Gyro_Angle->PitchAngle 俯仰角
 -- @date    2023/6/29
 **/
-double Gyro_PitchAngle_Get(void)
+float Gyro_PitchAngle_Get(void)
 {
     return Gyro_Angle.PitchAngle;
 }
@@ -87,7 +87,7 @@ double Gyro_PitchAngle_Get(void)
 -- @return  Gyro_Angle->YawAngle 偏航角
 -- @date    2023/11/04
 **/
-double Gyro_YawAngle_Get(void)
+float Gyro_YawAngle_Get(void)
 {
     return YawAngle_Trans;
 }
@@ -99,7 +99,7 @@ double Gyro_YawAngle_Get(void)
 **/
 void Gyro_Get_All_Angles()
 {
-    static double Yaw_Angle_Old = 0;
+    static float Yaw_Angle_Old = 0;
     imu660ra_get_acc();
     imu660ra_get_gyro();
     IMU_Get_Values();
@@ -113,8 +113,8 @@ void Gyro_Get_All_Angles()
     Gyro_Angle.PitchAngle = asin(2 * q0 * q2 - 2 * q1 * q3) * 180 / pI;
     Gyro_Angle.RollAngle = atan2(2 * q2 * q3 + 2 * q0 * q1, -2 * q1 * q1 - 2 * q2 * q2 + 1) * 180 / pI;
     Gyro_Angle.YawAngle = -atan2(2 * q1 * q2 + 2 * q0 * q3, -2 * q2 * q2 - 2 * q3 * q3 + 1) * 180 / pI;
-    double i = Gyro_Angle.YawAngle - Yaw_Angle_Old;
-    if (i < -180) 
+    float i = Gyro_Angle.YawAngle - Yaw_Angle_Old;
+    if (i < -180)//为了避免六轴算法的角度跳变，全部转化为0-360 
     {
         i += 360;
     }

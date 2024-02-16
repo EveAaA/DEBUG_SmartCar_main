@@ -3,9 +3,9 @@
 <title>Static Call Graph - [.\Objects\DEBUG_SmartCar_main.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\DEBUG_SmartCar_main.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6180002: Last Updated: Thu Feb  8 12:15:20 2024
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6190004: Last Updated: Fri Feb 16 10:26:40 2024
 <BR><P>
-<H3>Maximum Stack Usage =       1248 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =       1216 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
 main &rArr; User_Loop &rArr; Image_Process &rArr; Turn_To_Bin &rArr; Otsu_Threshold
 <P>
@@ -1125,8 +1125,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[20d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;User_Init
 </UL>
 
-<P><STRONG><a name="[fe]"></a>All_PID_Init</STRONG> (Thumb, 304 bytes, Stack size 72 bytes, car_control.o(.text.All_PID_Init))
-<BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = All_PID_Init &rArr; Incremental_PID_Init
+<P><STRONG><a name="[fe]"></a>All_PID_Init</STRONG> (Thumb, 268 bytes, Stack size 40 bytes, car_control.o(.text.All_PID_Init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = All_PID_Init &rArr; Incremental_PID_Init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Incremental_PID_Init
 <LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PIDInit
@@ -1388,7 +1388,7 @@ Global Symbols
 <LI><a href="#[153]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CSI_Stop
 </UL>
 
-<P><STRONG><a name="[161]"></a>CSI_EnableInterrupts</STRONG> (Thumb, 52 bytes, Stack size 8 bytes, fsl_csi.o(.text.CSI_EnableInterrupts))
+<P><STRONG><a name="[161]"></a>CSI_EnableInterrupts</STRONG> (Thumb, 50 bytes, Stack size 8 bytes, fsl_csi.o(.text.CSI_EnableInterrupts))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = CSI_EnableInterrupts
 </UL>
 <BR>[Called By]<UL><LI><a href="#[160]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CSI_TransferStart
@@ -1498,8 +1498,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[220]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;csi_add_empty_buffer
 </UL>
 
-<P><STRONG><a name="[164]"></a>Car_run</STRONG> (Thumb, 104 bytes, Stack size 8 bytes, car_control.o(.text.Car_run))
-<BR><BR>[Stack]<UL><LI>Max Depth = 792<LI>Call Chain = Car_run &rArr; Set_Car_Speed &rArr; Set_Motor_Speed &rArr; pwm_set_duty &rArr;  debug_assert_handler (Cycle)
+<P><STRONG><a name="[164]"></a>Car_run</STRONG> (Thumb, 88 bytes, Stack size 8 bytes, car_control.o(.text.Car_run))
+<BR><BR>[Stack]<UL><LI>Max Depth = 760<LI>Call Chain = Car_run &rArr; Set_Car_Speed &rArr; Set_Motor_Speed &rArr; pwm_set_duty &rArr;  debug_assert_handler (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[166]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Car_Speed
 <LI><a href="#[165]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GetPIDValue
@@ -1507,8 +1507,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PIT_IRQHandler
 </UL>
 
-<P><STRONG><a name="[167]"></a>Change_Direction</STRONG> (Thumb, 72 bytes, Stack size 16 bytes, car_control.o(.text.Change_Direction))
-<BR><BR>[Stack]<UL><LI>Max Depth = 800<LI>Call Chain = Change_Direction &rArr; Set_Car_Speed &rArr; Set_Motor_Speed &rArr; pwm_set_duty &rArr;  debug_assert_handler (Cycle)
+<P><STRONG><a name="[167]"></a>Change_Direction</STRONG> (Thumb, 64 bytes, Stack size 16 bytes, car_control.o(.text.Change_Direction))
+<BR><BR>[Stack]<UL><LI>Max Depth = 768<LI>Call Chain = Change_Direction &rArr; Set_Car_Speed &rArr; Set_Motor_Speed &rArr; pwm_set_duty &rArr;  debug_assert_handler (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[166]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Car_Speed
 <LI><a href="#[165]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GetPIDValue
@@ -1909,8 +1909,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[21e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;system_delay_init
 </UL>
 
-<P><STRONG><a name="[165]"></a>GetPIDValue</STRONG> (Thumb, 256 bytes, Stack size 40 bytes, pid.o(.text.GetPIDValue))
-<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = GetPIDValue &rArr; __hardfp_fabs
+<P><STRONG><a name="[165]"></a>GetPIDValue</STRONG> (Thumb, 240 bytes, Stack size 24 bytes, pid.o(.text.GetPIDValue))
+<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = GetPIDValue &rArr; __hardfp_fabs
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_fabs
 </UL>
@@ -1918,7 +1918,7 @@ Global Symbols
 <LI><a href="#[164]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Car_run
 </UL>
 
-<P><STRONG><a name="[17f]"></a>Get_Distance</STRONG> (Thumb, 248 bytes, Stack size 12 bytes, encoder.o(.text.Get_Distance))
+<P><STRONG><a name="[17f]"></a>Get_Distance</STRONG> (Thumb, 232 bytes, Stack size 12 bytes, encoder.o(.text.Get_Distance))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = Get_Distance
 </UL>
 <BR>[Called By]<UL><LI><a href="#[17d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Encoder_Process
@@ -1938,20 +1938,20 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Image_Process
 </UL>
 
-<P><STRONG><a name="[1fc]"></a>Get_Incremental_PID_Value</STRONG> (Thumb, 258 bytes, Stack size 40 bytes, pid.o(.text.Get_Incremental_PID_Value))
-<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = Get_Incremental_PID_Value
+<P><STRONG><a name="[1fc]"></a>Get_Incremental_PID_Value</STRONG> (Thumb, 230 bytes, Stack size 20 bytes, pid.o(.text.Get_Incremental_PID_Value))
+<BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = Get_Incremental_PID_Value
 </UL>
 <BR>[Called By]<UL><LI><a href="#[166]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Car_Speed
 </UL>
 
-<P><STRONG><a name="[182]"></a>Get_LB_Speed</STRONG> (Thumb, 104 bytes, Stack size 8 bytes, encoder.o(.text.Get_LB_Speed))
-<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Get_LB_Speed
+<P><STRONG><a name="[182]"></a>Get_LB_Speed</STRONG> (Thumb, 96 bytes, Stack size 4 bytes, encoder.o(.text.Get_LB_Speed))
+<BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = Get_LB_Speed
 </UL>
 <BR>[Called By]<UL><LI><a href="#[17d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Encoder_Process
 </UL>
 
-<P><STRONG><a name="[180]"></a>Get_LF_Speed</STRONG> (Thumb, 104 bytes, Stack size 8 bytes, encoder.o(.text.Get_LF_Speed))
-<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Get_LF_Speed
+<P><STRONG><a name="[180]"></a>Get_LF_Speed</STRONG> (Thumb, 96 bytes, Stack size 4 bytes, encoder.o(.text.Get_LF_Speed))
+<BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = Get_LF_Speed
 </UL>
 <BR>[Called By]<UL><LI><a href="#[17d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Encoder_Process
 </UL>
@@ -1962,14 +1962,14 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Image_Process
 </UL>
 
-<P><STRONG><a name="[183]"></a>Get_RB_Speed</STRONG> (Thumb, 112 bytes, Stack size 8 bytes, encoder.o(.text.Get_RB_Speed))
-<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Get_RB_Speed
+<P><STRONG><a name="[183]"></a>Get_RB_Speed</STRONG> (Thumb, 100 bytes, Stack size 4 bytes, encoder.o(.text.Get_RB_Speed))
+<BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = Get_RB_Speed
 </UL>
 <BR>[Called By]<UL><LI><a href="#[17d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Encoder_Process
 </UL>
 
-<P><STRONG><a name="[181]"></a>Get_RF_Speed</STRONG> (Thumb, 112 bytes, Stack size 8 bytes, encoder.o(.text.Get_RF_Speed))
-<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Get_RF_Speed
+<P><STRONG><a name="[181]"></a>Get_RF_Speed</STRONG> (Thumb, 100 bytes, Stack size 4 bytes, encoder.o(.text.Get_RF_Speed))
+<BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = Get_RF_Speed
 </UL>
 <BR>[Called By]<UL><LI><a href="#[17d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Encoder_Process
 </UL>
@@ -1986,20 +1986,20 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Image_Process
 </UL>
 
-<P><STRONG><a name="[1ab]"></a>Gyro_Get_All_Angles</STRONG> (Thumb, 536 bytes, Stack size 64 bytes, gyro.o(.text.Gyro_Get_All_Angles))
-<BR><BR>[Stack]<UL><LI>Max Depth = 928<LI>Call Chain = Gyro_Get_All_Angles &rArr; imu660ra_get_gyro &rArr; imu660ra_read_registers &rArr; spi_read_8bit_registers &rArr; spi_write &rArr; LPSPI_MasterTransferBlocking &rArr; LPSPI_CheckTransferArgument &rArr; __aeabi_assert &rArr; DbgConsole_Printf &rArr; DbgConsole_Vprintf &rArr; DbgConsole_PrintfFormattedData &rArr; DbgConsole_ConvertFloatRadixNumToString &rArr; __hardfp_pow &rArr; sqrt
+<P><STRONG><a name="[1ab]"></a>Gyro_Get_All_Angles</STRONG> (Thumb, 504 bytes, Stack size 56 bytes, gyro.o(.text.Gyro_Get_All_Angles))
+<BR><BR>[Stack]<UL><LI>Max Depth = 920<LI>Call Chain = Gyro_Get_All_Angles &rArr; imu660ra_get_gyro &rArr; imu660ra_read_registers &rArr; spi_read_8bit_registers &rArr; spi_write &rArr; LPSPI_MasterTransferBlocking &rArr; LPSPI_CheckTransferArgument &rArr; __aeabi_assert &rArr; DbgConsole_Printf &rArr; DbgConsole_Vprintf &rArr; DbgConsole_PrintfFormattedData &rArr; DbgConsole_ConvertFloatRadixNumToString &rArr; __hardfp_pow &rArr; sqrt
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;imu660ra_get_gyro
 <LI><a href="#[1ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;imu660ra_get_acc
-<LI><a href="#[1af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IMU_AHRS_update
-<LI><a href="#[1ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IMU_Get_Values
 <LI><a href="#[1b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan2
 <LI><a href="#[1b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_asin
+<LI><a href="#[1af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IMU_AHRS_update
+<LI><a href="#[1ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IMU_Get_Values
 </UL>
 <BR>[Called By]<UL><LI><a href="#[1eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Sensor_Handler
 </UL>
 
-<P><STRONG><a name="[1b2]"></a>Gyro_Offset_Init</STRONG> (Thumb, 232 bytes, Stack size 16 bytes, gyro.o(.text.Gyro_Offset_Init))
+<P><STRONG><a name="[1b2]"></a>Gyro_Offset_Init</STRONG> (Thumb, 220 bytes, Stack size 16 bytes, gyro.o(.text.Gyro_Offset_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 880<LI>Call Chain = Gyro_Offset_Init &rArr; imu660ra_get_gyro &rArr; imu660ra_read_registers &rArr; spi_read_8bit_registers &rArr; spi_write &rArr; LPSPI_MasterTransferBlocking &rArr; LPSPI_CheckTransferArgument &rArr; __aeabi_assert &rArr; DbgConsole_Printf &rArr; DbgConsole_Vprintf &rArr; DbgConsole_PrintfFormattedData &rArr; DbgConsole_ConvertFloatRadixNumToString &rArr; __hardfp_pow &rArr; sqrt
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;system_delay_ms
@@ -2012,7 +2012,7 @@ Global Symbols
 <BR>[Address Reference Count : 2]<UL><LI> startup_mimxrt1064.o(.text)
 <LI> startup_mimxrt1064.o(.isr_vector)
 </UL>
-<P><STRONG><a name="[1af]"></a>IMU_AHRS_update</STRONG> (Thumb, 1218 bytes, Stack size 96 bytes, gyro.o(.text.IMU_AHRS_update))
+<P><STRONG><a name="[1af]"></a>IMU_AHRS_update</STRONG> (Thumb, 974 bytes, Stack size 96 bytes, gyro.o(.text.IMU_AHRS_update))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = IMU_AHRS_update &rArr; My_Rsqrt
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;My_Rsqrt
@@ -2020,7 +2020,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[1ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Gyro_Get_All_Angles
 </UL>
 
-<P><STRONG><a name="[1ae]"></a>IMU_Get_Values</STRONG> (Thumb, 396 bytes, Stack size 4 bytes, gyro.o(.text.IMU_Get_Values))
+<P><STRONG><a name="[1ae]"></a>IMU_Get_Values</STRONG> (Thumb, 344 bytes, Stack size 4 bytes, gyro.o(.text.IMU_Get_Values))
 <BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = IMU_Get_Values
 </UL>
 <BR>[Called By]<UL><LI><a href="#[1ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Gyro_Get_All_Angles
@@ -2038,8 +2038,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Image_Process
 </UL>
 
-<P><STRONG><a name="[1b5]"></a>Image_Process</STRONG> (Thumb, 512 bytes, Stack size 56 bytes, image.o(.text.Image_Process))
-<BR><BR>[Stack]<UL><LI>Max Depth = 1232<LI>Call Chain = Image_Process &rArr; Turn_To_Bin &rArr; Otsu_Threshold
+<P><STRONG><a name="[1b5]"></a>Image_Process</STRONG> (Thumb, 520 bytes, Stack size 56 bytes, image.o(.text.Image_Process))
+<BR><BR>[Stack]<UL><LI>Max Depth = 1200<LI>Call Chain = Image_Process &rArr; Turn_To_Bin &rArr; Otsu_Threshold
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_draw_point
 <LI><a href="#[168]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Cross_Fill
@@ -2055,8 +2055,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[211]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;User_Loop
 </UL>
 
-<P><STRONG><a name="[ff]"></a>Incremental_PID_Init</STRONG> (Thumb, 98 bytes, Stack size 48 bytes, pid.o(.text.Incremental_PID_Init))
-<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = Incremental_PID_Init
+<P><STRONG><a name="[ff]"></a>Incremental_PID_Init</STRONG> (Thumb, 78 bytes, Stack size 24 bytes, pid.o(.text.Incremental_PID_Init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = Incremental_PID_Init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;All_PID_Init
 </UL>
@@ -2195,11 +2195,6 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 728<LI>Call Chain = LPSPI_MasterTransferBlocking &rArr; LPSPI_CheckTransferArgument &rArr; __aeabi_assert &rArr; DbgConsole_Printf &rArr; DbgConsole_Vprintf &rArr; DbgConsole_PrintfFormattedData &rArr; DbgConsole_ConvertFloatRadixNumToString &rArr; __hardfp_pow &rArr; sqrt
 </UL>
 <BR>[Calls]<UL><LI><a href="#[11f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_assert
-<LI><a href="#[1d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_WriteData
-<LI><a href="#[1c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_CombineWriteData
-<LI><a href="#[1d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_TxFifoReady
-<LI><a href="#[1d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_GetRxFifoSize
-<LI><a href="#[1d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_FlushFifo
 <LI><a href="#[1d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_ClearStatusFlags
 <LI><a href="#[1d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_GetStatusFlags
 <LI><a href="#[1d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_GetTxFifoCount
@@ -2209,6 +2204,11 @@ Global Symbols
 <LI><a href="#[1cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_Enable
 <LI><a href="#[1c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_CheckTransferArgument
 <LI><a href="#[1c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_GetInstance
+<LI><a href="#[1d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_WriteData
+<LI><a href="#[1c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_CombineWriteData
+<LI><a href="#[1d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_TxFifoReady
+<LI><a href="#[1d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_GetRxFifoSize
+<LI><a href="#[1d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_FlushFifo
 </UL>
 <BR>[Called By]<UL><LI><a href="#[261]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spi_write
 </UL>
@@ -2455,23 +2455,23 @@ Global Symbols
 <BR>[Address Reference Count : 2]<UL><LI> startup_mimxrt1064.o(.text)
 <LI> startup_mimxrt1064.o(.isr_vector)
 </UL>
-<P><STRONG><a name="[1e8]"></a>Otsu_Threshold</STRONG> (Thumb, 800 bytes, Stack size 1160 bytes, image.o(.text.Otsu_Threshold))
-<BR><BR>[Stack]<UL><LI>Max Depth = 1160<LI>Call Chain = Otsu_Threshold
+<P><STRONG><a name="[1e8]"></a>Otsu_Threshold</STRONG> (Thumb, 778 bytes, Stack size 1128 bytes, image.o(.text.Otsu_Threshold))
+<BR><BR>[Stack]<UL><LI>Max Depth = 1128<LI>Call Chain = Otsu_Threshold
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 </UL>
 <BR>[Called By]<UL><LI><a href="#[1b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_To_Bin
 </UL>
 
-<P><STRONG><a name="[100]"></a>PIDInit</STRONG> (Thumb, 86 bytes, Stack size 48 bytes, pid.o(.text.PIDInit))
-<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = PIDInit
+<P><STRONG><a name="[100]"></a>PIDInit</STRONG> (Thumb, 70 bytes, Stack size 24 bytes, pid.o(.text.PIDInit))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = PIDInit
 </UL>
 <BR>[Called By]<UL><LI><a href="#[1f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Pid_Init
 <LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;All_PID_Init
 </UL>
 
-<P><STRONG><a name="[86]"></a>PIT_IRQHandler</STRONG> (Thumb, 280 bytes, Stack size 8 bytes, isr.o(.text.PIT_IRQHandler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 944<LI>Call Chain = PIT_IRQHandler &rArr; Sensor_Handler &rArr; Gyro_Get_All_Angles &rArr; imu660ra_get_gyro &rArr; imu660ra_read_registers &rArr; spi_read_8bit_registers &rArr; spi_write &rArr; LPSPI_MasterTransferBlocking &rArr; LPSPI_CheckTransferArgument &rArr; __aeabi_assert &rArr; DbgConsole_Printf &rArr; DbgConsole_Vprintf &rArr; DbgConsole_PrintfFormattedData &rArr; DbgConsole_ConvertFloatRadixNumToString &rArr; __hardfp_pow &rArr; sqrt
+<P><STRONG><a name="[86]"></a>PIT_IRQHandler</STRONG> (Thumb, 272 bytes, Stack size 8 bytes, isr.o(.text.PIT_IRQHandler))
+<BR><BR>[Stack]<UL><LI>Max Depth = 936<LI>Call Chain = PIT_IRQHandler &rArr; Sensor_Handler &rArr; Gyro_Get_All_Angles &rArr; imu660ra_get_gyro &rArr; imu660ra_read_registers &rArr; spi_read_8bit_registers &rArr; spi_write &rArr; LPSPI_MasterTransferBlocking &rArr; LPSPI_CheckTransferArgument &rArr; __aeabi_assert &rArr; DbgConsole_Printf &rArr; DbgConsole_Vprintf &rArr; DbgConsole_PrintfFormattedData &rArr; DbgConsole_ConvertFloatRadixNumToString &rArr; __hardfp_pow &rArr; sqrt
 </UL>
 <BR>[Calls]<UL><LI><a href="#[167]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Change_Direction
 <LI><a href="#[166]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Car_Speed
@@ -2532,8 +2532,8 @@ Global Symbols
 <BR>[Address Reference Count : 2]<UL><LI> startup_mimxrt1064.o(.text)
 <LI> startup_mimxrt1064.o(.isr_vector)
 </UL>
-<P><STRONG><a name="[1f4]"></a>Pid_Init</STRONG> (Thumb, 96 bytes, Stack size 16 bytes, inertial_navigation.o(.text.Pid_Init))
-<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = Pid_Init &rArr; PIDInit
+<P><STRONG><a name="[1f4]"></a>Pid_Init</STRONG> (Thumb, 84 bytes, Stack size 16 bytes, inertial_navigation.o(.text.Pid_Init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = Pid_Init &rArr; PIDInit
 </UL>
 <BR>[Calls]<UL><LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PIDInit
 </UL>
@@ -2616,7 +2616,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[1eb]"></a>Sensor_Handler</STRONG> (Thumb, 12 bytes, Stack size 8 bytes, call_back_action.o(.text.Sensor_Handler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 936<LI>Call Chain = Sensor_Handler &rArr; Gyro_Get_All_Angles &rArr; imu660ra_get_gyro &rArr; imu660ra_read_registers &rArr; spi_read_8bit_registers &rArr; spi_write &rArr; LPSPI_MasterTransferBlocking &rArr; LPSPI_CheckTransferArgument &rArr; __aeabi_assert &rArr; DbgConsole_Printf &rArr; DbgConsole_Vprintf &rArr; DbgConsole_PrintfFormattedData &rArr; DbgConsole_ConvertFloatRadixNumToString &rArr; __hardfp_pow &rArr; sqrt
+<BR><BR>[Stack]<UL><LI>Max Depth = 928<LI>Call Chain = Sensor_Handler &rArr; Gyro_Get_All_Angles &rArr; imu660ra_get_gyro &rArr; imu660ra_read_registers &rArr; spi_read_8bit_registers &rArr; spi_write &rArr; LPSPI_MasterTransferBlocking &rArr; LPSPI_CheckTransferArgument &rArr; __aeabi_assert &rArr; DbgConsole_Printf &rArr; DbgConsole_Vprintf &rArr; DbgConsole_PrintfFormattedData &rArr; DbgConsole_ConvertFloatRadixNumToString &rArr; __hardfp_pow &rArr; sqrt
 </UL>
 <BR>[Calls]<UL><LI><a href="#[17d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Encoder_Process
 <LI><a href="#[1ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Gyro_Get_All_Angles
@@ -2624,8 +2624,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PIT_IRQHandler
 </UL>
 
-<P><STRONG><a name="[166]"></a>Set_Car_Speed</STRONG> (Thumb, 268 bytes, Stack size 72 bytes, car_control.o(.text.Set_Car_Speed))
-<BR><BR>[Stack]<UL><LI>Max Depth = 784<LI>Call Chain = Set_Car_Speed &rArr; Set_Motor_Speed &rArr; pwm_set_duty &rArr;  debug_assert_handler (Cycle)
+<P><STRONG><a name="[166]"></a>Set_Car_Speed</STRONG> (Thumb, 252 bytes, Stack size 40 bytes, car_control.o(.text.Set_Car_Speed))
+<BR><BR>[Stack]<UL><LI>Max Depth = 752<LI>Call Chain = Set_Car_Speed &rArr; Set_Motor_Speed &rArr; pwm_set_duty &rArr;  debug_assert_handler (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Motor_Speed
 <LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_Incremental_PID_Value
@@ -2651,7 +2651,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[1b7]"></a>Turn_To_Bin</STRONG> (Thumb, 232 bytes, Stack size 16 bytes, image.o(.text.Turn_To_Bin))
-<BR><BR>[Stack]<UL><LI>Max Depth = 1176<LI>Call Chain = Turn_To_Bin &rArr; Otsu_Threshold
+<BR><BR>[Stack]<UL><LI>Max Depth = 1144<LI>Call Chain = Turn_To_Bin &rArr; Otsu_Threshold
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Otsu_Threshold
 </UL>
@@ -2730,11 +2730,9 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 1056<LI>Call Chain = User_Init &rArr; tft180_init &rArr; tft180_clear &rArr; tft180_set_region &rArr; tft180_write_index &rArr; spi_write_8bit &rArr; spi_write_8bit_array &rArr; spi_write &rArr; LPSPI_MasterTransferBlocking &rArr; LPSPI_CheckTransferArgument &rArr; __aeabi_assert &rArr; DbgConsole_Printf &rArr; DbgConsole_Vprintf &rArr; DbgConsole_PrintfFormattedData &rArr; DbgConsole_ConvertFloatRadixNumToString &rArr; __hardfp_pow &rArr; sqrt
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;system_delay_ms
-<LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
 <LI><a href="#[210]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mt9v03x_init
 <LI><a href="#[20f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;imu660ra_init
-<LI><a href="#[11c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Bluetooth_Init
-<LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;All_Encoder_Init
+<LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
 <LI><a href="#[1b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Gyro_Offset_Init
 <LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;All_Button_Init
 <LI><a href="#[1e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Motor_Init
@@ -2742,12 +2740,14 @@ Global Symbols
 <LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;All_PID_Init
 <LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Beep_Init
 <LI><a href="#[1e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Manipulator_Init
+<LI><a href="#[11c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Bluetooth_Init
+<LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;All_Encoder_Init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
 <P><STRONG><a name="[211]"></a>User_Loop</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, usermain.o(.text.User_Loop))
-<BR><BR>[Stack]<UL><LI>Max Depth = 1240<LI>Call Chain = User_Loop &rArr; Image_Process &rArr; Turn_To_Bin &rArr; Otsu_Threshold
+<BR><BR>[Stack]<UL><LI>Max Depth = 1208<LI>Call Chain = User_Loop &rArr; Image_Process &rArr; Turn_To_Bin &rArr; Otsu_Threshold
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Image_Process
 </UL>
@@ -2795,7 +2795,6 @@ Global Symbols
 <LI><a href="#[179]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ENET_GetInstance
 <LI><a href="#[16c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EDMA_HandleIRQ
 <LI><a href="#[16b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EDMA_GetChannelStatusFlags
-<LI><a href="#[1c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_CombineWriteData
 <LI><a href="#[1d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_SeparateReadData
 <LI><a href="#[126]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CLOCK_ControlGate
 <LI><a href="#[124]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CLOCK_ControlGate
@@ -2819,6 +2818,7 @@ Global Symbols
 <LI><a href="#[1ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_MasterSetDelayScaler
 <LI><a href="#[1c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_MasterSetBaudRate
 <LI><a href="#[1c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_GetInstance
+<LI><a href="#[1c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_CombineWriteData
 <LI><a href="#[12e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CLOCK_ControlGate
 <LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CLOCK_SetDiv
 <LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CLOCK_SetMux
@@ -2969,9 +2969,6 @@ Global Symbols
 <LI><a href="#[1fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pwm_set_duty
 <LI><a href="#[20c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fifo_write_buffer
 <LI><a href="#[21a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fifo_read_buffer
-<LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_show_string
-<LI><a href="#[26e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_show_char
-<LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_draw_point
 <LI><a href="#[269]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_set_region
 <LI><a href="#[11b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bluetooth_ch9141_read_buffer
 <LI><a href="#[26f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uart_iomuxc
@@ -2980,6 +2977,9 @@ Global Symbols
 <LI><a href="#[243]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spi_write_8bit_registers
 <LI><a href="#[261]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spi_write
 <LI><a href="#[25b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spi_iomuxc
+<LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_show_string
+<LI><a href="#[26e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_show_char
+<LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_draw_point
 </UL>
 
 <P><STRONG><a name="[229]"></a>debug_init</STRONG> (Thumb, 80 bytes, Stack size 40 bytes, zf_common_debug.o(.text.debug_init))
@@ -3130,9 +3130,9 @@ Global Symbols
 <LI><a href="#[238]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gpio_iomuxc
 </UL>
 <BR>[Called By]<UL><LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;soft_iic_init
-<LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
 <LI><a href="#[20f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;imu660ra_init
 <LI><a href="#[11d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bluetooth_ch9141_init
+<LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
 <LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;All_Button_Init
 <LI><a href="#[1e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Motor_Init
 <LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Beep_Init
@@ -3190,8 +3190,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[23b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;imu660ra_read_registers
 </UL>
-<BR>[Called By]<UL><LI><a href="#[1ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Gyro_Get_All_Angles
-<LI><a href="#[1b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Gyro_Offset_Init
+<BR>[Called By]<UL><LI><a href="#[1b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Gyro_Offset_Init
+<LI><a href="#[1ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Gyro_Get_All_Angles
 </UL>
 
 <P><STRONG><a name="[20f]"></a>imu660ra_init</STRONG> (Thumb, 318 bytes, Stack size 40 bytes, zf_device_imu660ra.o(.text.imu660ra_init))
@@ -3235,7 +3235,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[aa]"></a>main</STRONG> (Thumb, 30 bytes, Stack size 8 bytes, main.o(.text.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 1248<LI>Call Chain = main &rArr; User_Loop &rArr; Image_Process &rArr; Turn_To_Bin &rArr; Otsu_Threshold
+<BR><BR>[Stack]<UL><LI>Max Depth = 1216<LI>Call Chain = main &rArr; User_Loop &rArr; Image_Process &rArr; Turn_To_Bin &rArr; Otsu_Threshold
 </UL>
 <BR>[Calls]<UL><LI><a href="#[211]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;User_Loop
 <LI><a href="#[20d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;User_Init
@@ -3405,8 +3405,8 @@ Global Symbols
 <LI><a href="#[14a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CLOCK_SetDiv
 <LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CLOCK_SetMux
 </UL>
-<BR>[Called By]<UL><LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
-<LI><a href="#[20f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;imu660ra_init
+<BR>[Called By]<UL><LI><a href="#[20f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;imu660ra_init
+<LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
 </UL>
 
 <P><STRONG><a name="[25b]"></a>spi_iomuxc</STRONG> (Thumb, 1508 bytes, Stack size 32 bytes, zf_driver_spi.o(.text.spi_iomuxc))
@@ -3455,9 +3455,9 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[263]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spi_write_8bit_array
 </UL>
-<BR>[Called By]<UL><LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
-<LI><a href="#[26d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_write_index
+<BR>[Called By]<UL><LI><a href="#[26d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_write_index
 <LI><a href="#[269]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_set_region
+<LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
 </UL>
 
 <P><STRONG><a name="[263]"></a>spi_write_8bit_array</STRONG> (Thumb, 38 bytes, Stack size 40 bytes, zf_driver_spi.o(.text.spi_write_8bit_array))
@@ -3506,7 +3506,6 @@ Global Symbols
 <LI><a href="#[1a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPT_SetOutputCompareValue
 </UL>
 <BR>[Called By]<UL><LI><a href="#[20d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;User_Init
-<LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
 <LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mt9v03x_set_config_sccb
 <LI><a href="#[210]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mt9v03x_init
 <LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mt9v03x_get_version
@@ -3514,6 +3513,7 @@ Global Symbols
 <LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mt9v03x_set_config
 <LI><a href="#[20f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;imu660ra_init
 <LI><a href="#[23e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;imu660ra_self_check
+<LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
 <LI><a href="#[1b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Gyro_Offset_Init
 </UL>
 
@@ -3546,15 +3546,15 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gpio_init
 <LI><a href="#[1b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;system_delay_ms
-<LI><a href="#[26c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_set_color
-<LI><a href="#[26b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_set_dir
-<LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_clear
 <LI><a href="#[26a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_debug_init
 <LI><a href="#[26d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_write_index
 <LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetPinsOutput
 <LI><a href="#[18f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ClearPinsOutput
 <LI><a href="#[23c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spi_init
 <LI><a href="#[264]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spi_write_8bit
+<LI><a href="#[26c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_set_color
+<LI><a href="#[26b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_set_dir
+<LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_clear
 </UL>
 <BR>[Called By]<UL><LI><a href="#[20d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;User_Init
 </UL>
@@ -4367,11 +4367,11 @@ Local Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[190]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_PortClear
 </UL>
-<BR>[Called By]<UL><LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
+<BR>[Called By]<UL><LI><a href="#[26d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_write_index
+<LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
 <LI><a href="#[26e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_show_char
 <LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_draw_point
 <LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_clear
-<LI><a href="#[26d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_write_index
 </UL>
 
 <P><STRONG><a name="[269]"></a>tft180_set_region</STRONG> (Thumb, 394 bytes, Stack size 56 bytes, zf_device_tft180.o(.text.tft180_set_region))
@@ -4391,11 +4391,11 @@ Local Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_PortSet
 </UL>
-<BR>[Called By]<UL><LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
+<BR>[Called By]<UL><LI><a href="#[26d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_write_index
+<LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
 <LI><a href="#[26e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_show_char
 <LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_draw_point
 <LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_clear
-<LI><a href="#[26d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_write_index
 </UL>
 
 <P><STRONG><a name="[190]"></a>GPIO_PortClear</STRONG> (Thumb, 18 bytes, Stack size 8 bytes, zf_device_tft180.o(.text.GPIO_PortClear))
@@ -4411,8 +4411,8 @@ Local Symbols
 <LI><a href="#[18f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ClearPinsOutput
 <LI><a href="#[264]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spi_write_8bit
 </UL>
-<BR>[Called By]<UL><LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
-<LI><a href="#[269]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_set_region
+<BR>[Called By]<UL><LI><a href="#[269]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_set_region
+<LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft180_init
 </UL>
 
 <P><STRONG><a name="[1a0]"></a>GPIO_PortSet</STRONG> (Thumb, 18 bytes, Stack size 8 bytes, zf_device_tft180.o(.text.GPIO_PortSet))
@@ -4745,8 +4745,8 @@ Local Symbols
 <P><STRONG><a name="[1c3]"></a>LPSPI_IsMaster</STRONG> (Thumb, 16 bytes, Stack size 4 bytes, fsl_lpspi.o(.text.LPSPI_IsMaster))
 <BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = LPSPI_IsMaster
 </UL>
-<BR>[Called By]<UL><LI><a href="#[1c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_CommonIRQHandler
-<LI><a href="#[1c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_MasterSetBaudRate
+<BR>[Called By]<UL><LI><a href="#[1c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_MasterSetBaudRate
+<LI><a href="#[1c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPSPI_CommonIRQHandler
 </UL>
 
 <P><STRONG><a name="[1d7]"></a>LPSPI_GetRxFifoCount</STRONG> (Thumb, 16 bytes, Stack size 4 bytes, fsl_lpspi.o(.text.LPSPI_GetRxFifoCount))

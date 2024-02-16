@@ -10,6 +10,6 @@ typedef enum
 }ServoHandle;
 
 void Manipulator_Init();
-void Set_Servo_Angle(ServoHandle Servo,double Angle);
+void Set_Servo_Angle(ServoHandle Servo,float Angle);
 
 #endif

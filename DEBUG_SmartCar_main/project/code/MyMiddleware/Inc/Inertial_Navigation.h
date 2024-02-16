@@ -5,20 +5,20 @@
 
 typedef struct
 {
-    double Start_Position_X;
-    double Start_Position_Y;
-    double Cur_Position_X;
-    double Cur_Position_Y;
-    double Start_Angle;
-    double Cur_Angle;
-    double Target_Position_X;
-    double Target_Position_Y;
+    float Start_Position_X;
+    float Start_Position_Y;
+    float Cur_Position_X;
+    float Cur_Position_Y;
+    float Start_Angle;
+    float Cur_Angle;
+    float Target_Position_X;
+    float Target_Position_Y;
     uint8 Start_Flag;
 }Navigation_Handle;
 
 extern Navigation_Handle Navigation;
 
 void Enable_Navigation();
-void Navigation_Process(double x,double y);
+void Navigation_Process(float x,float y);
 void Pid_Init();
 #endif

@@ -5,15 +5,15 @@
 
 void All_Encoder_Init();
 void Get_Encoder_Pulses();
-double Get_LF_Speed();
-double Get_RF_Speed();
-double Get_LB_Speed();
-double Get_RB_Speed();
+float Get_LF_Speed();
+float Get_RF_Speed();
+float Get_LB_Speed();
+float Get_RB_Speed();
 void Get_Distance();
 void Encoder_Process();
-double Encoder_YawAngle_Get();
-extern double Encoder_Distance[4];
-extern double Encoer_Speed[4];
-double Get_X_Distance();
-double Get_Y_Distance();
+float Encoder_YawAngle_Get();
+extern float Encoder_Distance[4];
+extern float Encoer_Speed[4];
+float Get_X_Distance();
+float Get_Y_Distance();
 #endif

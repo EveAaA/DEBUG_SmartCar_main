@@ -35,8 +35,8 @@
 
 int16 Encoder_Pules_Buffer[4];
 int32 Distance_Buffer[4];
-double Encoer_Speed[4];
-double Encoder_Distance[4];
+float Encoer_Speed[4];
+float Encoder_Distance[4];
 /**
  ******************************************************************************
  *  @defgroup 外部调用
@@ -77,11 +77,11 @@ void Get_Encoder_Pulses()
 -- @date    2023/11/4
 **/
 
-double Get_LF_Speed()
+float Get_LF_Speed()
 {
-    static double Filter;
-    double Speed = (Encoder_Pules_Buffer[0] / 600.0)*100.0;
-    Filter = 0.25*Speed + Filter*0.75;
+    static float Filter;
+    float Speed = (Encoder_Pules_Buffer[0] / 600.0f)*100.0f;
+    Filter = 0.25f*Speed + Filter*0.75f;
     return Filter;
 }
 
@@ -90,11 +90,11 @@ double Get_LF_Speed()
 -- @auther  庄文标
 -- @date    2023/11/4
 **/
-double Get_RF_Speed()
+float Get_RF_Speed()
 {
-    static double Filter;
-    double Speed = (Encoder_Pules_Buffer[1] / 600.0)*100.0;
-    Filter = 0.25*Speed + Filter*0.75;
+    static float Filter;
+    float Speed = (Encoder_Pules_Buffer[1] / 600.0f)*100.0f;
+    Filter = 0.25f*Speed + Filter*0.75f;
     return -Filter;
 }
 
@@ -103,11 +103,11 @@ double Get_RF_Speed()
 -- @auther  庄文标
 -- @date    2023/11/4
 **/
-double Get_LB_Speed()
+float Get_LB_Speed()
 {
-    static double Filter;
-    double Speed = (Encoder_Pules_Buffer[2] / 600.0)*100.0;
-    Filter = 0.25*Speed + Filter*0.75;
+    static float Filter;
+    float Speed = (Encoder_Pules_Buffer[2] / 600.0f)*100.0f;
+    Filter = 0.25f*Speed + Filter*0.75f;
     return Filter;
 }
 
@@ -116,11 +116,11 @@ double Get_LB_Speed()
 -- @auther  庄文标
 -- @date    2023/11/4
 **/
-double Get_RB_Speed()
+float Get_RB_Speed()
 {
-    static double Filter;
-    double Speed = (Encoder_Pules_Buffer[3] / 600.0)*100.0;
-    Filter = 0.25*Speed + Filter*0.75;
+    static float Filter;
+    float Speed = (Encoder_Pules_Buffer[3] / 600.0f)*100.0f;
+    Filter = 0.25f*Speed + Filter*0.75f;
     return -Filter;
 }
 
@@ -131,8 +131,8 @@ double Get_RB_Speed()
 **/
 void Get_Distance()
 {
-    static double Cm_Per;
-    Cm_Per = (6.3*3.1415926)/2048.0;
+    static float Cm_Per;
+    Cm_Per = (6.3f*3.1415926f)/2048.0f;
     if(Navigation.Start_Flag)//开启惯性导航，开始距离解算
     {
         for(int i = 0;i<=3;i++)
@@ -179,11 +179,11 @@ void Encoder_Process()
 -- @auther  庄文标
 -- @date    2023/12/7
 **/
-double Encoder_YawAngle_Get()
+float Encoder_YawAngle_Get()
 {
-    double L_Distance = Encoder_Distance[0] + Encoder_Distance[2];
-    double R_Distance = -Encoder_Distance[1] + (-Encoder_Distance[3]);
-    return (((L_Distance-R_Distance)/2.0)/60)*90;
+    float L_Distance = Encoder_Distance[0] + Encoder_Distance[2];
+    float R_Distance = -Encoder_Distance[1] + (-Encoder_Distance[3]);
+    return (((L_Distance-R_Distance)/2.0f)/60)*90;
 }
 
 /**@brief   X轴距离获取
@@ -191,7 +191,7 @@ double Encoder_YawAngle_Get()
 -- @auther  庄文标
 -- @date    2023/12/7
 **/
-double Get_X_Distance()
+float Get_X_Distance()
 {
     return (Encoder_Distance[0] + (-Encoder_Distance[3]) - Encoder_Distance[2] - (-Encoder_Distance[1]))/4.0;
 }
@@ -201,7 +201,7 @@ double Get_X_Distance()
 -- @auther  庄文标
 -- @date    2023/12/7
 **/
-double Get_Y_Distance()
+float Get_Y_Distance()
 {
     return (Encoder_Distance[0] + (-Encoder_Distance[3]) + Encoder_Distance[2] + (-Encoder_Distance[1]))/4.0;
 }

@@ -5,7 +5,7 @@
 
 typedef enum
 {
-    On,
+    On,//³¤Ïì
     Off,
 }Beep_Mode;
 
