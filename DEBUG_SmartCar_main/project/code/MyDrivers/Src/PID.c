@@ -37,9 +37,9 @@
 **/
 void PIDInit(Pid_TypeDef *PID, float Kp, float Ki, float Kd, float OutputMax, float OutputMin)
 {
-	PID->Pid_Par->Kp = Kp;
-	PID->Pid_Par->Ki = Ki;
-	PID->Pid_Par->Kd = Kd;
+	PID->Kp = Kp;
+	PID->Ki = Ki;
+	PID->Kd = Kd;
 	PID->previousError = 0;
 	PID->OutputMin = OutputMin;
 	PID->OutputMax = OutputMax;
@@ -61,7 +61,7 @@ float GetPIDValue(Pid_TypeDef *PID, float error)
 	I = I + error;
 	D = error - PID->previousError;
 
-	PID->Output = PID->Pid_Par->Kp * P+ PID->Pid_Par->Ki * I+ PID->Pid_Par->Kd * D;
+	PID->Output = PID->Kp * P+ PID->Ki * I+ PID->Kd * D;
 	PID->previousError = error;
 	
 	if(fabs(I) > 100)
@@ -93,9 +93,9 @@ float GetPIDValue(Pid_TypeDef *PID, float error)
 **/
 void Incremental_PID_Init(Incremental_PID_TypeDef *PID, float Kp, float Ki, float Kd, float Out_Put_Max, float Out_Put_Min)
 {
-	PID->Inc_PID_Par->Kp = Kp;
-	PID->Inc_PID_Par->Ki = Ki;
-	PID->Inc_PID_Par->Kd = Kd;
+	PID->Kp = Kp;
+	PID->Ki = Ki;
+	PID->Kd = Kd;
 	PID->Error = 0;
 	PID->Error_Last= 0;
 	PID->Error_Pre= 0;
@@ -122,7 +122,7 @@ float Get_Incremental_PID_Value(Incremental_PID_TypeDef *PID, float Error)
 	I = PID->Error;
 	D = PID->Error - 2*PID->Error_Last + PID->Error_Pre;
 	
-	Increment = PID->Inc_PID_Par->Kp*P + PID->Inc_PID_Par->Ki*I + PID->Inc_PID_Par->Kd*D;
+	Increment = PID->Kp*P + PID->Ki*I + PID->Kd*D;
 
 	PID->Error_Pre = PID->Error_Last;
 	PID->Error_Last = PID->Error;

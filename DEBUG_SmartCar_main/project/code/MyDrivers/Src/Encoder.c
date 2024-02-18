@@ -37,33 +37,20 @@ int16 Encoder_Pules_Buffer[4];
 int32 Distance_Buffer[4];
 float Encoer_Speed[4];
 float Encoder_Distance[4];
+
 /**
  ******************************************************************************
- *  @defgroup 外部调用
+ *  @defgroup 内部调用
  *  @brief
  *
 **/
-
-
-/**@brief   所有编码器初始化
--- @param   无
--- @auther  庄文标
--- @date    2023/11/4
-**/
-void All_Encoder_Init()
-{
-    encoder_quad_init(Encoder_LF, Encoder_LF_A, Encoder_LF_B);                     // 初始化编码器模块与引脚 正交解码编码器模式
-    encoder_quad_init(Encoder_RF, Encoder_RF_A, Encoder_RF_B);                     // 初始化编码器模块与引脚 正交解码编码器模式
-    encoder_quad_init(Encoder_LB, Encoder_LB_A, Encoder_LB_B);                     // 初始化编码器模块与引脚 正交解码编码器模式
-    encoder_quad_init(Encoder_RB, Encoder_RB_A, Encoder_RB_B);                     // 初始化编码器模块与引脚 正交解码编码器模式
-}
 
 /**@brief   获取编码器速度
 -- @param   无
 -- @auther  庄文标
 -- @date    2023/11/4
 **/
-void Get_Encoder_Pulses()
+static void Get_Encoder_Pulses()
 {
     Encoder_Pules_Buffer[0] = encoder_get_count(Encoder_LF);// 获取编码器计数                 
     Encoder_Pules_Buffer[1] = encoder_get_count(Encoder_RF);
@@ -76,8 +63,7 @@ void Get_Encoder_Pulses()
 -- @auther  庄文标
 -- @date    2023/11/4
 **/
-
-float Get_LF_Speed()
+static float Get_LF_Speed()
 {
     static float Filter;
     float Speed = (Encoder_Pules_Buffer[0] / 600.0f)*100.0f;
@@ -90,7 +76,7 @@ float Get_LF_Speed()
 -- @auther  庄文标
 -- @date    2023/11/4
 **/
-float Get_RF_Speed()
+static float Get_RF_Speed()
 {
     static float Filter;
     float Speed = (Encoder_Pules_Buffer[1] / 600.0f)*100.0f;
@@ -103,7 +89,7 @@ float Get_RF_Speed()
 -- @auther  庄文标
 -- @date    2023/11/4
 **/
-float Get_LB_Speed()
+static float Get_LB_Speed()
 {
     static float Filter;
     float Speed = (Encoder_Pules_Buffer[2] / 600.0f)*100.0f;
@@ -116,7 +102,7 @@ float Get_LB_Speed()
 -- @auther  庄文标
 -- @date    2023/11/4
 **/
-float Get_RB_Speed()
+static float Get_RB_Speed()
 {
     static float Filter;
     float Speed = (Encoder_Pules_Buffer[3] / 600.0f)*100.0f;
@@ -129,7 +115,7 @@ float Get_RB_Speed()
 -- @auther  庄文标
 -- @date    2023/12/6
 **/
-void Get_Distance()
+static void Get_Distance()
 {
     static float Cm_Per;
     Cm_Per = (6.3f*3.1415926f)/2048.0f;
@@ -153,6 +139,26 @@ void Get_Distance()
         }
     }
 
+}
+
+/**
+ ******************************************************************************
+ *  @defgroup 外部调用
+ *  @brief
+ *
+**/
+
+/**@brief   所有编码器初始化
+-- @param   无
+-- @auther  庄文标
+-- @date    2023/11/4
+**/
+void All_Encoder_Init()
+{
+    encoder_quad_init(Encoder_LF, Encoder_LF_A, Encoder_LF_B);                     // 初始化编码器模块与引脚 正交解码编码器模式
+    encoder_quad_init(Encoder_RF, Encoder_RF_A, Encoder_RF_B);                     // 初始化编码器模块与引脚 正交解码编码器模式
+    encoder_quad_init(Encoder_LB, Encoder_LB_A, Encoder_LB_B);                     // 初始化编码器模块与引脚 正交解码编码器模式
+    encoder_quad_init(Encoder_RB, Encoder_RB_A, Encoder_RB_B);                     // 初始化编码器模块与引脚 正交解码编码器模式
 }
 
 /**@brief   编码器进程
@@ -193,10 +199,10 @@ float Encoder_YawAngle_Get()
 **/
 float Get_X_Distance()
 {
-    return (Encoder_Distance[0] + (-Encoder_Distance[3]) - Encoder_Distance[2] - (-Encoder_Distance[1]))/4.0;
+    return (Encoder_Distance[0] + (-Encoder_Distance[3]) - Encoder_Distance[2] - (-Encoder_Distance[1]))/4.0f;
 }
 
-/**@brief   Y轴距离获取
+/**@brief   Y轴距离获取f
 -- @param   无
 -- @auther  庄文标
 -- @date    2023/12/7

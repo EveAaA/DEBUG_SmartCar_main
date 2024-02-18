@@ -3,9 +3,8 @@
 
 #include "UserMain.h"
 
-void Arrow_Display(int Line);
-void Get_Page();
-void Meau_Display();
+void Menu_Display();
+void Flash_Init();
 //行的宏定义
 #define Line_0 (16*0)
 #define Line_1 (16*1)
@@ -39,6 +38,25 @@ void Meau_Display();
 #define Row_19 (8*19)
 #define Row_20 (8*20)
 
-extern int Set_Line;
+typedef enum
+{
+	Page0 = 0,
+	Page1 = 1,
+	Page2 = 2,
+	Page3 = 3,
+	Page4 = 4,
+	Page5 = 5,
+	Page6 = 6,
+	Page7 = 7,
+	Page_Select = 8,
+}Menu_Handle;
+
+typedef struct
+{
+	uint8 Set_Line;
+	uint8 Set_Mode;
+	uint8 Flash_Set;
+}Menu_;
+
 extern int Show_Mode;
-#endif /* MYMIDDLEWARE_INC_MEAU_H_ */
+#endif

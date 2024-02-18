@@ -6,11 +6,7 @@ typedef struct
 	float Kp;//比例系数
 	float Ki;//微分系数
 	float Kd;//积分系数
-}Pid_Par_Handle;
 
-typedef struct
-{
-	Pid_Par_Handle (*Pid_Par);//Pid参数
 	float previousError;
 
 	float OutputMin;//限幅
@@ -24,11 +20,6 @@ typedef struct
 	float Kp;//比例系数
 	float Ki;//微分系数
 	float Kd;//积分系数
-}Incremental_PID_Par_Handle;
-
-typedef struct
-{
-	Incremental_PID_Par_Handle (*Inc_PID_Par);
 
 	float Error;//本次误差
 	float Error_Last;//上次误差

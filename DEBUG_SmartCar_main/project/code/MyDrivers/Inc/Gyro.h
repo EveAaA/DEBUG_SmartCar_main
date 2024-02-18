@@ -52,8 +52,6 @@ float Gyro_RollAngle_Get(void);
 float Gyro_PitchAngle_Get(void);
 float Gyro_YawAngle_Get(void);
 void Gyro_Get_All_Angles();
-float My_Rsqrt(float num);
 void Gyro_Offset_Init(void);
-void IMU_Get_Values(void);
-void IMU_AHRS_update(IMU_Param_t* IMU);
+
 #endif

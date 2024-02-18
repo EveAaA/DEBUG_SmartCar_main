@@ -12,9 +12,10 @@
 #include "Beep.h"
 #include "Image.h"
 #include "Uart.h"
+#include "Rotary.h"
 /*-----------------------MyMiddleware------------------------------*/
 #include "Car_Control.h"
-#include "Meau.h"
+#include "Menu.h"
 #include "Inertial_Navigation.h"
 /*-----------------------MyFiles-----------------------------------*/
 #include "Call_Back_Action.h"
