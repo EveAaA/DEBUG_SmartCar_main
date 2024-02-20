@@ -3,37 +3,37 @@
 
 typedef struct
 {
-	double Kp;//比例系数
-	double Ki;//微分系数
-	double Kd;//积分系数
+	float Kp;//比例系数
+	float Ki;//微分系数
+	float Kd;//积分系数
 
-	double previousError;
+	float previousError;
 
-	double OutputMin;//限幅
-	double OutputMax;
+	float OutputMin;//限幅
+	float OutputMax;
 	
-	double Output;
+	float Output;
 }Pid_TypeDef;
 
 typedef struct
 {
-	double Kp;//比例系数
-	double Ki;//微分系数
-	double Kd;//积分系数
+	float Kp;//比例系数
+	float Ki;//微分系数
+	float Kd;//积分系数
 
-	double Error;//本次误差
-	double Error_Last;//上次误差
-	double Error_Pre;//上上次误差
+	float Error;//本次误差
+	float Error_Last;//上次误差
+	float Error_Pre;//上上次误差
 
-	double Out_Put_Min;//限幅
-	double Out_Put_Max;
+	float Out_Put_Min;//限幅
+	float Out_Put_Max;
 	
-	double Output;
+	float Output;
 }Incremental_PID_TypeDef;
 
-void PIDInit(Pid_TypeDef *PID, double Kp, double Ki, double Kd, double OutputMax, double OutputMin);
-double GetPIDValue(Pid_TypeDef *PID, double error);
+void PIDInit(Pid_TypeDef *PID, float Kp, float Ki, float Kd, float OutputMax, float OutputMin);
+float GetPIDValue(Pid_TypeDef *PID, float error);
 
-void Incremental_PID_Init(Incremental_PID_TypeDef *PID, double Kp, double Ki, double Kd, double Out_Put_Max, double Out_Put_Min);
-double Get_Incremental_PID_Value(Incremental_PID_TypeDef *PID, double Error);
+void Incremental_PID_Init(Incremental_PID_TypeDef *PID, float Kp, float Ki, float Kd, float Out_Put_Max, float Out_Put_Min);
+float Get_Incremental_PID_Value(Incremental_PID_TypeDef *PID, float Error);
 #endif

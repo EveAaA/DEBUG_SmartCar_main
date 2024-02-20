@@ -42,13 +42,13 @@ void Manipulator_Init()
 
 /**@brief   设置舵机角度
 -- @param   ServoHandle Servo 选择舵机
--- @param   double Angle 设置的角度
+-- @param   float Angle 设置的角度
 -- @auther  庄文标
 -- @date    2023/11/5
 **/
-void Set_Servo_Angle(ServoHandle Servo,double Angle)
+void Set_Servo_Angle(ServoHandle Servo,float Angle)
 {
-    double Servo_PWM = ((float)PWM_DUTY_MAX / (1000.0 / (float)Servo_FREQ) * (0.5 + (float)(Angle) / 90.0));
+    float Servo_PWM = ((float)PWM_DUTY_MAX / (1000.0 / (float)Servo_FREQ) * (0.5 + (float)(Angle) / 90.0));
 
     switch (Servo)
     {

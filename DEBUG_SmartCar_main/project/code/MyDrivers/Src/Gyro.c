@@ -26,106 +26,7 @@ Gyro_AngleTypeDef Gyro_Angle;
 Gyro_Param_t GyroOffset;
 Gyro_Param_t AccOffset;
 IMU_Param_t IMU_Data;
-double YawAngle_Trans = 0;//转换后的偏航角，归到0-360
-/**
- ******************************************************************************
- *  @defgroup 外部调用
- *  @brief
- *
-**/
-
-/**@brief   陀螺仪数据的初始化，避免零点飘逸
--- @param   无
--- @auther  庄文标
--- @date    2023/7/4
-**/
-void Gyro_Offset_Init(void)
-{
-    GyroOffset.Xdata = 0;
-    GyroOffset.Ydata = 0;
-    GyroOffset.Zdata = 0;
-    for (uint16_t i = 0; i < 100; ++i)
-    {
-        imu660ra_get_gyro();    // 获取陀螺仪角速度
-        GyroOffset.Xdata += imu660ra_gyro_x;
-        GyroOffset.Ydata += imu660ra_gyro_y;
-        GyroOffset.Zdata += imu660ra_gyro_z;
-        system_delay_ms(5);    // 最大 1Khz
-    }
-
-    GyroOffset.Xdata /= 100;
-    GyroOffset.Ydata /= 100;
-    GyroOffset.Zdata /= 100;
-}
-
-
-/**@brief   获取滚动角
--- @param   无
--- @auther  庄文标
--- @return  Gyro_Angle->RollAngle 滚动角
--- @date    2023/6/29
-**/
-double Gyro_RollAngle_Get(void)
-{
-    return Gyro_Angle.RollAngle;
-}
-
-/**@brief   获取俯仰角
--- @param   无
--- @auther  庄文标
--- @return  Gyro_Angle->PitchAngle 俯仰角
--- @date    2023/6/29
-**/
-double Gyro_PitchAngle_Get(void)
-{
-    return Gyro_Angle.PitchAngle;
-}
-
-/**@brief   获取偏航角
--- @param   无
--- @auther  庄文标
--- @return  Gyro_Angle->YawAngle 偏航角
--- @date    2023/11/04
-**/
-double Gyro_YawAngle_Get(void)
-{
-    return YawAngle_Trans;
-}
-
-/**@brief   获取陀螺仪数据
--- @param   无
--- @auther  庄文标
--- @date    2023/7/4
-**/
-void Gyro_Get_All_Angles()
-{
-    static double Yaw_Angle_Old = 0;
-    imu660ra_get_acc();
-    imu660ra_get_gyro();
-    IMU_Get_Values();
-    // printf("X_Distant = %lf\r\n",IMU_Data.acc_x*0.005f);
-    IMU_AHRS_update(&IMU_Data);
-    float q0 = Q_info.q0;
-    float q1 = Q_info.q1;
-    float q2 = Q_info.q2;
-    float q3 = Q_info.q3;
-    // atan2返回输入坐标点与坐标原点连线与X轴正方形夹角的弧度值
-    Gyro_Angle.PitchAngle = asin(2 * q0 * q2 - 2 * q1 * q3) * 180 / pI;
-    Gyro_Angle.RollAngle = atan2(2 * q2 * q3 + 2 * q0 * q1, -2 * q1 * q1 - 2 * q2 * q2 + 1) * 180 / pI;
-    Gyro_Angle.YawAngle = -atan2(2 * q1 * q2 + 2 * q0 * q3, -2 * q2 * q2 - 2 * q3 * q3 + 1) * 180 / pI;
-    double i = Gyro_Angle.YawAngle - Yaw_Angle_Old;
-    if (i < -180) 
-    {
-        i += 360;
-    }
-    else if (i > 180) 
-    {
-        i -= 360;
-    }
-    YawAngle_Trans += i;
-    Yaw_Angle_Old = Gyro_Angle.YawAngle;
-
-}
+float YawAngle_Trans = 0;//转换后的偏航角，归到0-360
 
 /**
  ******************************************************************************
@@ -139,7 +40,7 @@ void Gyro_Get_All_Angles()
 -- @auther  庄文标
 -- @date    2023/7/4
 **/
-float My_Rsqrt(float num)
+static float My_Rsqrt(float num)
 {
     float halfx = 0.5f * num;
     float y = num;
@@ -157,7 +58,7 @@ float My_Rsqrt(float num)
 -- @auther  庄文标
 -- @date    2023/7/4
 **/
-void IMU_Get_Values(void)
+static void IMU_Get_Values(void)
 {
     float alpha = 0.3;
 
@@ -179,7 +80,7 @@ void IMU_Get_Values(void)
 -- @auther  庄文标
 -- @date    2023/7/4
 **/
-void IMU_AHRS_update(IMU_Param_t* IMU)
+static void IMU_AHRS_update(IMU_Param_t* IMU)
 {
     float halfT = 0.5 * delta_T;    // 采样周期一半
     float vx, vy, vz;               // 当前姿态计算得来的重力在三轴上的分量
@@ -244,5 +145,106 @@ void IMU_AHRS_update(IMU_Param_t* IMU)
     Q_info.q2 = q2 * norm;
     Q_info.q3 = q3 * norm;  // 用全局变量记录上一次计算的四元数值
 }
+
+/**
+ ******************************************************************************
+ *  @defgroup 外部调用
+ *  @brief
+ *
+**/
+
+/**@brief   陀螺仪数据的初始化，避免零点飘逸
+-- @param   无
+-- @auther  庄文标
+-- @date    2023/7/4
+**/
+void Gyro_Offset_Init(void)
+{
+    GyroOffset.Xdata = 0;
+    GyroOffset.Ydata = 0;
+    GyroOffset.Zdata = 0;
+    for (uint16_t i = 0; i < 100; ++i)
+    {
+        imu660ra_get_gyro();    // 获取陀螺仪角速度
+        GyroOffset.Xdata += imu660ra_gyro_x;
+        GyroOffset.Ydata += imu660ra_gyro_y;
+        GyroOffset.Zdata += imu660ra_gyro_z;
+        system_delay_ms(5);    // 最大 1Khz
+    }
+
+    GyroOffset.Xdata /= 100;
+    GyroOffset.Ydata /= 100;
+    GyroOffset.Zdata /= 100;
+}
+
+
+/**@brief   获取滚动角
+-- @param   无
+-- @auther  庄文标
+-- @return  Gyro_Angle->RollAngle 滚动角
+-- @date    2023/6/29
+**/
+float Gyro_RollAngle_Get(void)
+{
+    return Gyro_Angle.RollAngle;
+}
+
+/**@brief   获取俯仰角
+-- @param   无
+-- @auther  庄文标
+-- @return  Gyro_Angle->PitchAngle 俯仰角
+-- @date    2023/6/29
+**/
+float Gyro_PitchAngle_Get(void)
+{
+    return Gyro_Angle.PitchAngle;
+}
+
+/**@brief   获取偏航角
+-- @param   无
+-- @auther  庄文标
+-- @return  Gyro_Angle->YawAngle 偏航角
+-- @date    2023/11/04
+**/
+float Gyro_YawAngle_Get(void)
+{
+    return YawAngle_Trans;
+}
+
+/**@brief   获取陀螺仪数据
+-- @param   无
+-- @auther  庄文标
+-- @date    2023/7/4
+**/
+void Gyro_Get_All_Angles()
+{
+    static float Yaw_Angle_Old = 0;
+    imu660ra_get_acc();
+    imu660ra_get_gyro();
+    IMU_Get_Values();
+    // printf("X_Distant = %lf\r\n",IMU_Data.acc_x*0.005f);
+    IMU_AHRS_update(&IMU_Data);
+    float q0 = Q_info.q0;
+    float q1 = Q_info.q1;
+    float q2 = Q_info.q2;
+    float q3 = Q_info.q3;
+    // atan2返回输入坐标点与坐标原点连线与X轴正方形夹角的弧度值
+    Gyro_Angle.PitchAngle = asin(2 * q0 * q2 - 2 * q1 * q3) * 180 / pI;
+    Gyro_Angle.RollAngle = atan2(2 * q2 * q3 + 2 * q0 * q1, -2 * q1 * q1 - 2 * q2 * q2 + 1) * 180 / pI;
+    Gyro_Angle.YawAngle = -atan2(2 * q1 * q2 + 2 * q0 * q3, -2 * q2 * q2 - 2 * q3 * q3 + 1) * 180 / pI;
+    float i = Gyro_Angle.YawAngle - Yaw_Angle_Old;
+    if (i < -180)//为了避免六轴算法的角度跳变，全部转化为0-360 
+    {
+        i += 360;
+    }
+    else if (i > 180) 
+    {
+        i -= 360;
+    }
+    YawAngle_Trans += i;
+    Yaw_Angle_Old = Gyro_Angle.YawAngle;
+}
+
+
 
 

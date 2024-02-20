@@ -36,9 +36,8 @@
 #include "zf_common_headfile.h"
 #include "zf_common_debug.h"
 #include "isr.h"
-#include "Bluetooth.h"
-#include "Call_Back_Action.h"
 #include "UserMain.h"
+
 extern uint16 Start; 
 extern Pid_TypeDef Angle_PID;
 void CSI_IRQHandler(void)
@@ -52,10 +51,6 @@ void PIT_IRQHandler(void)
     if(pit_flag_get(PIT_CH0))
     {
         Sensor_Handler();
-        if(Key_Time != 0)
-        {
-            Key_Time++;
-        }
         pit_flag_clear(PIT_CH0);
     }
     
@@ -202,6 +197,15 @@ void GPIO1_Combined_16_31_IRQHandler(void)
         exti_flag_clear(B16); // 清除中断标志位
     }
 
+    if(exti_flag_get(B18))
+    {
+        if(gpio_get_level(C0) == 1)//正转
+        {
+            Rotary.Clockwise = 1;
+        }
+
+        exti_flag_clear(B18); // 清除中断标志位
+    }
     
 }
 
@@ -210,7 +214,12 @@ void GPIO2_Combined_0_15_IRQHandler(void)
     flexio_camera_vsync_handler();
     
     if(exti_flag_get(C0))
-    {
+    {   
+        if(gpio_get_level(B18) == 1 && gpio_get_level(Rotary_D) == 1)
+        {
+            Rotary.Anticlockwise = 1;
+        }
+
         exti_flag_clear(C0);// 清除中断标志位
     }
 
@@ -227,6 +236,17 @@ void GPIO2_Combined_16_31_IRQHandler(void)
         exti_flag_clear(C16); // 清除中断标志位
     }
     
+    if(exti_flag_get(C24))
+    {
+        system_delay_ms(20);
+        if(gpio_get_level(C24) == 1)
+        {
+            Rotary.Press = 1;
+            Rotary.Clockwise = 0;
+            Rotary.Anticlockwise = 0;
+        }
+        exti_flag_clear(C24); // 清除中断标志位
+    }
 }
 
 

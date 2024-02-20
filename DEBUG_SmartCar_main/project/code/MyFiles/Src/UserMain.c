@@ -16,9 +16,7 @@
 
 /* Define\Declare ------------------------------------------------------------*/
 uint16 Start = 2;
-uint16 count = 0;
-extern float test_1;
-extern float test_2;
+
 /**
  ******************************************************************************
  *  @defgroup 外部调用
@@ -42,10 +40,11 @@ void User_Init()
     All_Encoder_Init();
     All_PID_Init();
     Pid_Init();
-    All_Button_Init();
     Motor_Init();
     mt9v03x_init();
-    // Handler_Init();
+    Rotary_Init();
+    Flash_Init();
+    Handler_Init();
     Manipulator_Init();
     // Beep(On);
     // system_delay_ms(100);
@@ -59,8 +58,7 @@ void User_Init()
 **/
 void User_Loop()
 {
-    //All_Button_Scan();
-    //Meau_Display();
+    Menu_Display();
     if(mt9v03x_finish_flag)
     {
       Image_Process();

@@ -15,7 +15,7 @@ uint8 Otsu_Threshold(uint8 *Image, uint16 col, uint16 row);
 #define Border_Max  Image_W-2 //边界最大值
 #define Border_Min  1   //边界最小值
 extern uint8 Original_Image[Image_H][Image_W];
-extern double Image_Erro;
+extern float Image_Erro;
 extern uint8 Image_Thereshold;
 
 typedef struct

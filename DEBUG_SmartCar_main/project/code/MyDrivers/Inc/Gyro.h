@@ -5,55 +5,53 @@
 
 typedef struct
 {
-    double RollAngle;   
+    float RollAngle;   
 
-    double PitchAngle;  
+    float PitchAngle;  
 
-    double YawAngle;    
+    float YawAngle;    
 
 }Gyro_AngleTypeDef;
 
 typedef struct
 {
-    double Xdata ;   
+    float Xdata ;   
 
-    double Ydata ;  
+    float Ydata ;  
 
-    double Zdata;   
+    float Zdata;   
 
 }Gyro_Param_t;
 
 typedef struct
 {
-    double acc_x ;   
+    float acc_x ;   
 
-    double acc_y ;  
+    float acc_y ;  
 
-    double acc_z;    
+    float acc_z;    
 
-    double gyro_x;
+    float gyro_x;
 
-    double gyro_y;
+    float gyro_y;
 
-    double gyro_z;
+    float gyro_z;
 
 }IMU_Param_t;
 
 typedef struct
 {
-    double q0;
-    double q1;
-    double q2;
-    double q3;
+    float q0;
+    float q1;
+    float q2;
+    float q3;
 
 }Quater_Param_t;
 
-double Gyro_RollAngle_Get(void);
-double Gyro_PitchAngle_Get(void);
-double Gyro_YawAngle_Get(void);
+float Gyro_RollAngle_Get(void);
+float Gyro_PitchAngle_Get(void);
+float Gyro_YawAngle_Get(void);
 void Gyro_Get_All_Angles();
-float My_Rsqrt(float num);
 void Gyro_Offset_Init(void);
-void IMU_Get_Values(void);
-void IMU_AHRS_update(IMU_Param_t* IMU);
+
 #endif

@@ -40,7 +40,7 @@ uint8 Center_Line[Image_H];//中线数组
 #define Threshold_Max   255*5//此参数可根据自己的需求调节
 #define Threshold_Min   255*2//此参数可根据自己的需求调节
 
-double Image_Erro;
+float Image_Erro;
 
 Flag_Handle Image_Flag;//元素标志位
 
@@ -219,7 +219,7 @@ uint8 Otsu_Threshold(uint8 *Image, uint16 col, uint16 row)
     uint32 Pixel_Integral = 0;//像素累计值
     int32 Pixel_IntegralFore = 0;//前景像素的累积灰度值
     int32 Pixel_Fore = 0;//前景像素，被认为是目标的像素
-    double Omega_Back=0, Omega_Fore=0, Micro_Back=0, Micro_Fore=0, SigmaB=0, Sigma=0; // 类间方差，分别为背景像素的相对权重，前景像素的相对权重，背景像素的平均灰度值，前景像素的平均灰度值;
+    float Omega_Back=0, Omega_Fore=0, Micro_Back=0, Micro_Fore=0, SigmaB=0, Sigma=0; // 类间方差，分别为背景像素的相对权重，前景像素的相对权重，背景像素的平均灰度值，前景像素的平均灰度值;
     uint8 Min_Value=0, Max_Value=0;
     uint8 Threshold = 0;//阈值
 
@@ -263,12 +263,12 @@ uint8 Otsu_Threshold(uint8 *Image, uint16 col, uint16 row)
     {
           Pixel_Back = Pixel_Back + HistGram[Y];    //前景像素点数
           Pixel_Fore = Amount - Pixel_Back;         //背景像素点数
-          Omega_Back = (double)Pixel_Back / Amount;//前景像素百分比
-          Omega_Fore = (double)Pixel_Fore / Amount;//背景像素百分比
+          Omega_Back = (float)Pixel_Back / Amount;//前景像素百分比
+          Omega_Fore = (float)Pixel_Fore / Amount;//背景像素百分比
           Pixel_Integral_Back += HistGram[Y] * Y;  //前景灰度值
           Pixel_IntegralFore = Pixel_Integral - Pixel_Integral_Back;//背景灰度值
-          Micro_Back = (double)Pixel_Integral_Back / Pixel_Back;//前景灰度百分比
-          Micro_Fore = (double)Pixel_IntegralFore / Pixel_Fore;//背景灰度百分比
+          Micro_Back = (float)Pixel_Integral_Back / Pixel_Back;//前景灰度百分比
+          Micro_Fore = (float)Pixel_IntegralFore / Pixel_Fore;//背景灰度百分比
           Sigma = Omega_Back * Omega_Fore * (Micro_Back - Micro_Fore) * (Micro_Back - Micro_Fore);//g
           if (Sigma > SigmaB)//遍历最大的类间方差g
           {
