@@ -75,30 +75,30 @@ def newOSTU(hist, mean):
     '''
     Pb = hist[0]
     Ub = 0
-    Pf = hist[0]
+    Pf = 1.0
     Uf = 0
     Var = 0
     Max = 0
     The = 0
     epsilon = 1e-10 # 避免除数为0无穷小量
-    for t in range(1, mean):
+    for t in range(1, len(hist)-1):
         Pb += hist[t]
-        Pf += hist[t + 1]
+        Pf -= hist[t + 1]
         Ub = Ub + (hist[t]/(Pb+epsilon))*(t-Ub)
         Uf = Uf + (hist[t + 1] /(Pf+epsilon)) * (t-Uf)
         Var = (Pb * (1 - Pb) * (Ub - Uf) ** 2) ** 2
         if Var > Max:
             Max = Var
             The = t
-    return int((The * 1.2 / len(hist) * 256 + -128))
+    return int((The / len(hist) * 256 + -128))
 
-    
+
 
 def getAutoThreshold():
     his = img.get_histogram()
     #per = his.get_percentile(0.99)
     statistics=img.get_statistics()
-    print(statistics.b_mean())
+    print(statistics.b_min())
     print(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)])
     print( len(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)]))
     print(int(math.floor((statistics.b_min() + statistics.b_max()) / 2 + 128) / 256 * len(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)])))
@@ -112,5 +112,5 @@ while(True):
     clock.tick()
     img = sensor.snapshot()
     getAutoThreshold()
-    #img.binary([test_list])
+    # img.binary([test_list])
     print(clock.avg())

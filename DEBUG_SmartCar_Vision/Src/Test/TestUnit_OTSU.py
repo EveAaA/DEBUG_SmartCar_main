@@ -88,20 +88,25 @@ def newOSTU(hist, mean):
         Uf = Uf + (hist[t + 1] /(Pf+epsilon)) * (t-Uf)
         Var = (Pb * (1 - Pb) * (Ub - Uf) ** 2) ** 2
         if Var > Max:
+            Max = Var
             The = t
-    return int(The / len(hist) * 256 + -128)
+    return int((The * 1.2 / len(hist) * 256 + -128))
+
+
 
 def getAutoThreshold():
     his = img.get_histogram()
     #per = his.get_percentile(0.99)
     statistics=img.get_statistics()
-    #print(statistics.b_mean())
-    #print(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)])
-    #print( len(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)]))
-    #print(int(math.floor((statistics.b_mean()+128) / 255 * len(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)]))))
+    print(statistics.b_mean())
+    print(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)])
+    print( len(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)]))
+    print(int(math.floor((statistics.b_min() + statistics.b_max()) / 2 + 128) / 256 * len(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)])))
+    print(int(math.floor((statistics.b_mean()+128) / 255 * len(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)]))))
     The = newOSTU(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)], int(math.floor((statistics.b_mean()+128) / 255 * len(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)]))))
-    print(The)
-    test_list[5] = int(The)
+    #print(The)
+    test_list[5] = The
+    print(test_list)
 
 while(True):
     clock.tick()
