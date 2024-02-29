@@ -5,7 +5,7 @@ import math
 sensor.reset()
 sensor.set_pixformat(sensor.RGB565)
 sensor.set_framesize(sensor.QVGA)
-sensor.set_auto_exposure(True, 120)
+#sensor.set_auto_exposure(True, 120)
 #sensor.set_brightness(100)
 sensor.skip_frames(time = 2000)
 
@@ -64,15 +64,7 @@ def otsu_threshold(hist):
 
     return optimal_thresh
 
-def newOSTU(hist, mean):
-    '''
-        @brief: 一维Otsu改进大津法追踪色块对B通道直方图做阈值分割
-                传统Otsu由于冗余的计算均值, 方差做过多运算, 运用递推法
-                做一次加速, 由于可以证明阈值的区间在0-直方图均值的范围,
-                所以只需要遍历0-直方图均值即可进行二次加速(连电脑帧率为22帧)
-        @param: 手动传入区间范围直方图, 以及平均值的映射于0-255下标
-        @return: 返回阈值重新映射于-128-127
-    '''
+def newOSTU(hist, minIndex):
     Pb = hist[0]
     Ub = 0
     Pf = 1.0
@@ -80,17 +72,23 @@ def newOSTU(hist, mean):
     Var = 0
     Max = 0
     The = 0
-    epsilon = 1e-10 # 避免除数为0无穷小量
-    for t in range(1, len(hist)-1):
+    sb = 0
+    sf = 0
+    Sum = sum((hist[i]*i) for i in range(len(hist)))
+    epsilon = 1e-10
+    for t in range(1, len(hist) - 1):
         Pb += hist[t]
-        Pf -= hist[t + 1]
-        Ub = Ub + (hist[t]/(Pb+epsilon))*(t-Ub)
-        Uf = Uf + (hist[t + 1] /(Pf+epsilon)) * (t-Uf)
+        Pf -= hist[t]
+        sb +=  t * hist[t]
+        sf =  Sum - sb
+        Ub = sb / (Pb + epsilon)
+        Uf = sf / (Pf + epsilon)
         Var = (Pb * (1 - Pb) * (Ub - Uf) ** 2) ** 2
+        #print(Var)
         if Var > Max:
             Max = Var
             The = t
-    return int((The / len(hist) * 256 + -128))
+    return The + minIndex
 
 
 
@@ -98,12 +96,12 @@ def getAutoThreshold():
     his = img.get_histogram()
     #per = his.get_percentile(0.99)
     statistics=img.get_statistics()
-    print(statistics.b_min())
-    print(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)])
-    print( len(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)]))
-    print(int(math.floor((statistics.b_min() + statistics.b_max()) / 2 + 128) / 256 * len(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)])))
-    print(int(math.floor((statistics.b_mean()+128) / 255 * len(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)]))))
-    The = newOSTU(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)], int(math.floor((statistics.b_mean()+128) / 255 * len(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)]))))
+    #print(statistics.b_min())
+    #print(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)])
+    #print( len(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)]))
+    #print(int(math.floor((statistics.b_min() + statistics.b_max()) / 2 + 128) / 256 * len(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)])))
+    #print(int(math.floor((statistics.b_mean()+128) / 255 * len(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)]))))
+    The = newOSTU(his.b_bins()[(statistics.b_min()+128): (statistics.b_max()+128-1)], statistics.b_min())
     #print(The)
     test_list[5] = The
     print(test_list)
@@ -112,5 +110,5 @@ while(True):
     clock.tick()
     img = sensor.snapshot()
     getAutoThreshold()
-    # img.binary([test_list])
+    img.binary([test_list])
     print(clock.avg())
