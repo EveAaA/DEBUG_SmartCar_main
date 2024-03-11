@@ -19,8 +19,8 @@
 #define delta_T     0.005f  // 采样周期1ms 即频率1KHZ
 #define  pI  3.1415926f
 float I_ex, I_ey, I_ez;  // 误差积分
-float IMU_kp= 0.17;    // 加速度计的收敛速率比例增益
-float IMU_ki= 0.004;   // 陀螺仪收敛速率的积分增益
+float IMU_kp= 0.15f;    // 加速度计的收敛速率比例增益
+float IMU_ki= 0.002f;   // 陀螺仪收敛速率的积分增益
 Quater_Param_t Q_info = {1, 0, 0, 0};  // 四元数初始化
 Gyro_AngleTypeDef Gyro_Angle;
 Gyro_Param_t GyroOffset;
@@ -60,8 +60,7 @@ static float My_Rsqrt(float num)
 **/
 static void IMU_Get_Values(void)
 {
-    float alpha = 0.3;
-
+    float alpha = 0.5;
     //一阶低通滤波，单位g
     IMU_Data.acc_x = (((float) imu660ra_acc_x) * alpha) / 4096 + IMU_Data.acc_x * (1 - alpha);
     IMU_Data.acc_y = (((float) imu660ra_acc_y) * alpha) / 4096 + IMU_Data.acc_y * (1 - alpha);
@@ -163,18 +162,18 @@ void Gyro_Offset_Init(void)
     GyroOffset.Xdata = 0;
     GyroOffset.Ydata = 0;
     GyroOffset.Zdata = 0;
-    for (uint16_t i = 0; i < 100; ++i)
+    for (uint16_t i = 0; i < 200; ++i)
     {
         imu660ra_get_gyro();    // 获取陀螺仪角速度
         GyroOffset.Xdata += imu660ra_gyro_x;
         GyroOffset.Ydata += imu660ra_gyro_y;
         GyroOffset.Zdata += imu660ra_gyro_z;
-        system_delay_ms(5);    // 最大 1Khz
+        system_delay_ms(10);    // 最大 1Khz
     }
 
-    GyroOffset.Xdata /= 100;
-    GyroOffset.Ydata /= 100;
-    GyroOffset.Zdata /= 100;
+    GyroOffset.Xdata /= 200.0f;
+    GyroOffset.Ydata /= 200.0f;
+    GyroOffset.Zdata /= 200.0f;
 }
 
 

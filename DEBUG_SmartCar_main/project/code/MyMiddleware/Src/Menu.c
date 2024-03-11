@@ -97,10 +97,11 @@ static void Page_Select_Mode()
     }   
 }
 
-/**@brief   第零页显示
--- @param   无
--- @auther  庄文标
--- @date    2024/2/16
+/**@brief    第零页显示
+-- @param    无
+-- @verbatim 用于查看传感器的数值
+-- @auther   庄文标
+-- @date     2024/2/16
 **/
 static void Page0_Mode()
 {

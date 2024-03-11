@@ -17,26 +17,26 @@
 
 /* Define\Declare ------------------------------------------------------------*/
 //编码器引脚
-#define Encoder_LF                   (QTIMER1_ENCODER2)
-#define Encoder_LF_A                 (QTIMER1_ENCODER2_CH1_C2)
-#define Encoder_LF_B                 (QTIMER1_ENCODER2_CH2_C24)
+#define Encoder_LF                   (QTIMER1_ENCODER1)
+#define Encoder_LF_A                 (QTIMER1_ENCODER1_CH1_C0)
+#define Encoder_LF_B                 (QTIMER1_ENCODER1_CH2_C1)
 
-#define Encoder_RF                   (QTIMER1_ENCODER1)
-#define Encoder_RF_A                 (QTIMER1_ENCODER1_CH1_C0)
-#define Encoder_RF_B                 (QTIMER1_ENCODER1_CH2_C1)
+#define Encoder_RF                   (QTIMER1_ENCODER2)
+#define Encoder_RF_A                 (QTIMER1_ENCODER2_CH1_C2)
+#define Encoder_RF_B                 (QTIMER1_ENCODER2_CH2_C24)
 
-#define Encoder_LB                   (QTIMER3_ENCODER2)
-#define Encoder_LB_A                 (QTIMER3_ENCODER2_CH1_B18)
-#define Encoder_LB_B                 (QTIMER3_ENCODER2_CH2_B19)
+#define Encoder_LB                   (QTIMER3_ENCODER1)
+#define Encoder_LB_A                 (QTIMER3_ENCODER1_CH1_B16)
+#define Encoder_LB_B                 (QTIMER3_ENCODER1_CH2_B17)
 
 #define Encoder_RB                   (QTIMER2_ENCODER1)
 #define Encoder_RB_A                 (QTIMER2_ENCODER1_CH1_C3)
 #define Encoder_RB_B                 (QTIMER2_ENCODER1_CH2_C25)
 
-int16 Encoder_Pules_Buffer[4];
-int32 Distance_Buffer[4];
-float Encoer_Speed[4];
-float Encoder_Distance[4];
+int16 Encoder_Pules_Buffer[4];//脉冲数组
+int32 Distance_Buffer[4];//距离缓存数组
+float Encoer_Speed[4];//速度数组
+float Encoder_Distance[4];//实际距离数组
 
 /**
  ******************************************************************************
@@ -202,7 +202,7 @@ float Get_X_Distance()
     return (Encoder_Distance[0] + (-Encoder_Distance[3]) - Encoder_Distance[2] - (-Encoder_Distance[1]))/4.0f;
 }
 
-/**@brief   Y轴距离获取f
+/**@brief   Y轴距离获取
 -- @param   无
 -- @auther  庄文标
 -- @date    2023/12/7

@@ -2,9 +2,9 @@
 #define _ROTARY_H
 
 #include "zf_common_headfile.h"
-#define Rotary_A B18
-#define Rotary_B C0
-#define Rotary_D C24
+#define Rotary_A B23
+#define Rotary_B B14
+#define Rotary_D C26
 void Rotary_Init();
 
 typedef struct

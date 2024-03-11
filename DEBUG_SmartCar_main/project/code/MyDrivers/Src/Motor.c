@@ -17,14 +17,14 @@
 
 /* Define\Declare ------------------------------------------------------------*/
 #define PWM_Freq 17000
-#define Motor_LF PWM1_MODULE0_CHA_D12 
-#define Motor_RF PWM1_MODULE0_CHB_D13//前进
-#define Motor_RB PWM1_MODULE1_CHA_D14 //
+#define Motor_LF PWM2_MODULE2_CHB_C11 
+#define Motor_RF PWM1_MODULE0_CHA_D12//前进
+#define Motor_RB PWM4_MODULE2_CHA_C30 //
 #define Motor_LB PWM1_MODULE1_CHB_D15 
-#define Motor_Dir_LF D27
-#define Motor_Dir_RF C27
-#define Motor_Dir_LB B23 
-#define Motor_Dir_RB D4
+#define Motor_Dir_LF C31
+#define Motor_Dir_RF D13
+#define Motor_Dir_LB D14 
+#define Motor_Dir_RB C27
 
 /**
  ******************************************************************************
@@ -89,12 +89,12 @@ void Set_Motor_Speed(MotorHandle Motor, float PWMDuty)
             if(Forward)
             {
                 pwm_set_duty(Motor_LF,Pwm_Set);
-                gpio_set_level(Motor_Dir_LF,1);
+                gpio_set_level(Motor_Dir_LF,0);
             }
             else if(!Forward)
             {
                 pwm_set_duty(Motor_LF,Pwm_Set);
-                gpio_set_level(Motor_Dir_LF,0);
+                gpio_set_level(Motor_Dir_LF,1);
             }
         break;
         case RMotor_B:

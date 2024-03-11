@@ -12,7 +12,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "Image.h"
-
+#include "UserMain.h"
 
 /* Define\Declare ------------------------------------------------------------*/
 #define use_num     1   //1就是不压缩，2就是压缩一倍
@@ -764,8 +764,6 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W], uint8 *L_Border, uint8 *R_Border, ui
 			R_Border[i] = slope_l_rate * (i)+intercept_l;
 			R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);
 		}
-
-
 	}
 
 }

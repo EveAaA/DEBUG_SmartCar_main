@@ -48,7 +48,7 @@ typedef enum
 	Page5 = 5,
 	Page6 = 6,
 	Page7 = 7,
-	Page_Select = 8,
+	Page_Select = 8,//“≥√Ê—°‘Ò
 }Menu_Handle;
 
 typedef struct

@@ -6,8 +6,8 @@
 void All_Encoder_Init();
 void Encoder_Process();
 float Encoder_YawAngle_Get();
-extern float Encoder_Distance[4];
-extern float Encoer_Speed[4];
 float Get_X_Distance();
 float Get_Y_Distance();
+extern float Encoder_Distance[4];
+extern float Encoer_Speed[4];
 #endif

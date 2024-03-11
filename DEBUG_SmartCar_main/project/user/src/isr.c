@@ -56,21 +56,21 @@ void PIT_IRQHandler(void)
     
     if(pit_flag_get(PIT_CH1))
     {
-        if(Start == 1)
-        {
-            // Navigation_Process(50,100);
-            Car_run();
-            // Set_Car_Speed(3,0,0-GetPIDValue(&Angle_PID,Gyro_YawAngle_Get()));
-            // Set_Motor_Speed(LMotor_B,Get_Incremental_PID_Value(&LMotor_B_Speed,10-Get_LB_Speed()));
-        }
-        else if(Start == 0)
-        {
-            Set_Car_Speed(0,0,0);
-        }
-        else if(Start == 2)
-        {
-            Change_Direction();
-        }
+        // if(Start == 1)
+        // {
+        //     // Navigation_Process(50,100);
+        //     Car_run();
+        //     // Set_Car_Speed(3,0,0-GetPIDValue(&Angle_PID,Gyro_YawAngle_Get()));
+        //     // Set_Motor_Speed(LMotor_B,Get_Incremental_PID_Value(&LMotor_B_Speed,10-Get_LB_Speed()));
+        // }
+        // else if(Start == 0)
+        // {
+        //     Set_Car_Speed(0,0,0);
+        // }
+        // else if(Start == 2)
+        // {
+        //     Change_Direction();
+        // }
         
         pit_flag_clear(PIT_CH1);
     }
@@ -185,7 +185,17 @@ void GPIO1_Combined_0_15_IRQHandler(void)
     {
         exti_flag_clear(B0);// 清除中断标志位
     }
-    
+    dl1a_int_handler();
+    if(exti_flag_get(Rotary_B))
+    {
+        if(gpio_get_level(Rotary_A) == 1)//正转
+        {
+            Rotary.Anticlockwise = 1;
+            Rotary.Clockwise = 0;
+            Rotary.Press = 0;
+        }
+        exti_flag_clear(Rotary_B); // 清除中断标志位
+    }
 }
 
 
@@ -197,16 +207,17 @@ void GPIO1_Combined_16_31_IRQHandler(void)
         exti_flag_clear(B16); // 清除中断标志位
     }
 
-    if(exti_flag_get(B18))
+    if(exti_flag_get(Rotary_A))
     {
-        if(gpio_get_level(C0) == 1)//正转
+        if(gpio_get_level(Rotary_B) == 1)//正转
         {
             Rotary.Clockwise = 1;
+            Rotary.Anticlockwise = 0;
+            Rotary.Press = 0;
         }
 
-        exti_flag_clear(B18); // 清除中断标志位
+        exti_flag_clear(Rotary_A); // 清除中断标志位
     }
-    
 }
 
 void GPIO2_Combined_0_15_IRQHandler(void)
@@ -215,11 +226,6 @@ void GPIO2_Combined_0_15_IRQHandler(void)
     
     if(exti_flag_get(C0))
     {   
-        if(gpio_get_level(B18) == 1 && gpio_get_level(Rotary_D) == 1)
-        {
-            Rotary.Anticlockwise = 1;
-        }
-
         exti_flag_clear(C0);// 清除中断标志位
     }
 
@@ -236,16 +242,16 @@ void GPIO2_Combined_16_31_IRQHandler(void)
         exti_flag_clear(C16); // 清除中断标志位
     }
     
-    if(exti_flag_get(C24))
+    if(exti_flag_get(Rotary_D))
     {
         system_delay_ms(20);
-        if(gpio_get_level(C24) == 1)
+        if(gpio_get_level(Rotary_D) == 1)
         {
             Rotary.Press = 1;
             Rotary.Clockwise = 0;
             Rotary.Anticlockwise = 0;
         }
-        exti_flag_clear(C24); // 清除中断标志位
+        exti_flag_clear(Rotary_D); // 清除中断标志位
     }
 }
 
