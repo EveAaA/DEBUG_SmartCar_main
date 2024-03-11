@@ -17,6 +17,7 @@
 
 /*****************define*********************************************************/
 extern fifo_struct uart_data_fifo;
+borderTypeDef border;
 UART _UART_FINDBORDER;
 UART _UART_FINE_TUNING;
 UART _UART_RECOGNIZE_PLACE;
@@ -85,5 +86,45 @@ double UART_ReadBuffer(UART *uart)
     else
     {
         return NULL;
+    }
+}
+
+/**
+ * @brief: 对数据解包 (调用方法放在定时器中断函数当中)
+ * @param: 串口结构体, 串口数据解包结构体
+ * @return: 是否完成数据解包
+ *
+ */
+bool UART_UnpackData(UART *uart, borderTypeDef *border)
+{
+
+    uart->fifo_data_count = fifo_used(&uart_data_fifo);
+    if (uart->fifo_data_count != 0)
+    {
+        fifo_read_buffer(&uart_data_fifo, uart->fifo_get_data, &uart->fifo_data_count, FIFO_READ_AND_CLEAN);
+        // 判断是否有丢包现象 对帧头帧尾都做判断
+        if (uart->fifo_get_data[0] == 0x00 && uart->fifo_get_data[1] == 0x7F && uart->fifo_get_data[2] == 0x6F && uart->fifo_get_data[3] == 0x7F && 
+            uart->fifo_get_data[4] == 0x0F && uart->fifo_get_data[uart->fifo_data_count - 1] == 0x7F)
+        {   
+            // 通过串口特殊编号判断是解包到哪个变量当中
+            switch (uart->UART_INDEX)
+            {
+            case UART_FINDBORDER: // 找到目标板时的判断
+                border->isFindBorder = true;
+                border->dy = uart->fifo_get_data[5]
+                break;
+            default:
+                break;
+            }
+        }
+    }
+    else
+    {
+        border->dx = 0.0;
+        border->dy = 0.0;
+        border->isFindBorder = false;
+        border->isFineTuning = false;
+        border->isRecognizeBorder = false;
+        return false;
     }
 }
