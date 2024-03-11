@@ -12,7 +12,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "Car_Control.h"
-
+#include "math.h"
 /* Define\Declare ------------------------------------------------------------*/
 Incremental_PID_TypeDef LMotor_F_Speed;
 Incremental_PID_TypeDef RMotor_F_Speed;
@@ -81,7 +81,7 @@ void Car_run()
   Set_Car_Speed(0,3,-Image_Erro_);
 }
 
-
+extern Pid_TypeDef Angle_PID;
 /**@brief   改变小车行进方向朝向为目标板方向
 -- @param   无
 -- @auther  戴骐阳
@@ -91,6 +91,15 @@ void Change_Direction(void)
 {
   float DirectionPidErr = 0.0;
   DirectionPidErr = GetPIDValue(&BorderPlace_PID, Direction_Err);
-  Set_Car_Speed(0, 0, -DirectionPidErr);
+  if(fabs(Direction_Err) < 3)
+  {
+      Set_Car_Speed(0,0,0-GetPIDValue(&Angle_PID,Gyro_YawAngle_Get()));
+  }
+  else
+  {
+      Set_Car_Speed(DirectionPidErr,0,0-GetPIDValue(&Angle_PID,Gyro_YawAngle_Get()));
+  }
+  
+  // Set_Car_Speed(0,0,0-GetPIDValue(&Angle_PID,Gyro_YawAngle_Get()));
 }
 

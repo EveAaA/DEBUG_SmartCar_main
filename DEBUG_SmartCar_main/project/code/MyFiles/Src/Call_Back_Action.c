@@ -50,7 +50,7 @@ void TIM_Init()
 void Sensor_Handler()
 {
     Gyro_Get_All_Angles();
-    // Encoder_Process();
+    Encoder_Process();
 }
 
 /**@brief   找目标板openart串口
@@ -62,6 +62,7 @@ void Uart_Findborder_Receive(void)
 {
     uart_query_byte(UART_1, &_UART_FINDBORDER.get_data);
     fifo_write_buffer(&uart_data_fifo, &_UART_FINDBORDER.get_data, 1);
+		Direction_Err = UART_ReadBuffer(&_UART_FINDBORDER);
 }
 
 /**@brief   微调openart串口

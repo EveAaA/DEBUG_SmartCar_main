@@ -39,7 +39,7 @@
 #include "UserMain.h"
 
 extern uint16 Start; 
-extern Pid_TypeDef Angle_PID;
+
 void CSI_IRQHandler(void)
 {
     CSI_DriverIRQHandler();     // 调用SDK自带的中断函数 这个函数最后会调用我们设置的回调函数
@@ -56,22 +56,18 @@ void PIT_IRQHandler(void)
     
     if(pit_flag_get(PIT_CH1))
     {
-        // if(Start == 1)
-        // {
-        //     // Navigation_Process(50,100);
-        //     Car_run();
-        //     // Set_Car_Speed(3,0,0-GetPIDValue(&Angle_PID,Gyro_YawAngle_Get()));
-        //     // Set_Motor_Speed(LMotor_B,Get_Incremental_PID_Value(&LMotor_B_Speed,10-Get_LB_Speed()));
-        // }
-        // else if(Start == 0)
-        // {
-        //     Set_Car_Speed(0,0,0);
-        // }
-        // else if(Start == 2)
-        // {
-        //     Change_Direction();
-        // }
-        
+        if(Start == 1)
+        {
+            Change_Direction();
+            // Navigation_Process(50,100);
+            // Set_Car_Speed(0,0,0-GetPIDValue(&Angle_PID,Gyro_YawAngle_Get()));
+            // Set_Motor_Speed(LMotor_B,Get_Incremental_PID_Value(&LMotor_B_Speed,10-Get_LB_Speed()));
+        }
+        else if(Start == 0)
+        {
+            Set_Car_Speed(0,0,0);
+        }
+
         pit_flag_clear(PIT_CH1);
     }
     

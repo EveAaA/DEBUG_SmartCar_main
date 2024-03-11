@@ -109,6 +109,10 @@ static void Page0_Mode()
     Arrow_Display(Menu.Set_Line);//箭头显示
     tft180_show_string(Row_1,Line_0,"Yaw_Angle:");
     tft180_show_float(Row_11,Line_0,Gyro_YawAngle_Get(),3,1);
+    tft180_show_string(Row_1,Line_1,"Start:");
+    tft180_show_int(Row_7,Line_1,Start,2);
+    tft180_show_string(Row_1,Line_2,"Stop:");
+    tft180_show_float(Row_1,Line_3,Direction_Err, 3, 3);
     Exit_Dis;
 
     if(Menu.Set_Line == 7 && Rotary.Press)//退出
@@ -118,6 +122,14 @@ static void Page0_Mode()
         Menu.Set_Line = 0;
         tft180_clear();
     } 
+
+    if(Menu.Set_Line == 1 && Rotary.Press)//退出
+    {
+        Rotary.Press = 0;
+        Start = 1;
+    }
+    
+     
 }
 
 /**@brief   第一页显示
