@@ -20,9 +20,22 @@ typedef struct Uart
     uint32 fifo_data_count; // fifo 数据个数
 } UART;
 
+// 和串口有关对卡片处理的结构体 (找到卡片标志位, 开始微调标志位, 开始识别标志位, 偏移量x,偏移量y, 识别卡片种类) 
+typedef struct OpenartBorder
+{
+    bool isFindBorder;
+    bool isFineTuning;
+    bool isRecognizeBorder;
+    float dx;
+    float dy;
+    uint8_t borderType; // uint8够放所有类型
+}borderTypeDef;
+
+
 /*
     外部调用串口结构体
 */
+extern borderTypeDef border;
 extern UART _UART_FINDBORDER;
 extern UART _UART_FINE_TUNING;
 extern UART _UART_RECOGNIZE_PLACE;
