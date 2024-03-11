@@ -2064,6 +2064,11 @@
               <FileType>1</FileType>
               <FilePath>..\code\MyDrivers\Src\Uart.c</FilePath>
             </File>
+            <File>
+              <FileName>Rotary.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\MyDrivers\Src\Rotary.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2075,14 +2080,14 @@
               <FilePath>..\code\MyMiddleware\Src\Car_Control.c</FilePath>
             </File>
             <File>
-              <FileName>Meau.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\code\MyMiddleware\Src\Meau.c</FilePath>
-            </File>
-            <File>
               <FileName>Inertial_Navigation.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\code\MyMiddleware\Src\Inertial_Navigation.c</FilePath>
+            </File>
+            <File>
+              <FileName>Menu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\MyMiddleware\Src\Menu.c</FilePath>
             </File>
           </Files>
         </Group>

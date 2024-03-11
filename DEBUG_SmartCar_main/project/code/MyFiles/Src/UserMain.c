@@ -38,6 +38,7 @@ void User_Init()
     imu660ra_init();
     system_delay_ms(100);
     Gyro_Offset_Init();
+	UART_Init();
     // All_Encoder_Init();
     // All_PID_Init();
     // Pid_Init();
@@ -61,11 +62,13 @@ void User_Init()
 **/
 void User_Loop()
 {  
+	Direction_Err = UART_ReadBuffer(&_UART_FINDBORDER);
     if(mt9v03x_finish_flag)
     {
       Image_Process();
       mt9v03x_finish_flag = 0;
     }
+	tft180_show_float(Line_6, Row_3, Direction_Err, 3, 3);
     tft180_show_gray_image(0, 0, (const uint8 *)(Original_Image), MT9V03X_W, MT9V03X_H, (Row_18), (Line_5), Image_Thereshold);
     // Menu_Display();
 }

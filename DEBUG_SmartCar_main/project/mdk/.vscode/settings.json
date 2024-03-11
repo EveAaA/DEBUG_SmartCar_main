@@ -22,7 +22,8 @@
         "zf_device_mt9v03x.h": "c",
         "ios": "c",
         "inertial_navigation.h": "c",
-        "manipulator.h": "c"
+        "manipulator.h": "c",
+        "uart.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled",
     "MicroPython.executeButton": [
