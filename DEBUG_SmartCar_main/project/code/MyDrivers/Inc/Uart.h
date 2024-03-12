@@ -43,5 +43,6 @@ extern UART _UART_RECOGNIZE_PLACE;
 void UART_Init(void);
 void UART_init(UART *uart, IRQn_Type UART_PRIORITY, uart_index_enum UART_INDEX);
 double UART_ReadBuffer(UART *uart);
+void UART_UnpackData(UART *uart, borderTypeDef *border);
 
 #endif

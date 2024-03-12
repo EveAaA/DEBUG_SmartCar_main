@@ -112,7 +112,11 @@ static void Page0_Mode()
     tft180_show_string(Row_1,Line_1,"Start:");
     tft180_show_int(Row_7,Line_1,Start,2);
     tft180_show_string(Row_1,Line_2,"Stop:");
-    tft180_show_float(Row_1,Line_3,Direction_Err, 3, 3);
+    tft180_show_string(Row_1,Line_3,"dx:");
+    tft180_show_float(Row_4,Line_3,border.dx, 3, 3);
+    tft180_show_string(Row_1,Line_4,"IsFind:");
+    tft180_show_float(Row_8, Line_4, border.isFindBorder, 3, 3);
+
     Exit_Dis;
 
     if(Menu.Set_Line == 7 && Rotary.Press)//ÍË³ö

@@ -58,13 +58,23 @@ void PIT_IRQHandler(void)
     {
         if(Start == 1)
         {
-            Change_Direction();
+            UART_UnpackData(&_UART_FINDBORDER, &border); // 优先对数据解包 后续可能优化成三openart并行解包
+            if (border.isFindBorder) // 找到板了往板的方向走
+            {
+                Change_Direction();
+            }
+            else   // 没找到板继续沿着赛道走
+            {
+                Car_run();
+            }
             // Navigation_Process(50,100);
             // Set_Car_Speed(0,0,0-GetPIDValue(&Angle_PID,Gyro_YawAngle_Get()));
             // Set_Motor_Speed(LMotor_B,Get_Incremental_PID_Value(&LMotor_B_Speed,10-Get_LB_Speed()));
         }
         else if(Start == 0)
         {
+            // 测试解包效果
+            UART_UnpackData(&_UART_FINDBORDER, &border);
             Set_Car_Speed(0,0,0);
         }
 

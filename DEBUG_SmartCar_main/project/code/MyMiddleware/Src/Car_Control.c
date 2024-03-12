@@ -90,10 +90,11 @@ extern Pid_TypeDef Angle_PID;
 void Change_Direction(void)
 {
   float DirectionPidErr = 0.0;
-  DirectionPidErr = GetPIDValue(&BorderPlace_PID, Direction_Err);
-  if(fabs(Direction_Err) < 3)
+  DirectionPidErr = GetPIDValue(&BorderPlace_PID, border.dx);
+  if(fabs(Direction_Err) < 3) // 误差小于3的时候停车
   {
       Set_Car_Speed(0,0,0-GetPIDValue(&Angle_PID,Gyro_YawAngle_Get()));
+      border.isFindBorder = false;
   }
   else
   {

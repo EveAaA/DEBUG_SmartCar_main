@@ -95,7 +95,7 @@ double UART_ReadBuffer(UART *uart)
  * @return: 是否完成数据解包
  *
  */
-bool UART_UnpackData(UART *uart, borderTypeDef *border)
+void UART_UnpackData(UART *uart, borderTypeDef *border)
 {
 
     uart->fifo_data_count = fifo_used(&uart_data_fifo);
@@ -111,7 +111,7 @@ bool UART_UnpackData(UART *uart, borderTypeDef *border)
             {
             case UART_FINDBORDER: // 找到目标板时的判断
                 border->isFindBorder = true;
-                border->dy = uart->fifo_get_data[5]
+                border->dx = uart->fifo_get_data[5];
                 break;
             default:
                 break;
@@ -125,6 +125,5 @@ bool UART_UnpackData(UART *uart, borderTypeDef *border)
         border->isFindBorder = false;
         border->isFineTuning = false;
         border->isRecognizeBorder = false;
-        return false;
     }
 }

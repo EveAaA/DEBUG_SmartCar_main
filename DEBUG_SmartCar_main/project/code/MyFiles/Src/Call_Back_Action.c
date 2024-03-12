@@ -62,7 +62,7 @@ void Uart_Findborder_Receive(void)
 {
     uart_query_byte(UART_1, &_UART_FINDBORDER.get_data);
     fifo_write_buffer(&uart_data_fifo, &_UART_FINDBORDER.get_data, 1);
-		Direction_Err = UART_ReadBuffer(&_UART_FINDBORDER);
+		// Direction_Err = UART_ReadBuffer(&_UART_FINDBORDER);
 }
 
 /**@brief   Î¢µ÷openart´®¿Ú
