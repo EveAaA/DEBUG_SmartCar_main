@@ -9,6 +9,8 @@ void Set_Car_Speed(float Speed_X,float Speed_Y,float Speed_Z);
 void Car_run();
 void Change_Direction(void);
 
+
+extern bool DRIVING;
 extern float Direction_Err;
 extern float Image_Erro_;
 extern Pid_TypeDef Image_PID;

@@ -31,10 +31,16 @@ typedef struct OpenartBorder
     uint8_t borderType; // uint8够放所有类型
 }borderTypeDef;
 
+typedef struct UnPackFlag
+{
+	bool startFlag;
+	bool endFlag;
+}UnPackFlagTypeDef;
 
 /*
     外部调用串口结构体
 */
+extern UnPackFlagTypeDef unPackFlag;
 extern borderTypeDef border;
 extern UART _UART_FINDBORDER;
 extern UART _UART_FINE_TUNING;

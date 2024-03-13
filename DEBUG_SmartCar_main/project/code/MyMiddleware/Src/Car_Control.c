@@ -91,14 +91,14 @@ void Change_Direction(void)
 {
   float DirectionPidErr = 0.0;
   DirectionPidErr = GetPIDValue(&BorderPlace_PID, border.dx);
-  if(fabs(Direction_Err) < 3) // 误差小于3的时候停车
+  if(fabs(border.dx) < 3) // 误差小于3的时候停车
   {
-      Set_Car_Speed(0,0,0-GetPIDValue(&Angle_PID,Gyro_YawAngle_Get()));
-      border.isFindBorder = false;
+      Set_Car_Speed(0,0,0);
+	  DRIVING = false;
   }
   else
   {
-      Set_Car_Speed(DirectionPidErr,0,0-GetPIDValue(&Angle_PID,Gyro_YawAngle_Get()));
+      Set_Car_Speed(DirectionPidErr,0, 0);
   }
   
   // Set_Car_Speed(0,0,0-GetPIDValue(&Angle_PID,Gyro_YawAngle_Get()));
