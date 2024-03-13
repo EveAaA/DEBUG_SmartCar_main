@@ -21,6 +21,7 @@ borderTypeDef border;
 UART _UART_FINDBORDER;
 UART _UART_FINE_TUNING;
 UART _UART_RECOGNIZE_PLACE;
+UnPackFlagTypeDef unPackFlag = {false, false}; // 判断帧头帧尾是否到达
 
 /**@brief    初始化串口(外部调用)
 -- @param    None
@@ -102,20 +103,18 @@ void UART_UnpackData(UART *uart, borderTypeDef *border)
     if (uart->fifo_data_count != 0)
     {
         fifo_read_buffer(&uart_data_fifo, uart->fifo_get_data, &uart->fifo_data_count, FIFO_READ_AND_CLEAN);
-        // 判断是否有丢包现象 对帧头帧尾都做判断
-        if (uart->fifo_get_data[0] == 0x00 && uart->fifo_get_data[1] == 0x7F && uart->fifo_get_data[2] == 0x6F && uart->fifo_get_data[3] == 0x7F && 
-            uart->fifo_get_data[4] == 0x0F && uart->fifo_get_data[uart->fifo_data_count - 1] == 0x7F)
-        {   
             // 通过串口特殊编号判断是解包到哪个变量当中
-            switch (uart->UART_INDEX)
-            {
-            case UART_FINDBORDER: // 找到目标板时的判断
-                border->isFindBorder = true;
-                border->dx = uart->fifo_get_data[5];
-                break;
-            default:
-                break;
-            }
+        switch (uart->UART_INDEX)
+        {
+        case UART_FINDBORDER: // 找到目标板时的判断
+		     if (uart->fifo_get_data[1] == 0x01)
+			 {
+				border->isFindBorder = true;
+			 }
+             border->dx = (float)uart->fifo_get_data[2];
+             break;
+        default:
+             break;
         }
     }
     else

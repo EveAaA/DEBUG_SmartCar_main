@@ -60,9 +60,10 @@ void Sensor_Handler()
 **/
 void Uart_Findborder_Receive(void)
 {
+	
     uart_query_byte(UART_1, &_UART_FINDBORDER.get_data);
     fifo_write_buffer(&uart_data_fifo, &_UART_FINDBORDER.get_data, 1);
-		// Direction_Err = UART_ReadBuffer(&_UART_FINDBORDER);
+	border.dx = UART_ReadBuffer(&_UART_FINDBORDER);
 }
 
 /**@brief   Î¢µ÷openart´®¿Ú
@@ -74,4 +75,5 @@ void Uart_Fine_Tuning_Receive(void)
 {
     uart_query_byte(UART_2, &_UART_FINE_TUNING.get_data);
     fifo_write_buffer(&uart_data_fifo, &_UART_FINE_TUNING.get_data, 1);
+	
 }
