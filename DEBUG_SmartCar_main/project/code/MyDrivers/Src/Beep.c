@@ -15,7 +15,6 @@
 
 /* Define\Declare ------------------------------------------------------------*/
 #define Beep_Pin B21
-int8 Beep_Time = 0;
 
 /**
  ******************************************************************************
@@ -39,7 +38,7 @@ void Beep_Init()
 -- @auther  ×¯ÎÄ±ê
 -- @date    2023/11/13
 **/
-void Beep(Beep_Mode Mode)
+void Beep(Beep_Handle Mode)
 {
     switch(Mode)
     {

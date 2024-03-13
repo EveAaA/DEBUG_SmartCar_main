@@ -13,6 +13,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "UserMain.h"
 #include "zf_common_headfile.h"
+#include "User_FSM.h"
 
 /* Define\Declare ------------------------------------------------------------*/
 uint16 Start = 2;
@@ -65,25 +66,26 @@ void Mt9v03x_Init()
 **/
 void User_Init()
 {
-    system_delay_ms(100);
-    // Beep_Init();
+    system_delay_ms(100);//延时一会等待所有外设上电
     tft180_init();
     IMU_Init();
     Mt9v03x_Init();
-    // Bluetooth_Init();
     All_Encoder_Init();
     tft180_show_string(Row_0, Line_2, "Encoder Init ...");
     Rotary_Init();
+    // Bluetooth_Init();
     tft180_show_string(Row_0, Line_3, "Rotary Init ...");
     Manipulator_Init();
     Motor_Init();
     tft180_show_string(Row_0, Line_4, "Motor Init ...");
+    Beep_Init();
     // dl1a_init();
     Flash_Init();
     All_PID_Init();
     Pid_Init();
     UART_Init();
     TIM_Init();
+    My_FSM_Init();
     tft180_show_string(Row_0, Line_5, "Soft Init ...");
     tft180_clear();
     // Beep(On);
@@ -107,10 +109,10 @@ void User_Loop()
             mt9v03x_finish_flag = 0;
         }
         tft180_show_gray_image(0, 0, (const uint8 *)(Original_Image), MT9V03X_W, MT9V03X_H, (Row_18), (Line_5), Image_Thereshold);
+        FSMRun(CURRENT_FSM);
     }
     else
     {
         Menu_Display();
     }
-    // printf("%f,%f,%f,%f,%d\r\n",Encoer_Speed[0],Encoer_Speed[1],Encoer_Speed[2],Encoer_Speed[3],5);
 }

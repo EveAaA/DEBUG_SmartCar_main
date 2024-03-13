@@ -28,8 +28,8 @@ Pid_TypeDef Angle_PID;
 
 void Pid_Init()
 {
-  PIDInit(&Distance_PID,3,0,0,3,-3);
-  PIDInit(&Angle_PID,0.44f,0,2,1.5f,-1.5f);
+    PIDInit(&Distance_PID,3,0,0,3,-3);
+    PIDInit(&Angle_PID,0.44f,0,2,1.5f,-1.5f);
 }
 
 /**@brief   惯性导航使能
@@ -39,16 +39,15 @@ void Pid_Init()
 **/
 void Enable_Navigation()
 {
-  if(Navigation.Start_Flag == 0)
-  {
-    Navigation.Start_Position_X = 0;//更新起点位置
-    Navigation.Start_Position_Y = 0;
-    Navigation.Cur_Position_X = 0;//当前位置初始化
-    Navigation.Cur_Position_Y = 0;
-    Navigation.Start_Angle = Gyro_YawAngle_Get();//当前角度
-    Navigation.Start_Flag = 1;//开启惯性导航
-  }
+    if(Navigation.Start_Flag == 0)
+    {
+        Navigation.Start_Position_X = 0;//更新起点位置
+        Navigation.Start_Position_Y = 0;
+        Navigation.Start_Angle = Gyro_YawAngle_Get();//当前角度
+        Navigation.Start_Flag = 1;//开启惯性导航
+    }
 }
+
 
 /**@brief   惯性导航进程
 -- @param   float x 目标X坐标
@@ -62,7 +61,7 @@ void Navigation_Process(float x,float y)
     static float Y_Output = 0;
     static float Z_Output = 0;
 
-    Enable_Navigation();//开启惯性导航，设置当前信息
+    // Enable_Navigation();//开启惯性导航，设置当前信息
     Navigation.Cur_Angle = Navigation.Start_Angle - Gyro_YawAngle_Get();//获取自身角度
     // Navigation.Cur_Position_X = sin(Navigation.Cur_Angle / 180 * 3.14159f) * Get_X_Distance();
     Navigation.Cur_Position_X = Get_X_Distance();//获取自身坐标值
@@ -76,12 +75,12 @@ void Navigation_Process(float x,float y)
     // printf("X = %lf\r\n",X_Output);
     // printf("Y = %lf\r\n",Y_Output);
     // printf("Z = %lf\r\n",Z_Output);
-    if((Navigation.Target_Position_X - Navigation.Cur_Position_X) < 0.5 && (Navigation.Target_Position_Y - Navigation.Cur_Position_Y) < 0.5)
-    {
-      Set_Car_Speed(0,0,Z_Output);
-    }
-    else
-    {
-      Set_Car_Speed(X_Output,Y_Output,Z_Output);//设置速度
-    }
+    // if((Navigation.Target_Position_X - Navigation.Cur_Position_X) < 1.0f && (Navigation.Target_Position_Y - Navigation.Cur_Position_Y) < 1.0f)
+    // {
+    //     Set_Car_Speed(0,0,Z_Output);
+    // }
+    // else
+    // {
+    Set_Car_Speed(X_Output,Y_Output,Z_Output);//设置速度
+    // }
 } 

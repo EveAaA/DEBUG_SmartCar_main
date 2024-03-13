@@ -74,11 +74,17 @@ void Set_Car_Speed(float Speed_X,float Speed_Y,float Speed_Z)
 
 float Image_Erro_;
 float Angle_Erro_;
+
+/**@brief   巡线
+-- @param   无
+-- @auther  戴骐阳
+-- @date    2023/12/23
+**/
 void Car_run()
 {
-  Image_Erro_ = GetPIDValue(&Image_PID,(60 - Image_Erro)*0.01f);
-  // Angle_Erro_ = GetPIDValue(&Angle_PID,Gyro_YawAngle_Get() - Image_Erro);
-  Set_Car_Speed(0,3,-Image_Erro_);
+    Image_Erro_ = GetPIDValue(&Image_PID,(60 - Image_Erro)*0.01f);
+    // Angle_Erro_ = GetPIDValue(&Angle_PID,Gyro_YawAngle_Get() - Image_Erro);
+    Set_Car_Speed(0,3,-Image_Erro_);
 }
 
 extern Pid_TypeDef Angle_PID;
@@ -89,18 +95,22 @@ extern Pid_TypeDef Angle_PID;
 **/
 void Change_Direction(void)
 {
-  float DirectionPidErr = 0.0;
-  DirectionPidErr = GetPIDValue(&BorderPlace_PID, border.dx);
-  if(fabs(Direction_Err) < 3) // 误差小于3的时候停车
-  {
-      Set_Car_Speed(0,0,0-GetPIDValue(&Angle_PID,Gyro_YawAngle_Get()));
-      border.isFindBorder = false;
-  }
-  else
-  {
-      Set_Car_Speed(DirectionPidErr,0,0-GetPIDValue(&Angle_PID,Gyro_YawAngle_Get()));
-  }
-  
-  // Set_Car_Speed(0,0,0-GetPIDValue(&Angle_PID,Gyro_YawAngle_Get()));
+    float DirectionPidErr = 0.0f;
+    Navigation.Cur_Angle = Navigation.Start_Angle - Gyro_YawAngle_Get();//获取自身角度
+    // Navigation.Cur_Position_X = sin(Navigation.Cur_Angle / 180 * 3.14159f) * Get_X_Distance();
+    Navigation.Cur_Position_X = Get_X_Distance();//获取自身坐标值
+    Navigation.Cur_Position_Y = Get_Y_Distance();
+    DirectionPidErr = GetPIDValue(&BorderPlace_PID, border.dx);
+    Set_Car_Speed(DirectionPidErr,0,GetPIDValue(&Angle_PID,Navigation.Cur_Angle));  
+}
+
+/**@brief   返回赛道
+-- @param   无
+-- @auther  庄文标
+-- @date    2024/3/13
+**/
+void Back_Autodrome()
+{
+    Navigation_Process(0,0);
 }
 

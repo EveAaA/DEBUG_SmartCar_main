@@ -132,6 +132,11 @@ static void Page0_Mode()
         Rotary.Press = 0;
         Start = 1;
     }
+    if(Menu.Set_Line == 2 && Rotary.Press)//ÍË³ö
+    {
+        Rotary.Press = 0;
+        Start = 0;
+    }
     
      
 }

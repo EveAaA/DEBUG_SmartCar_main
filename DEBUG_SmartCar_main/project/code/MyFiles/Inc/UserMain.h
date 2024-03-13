@@ -13,6 +13,8 @@
 #include "Image.h"
 #include "Uart.h"
 #include "Rotary.h"
+#include "FSM.h"
+#include "math.h"
 /*-----------------------MyMiddleware------------------------------*/
 #include "Car_Control.h"
 #include "Menu.h"

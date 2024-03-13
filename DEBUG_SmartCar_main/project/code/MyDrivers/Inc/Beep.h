@@ -5,11 +5,11 @@
 
 typedef enum
 {
-    On,//?
-    Off,//?
-}Beep_Mode;
+    On,//常开
+    Off,//常关
+}Beep_Handle;
 
 void Beep_Init();
-void Beep(Beep_Mode Mode);
+void Beep(Beep_Handle Mode);
 
 #endif
