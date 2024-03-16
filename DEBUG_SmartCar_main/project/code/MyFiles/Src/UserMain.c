@@ -73,21 +73,22 @@ void User_Init()
     All_Encoder_Init();
     tft180_show_string(Row_0, Line_2, "Encoder Init ...");
     Rotary_Init();
-    // Bluetooth_Init();
+    Bluetooth_Init();
     tft180_show_string(Row_0, Line_3, "Rotary Init ...");
     Manipulator_Init();
     Motor_Init();
     tft180_show_string(Row_0, Line_4, "Motor Init ...");
     Beep_Init();
     // dl1a_init();
-    Flash_Init();
+    // Flash_Init();
     All_PID_Init();
     Pid_Init();
     UART_Init();
-    TIM_Init();
     My_FSM_Init();
     tft180_show_string(Row_0, Line_5, "Soft Init ...");
     tft180_clear();
+    TIM_Init();
+
     // Beep(On);
     // system_delay_ms(100);
     // Beep(Off);
@@ -108,11 +109,13 @@ void User_Loop()
             Image_Process();
             mt9v03x_finish_flag = 0;
         }
-        tft180_show_gray_image(0, 0, (const uint8 *)(Original_Image), MT9V03X_W, MT9V03X_H, (Row_18), (Line_5), Image_Thereshold);
         FSMRun(CURRENT_FSM);
+        // Car_run();
+        tft180_show_gray_image(0, 0, (const uint8 *)(Original_Image), MT9V03X_W, MT9V03X_H, (Row_18), (Line_5), Image_Thereshold);
     }
     else
     {
         Menu_Display();
     }
+    
 }

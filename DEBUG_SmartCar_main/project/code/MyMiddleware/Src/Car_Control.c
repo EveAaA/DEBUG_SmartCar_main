@@ -23,7 +23,7 @@ Pid_TypeDef BorderPlace_PID;
 
 //串口获取的像素偏差
 float Direction_Err = 0.0;
-
+#define debug_swithch 0 //是否调试
 /**
  ******************************************************************************
  *  @defgroup 外部调用
@@ -43,8 +43,8 @@ void All_PID_Init()
     Incremental_PID_Init(&RMotor_F_Speed,0.5f,0.25f,0.35f,40,-40);
     Incremental_PID_Init(&LMotor_B_Speed,0.7f,0.3f,0.5f,40,-40);
     Incremental_PID_Init(&RMotor_B_Speed,0.5f,0.35f,0.5f,40,-40);
-    PIDInit(&Image_PID,5.0f,0,0,1.5,-1.5);
-    PIDInit(&BorderPlace_PID,5,0,0,1.5,-1.5);
+    PIDInit(&Image_PID,5.0f,0,0,3.0f,-3.0f);
+    PIDInit(&BorderPlace_PID,5,0,0,3,-3);
 }
 
 
@@ -77,14 +77,17 @@ float Angle_Erro_;
 
 /**@brief   巡线
 -- @param   无
--- @auther  戴骐阳
+-- @auther  庄文标
 -- @date    2023/12/23
 **/
 void Car_run()
 {
-    Image_Erro_ = GetPIDValue(&Image_PID,(60 - Image_Erro)*0.01f);
+    Image_Erro_ = GetPIDValue(&Image_PID,(80 - Image_Erro)*0.05f);
     // Angle_Erro_ = GetPIDValue(&Angle_PID,Gyro_YawAngle_Get() - Image_Erro);
-    Set_Car_Speed(0,3,-Image_Erro_);
+    Set_Car_Speed(0,4,-Image_Erro_);
+#if debug_swithch
+    printf("line\r\n");
+#endif
 }
 
 extern Pid_TypeDef Angle_PID;
@@ -96,21 +99,50 @@ extern Pid_TypeDef Angle_PID;
 void Change_Direction(void)
 {
     float DirectionPidErr = 0.0f;
+    Navigation.Start_Flag = 1;//使能惯性导航
     Navigation.Cur_Angle = Navigation.Start_Angle - Gyro_YawAngle_Get();//获取自身角度
     // Navigation.Cur_Position_X = sin(Navigation.Cur_Angle / 180 * 3.14159f) * Get_X_Distance();
     Navigation.Cur_Position_X = Get_X_Distance();//获取自身坐标值
     Navigation.Cur_Position_Y = Get_Y_Distance();
     DirectionPidErr = GetPIDValue(&BorderPlace_PID, border.dx);
+#if debug_swithch
+    printf("FIND\r\n");
+#endif
     Set_Car_Speed(DirectionPidErr,0,GetPIDValue(&Angle_PID,Navigation.Cur_Angle));  
+}
+
+/**@brief   前进找到卡片
+-- @param   无
+-- @auther  庄文标
+-- @date    2024/3/23
+**/
+void Forward_Board()
+{
+    Navigation.Cur_Angle = Navigation.Start_Angle - Gyro_YawAngle_Get();//获取自身角度
+    Set_Car_Speed(0,3,GetPIDValue(&Angle_PID,Navigation.Cur_Angle));
+#if debug_swithch
+    printf("FIND_X\r\n");
+#endif
 }
 
 /**@brief   返回赛道
 -- @param   无
 -- @auther  庄文标
--- @date    2024/3/13
+-- @date    2024/3/16
 **/
 void Back_Autodrome()
 {
-    Navigation_Process(0,0);
+    Navigation.Cur_Angle = Navigation.Start_Angle - Gyro_YawAngle_Get();//获取自身角度
+    if(Navigation.Cur_Position_X > 0)
+    {
+        Set_Car_Speed(-5,0,GetPIDValue(&Angle_PID,Navigation.Cur_Angle));
+    }
+    else
+    {
+        Set_Car_Speed(5,0,GetPIDValue(&Angle_PID,Navigation.Cur_Angle));
+    }
+#if debug_swithch
+    printf("x:%f\r\n",Navigation.Cur_Position_X);
+#endif
 }
 

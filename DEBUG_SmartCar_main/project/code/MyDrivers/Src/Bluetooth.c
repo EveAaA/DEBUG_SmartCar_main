@@ -26,7 +26,11 @@ float test_3 = 0.0f;
 **/
 void Bluetooth_Init(void)
 {
-    bluetooth_ch9141_init();
+    while(1)
+    {
+        if(!bluetooth_ch9141_init())
+            break;
+    }
     Bluetooth_Set_Watch_Variable(Num_Address, CH1, &test_1);
     Bluetooth_Set_Watch_Variable(Num_Address, CH2, &test_2);
 }

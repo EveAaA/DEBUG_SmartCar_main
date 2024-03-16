@@ -17,11 +17,12 @@ typedef struct FSMTable  //状态表
 typedef struct FSM  //状态机
 {
 	uint8 CurState;  //当前状态（枚举类型从0开始）
+	uint8 Fsm_Number;//状态机编号
 	FSMTable_t *FsmTable;  //状态表
 }FSM_t;
 
 
-void FSMInit(FSM_t *fsm, uint8 state, FSMTable_t *fsmtable);
+void FSMInit(FSM_t *fsm, uint8 state, FSMTable_t *fsmtable,uint8 Number);
 void FSMRun(FSM_t *fsm);
 
 #endif

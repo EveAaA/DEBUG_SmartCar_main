@@ -18,6 +18,8 @@ FSM_t *CURRENT_FSM;//当前运行状态机
 FSM_t Line_FSM;//巡线状态机
 FSM_t Board_FSM;//卡片状态机_赛道旁
 
+#define DEBUG_SWITCH 0
+
 /**
  ******************************************************************************
  *  @defgroup 内部调用
@@ -44,10 +46,11 @@ bool Depart_Select()
 **/
 bool Board_Find()
 {
-    if(fabs(border.dx) > 5)
+    if(fabs(border.dx) > 5 && border.dx != 127)
     {
         CURRENT_FSM = &Board_FSM;//切换到卡片状态机
         Enable_Navigation();//使能惯导，记录数据
+        // printf("board_find");
     }
     return false;
 }
@@ -60,6 +63,7 @@ bool Board_Find_Finish()
 {
     if(fabs(border.dx) < 5)
     {
+        // printf("board_finishy\r\n");
         return true;
     }
     return false;
@@ -71,16 +75,40 @@ bool Board_Find_Finish()
 **/
 bool Back_Autodrome_Finish()
 {
-    if((Navigation.Target_Position_X - Navigation.Cur_Position_X) < 1.0f && (Navigation.Target_Position_Y - Navigation.Cur_Position_Y) < 1.0f)
+    Navigation.Cur_Position_X = Get_X_Distance();//获取自身坐标值
+    // if((fabs(0 - Navigation.Cur_Position_X) < 1.0f && fabs(Navigation.Cur_Angle < 1.0f)) || (Image_Erro <= 100 && Image_Erro >= 37 && fabs(Navigation.Cur_Angle < 1.0f)))
+    // {
+    //     Navigation.Cur_Position_X = 0;//记录值清零
+    //     Navigation.Cur_Position_Y = 0;
+    //     Navigation.Start_Angle = 0;
+    //     Navigation.Start_Flag = 0;//关闭惯性导航
+    //     // printf("back_finis\n\r");
+    //     return true;
+    // }
+    if((fabs(0 - Navigation.Cur_Position_X) < 1.0f && fabs(Navigation.Cur_Angle < 1.0f)))
     {
         Navigation.Cur_Position_X = 0;//记录值清零
         Navigation.Cur_Position_Y = 0;
         Navigation.Start_Angle = 0;
         Navigation.Start_Flag = 0;//关闭惯性导航
+#if DEBUG_SWITCH
+        printf("back_finish\n\r");
+#endif
         CURRENT_FSM = &Line_FSM;//切换到巡线状态机
+        return false;
     }
     return false;
 }
+
+bool Foward_finish()
+{
+    if(border.dx == 127)
+    {
+        return true;
+    }
+    return false;
+}
+
 
 /**
  ******************************************************************************
@@ -99,9 +127,11 @@ FSMTable_t LineTable[] =
 FSMTable_t BoardTable[] =
 {
     //当前的状态		当前状态执行函数		跳转事件条件函数		下一个状态
-	{FindBoard,       Change_Direction,      Board_Find_Finish,     BackAutodrome },
-    {BackAutodrome,   Back_Autodrome,        Back_Autodrome_Finish, LinePatrol     },
+	{Find,              Change_Direction,     Board_Find_Finish,      Forward           },
+    {Forward,           Forward_Board,        Foward_finish,          BackAutodrome     },
+    {BackAutodrome,     Back_Autodrome,       Back_Autodrome_Finish,  finish            },
 };
+
 
 /**
  ******************************************************************************
@@ -117,6 +147,6 @@ FSMTable_t BoardTable[] =
 void My_FSM_Init()
 {
     CURRENT_FSM = &Line_FSM;
-    FSMInit(&Line_FSM,Depart,LineTable);
-    FSMInit(&Board_FSM,FindBoard,BoardTable);
+    FSMInit(&Line_FSM,Depart,LineTable,0);
+    FSMInit(&Board_FSM,Find,BoardTable,1);
 }

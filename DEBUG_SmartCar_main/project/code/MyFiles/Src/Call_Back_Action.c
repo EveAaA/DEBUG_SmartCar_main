@@ -38,7 +38,6 @@ void TIM_Init()
     pit_ms_init(Sensor_CH, 5);                                                  // 初始化 PIT_CH0 为周期中断 5ms 周期
     interrupt_set_priority(Sensor_PRIORITY, 0); 
     pit_ms_init(PIT_CH1, 20);                                                  // 初始化 PIT_CH0 为周期中断 20ms 周期
-    interrupt_set_priority(PIT_IRQn, 0);    
 }
 
 
@@ -63,7 +62,7 @@ void Uart_Findborder_Receive(void)
 	
     uart_query_byte(UART_1, &_UART_FINDBORDER.get_data);
     fifo_write_buffer(&uart_data_fifo, &_UART_FINDBORDER.get_data, 1);
-	border.dx = UART_ReadBuffer(&_UART_FINDBORDER);
+	  border.dx = UART_ReadBuffer(&_UART_FINDBORDER);
 }
 
 /**@brief   微调openart串口

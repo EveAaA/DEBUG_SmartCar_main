@@ -28,7 +28,7 @@ Pid_TypeDef Angle_PID;
 
 void Pid_Init()
 {
-    PIDInit(&Distance_PID,3,0,0,3,-3);
+    PIDInit(&Distance_PID,3,0,0,10,-10);
     PIDInit(&Angle_PID,0.44f,0,2,1.5f,-1.5f);
 }
 
@@ -81,6 +81,6 @@ void Navigation_Process(float x,float y)
     // }
     // else
     // {
-    Set_Car_Speed(X_Output,Y_Output,Z_Output);//设置速度
+    Set_Car_Speed(X_Output+3, Y_Output,Z_Output);//设置速度
     // }
 } 

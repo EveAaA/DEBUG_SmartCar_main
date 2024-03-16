@@ -288,7 +288,7 @@ uint8 Otsu_Threshold(uint8 *Image, uint16 col, uint16 row)
 void Turn_To_Bin(void)
 {
   uint8 i,j;
-  Image_Thereshold = 1.075 * Otsu_Threshold(Original_Image[0], Image_W, Image_H);//获取大津法阈值
+  Image_Thereshold = 1.075f * Otsu_Threshold(Original_Image[0], Image_W, Image_H);//获取大津法阈值
   for(i = 0;i<Image_H;i++)
   {
       for(j = 0;j<Image_W;j++)
@@ -825,6 +825,6 @@ void Image_Process()
         tft180_draw_point(L_Border[i], i, RGB565_BLUE);//显示起点 显示左边线
         tft180_draw_point(R_Border[i], i, RGB565_RED);//显示起点 显示右边线
     }
-    Image_Erro = (Center_Line[59])*0.375 + (Center_Line[60])*0.5 + (Center_Line[61])*0.1;
+    Image_Erro = (Center_Line[59])*0.375f + (Center_Line[60])*0.5f + (Center_Line[61])*0.1f;
 }
 

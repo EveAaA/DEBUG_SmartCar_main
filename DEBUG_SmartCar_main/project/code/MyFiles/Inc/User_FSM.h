@@ -9,7 +9,14 @@ enum State  //状态
     Depart = 0,//发车
     LinePatrol = 1,//巡线
     FindBoard = 2,//找到卡片
-    BackAutodrome = 3,//返回赛道
+};
+
+enum Board_State
+{
+    Find,//找到卡片
+    Forward,//前进
+    BackAutodrome,//返回赛道
+    finish,//完成
 };
 
 

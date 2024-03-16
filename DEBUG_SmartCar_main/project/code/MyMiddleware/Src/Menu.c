@@ -116,7 +116,7 @@ static void Page0_Mode()
     tft180_show_float(Row_4,Line_3,border.dx, 3, 3);
     tft180_show_string(Row_1,Line_4,"IsFind:");
     tft180_show_float(Row_8, Line_4, border.isFindBorder, 3, 3);
-
+    tft180_show_float(Row_8, Line_5, Image_Erro, 3, 3);
     Exit_Dis;
 
     if(Menu.Set_Line == 7 && Rotary.Press)//ÍË³ö
@@ -132,11 +132,11 @@ static void Page0_Mode()
         Rotary.Press = 0;
         Start = 1;
     }
-    if(Menu.Set_Line == 2 && Rotary.Press)//ÍË³ö
-    {
-        Rotary.Press = 0;
-        Start = 0;
-    }
+    // if(Menu.Set_Line == 2 && Rotary.Anticlockwise)//ÍË³ö
+    // {
+    //     Rotary.Press = 0;
+    //     Start -= 1;
+    // }
     
      
 }

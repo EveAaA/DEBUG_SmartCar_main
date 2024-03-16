@@ -37,6 +37,7 @@
 #include "zf_common_debug.h"
 #include "isr.h"
 #include "UserMain.h"
+#include "User_FSM.h"
 
 extern uint16 Start; 
 
@@ -56,6 +57,10 @@ void PIT_IRQHandler(void)
     
     if(pit_flag_get(PIT_CH1))
     {
+        // if(Start == 1)
+        // {
+        // //    FSMRun(CURRENT_FSM);
+        // }
         // if(Start == 1)
         // {
         //     UART_UnpackData(&_UART_FINDBORDER, &border); // 优先对数据解包 后续可能优化成三openart并行解包
@@ -192,19 +197,21 @@ void GPIO1_Combined_0_15_IRQHandler(void)
         exti_flag_clear(B0);// 清除中断标志位
     }
     dl1a_int_handler();
-    if(exti_flag_get(Rotary_B))
-    {
-        if(gpio_get_level(Rotary_A) == 1)//正转
-        {
-            Rotary.Anticlockwise = 1;
-            Rotary.Clockwise = 0;
-            Rotary.Press = 0;
-        }
-        exti_flag_clear(Rotary_B); // 清除中断标志位
-    }
+    // if(exti_flag_get(Rotary_B))
+    // {
+    //     if(gpio_get_level(Rotary_A) == 1)//正转
+    //     {
+    //         Rotary.Anticlockwise = 1;
+    //         Rotary.Clockwise = 0;
+    //         Rotary.Press = 0;
+    //     }
+    //     exti_flag_clear(Rotary_B); // 清除中断标志位
+    // }
 }
 
-
+int8 flag = 0;
+int8 CW_1 = 0;
+int8 CW_2 = 0;
 void GPIO1_Combined_16_31_IRQHandler(void)
 {
     wireless_module_spi_handler();
@@ -213,15 +220,39 @@ void GPIO1_Combined_16_31_IRQHandler(void)
         exti_flag_clear(B16); // 清除中断标志位
     }
 
+    // if(exti_flag_get(Rotary_A))
+    // {
+    //     if(gpio_get_level(Rotary_B) == 1)//正转
+    //     {
+    //         Rotary.Clockwise = 1;
+    //         Rotary.Anticlockwise = 0;
+    //         Rotary.Press = 0;
+    //     }
+
+    //     exti_flag_clear(Rotary_A); // 清除中断标志位
+    // }
     if(exti_flag_get(Rotary_A))
     {
-        if(gpio_get_level(Rotary_B) == 1)//正转
+        int8 alv = gpio_get_level(Rotary_A);
+        int8 blv = gpio_get_level(Rotary_B);
+        if(flag == 0 && alv == 0)
         {
-            Rotary.Clockwise = 1;
-            Rotary.Anticlockwise = 0;
-            Rotary.Press = 0;
+            CW_1 = blv;
+            flag = 1;
         }
-
+        if(flag && alv)
+        {
+            CW_2 = !blv;
+            if (CW_1 && CW_2) 
+            {
+                Rotary.Clockwise = 1;
+            }
+            if (CW_1 == 0 && CW_2 == 0) 
+            {
+                Rotary.Anticlockwise = 1;
+            }
+            flag = 0;
+        }
         exti_flag_clear(Rotary_A); // 清除中断标志位
     }
 }
