@@ -119,7 +119,7 @@ void    tft180_show_rgb565_image        (uint16 x, uint16 y, const uint16 *image
 
 void    tft180_show_wave                (uint16 x, uint16 y, const uint16 *wave, uint16 width, uint16 value_max, uint16 dis_width, uint16 dis_value_max);
 void    tft180_show_chinese             (uint16 x, uint16 y, uint8 size, const uint8 *chinese_buffer, uint8 number, const uint16 color);
-
+void    tft180_Draw_ColorCircle         (uint16_t x, uint16_t y, uint16_t r, uint16_t color);
 //-------------------------------------------------------------------------------------------------------------------
 // 函数简介     TFT180 显示小钻风图像
 // 参数说明     p               图像数组

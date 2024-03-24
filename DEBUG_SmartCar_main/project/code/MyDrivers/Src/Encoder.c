@@ -35,7 +35,7 @@
 
 int16 Encoder_Pules_Buffer[4];//脉冲数组
 int32 Distance_Buffer[4];//距离缓存数组
-float Encoer_Speed[4];//速度数组
+float Encoer_Speed[4];//速度数组,顺序为LF RF LB RB
 float Encoder_Distance[4];//实际距离数组
 
 /**

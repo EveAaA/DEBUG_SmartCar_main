@@ -393,6 +393,50 @@ void tft180_draw_line (uint16 x_start, uint16 y_start, uint16 x_end, uint16 y_en
     }while(0);
 }
 
+/**@brief   画圆
+-- @param   uint16_t x X坐标
+-- @param   uint16_t y y坐标
+-- @param   uint16_t r 半径
+-- @param   uint16_t color 颜色
+-- @auther  庄文标
+-- @date    2023/11/5
+**/
+void tft180_Draw_ColorCircle(uint16_t x, uint16_t y, uint16_t r, uint16_t color)
+{
+	/* Bresenham画圆算法 */
+	int16_t a = 0, b = r;
+    int16_t d = 3 - (r << 1);		//算法决策参数
+		
+	/* 如果圆在屏幕可见区域外，直接退出 */
+    if (x - r < 0 || x + r > tft180_x_max || y - r < 0 || y + r > tft180_y_max) 
+				return;
+		
+	/* 开始画圆 */
+    while(a <= b)
+    {
+        tft180_draw_point(x - b, y - a, color);
+        tft180_draw_point(x + b, y - a, color);
+        tft180_draw_point(x - a, y + b, color);
+        tft180_draw_point(x - b, y - a, color);
+        tft180_draw_point(x - a, y - b, color);
+        tft180_draw_point(x + b, y + a, color);
+        tft180_draw_point(x + a, y - b, color);
+        tft180_draw_point(x + a, y + b, color);
+        tft180_draw_point(x - b, y + a, color);
+        a++;
+
+        if(d < 0)
+			d += 4 * a + 6;
+        else
+        {
+            d += 10 + 4 * (a - b);
+            b--;
+        }
+
+        tft180_draw_point(x + a, y + b, color);
+    }
+}
+
 //-------------------------------------------------------------------------------------------------------------------
 // 函数简介     TFT180 显示字符
 // 参数说明     x               坐标x方向的起点 参数范围 [0, tft180_x_max-1]

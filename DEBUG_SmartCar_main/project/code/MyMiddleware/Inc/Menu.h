@@ -53,10 +53,12 @@ typedef enum
 
 typedef struct
 {
-	uint8 Set_Line;
-	uint8 Set_Mode;
+	uint8 Set_Line;//设置的行
+	uint8 Set_Mode;//设置的模式
 	uint8 Flash_Set;
+	bool  Image_Show;//是否为图像显示
 }Menu_;
 
 extern int Show_Mode;
+extern Menu_ Menu;
 #endif

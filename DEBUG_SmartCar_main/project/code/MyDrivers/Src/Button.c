@@ -15,16 +15,12 @@
 
 /* Define\Declare ------------------------------------------------------------*/
 int8 Button_Value[5] = {0,0,0,0,0};//键值
+int8 Button[5] = {B11,B15,B14,B9,B10};
+int8 Button_Temp[5] = {0,0,0,0,0};
 int8 Switch_Button_Value[2] = {0,0};
-uint8 Key_Mode = 0;
-uint8 Key_Time = 0;
-#define Key_Sleep_Time 24
+uint16 Key_Time[5] = {0,0,0,0,0};
+#define Key_Sleep_Time 4
 //按键管脚定义
-#define Button_0 B9
-#define Button_1 B10
-#define Button_2 B11
-#define Button_3 B14
-#define Button_4 B15
 #define Switch_Button_0 B16
 #define Switch_Button_1 B17
 
@@ -42,11 +38,11 @@ uint8 Key_Time = 0;
 **/
 void All_Button_Init()
 {
-    gpio_init(Button_0,GPI,0,GPI_PULL_UP);
-    gpio_init(Button_1,GPI,0,GPI_PULL_UP);
-    gpio_init(Button_2,GPI,0,GPI_PULL_UP);
-    gpio_init(Button_3,GPI,0,GPI_PULL_UP);
-    gpio_init(Button_4,GPI,0,GPI_PULL_UP);
+    gpio_init(Button[0],GPI,0,GPI_PULL_UP);
+    gpio_init(Button[1],GPI,0,GPI_PULL_UP);
+    gpio_init(Button[2],GPI,0,GPI_PULL_UP);
+    gpio_init(Button[3],GPI,0,GPI_PULL_UP);
+    gpio_init(Button[4],GPI,0,GPI_PULL_UP);
     gpio_init(Switch_Button_0,GPI,0,GPI_PULL_UP);
     gpio_init(Switch_Button_1,GPI,0,GPI_PULL_UP);
 }
@@ -71,6 +67,21 @@ void All_Button_Scan()
     }
 }
 
+/**@brief   所有按键消抖
+-- @param   无
+-- @auther  庄文标
+-- @date    2024/1/21
+**/
+void Key_Delay()
+{
+    for(uint8 Num = 0;Num<=4;Num++)
+    {
+        if(Key_Time[Num] != 0)
+        {
+            Key_Time[Num]++;
+        }
+    }
+}
 
 /**
  ******************************************************************************
@@ -87,141 +98,44 @@ void All_Button_Scan()
 **/
 void Get_Button_Value(int8 KeyNum)
 {
-    switch(KeyNum)
+	switch(Button_Temp[KeyNum])
     {
-        case 0:
-            switch(Key_Mode)
+        case 0://空闲状态
+            if(gpio_get_level(Button[KeyNum]) == 0)
             {
-                case 0:
-                    if(gpio_get_level(Button_0) == 0)
-                    {
-                        Key_Mode = 1;
-                        Key_Time = 1;
-                    }
-                break;
-                case 1://按键消抖
-                    if(Key_Time >= Key_Sleep_Time)
-                    {
-                        Key_Mode = 2;
-                        Key_Time = 0;
-                    }
-                break;
-                case 2://二次判断
-                    if(gpio_get_level(Button_0) == 0)
-					{
-                        Button_Value[0] = 1;
-                        Key_Mode = 0;
-                    }
-                break;										
+                Button_Temp[KeyNum] = 1;//消抖
+                Key_Time[KeyNum] = 1;//开始计时
             }
         break;
-        case 1:
-            switch(Key_Mode)
+        case 1://消抖状态
+            if((Key_Time[KeyNum] > Key_Sleep_Time) && (gpio_get_level(Button[KeyNum]) == 0))//大于消抖时间且仍为低电平
             {
-                case 0:
-                    if(gpio_get_level(Button_1) == 0)
-                    {
-                        Key_Mode = 1;
-                        Key_Time = 1;
-                    }
-                break;
-                case 1:
-                    if(Key_Time >= Key_Sleep_Time)
-                    {
-                        Key_Mode = 2;
-                        Key_Time = 0;
-                    }
-                break;
-                case 2:
-                    if(gpio_get_level(Button_1) == 0)
-					{
-                        Button_Value[1] = 1;
-                        Key_Mode = 0;
-                    }
-                break;										
+                Button_Temp[KeyNum] = 2;//进入等待释放或长按计时
             }
         break;
-        case 2:
-            switch(Key_Mode)
+        case 2://判断长按还是短按
+            if(gpio_get_level(Button[KeyNum]) == 1)//如果按键抬起
             {
-                case 0:
-                    if(gpio_get_level(Button_2) == 0)
-                    {
-                        Key_Mode = 1;
-                        Key_Time = 1;
-                    }
-                break;
-                case 1:
-                    if(Key_Time >= Key_Sleep_Time)
-                    {
-                        Key_Mode = 2;
-                        Key_Time = 0;
-                    }
-                break;
-                case 2:
-                    if(gpio_get_level(Button_2) == 0)
-					{
-                        Button_Value[2] = 1;
-                        Key_Mode = 0;
-                    }
-                break;										
+                Button_Temp[KeyNum] = 0;//进入等待释放或长按计时
+                Button_Value[KeyNum] = 2;//判断为短按               
             }
-        break;
-        case 3:
-            switch(Key_Mode)
-            {
-                case 0:
-                    if(gpio_get_level(Button_3) == 0)
-                    {
-                        Key_Mode = 1;
-                        Key_Time = 1;
-                    }
-                break;
-                case 1:
-                    if(Key_Time >= Key_Sleep_Time)
-                    {
-                        Key_Mode = 2;
-                        Key_Time = 0;
-                    }
-                break;
-                case 2:
-                    if(gpio_get_level(Button_3) == 0)
-					{
-                        Button_Value[3] = 1;
-                        Key_Mode = 0;
-                    }
-                break;										
-            }
-        break;
-        case 4:
-            switch(Key_Mode)
-            {
-                case 0:
-                    if(gpio_get_level(Button_4) == 0)
-                    {
-                        Key_Mode = 1;
-                        Key_Time = 1;
-                    }
-                break;
-                case 1:
-                    if(Key_Time >= Key_Sleep_Time)
-                    {
-                        Key_Mode = 2;
-                        Key_Time = 0;
-                    }
-                break;
-                case 2:
-                    if(gpio_get_level(Button_4) == 0)
-					{
-                        Button_Value[4] = 1;
-                        Key_Mode = 0;
-                    }
-                break;										
-            }
-        break;
 
+            if((Key_Time[KeyNum] > Key_Sleep_Time*100) && (gpio_get_level(Button[KeyNum]) == 0))//大于长按时间
+            {
+                Button_Temp[KeyNum] = 3;//进入等待释放
+                Button_Value[KeyNum] = 3;     
+            }
+        break;
+        case 3://等待释放
+            if(gpio_get_level(Button[KeyNum]) == 1)
+            {
+                Button_Temp[KeyNum] = 0;//进入等待释放或长按计时
+                Button_Value[KeyNum] = 0;               
+            }
+        break;
     }
 }
+
 
 
 /**@brief    获取拨码按键键值

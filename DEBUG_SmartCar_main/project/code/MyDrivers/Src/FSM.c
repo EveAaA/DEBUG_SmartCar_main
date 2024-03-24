@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    FSM.c
-  * @author  俞立
+  * @author  俞立、庄文标
   * @brief   状态机
   *
   @verbatim
@@ -23,6 +23,7 @@
 **/
 
 /**@brief   状态机初始化
+-- @auther  庄文标
 -- @param   FSM_t *fsm 状态机名称
 -- @param   uint8 state 初始状态
 -- @param   FSMTable_t *fsmtable 状态表 
@@ -36,6 +37,7 @@ void FSMInit(FSM_t *fsm, uint8 state, FSMTable_t *fsmtable,uint8 Number)
 }
 
 /**@brief   状态机运行
+-- @auther  庄文标
 -- @param   FSM_t *fsm 状态机名称
 -- @date    2024/3/13
 **/
@@ -46,7 +48,7 @@ void FSMRun(FSM_t *fsm)
 	uint8 curState = fsm->CurState;  //状态机当前状态
 	FSMTable_t *fsmTable = fsm->FsmTable;  //状态机状态表
 
-	if(fsm->Fsm_Number != Last_Fsm)
+	if(Current_Fsm != Last_Fsm)//为了确保状态机跳转后还是从第一个状态开始
 	{
 		fsm->CurState = fsmTable[0].CurState;
 	}

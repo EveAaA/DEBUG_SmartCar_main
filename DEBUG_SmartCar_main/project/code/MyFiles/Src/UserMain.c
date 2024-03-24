@@ -83,17 +83,16 @@ void User_Init()
     // Flash_Init();
     All_PID_Init();
     Pid_Init();
-    UART_Init();
-    My_FSM_Init();
+    // UART_Init();
+    // My_FSM_Init();
     tft180_show_string(Row_0, Line_5, "Soft Init ...");
     tft180_clear();
     TIM_Init();
-
+    // timer_init(GPT_TIM_1,TIMER_US);
     // Beep(On);
     // system_delay_ms(100);
     // Beep(Off);
 }
-
 /**@brief   所有主循环内容
 -- @param   无
 -- @auther  庄文标
@@ -101,21 +100,7 @@ void User_Init()
 **/
 void User_Loop()
 {
-    // Start作为开始标志位其为1表示小车开始行进,否则继续显示菜单界面
-    if (Start == 1)
-    {
-        if (mt9v03x_finish_flag)
-        {
-            Image_Process();
-            mt9v03x_finish_flag = 0;
-        }
-        FSMRun(CURRENT_FSM);
-        // Car_run();
-        tft180_show_gray_image(0, 0, (const uint8 *)(Original_Image), MT9V03X_W, MT9V03X_H, (Row_18), (Line_5), Image_Thereshold);
-    }
-    else
-    {
-        Menu_Display();
-    }
     
+    // Start作为开始标志位其为1表示小车开始行进,否则继续显示菜单界面
+    Menu_Display();
 }

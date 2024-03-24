@@ -46,6 +46,7 @@ void CSI_IRQHandler(void)
     CSI_DriverIRQHandler();     // 调用SDK自带的中断函数 这个函数最后会调用我们设置的回调函数
     __DSB();                    // 数据同步隔离
 }
+extern Pid_TypeDef Angle_PID;
 
 void PIT_IRQHandler(void)
 {
@@ -57,37 +58,20 @@ void PIT_IRQHandler(void)
     
     if(pit_flag_get(PIT_CH1))
     {
-        // if(Start == 1)
-        // {
-        // //    FSMRun(CURRENT_FSM);
-        // }
-        // if(Start == 1)
-        // {
-        //     UART_UnpackData(&_UART_FINDBORDER, &border); // 优先对数据解包 后续可能优化成三openart并行解包
-        //     if (border.isFindBorder) // 找到板了往板的方向走
-        //     {
-        //         Change_Direction();
-        //     }
-        //     else   // 没找到板继续沿着赛道走
-        //     {
-        //         Car_run();
-        //     }
-        //     // Navigation_Process(50,100);
-        //     // Set_Car_Speed(0,0,0-GetPIDValue(&Angle_PID,Gyro_YawAngle_Get()));
-        //     // Set_Motor_Speed(LMotor_B,Get_Incremental_PID_Value(&LMotor_B_Speed,10-Get_LB_Speed()));
-        // }
-        // else if(Start == 0)
-        // {
-        //     // 测试解包效果
-        //     UART_UnpackData(&_UART_FINDBORDER, &border);
-        //     Set_Car_Speed(0,0,0);
-        // }
-
+        if(Start == 1)
+        {
+            Car_run();
+        }
         pit_flag_clear(PIT_CH1);
     }
     
     if(pit_flag_get(PIT_CH2))
     {
+        if (mt9v03x_finish_flag)
+        {
+            Image_Process();
+            mt9v03x_finish_flag = 0;
+        }
         pit_flag_clear(PIT_CH2);
     }
     

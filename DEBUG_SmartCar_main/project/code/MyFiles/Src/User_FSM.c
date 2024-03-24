@@ -18,7 +18,6 @@ FSM_t *CURRENT_FSM;//当前运行状态机
 FSM_t Line_FSM;//巡线状态机
 FSM_t Board_FSM;//卡片状态机_赛道旁
 
-#define DEBUG_SWITCH 0
 
 /**
  ******************************************************************************
@@ -76,22 +75,13 @@ bool Board_Find_Finish()
 bool Back_Autodrome_Finish()
 {
     Navigation.Cur_Position_X = Get_X_Distance();//获取自身坐标值
-    // if((fabs(0 - Navigation.Cur_Position_X) < 1.0f && fabs(Navigation.Cur_Angle < 1.0f)) || (Image_Erro <= 100 && Image_Erro >= 37 && fabs(Navigation.Cur_Angle < 1.0f)))
-    // {
-    //     Navigation.Cur_Position_X = 0;//记录值清零
-    //     Navigation.Cur_Position_Y = 0;
-    //     Navigation.Start_Angle = 0;
-    //     Navigation.Start_Flag = 0;//关闭惯性导航
-    //     // printf("back_finis\n\r");
-    //     return true;
-    // }
     if((fabs(0 - Navigation.Cur_Position_X) < 1.0f && fabs(Navigation.Cur_Angle < 1.0f)))
     {
         Navigation.Cur_Position_X = 0;//记录值清零
         Navigation.Cur_Position_Y = 0;
         Navigation.Start_Angle = 0;
         Navigation.Start_Flag = 0;//关闭惯性导航
-#if DEBUG_SWITCH
+#ifdef debug_switch
         printf("back_finish\n\r");
 #endif
         CURRENT_FSM = &Line_FSM;//切换到巡线状态机

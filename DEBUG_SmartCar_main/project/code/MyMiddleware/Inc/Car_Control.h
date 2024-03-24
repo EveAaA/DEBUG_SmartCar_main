@@ -4,10 +4,11 @@
 #include "zf_common_headfile.h"
 #include "UserMain.h"
 
-// #define DEBUG 0 //是否为调试模式
+// #define debug_switch  //是否调试
 
 void All_PID_Init();
 void Set_Car_Speed(float Speed_X,float Speed_Y,float Speed_Z);
+void Turn_Angle(float Target_Angle);
 void Car_run();
 void Change_Direction(void);
 void Back_Autodrome();

@@ -44,7 +44,10 @@ static void Arrow_Display(int Line)
         }
         else
         {
-            tft180_show_string(Row_0,Line_Num*16," ");
+            if(!Menu.Image_Show)
+            {
+                tft180_show_string(Row_0,Line_Num*16," ");
+            }
         }
 
     }
@@ -107,16 +110,20 @@ static void Page0_Mode()
 {
     Line_Change();//行切换
     Arrow_Display(Menu.Set_Line);//箭头显示
-    tft180_show_string(Row_1,Line_0,"Yaw_Angle:");
-    tft180_show_float(Row_11,Line_0,Gyro_YawAngle_Get(),3,1);
-    tft180_show_string(Row_1,Line_1,"Start:");
-    tft180_show_int(Row_7,Line_1,Start,2);
-    tft180_show_string(Row_1,Line_2,"Stop:");
-    tft180_show_string(Row_1,Line_3,"dx:");
-    tft180_show_float(Row_4,Line_3,border.dx, 3, 3);
-    tft180_show_string(Row_1,Line_4,"IsFind:");
-    tft180_show_float(Row_8, Line_4, border.isFindBorder, 3, 3);
-    tft180_show_float(Row_8, Line_5, Image_Erro, 3, 3);
+    if(!Menu.Image_Show)
+    {
+        tft180_show_string(Row_1,Line_0,"Yaw_Angle:");
+        tft180_show_float(Row_11,Line_0,Gyro_YawAngle_Get(),3,1);
+        tft180_show_string(Row_1,Line_1,"Start:");
+        tft180_show_int(Row_7,Line_1,Start,2);
+        tft180_show_string(Row_1,Line_2,"Stop:");
+        tft180_show_string(Row_1,Line_3,"dx:");
+        tft180_show_float(Row_4,Line_3,border.dx, 3, 3);
+        tft180_show_string(Row_1,Line_4,"IsFind:");
+        tft180_show_float(Row_8, Line_4, border.isFindBorder, 3, 3);
+        tft180_show_string(Row_1,Line_5,"Image");
+    }
+
     Exit_Dis;
 
     if(Menu.Set_Line == 7 && Rotary.Press)//退出
@@ -124,21 +131,45 @@ static void Page0_Mode()
         Rotary.Press = 0;
         Menu_Mode = 8;
         Menu.Set_Line = 0;
+        Menu.Image_Show = false;
         tft180_clear();
     } 
 
-    if(Menu.Set_Line == 1 && Rotary.Press)//退出
+    if(Menu.Set_Line == 1 && Rotary.Press)//发车
     {
         Rotary.Press = 0;
         Start = 1;
+        Menu.Image_Show = true;
     }
-    // if(Menu.Set_Line == 2 && Rotary.Anticlockwise)//退出
-    // {
-    //     Rotary.Press = 0;
-    //     Start -= 1;
-    // }
-    
-     
+    if(Menu.Set_Line == 2 && Rotary.Press)//发车
+    {
+        Rotary.Press = 0;
+        Start = 3;
+        // Menu.Image_Show = true;
+    }
+
+    if(Menu.Set_Line == 5 && Rotary.Press)//显示图像
+    {
+        Rotary.Press = 0;
+        Menu.Set_Line = 6;
+        Menu.Image_Show = true;
+        tft180_clear();
+    }
+
+    if(Menu.Image_Show)
+    {
+
+        for (int i = Hightest; i < Image_H-1; i++)
+        {
+            Center_Line[i] = (L_Border[i] + R_Border[i]) >> 1;//求中线
+            //求中线最好最后求，不管是补线还是做状态机，全程最好使用一组边线，中线最后求出，不能干扰最后的输出
+            tft180_draw_point(Center_Line[i], i, RGB565_BLACK);//显示起点 显示中线
+            tft180_draw_point(L_Border[i], i, RGB565_BLUE);//显示起点 显示左边线
+            tft180_draw_point(R_Border[i], i, RGB565_RED);//显示起点 显示右边线
+        }
+        tft180_show_gray_image(0, 0, (const uint8 *)(Bin_Image), MT9V03X_W, MT9V03X_H, (Row_18), (Line_5), 0);
+        tft180_show_float(Row_8, Line_6, Image_Erro, 3, 3);
+    }
 }
 
 /**@brief   第一页显示

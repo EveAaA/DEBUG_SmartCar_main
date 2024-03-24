@@ -13,7 +13,11 @@ void Image_Process();
 extern uint8 Original_Image[Image_H][Image_W];
 extern float Image_Erro;
 extern uint8 Image_Thereshold;
-
+extern uint8 L_Border[Image_H];//左线数组
+extern uint8 R_Border[Image_H];//右线数组
+extern uint8 Center_Line[Image_H];//中线数组
+extern uint8 Bin_Image[Image_H][Image_W];//二值化图像数组
+extern uint8 Hightest;//最高点
 typedef struct
 {
     int8_t Cross_Fill;

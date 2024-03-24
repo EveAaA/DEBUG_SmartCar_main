@@ -37,7 +37,8 @@ void TIM_Init()
 {
     pit_ms_init(Sensor_CH, 5);                                                  // 初始化 PIT_CH0 为周期中断 5ms 周期
     interrupt_set_priority(Sensor_PRIORITY, 0); 
-    pit_ms_init(PIT_CH1, 20);                                                  // 初始化 PIT_CH0 为周期中断 20ms 周期
+    pit_ms_init(PIT_CH1, 20);                                                  // 初始化 PIT_CH1 为周期中断 20ms 周期
+    pit_ms_init(PIT_CH2, 10);                                                  // 初始化 PIT_CH1 为周期中断 20ms 周期
 }
 
 
@@ -74,5 +75,4 @@ void Uart_Fine_Tuning_Receive(void)
 {
     uart_query_byte(UART_2, &_UART_FINE_TUNING.get_data);
     fifo_write_buffer(&uart_data_fifo, &_UART_FINE_TUNING.get_data, 1);
-	
 }
