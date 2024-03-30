@@ -100,7 +100,12 @@ void User_Init()
 **/
 void User_Loop()
 {
-    
+    // if (mt9v03x_finish_flag)
+    // {
+    //     Image_Process();
+    //     tft180_show_gray_image(0, 0, (const uint8 *)(Bin_Image), MT9V03X_W, MT9V03X_H, (Row_18), (Line_5), 0);
+    //     mt9v03x_finish_flag = 0;
+    // }
     // Start作为开始标志位其为1表示小车开始行进,否则继续显示菜单界面
     Menu_Display();
 }

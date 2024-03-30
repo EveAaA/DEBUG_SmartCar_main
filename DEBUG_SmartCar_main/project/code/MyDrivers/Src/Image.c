@@ -285,6 +285,7 @@ void Turn_To_Bin(void)
 {
   uint8 i,j;
   Image_Thereshold = 1.075f * Otsu_Threshold(Original_Image[0], Image_W, Image_H);//获取大津法阈值
+//   printf("begin");
   for(i = 0;i<Image_H;i++)
   {
       for(j = 0;j<Image_W;j++)
@@ -297,9 +298,11 @@ void Turn_To_Bin(void)
           {
               Bin_Image[i][j] = Black_Pixel;
           }
-        //   printf("BIN[%d][%d] = %d\r\n",i,j,Bin_Image[i][j]);
+        //   printf(" %d",Bin_Image[i][j]);
       }
+    //   printf("\r\n");
   }
+//   printf("end");
 }
 
 
@@ -452,6 +455,7 @@ void Search_L_R(uint16 Break_Flag, uint8(*image)[Image_W], uint16 *L_Stastic, ui
                 Temp_L[Index_L][1] = Search_Filds_L[(i)][1];
                 Index_L++;
                 Dir_L[L_Data_Statics - 1] = (i);//记录生长方向
+                // printf("dir[%d]:%d\n", L_Data_Statics - 1, Dir_L[L_Data_Statics - 1]);
             }
 
             if (Index_L)
@@ -519,7 +523,7 @@ void Search_L_R(uint16 Break_Flag, uint8(*image)[Image_W], uint16 *L_Stastic, ui
                 Temp_R[Index_R][1] = Search_Filds_R[(i)][1];
                 Index_R++;//索引加一
                 Dir_R[R_Data_Statics - 1] = (i);//记录生长方向
-                //printf("dir[%d]:%d\n", R_Data_Statics - 1, Dir_R[R_Data_Statics - 1]);
+                // printf("dir[%d]:%d\n", R_Data_Statics - 1, Dir_R[R_Data_Statics - 1]);
             }
             if (Index_R)
             {
@@ -916,7 +920,10 @@ void Image_Process()
         //元素处理函数放这里
         Cross_Fill(Bin_Image,L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);//十字补线
     }
-
-    Image_Erro = (Center_Line[59])*0.375f + (Center_Line[60])*0.5f + (Center_Line[61])*0.1f;
+    for (int i = Hightest; i < Image_H-1; i++)
+    {
+        Center_Line[i] = (L_Border[i] + R_Border[i]) >> 1;//求中线
+    }
+    Image_Erro = (Center_Line[69])*0.375f + (Center_Line[70])*0.5f + (Center_Line[71])*0.1f;
 }
 

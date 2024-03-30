@@ -42,7 +42,7 @@ void All_PID_Init()
     Incremental_PID_Init(&RMotor_F_Speed,0.5f,0.25f,0.35f,40,-40);
     Incremental_PID_Init(&LMotor_B_Speed,0.7f,0.3f,0.5f,40,-40);
     Incremental_PID_Init(&RMotor_B_Speed,0.5f,0.35f,0.5f,40,-40);
-    PIDInit(&Image_PID,4.0f,0,0,1.5f,-1.5f);
+    PIDInit(&Image_PID,3.8f,0,0.5f,2.5f,-2.5f);
     PIDInit(&BorderPlace_PID,5,0,0,3,-3);
     PIDInit(&Turn_PID,5.0f,0,1.2f,5,-5);
 }
@@ -121,9 +121,9 @@ float Angle_Erro_;
 **/
 void Car_run()
 {
-    Image_Erro_ = GetPIDValue(&Image_PID,(65 - Image_Erro)*0.03f);
+    Image_Erro_ = GetPIDValue(&Image_PID,(70 - Image_Erro)*0.03f);
     // Angle_Erro_ = GetPIDValue(&Angle_PID,Gyro_YawAngle_Get() - Image_Erro);
-    Set_Car_Speed(0,4,-Image_Erro_);
+    Set_Car_Speed(0,5,-Image_Erro_);
 #ifdef debug_switch
     printf("line\r\n");
 #endif

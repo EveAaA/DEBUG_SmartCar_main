@@ -161,7 +161,7 @@ static void Page0_Mode()
 
         for (int i = Hightest; i < Image_H-1; i++)
         {
-            Center_Line[i] = (L_Border[i] + R_Border[i]) >> 1;//求中线
+            // Center_Line[i] = (L_Border[i] + R_Border[i]) >> 1;//求中线
             //求中线最好最后求，不管是补线还是做状态机，全程最好使用一组边线，中线最后求出，不能干扰最后的输出
             tft180_draw_point(Center_Line[i], i, RGB565_BLACK);//显示起点 显示中线
             tft180_draw_point(L_Border[i], i, RGB565_BLUE);//显示起点 显示左边线
