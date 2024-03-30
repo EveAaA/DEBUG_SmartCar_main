@@ -18,30 +18,45 @@ typedef struct Uart
 
     uint8 get_data;         // 接收数据变量
     uint32 fifo_data_count; // fifo 数据个数
-} UART;
+	fifo_struct uart_data_fifo;
+}UART;
+
+typedef enum Dir{
+    LEFT = 0,
+    RIGHT,
+    STRAIGHT,
+}Dir_t;
 
 // 和串口有关对卡片处理的结构体 (找到卡片标志位, 开始微调标志位, 开始识别标志位, 偏移量x,偏移量y, 识别卡片种类) 
-typedef struct OpenartBorder
+typedef struct FINDBORDER
 {
-    bool isFindBorder;
-    bool isFineTuning;
-    bool isRecognizeBorder;
+    bool FINDBORDER_FLAG; // 只需要判断是否找到卡片标志位
+    float dx;
+    Dir_t dir;
+}FINDBORDERtypeDef;
+
+typedef struct FINETUNING
+{
+    bool FINETUNING_FINISH_FLAG; // 只需要判断是否开始微调标志位
+	bool IS_BORDER_ALIVE;
     float dx;
     float dy;
-    uint8_t borderType; // uint8够放所有类型
-}borderTypeDef;
+}FINETUNINGtypeDef;
 
-typedef struct UnPackFlag
+typedef struct UnpackData
 {
-	bool startFlag;
-	bool endFlag;
-}UnPackFlagTypeDef;
+    bool FINDBORDER_DATA_FLAG;
+    bool FINETUNING_DATA_FLAG;
+	bool FINETUNING_DATA_START_FLAG;
+    // 第三个摄像头启用的时候再写
+}UnpackDataTypeDef;
 
 /*
     外部调用串口结构体
 */
-extern UnPackFlagTypeDef unPackFlag;
-extern borderTypeDef border;
+extern UnpackDataTypeDef UnpackFlag;
+extern FINETUNINGtypeDef FINETUNING_DATA;
+extern FINDBORDERtypeDef FINDBORDER_DATA;
 extern UART _UART_FINDBORDER;
 extern UART _UART_FINE_TUNING;
 extern UART _UART_RECOGNIZE_PLACE;
@@ -49,6 +64,8 @@ extern UART _UART_RECOGNIZE_PLACE;
 void UART_Init(void);
 void UART_init(UART *uart, IRQn_Type UART_PRIORITY, uart_index_enum UART_INDEX);
 double UART_ReadBuffer(UART *uart);
-void UART_UnpackData(UART *uart, borderTypeDef *border);
+void UART_UnpackDataV2(UnpackDataTypeDef* UnpackFlag);
+void UART_ResetUnpackFlag(UnpackDataTypeDef *UnpackFlag);
 
 #endif
+

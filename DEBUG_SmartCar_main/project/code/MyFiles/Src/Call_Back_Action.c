@@ -19,7 +19,7 @@
 /* Define\Declare ------------------------------------------------------------*/
 #define Sensor_CH                  (PIT_CH0 )// 使用的周期中断编号 如果修改 需要同步对应修改周期中断编号与 isr.c 中的调用
 #define Sensor_PRIORITY            (PIT_IRQn)// 对应周期中断的中断编号 
-fifo_struct uart_data_fifo;
+
 
 /**
  ******************************************************************************
@@ -62,8 +62,11 @@ void Uart_Findborder_Receive(void)
 {
 	
     uart_query_byte(UART_1, &_UART_FINDBORDER.get_data);
-    fifo_write_buffer(&uart_data_fifo, &_UART_FINDBORDER.get_data, 1);
-	  border.dx = UART_ReadBuffer(&_UART_FINDBORDER);
+    fifo_write_buffer(&_UART_FINDBORDER.uart_data_fifo, &_UART_FINDBORDER.get_data, 1);
+	if (_UART_FINDBORDER.get_data == 0x80)
+    {
+      UnpackFlag.FINDBORDER_DATA_FLAG = true;
+    }
 }
 
 /**@brief   微调openart串口
@@ -74,5 +77,9 @@ void Uart_Findborder_Receive(void)
 void Uart_Fine_Tuning_Receive(void)
 {
     uart_query_byte(UART_2, &_UART_FINE_TUNING.get_data);
-    fifo_write_buffer(&uart_data_fifo, &_UART_FINE_TUNING.get_data, 1);
+    fifo_write_buffer(&_UART_FINE_TUNING.uart_data_fifo, &_UART_FINE_TUNING.get_data, 1);
+    if(_UART_FINE_TUNING.get_data == 0x80)
+    {
+      UnpackFlag.FINETUNING_DATA_FLAG = true;
+    }
 }

@@ -124,9 +124,7 @@ void LPUART4_IRQHandler(void)
     if(kLPUART_RxDataRegFullFlag & LPUART_GetStatusFlags(LPUART4))
     {
         // 接收中断 
-        flexio_camera_uart_handler();
-        
-        gps_uart_callback();
+		// Uart_Fine_Tuning_Receive();
     }
         
     LPUART_ClearStatusFlags(LPUART4, kLPUART_RxOverrunFlag);    // 不允许删除
