@@ -41,6 +41,7 @@ typedef struct FINETUNING
 	bool IS_BORDER_ALIVE;
     float dx;
     float dy;
+    float dz;
 }FINETUNINGtypeDef;
 
 typedef struct UnpackData

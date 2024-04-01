@@ -19,7 +19,7 @@
 UART _UART_FINDBORDER;
 UART _UART_FINE_TUNING;
 UART _UART_RECOGNIZE_PLACE;
-FINETUNINGtypeDef FINETUNING_DATA = {false, false, 0.0f, 0.0f};
+FINETUNINGtypeDef FINETUNING_DATA = {false, false, 0.0f, 0.0f, 0.0f};
 FINDBORDERtypeDef FINDBORDER_DATA = {false, 0.0f, STRAIGHT};  
 UnpackDataTypeDef UnpackFlag = {false, false, false}; // 判断帧头帧尾是否到达
 
@@ -137,12 +137,13 @@ void UART_UnpackData(UART *uart)
         case UART_FINE_TUNING:
             FINETUNING_DATA.dx = (float)uart->fifo_get_data[0];
             FINETUNING_DATA.dy = (float)uart->fifo_get_data[1];
-            if (uart->fifo_get_data[2] == 0x01)
+            FINETUNING_DATA.dz = (float)uart->fifo_get_data[2];
+            if (uart->fifo_get_data[3] == 0x01)
             {
                 FINETUNING_DATA.FINETUNING_FINISH_FLAG = false;
 				FINETUNING_DATA.IS_BORDER_ALIVE = true;
             }
-            else if (uart->fifo_get_data[2] == 0x00)
+            else if (uart->fifo_get_data[3] == 0x00)
             {
                 FINETUNING_DATA.FINETUNING_FINISH_FLAG = true;
 				FINETUNING_DATA.IS_BORDER_ALIVE = true;
