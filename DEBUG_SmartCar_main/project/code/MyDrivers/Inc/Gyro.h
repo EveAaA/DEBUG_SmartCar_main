@@ -53,5 +53,6 @@ float Gyro_PitchAngle_Get(void);
 float Gyro_YawAngle_Get(void);
 void Gyro_Get_All_Angles();
 void Gyro_Offset_Init(void);
+extern IMU_Param_t IMU_Data;
 
 #endif

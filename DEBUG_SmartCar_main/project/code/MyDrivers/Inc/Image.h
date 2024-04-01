@@ -20,7 +20,13 @@ extern uint8 Bin_Image[Image_H][Image_W];//二值化图像数组
 extern uint8 Hightest;//最高点
 typedef struct
 {
-    int8_t Cross_Fill;
+    bool Cross_Fill;//十字标志位
 }Flag_Handle;
+
+typedef struct
+{
+    bool Straight_Line;//是否存在长直线
+    uint16_t Straight_Line_Count;
+}Ring_Handle;
 
 #endif /* MYDRIVERS_INC_IMAGE_H_ */

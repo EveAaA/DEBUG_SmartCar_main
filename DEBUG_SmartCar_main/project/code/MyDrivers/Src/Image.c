@@ -42,8 +42,8 @@ uint8 Center_Line[Image_H];//中线数组
 
 float Image_Erro;
 uint8 Image_Show = 0;
-Flag_Handle Image_Flag;//元素标志位
-
+Flag_Handle Image_Flag = {false};//元素标志位
+Ring_Handle LeftRing;
 /**
  ******************************************************************************
  *  @defgroup 内部调用
@@ -824,6 +824,7 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W], uint8 *L_Border, uint8 *R_Border, ui
 
 	if (Break_Num_L_DOWN && Break_Num_R_DOWN &&(Bin_Image[Image_H - 10][4] == 0) && (Bin_Image[Image_H - 10][Image_W - 4] == 0))//十字前
 	{
+        Image_Flag.Cross_Fill = true;
 		//计算斜率,左边斜率
         start = Break_Num_L_DOWN + 2;
         end = Break_Num_L_DOWN + 7;
@@ -852,6 +853,7 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W], uint8 *L_Border, uint8 *R_Border, ui
 	}
 	else if (Break_Num_L_UP && Break_Num_R_UP && Bin_Image[Image_H - 10][4] && Bin_Image[Image_H - 10][Image_W - 4])//十字中
 	{
+        Image_Flag.Cross_Fill = true;
 		//计算斜率
 		start = Break_Num_L_UP - 15;
 		start = Limit_a_b(start, 0, Image_H);
@@ -880,6 +882,70 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W], uint8 *L_Border, uint8 *R_Border, ui
 
 }
 
+/** 
+* @brief 左圆环补线函数
+* @param uint8(*Bin_Image)[Image_W]		输入二值图像
+* @param uint8 *L_Border			输入左边界首地址
+* @param uint8 *R_Border			输入右边界首地址
+* @param uint16 Total_Num_L			输入左边循环总次数
+* @param uint16 Total_Num_R			输入右边循环总次数
+* @param uint16 *Dir_L				输入左边生长方向首地址
+* @param uint16 *Dir_R				输入右边生长方向首地址
+* @param uint16(*Points_L)[2]		输入左边轮廓首地址
+* @param uint16(*Points_R)[2]		输入右边轮廓首地址
+* @see CTest		Left_Ring(Bin_Image,L_Border, R_Border, data_statics_l, data_statics_r, Dir_L, Dir_R, Points_L, Points_R);
+ */
+void Left_Ring(uint8(*Bin_Image)[Image_W], uint8 *L_Border, uint8 *R_Border, uint16 Total_Num_L, uint16 Total_Num_R,
+										 uint16 *Dir_L, uint16 *Dir_R, uint16(*Points_L)[2], uint16(*Points_R)[2])
+{
+    int i;
+    uint8 Break_Num_L_UP = 0;//拐点
+    uint8 Break_Num_L_DOWN = 0;
+	uint8 start, end;
+	float slope_l_rate = 0, intercept_l = 0;
+
+    if(Total_Num_R <= 120)//长直线找到的点要比丢失边线找到的点来的少
+    {
+        LeftRing.Straight_Line = true;
+    }
+    else
+    {
+        LeftRing.Straight_Line = false;
+    }
+
+    for (i = 1; i < Total_Num_L; i++)//找拐点
+	{
+		if (Dir_L[i - 1] == 2 && Dir_L[i] == 2 && Dir_L[i + 3] == 4 && Dir_L[i + 5] == 4 && Dir_L[i + 7] == 4)//2-4跳变，左下拐点
+		{
+			Break_Num_L_DOWN = Points_L[i][1];//传递y坐标
+            // printf("find l_down\r\n");
+            // printf("%d %d\r\n",i,Break_Num_L_DOWN);
+            // if(Menu.Image_Show)
+            // {
+            //     tft180_Draw_ColorCircle(L_Border[Break_Num_L_DOWN],Break_Num_L_DOWN,5,RGB565_BLUE);//画出拐点
+            // }
+			break;
+		}
+	}
+    //补线
+    if (Break_Num_L_DOWN && LeftRing.Straight_Line && (Bin_Image[Image_H - 10][4] == 0) && (Bin_Image[Image_H - 10][Image_W - 4] == 0))//十字前
+	{
+		//计算斜率,左边斜率
+        start = Break_Num_L_DOWN + 2;
+        end = Break_Num_L_DOWN + 7;
+        end = Limit_a_b(end, 0, Image_H);//限幅
+
+		calculate_s_i(start, end, L_Border, &slope_l_rate, &intercept_l);
+		// printf("slope_l_rate:%f\nintercept_l:%f\n", slope_l_rate, intercept_l);
+		for (i = Break_Num_L_DOWN; i < Image_H - 1; i--)
+		{
+			L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+			L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
+		}
+        // tft180_show_string(Row_10,Line_7,"fuck");
+	}
+
+}
 
 /**
  ******************************************************************************
@@ -919,11 +985,17 @@ void Image_Process()
         Get_Right(Data_Stastics_R);
         //元素处理函数放这里
         Cross_Fill(Bin_Image,L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);//十字补线
+        if(!Image_Flag.Cross_Fill)
+        {
+            Left_Ring(Bin_Image,L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);//左圆环
+        }
+        
     }
     for (int i = Hightest; i < Image_H-1; i++)
     {
         Center_Line[i] = (L_Border[i] + R_Border[i]) >> 1;//求中线
     }
     Image_Erro = (Center_Line[69])*0.375f + (Center_Line[70])*0.5f + (Center_Line[71])*0.1f;
+    Image_Flag.Cross_Fill = false;
 }
 

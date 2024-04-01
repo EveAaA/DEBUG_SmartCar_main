@@ -14,9 +14,10 @@ enum State  //状态
 enum Board_State
 {
     Find,//找到卡片
-    Forward,//前进
-    BackAutodrome,//返回赛道
+    X_Move,//X前进
+    Y_Move,//Y前进
     finish,//完成
+    fuck,
 };
 
 

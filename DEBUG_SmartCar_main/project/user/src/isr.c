@@ -53,25 +53,32 @@ void PIT_IRQHandler(void)
     if(pit_flag_get(PIT_CH0))
     {
         Sensor_Handler();
+        // UART_UnpackDataV2(&UnpackFlag);
+        // UART_ResetUnpackFlag(&UnpackFlag);
         pit_flag_clear(PIT_CH0);
     }
     
     if(pit_flag_get(PIT_CH1))
     {
-        if(Start == 1)
-        {
-            Car_run();
-        }
+        // if (mt9v03x_finish_flag)
+        // {
+        //     Image_Process();
+        //     mt9v03x_finish_flag = 0;
+        // }
         pit_flag_clear(PIT_CH1);
     }
     
     if(pit_flag_get(PIT_CH2))
     {
-        if (mt9v03x_finish_flag)
+        if(Start == 1)
         {
-            Image_Process();
-            mt9v03x_finish_flag = 0;
+            Turn_Angle(-90);
         }
+        else if(Start == 3)
+        {
+            Turn_Angle(20);
+        }
+        // FSMRun(CURRENT_FSM);
         pit_flag_clear(PIT_CH2);
     }
     

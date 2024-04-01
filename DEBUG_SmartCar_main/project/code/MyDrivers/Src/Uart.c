@@ -139,12 +139,12 @@ void UART_UnpackData(UART *uart)
             FINETUNING_DATA.dy = (float)uart->fifo_get_data[1];
             if (uart->fifo_get_data[2] == 0x01)
             {
-                FINETUNING_DATA.FINETUNING_FINISH_FLAG = true;
+                FINETUNING_DATA.FINETUNING_FINISH_FLAG = false;
 				FINETUNING_DATA.IS_BORDER_ALIVE = true;
             }
             else if (uart->fifo_get_data[2] == 0x00)
             {
-                FINETUNING_DATA.FINETUNING_FINISH_FLAG = false;
+                FINETUNING_DATA.FINETUNING_FINISH_FLAG = true;
 				FINETUNING_DATA.IS_BORDER_ALIVE = true;
             }
 			else

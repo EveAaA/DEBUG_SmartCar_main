@@ -211,3 +211,8 @@ float Get_Y_Distance()
 {
     return (Encoder_Distance[0] + (-Encoder_Distance[3]) + Encoder_Distance[2] + (-Encoder_Distance[1]))/4.0;
 }
+
+float Get_X_Speed()
+{
+    return (Encoer_Speed[0] + Encoer_Speed[3] - Encoer_Speed[2] - Encoer_Speed[1])/4.0f;
+}

@@ -17,7 +17,7 @@
 /* Define\Declare ------------------------------------------------------------*/
 Navigation_Handle Navigation = {0,0,0,0,0,0,0,0,0};
 Pid_TypeDef Distance_PID;
-Pid_TypeDef Angle_PID;
+
 
 /**
  ******************************************************************************
@@ -29,7 +29,7 @@ Pid_TypeDef Angle_PID;
 void Pid_Init()
 {
     PIDInit(&Distance_PID,3,0,0,10,-10);
-    PIDInit(&Angle_PID,0.44f,0,2,1.5f,-1.5f);
+    
 }
 
 /**@brief   惯性导航使能

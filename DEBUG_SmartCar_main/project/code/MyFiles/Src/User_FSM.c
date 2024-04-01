@@ -1,12 +1,12 @@
 /**
   ******************************************************************************
-  * @file    MatrixKeyBoard.c
-  * @author  俞立，何志远，葛子磊
+  * @file    User_FSM.c
+  * @author  庄文标
   * @brief   主状态机
   *
-  @verbatim
+    @verbatim
 	无
-	@endverbatim
+    @endverbatim
   * @{
 **/
 
@@ -16,7 +16,8 @@
 /* Define\Declare ------------------------------------------------------------*/
 FSM_t *CURRENT_FSM;//当前运行状态机
 FSM_t Line_FSM;//巡线状态机
-FSM_t Board_FSM;//卡片状态机_赛道旁
+FSM_t Left_Board_FSM;//卡片状态机_赛道旁
+FSM_t Right_Board_FSM;//卡片状态机_赛道旁
 
 
 /**
@@ -45,11 +46,17 @@ bool Depart_Select()
 **/
 bool Board_Find()
 {
-    if(fabs(border.dx) > 5 && border.dx != 127)
+    if(FINDBORDER_DATA.FINDBORDER_FLAG == true)
     {
-        CURRENT_FSM = &Board_FSM;//切换到卡片状态机
-        Enable_Navigation();//使能惯导，记录数据
-        // printf("board_find");
+        Forward_Speed = 3;
+    }
+    else
+    {
+        Forward_Speed = 5;
+    }
+    if(FINDBORDER_DATA.dir == LEFT)
+    {
+        CURRENT_FSM = &Left_Board_FSM;//切换到卡片状态机
     }
     return false;
 }
@@ -58,47 +65,50 @@ bool Board_Find()
 -- @auther  庄文标
 -- @date    2024/3/13
 **/
-bool Board_Find_Finish()
+bool TurnAction_Finish()
 {
-    if(fabs(border.dx) < 5)
+    if(Turn_Finsh)
     {
+        Start_Angle = Gyro_YawAngle_Get();
         // printf("board_finishy\r\n");
         return true;
     }
     return false;
 }
 
-/**@brief   返回赛道结束
+/**@brief   平移结束
 -- @auther  庄文标
 -- @date    2024/3/13
 **/
-bool Back_Autodrome_Finish()
+bool Xmove_finish()
 {
-    Navigation.Cur_Position_X = Get_X_Distance();//获取自身坐标值
-    if((fabs(0 - Navigation.Cur_Position_X) < 1.0f && fabs(Navigation.Cur_Angle < 1.0f)))
-    {
-        Navigation.Cur_Position_X = 0;//记录值清零
-        Navigation.Cur_Position_Y = 0;
-        Navigation.Start_Angle = 0;
-        Navigation.Start_Flag = 0;//关闭惯性导航
-#ifdef debug_switch
-        printf("back_finish\n\r");
-#endif
-        CURRENT_FSM = &Line_FSM;//切换到巡线状态机
-        return false;
-    }
-    return false;
-}
-
-bool Foward_finish()
-{
-    if(border.dx == 127)
+    if(fabs(FINETUNING_DATA.dx) <= 8)
     {
         return true;
     }
     return false;
 }
 
+/**@brief   前进结束
+-- @auther  庄文标
+-- @date    2024/3/13
+**/
+bool Ymove_finish()
+{
+    if(fabs(FINETUNING_DATA.dy) <= 8)
+    {
+        return true;
+    }
+#ifdef debug_switch
+        printf("back_finish\n\r");
+#endif
+        return false;
+}
+
+bool Wait()
+{
+    return false;
+}
 
 /**
  ******************************************************************************
@@ -114,12 +124,13 @@ FSMTable_t LineTable[] =
     {LinePatrol,       Car_run,               Board_Find,            FindBoard     },
 };
 
-FSMTable_t BoardTable[] =
+FSMTable_t LeftBoardTable[] =
 {
     //当前的状态		当前状态执行函数		跳转事件条件函数		下一个状态
-	{Find,              Change_Direction,     Board_Find_Finish,      Forward           },
-    {Forward,           Forward_Board,        Foward_finish,          BackAutodrome     },
-    {BackAutodrome,     Back_Autodrome,       Back_Autodrome_Finish,  finish            },
+	{Find,              Change_Direction,     TurnAction_Finish,      X_Move       },
+    {X_Move,            X_Move_Action,        Xmove_finish,           Y_Move       },
+    {Y_Move,            Y_Move_Action,        Ymove_finish,           finish       },
+    {finish,            Motor_Disable,        Wait,                   fuck         },
 };
 
 
@@ -138,5 +149,5 @@ void My_FSM_Init()
 {
     CURRENT_FSM = &Line_FSM;
     FSMInit(&Line_FSM,Depart,LineTable,0);
-    FSMInit(&Board_FSM,Find,BoardTable,1);
+    FSMInit(&Left_Board_FSM,Find,LeftBoardTable,1);
 }
