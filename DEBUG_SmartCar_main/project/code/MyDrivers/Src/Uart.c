@@ -45,7 +45,8 @@ void UART_Init(void)
 void UART_init(UART *uart, IRQn_Type UART_PRIORITY, uart_index_enum UART_INDEX)
 {
     uart->UART_INDEX = UART_INDEX;
-	fifo_init(&uart->uart_data_fifo, FIFO_DATA_8BIT, uart->uart_get_data, 64); // 初始化 fifo 挂载缓冲区
+	uart->index = 0;
+	fifo_init(&uart->uart_data_fifo, FIFO_DATA_8BIT, uart->uart_get_data, 1024); // 初始化 fifo 挂载缓冲区
     switch (UART_INDEX)
     {
     case UART_FINDBORDER:
@@ -54,7 +55,7 @@ void UART_init(UART *uart, IRQn_Type UART_PRIORITY, uart_index_enum UART_INDEX)
 		uart_rx_interrupt(UART_INDEX, ZF_ENABLE); // 开启 UART_INDEX 的接收中断
         break;
     case UART_FINE_TUNING:
-        uart_init(UART_INDEX, UART_BAUDRATE, UART2_TX_B18, UART2_RX_B19);
+        uart_init(UART_INDEX, 9600, UART2_TX_B18, UART2_RX_B19);
 		interrupt_set_priority(UART_PRIORITY, 1); // 设置对应 UART_INDEX 的中断优先级为 0
 		uart_rx_interrupt(UART_INDEX, ZF_ENABLE); // 开启 UART_INDEX 的接收中断        
 		break;
@@ -105,8 +106,8 @@ void UART_UnpackData(UART *uart)
     uart->fifo_data_count = fifo_used(&uart->uart_data_fifo);
     if (uart->fifo_data_count != 0)
     {
-        fifo_read_buffer(&uart->uart_data_fifo, uart->fifo_get_data, &uart->fifo_data_count, FIFO_READ_AND_CLEAN);
-            // 通过串口特殊编号判断是解包到哪个变量当中
+        fifo_read_buffer(&uart->uart_data_fifo, uart->fifo_get_data, &uart->fifo_data_count, FIFO_READ_AND_CLEAN);    
+		// 通过串口特殊编号判断是解包到哪个变量当中
         switch (uart->UART_INDEX)
         {
         case UART_FINDBORDER: // 找到目标板时的判断
@@ -156,6 +157,7 @@ void UART_UnpackData(UART *uart)
         default:
              break;
         }
+		// memset(uart->fifo_get_data, 0, sizeof(uart->fifo_get_data));
     }
 }
 
@@ -171,10 +173,10 @@ void UART_UnpackDataV2(UnpackDataTypeDef* UnpackFlag)
     {
         UART_UnpackData(&_UART_FINDBORDER);
     }
-    if(UnpackFlag->FINETUNING_DATA_FLAG)
-    {
-        UART_UnpackData(&_UART_FINE_TUNING);
-    } 
+    // if(UnpackFlag->FINETUNING_DATA_FLAG)
+    // {
+    //     UART_UnpackData(&_UART_FINE_TUNING);
+    // } 
 }
 
 /**
@@ -187,5 +189,15 @@ void UART_ResetUnpackFlag(UnpackDataTypeDef *UnpackFlag)
 {
     UnpackFlag->FINDBORDER_DATA_FLAG = false;
     UnpackFlag->FINETUNING_DATA_FLAG = false;
-	// UnpackFlag->FINETUNING_DATA_START_FLAG = false;
+	UnpackFlag->FINETUNING_DATA_START_FLAG = false;
+}
+
+/**
+ * @brief: 串口发送一个字节 
+ * @param: 串口索引, 发送的字节  
+ * @return： None
+ */
+void UART_SendByte(UART* uart, uint8_t data)
+{
+    uart_write_byte(uart->UART_INDEX, data);
 }
