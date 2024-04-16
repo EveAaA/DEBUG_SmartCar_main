@@ -37,6 +37,7 @@ int16 Encoder_Pules_Buffer[4];//脉冲数组
 int32 Distance_Buffer[4];//距离缓存数组
 float Encoer_Speed[4];//速度数组,顺序为LF RF LB RB
 float Encoder_Distance[4];//实际距离数组
+const float Cm_Per = 0.0082832f;
 
 /**
  ******************************************************************************
@@ -117,8 +118,6 @@ static float Get_RB_Speed()
 **/
 static void Get_Distance()
 {
-    static float Cm_Per;
-    Cm_Per = (6.3f*3.1415926f)/2048.0f;
     if(Navigation.Start_Flag)//开启惯性导航，开始距离解算
     {
         for(int i = 0;i<=3;i++)
@@ -209,10 +208,25 @@ float Get_X_Distance()
 **/
 float Get_Y_Distance()
 {
-    return (Encoder_Distance[0] + (-Encoder_Distance[3]) + Encoder_Distance[2] + (-Encoder_Distance[1]))/4.0;
+    return (Encoder_Distance[0] + (-Encoder_Distance[3]) + Encoder_Distance[2] + (-Encoder_Distance[1]))/4.0f;
 }
 
+/**@brief   X轴速度获取
+-- @param   无
+-- @auther  庄文标
+-- @date    2023/12/7
+**/
 float Get_X_Speed()
 {
     return (Encoer_Speed[0] + Encoer_Speed[3] - Encoer_Speed[2] - Encoer_Speed[1])/4.0f;
+}
+
+/**@brief   Y轴速度获取
+-- @param   无
+-- @auther  庄文标
+-- @date    2023/12/7
+**/
+float Get_Y_Speed()
+{
+    return (Encoer_Speed[0] - Encoer_Speed[3] + Encoer_Speed[2] - Encoer_Speed[1])/4.0f;
 }

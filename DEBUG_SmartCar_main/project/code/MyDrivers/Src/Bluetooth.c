@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    Bluetooth.c
-  * @author  戴骐阳
+  * @author  戴骐阳、庄文标
   * @brief   蓝牙传输信息
   * @date    2/11/2023
     @verbatim
@@ -15,6 +15,13 @@ float *Num_Address[CH_COUNT] = {NULL}; // 存储需要观察变量的地址
 uint8 data_buffer[32];                 // 存储上位机接收到数据
 uint8 data_len;                        // 存储接收到的数据长度
 HashNode hashTable[1024];              
+ReceiveData_Handle Receivedata = 
+{
+    .Receive_Num = 0,
+    .Equal_pos = 0,
+    .Dot_pos = 0,
+    .Start_Flag = 2,
+};
 float test_1 = 0.0;
 float test_2 = 0.0;
 float test_3 = 0.0f;
@@ -31,8 +38,8 @@ void Bluetooth_Init(void)
         if(!bluetooth_ch9141_init())
             break;
     }
-    Bluetooth_Set_Watch_Variable(Num_Address, CH1, &test_1);
-    Bluetooth_Set_Watch_Variable(Num_Address, CH2, &test_2);
+//    Bluetooth_Set_Watch_Variable(Num_Address, CH1, &test_1);
+//    Bluetooth_Set_Watch_Variable(Num_Address, CH2, &test_2);
 }
 
 /**@brief     printf重定向
@@ -90,9 +97,91 @@ void Bluetooth_Set_Watch_Variable(float *float_add[], CH_NUM CH, float *Set_Num)
 **/
 void Bluetooth_Get_Message(void)
 {
-    memset(data_buffer, 0, 32);
+    // memset(data_buffer, 0, 32);
     // 获取取得的字符串长度以及将数据存入data_buffer当中
     data_len = bluetooth_ch9141_read_buffer(data_buffer, 32);
+    if(data_len != 0)                                                       // 收到了消息 读取函数会返回实际读取到的数据个数
+    {
+        bluetooth_ch9141_send_buffer(data_buffer, data_len);    
+    }
+}
+
+/**@brief     获取上位机传输的数据，并解包
+-- @param     None
+-- @auther    庄文标
+-- @date      2024/4/16
+**/
+void Get_Message()
+{
+    uint8 i = 0;
+    bluetooth_ch9141_read_buffer(data_buffer, 32);
+    Receivedata.RxBuffer[Receivedata.Receive_Num] = data_buffer[0];
+    if(Receivedata.RxBuffer[Receivedata.Receive_Num] == '!')//获取到结束位置
+    {
+        for(i = 0;i<=Receivedata.Receive_Num;i++)
+        {
+            if(Receivedata.RxBuffer[i] == '=')//寻找等号位置
+            {
+                Receivedata.Equal_pos = i;
+                break;
+            }
+            else
+            {
+                Receivedata.Equal_pos = 0;//非法值
+            }
+        }
+        if(Receivedata.Equal_pos!=0)//存在等号
+        {
+            for(i = 0;i<=Receivedata.Receive_Num;i++)
+            {
+                if(Receivedata.RxBuffer[i] == '.')//寻找小数点位置
+                {
+                    Receivedata.Dot_pos = i;
+                    break;
+                }
+            }
+            Receivedata.Integer = (Receivedata.RxBuffer[Receivedata.Equal_pos + 1] - '0')*10+(Receivedata.RxBuffer[Receivedata.Equal_pos + 2] - '0');
+            Receivedata.Decimal = (Receivedata.RxBuffer[Receivedata.Dot_pos + 1] - '0')*0.1f+(Receivedata.RxBuffer[Receivedata.Dot_pos + 2] - '0')*0.01f;
+            Receivedata.Real_Data = Receivedata.Integer + Receivedata.Decimal; 
+
+            if(Receivedata.RxBuffer[Receivedata.Equal_pos - 1] == 'P')
+            {
+                Receivedata.P_Data = Receivedata.Real_Data;
+                Receivedata.I_Data = 0;
+                Receivedata.D_Data = 0;
+            }
+            else if(Receivedata.RxBuffer[Receivedata.Equal_pos - 1] == 'I')
+            {
+                Receivedata.P_Data = 0;
+                Receivedata.I_Data = Receivedata.Real_Data;
+                Receivedata.D_Data = 0;
+            }
+            else
+            {
+                Receivedata.P_Data = 0;
+                Receivedata.I_Data = 0;
+                Receivedata.D_Data = Receivedata.Real_Data;
+            }
+            printf("%f,%f,%f\r\n",Receivedata.P_Data,Receivedata.I_Data,Receivedata.D_Data);
+        }
+        else//没有找到等号，说明为发车指令
+        {
+            if(Receivedata.RxBuffer[0] == 'S' && Receivedata.RxBuffer[Receivedata.Receive_Num - 1] == 't')
+            {
+                Receivedata.Start_Flag = 1;
+            }
+            else if(Receivedata.RxBuffer[0] == 'S' && Receivedata.RxBuffer[Receivedata.Receive_Num - 1] == 'p')
+            {
+                Receivedata.Start_Flag = 0;
+            }
+            printf("%d\r\n",Receivedata.Start_Flag);
+        }
+        Receivedata.Receive_Num=0;
+    }
+    else
+    {
+        Receivedata.Receive_Num++;
+    }
 }
 
 /**@brief     解析获取到的数据

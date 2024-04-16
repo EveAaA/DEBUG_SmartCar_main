@@ -63,9 +63,9 @@ void Uart_Findborder_Receive(void)
 	
     uart_query_byte(UART_1, &_UART_FINDBORDER.get_data);
     fifo_write_buffer(&_UART_FINDBORDER.uart_data_fifo, &_UART_FINDBORDER.get_data, 1);
-	if (_UART_FINDBORDER.get_data == 0x80)
+    if(_UART_FINDBORDER.get_data == 0x80)
     {
-      UnpackFlag.FINDBORDER_DATA_FLAG = true;
+       UnpackFlag.FINDBORDER_DATA_FLAG = true;
     }
 }
 

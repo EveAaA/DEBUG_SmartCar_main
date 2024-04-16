@@ -14,10 +14,12 @@ enum State  //状态
 enum Board_State
 {
     Find,//找到卡片
-    X_Move,//X前进
-    Y_Move,//Y前进
-    finish,//完成
-    fuck,
+    Wait_Data,//等待数据
+    Move,//移动到卡片前面
+    Confirm,//确认是否移动到位
+    Pick,//捡起卡片
+    Return_Line,//返回赛道
+    Finish,//
 };
 
 

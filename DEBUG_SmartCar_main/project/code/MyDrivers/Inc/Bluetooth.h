@@ -24,6 +24,21 @@ typedef struct {
     void (*function)();
 }HashNode;
 
+typedef struct
+{
+    uint8 RxBuffer[100];//存放数据的地方
+    uint8 Receive_Num;//数据索引
+    uint8 Equal_pos;//等号的位置
+    uint8 Dot_pos;//小数点的位置
+    uint8 Integer;//整数部分
+    float Decimal;//小数部分
+    float Real_Data;//实际的数值
+    float P_Data;
+    float I_Data;
+    float D_Data;
+    uint8 Start_Flag;
+}ReceiveData_Handle;
+
 extern HashNode hashTable[1024];
 extern ReceiveData After_Analyze_Data;
 extern float *Num_Address[CH_COUNT];
@@ -49,5 +64,5 @@ void Handle_GYP_Case(void);
 void Handle_GYI_Case(void);
 void Handle_GYD_Case(void);
 void Handle_GYK_Case(void);
-
+void Get_Message();
 #endif

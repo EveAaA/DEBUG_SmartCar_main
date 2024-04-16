@@ -53,32 +53,37 @@ void PIT_IRQHandler(void)
     if(pit_flag_get(PIT_CH0))
     {
         Sensor_Handler();
-        // UART_UnpackDataV2(&UnpackFlag);
-        // UART_ResetUnpackFlag(&UnpackFlag);
+        UART_UnpackDataV2(&UnpackFlag);
+        UART_ResetUnpackFlag(&UnpackFlag);
+        if(Stretch_Servo.Servo_Time > 0)
+        {
+            Stretch_Servo.Servo_Time++;
+        }
+
+        if(Raise_Servo.Servo_Time > 0)
+        {
+            Raise_Servo.Servo_Time++;
+        }
         pit_flag_clear(PIT_CH0);
     }
     
     if(pit_flag_get(PIT_CH1))
     {
-        // if (mt9v03x_finish_flag)
-        // {
-        //     Image_Process();
-        //     mt9v03x_finish_flag = 0;
-        // }
+        if (mt9v03x_finish_flag)
+        {
+            Image_Process();
+            mt9v03x_finish_flag = 0;
+        }
         pit_flag_clear(PIT_CH1);
     }
     
     if(pit_flag_get(PIT_CH2))
     {
-        if(Start == 1)
-        {
-            Turn_Angle(-90);
-        }
-        else if(Start == 3)
-        {
-            Turn_Angle(20);
-        }
-        // FSMRun(CURRENT_FSM);
+       if(Start == 1)
+       {
+            FSMRun(CURRENT_FSM);
+       }
+        
         pit_flag_clear(PIT_CH2);
     }
     
@@ -159,20 +164,13 @@ void LPUART6_IRQHandler(void)
     LPUART_ClearStatusFlags(LPUART6, kLPUART_RxOverrunFlag);    // 不允许删除
 }
 
-
 void LPUART8_IRQHandler(void)
 {
     if(kLPUART_RxDataRegFullFlag & LPUART_GetStatusFlags(LPUART8))
     {
         // 接收中断
         wireless_module_uart_handler();
-        Bluetooth_Get_Message();
-        ReceiveData After_Analyze_Data;
-        //如果有数据则解析数据
-        if(data_len > 0)
-        {
-            
-        }
+	    Get_Message();
     }
         
     LPUART_ClearStatusFlags(LPUART8, kLPUART_RxOverrunFlag);    // 不允许删除

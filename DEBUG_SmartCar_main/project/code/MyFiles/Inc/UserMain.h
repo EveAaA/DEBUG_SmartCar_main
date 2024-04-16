@@ -27,4 +27,6 @@ void User_Loop();
 
 extern uint16 Start;
 
+#define Servo_Slow
+
 #endif  

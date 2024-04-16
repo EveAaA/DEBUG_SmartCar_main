@@ -13,12 +13,21 @@ typedef struct
     float Cur_Angle;//当前角度
     float Target_Position_X;//目标X坐标
     float Target_Position_Y;//目标Y坐标
-    uint8 Start_Flag;//启动惯性导航
+    bool Start_Flag;//启动惯性导航
+    bool Finish_Flag;//惯性导航结束
 }Navigation_Handle;
+
+typedef enum
+{
+    Start_State = 0,//开始状态，记录初始值
+    X_State,//X轴移动状态
+    Stop,//X轴移动结束
+    Y_State,//Y轴移动状态
+    Move_Finish,//移动结束
+}State;
 
 extern Navigation_Handle Navigation;
 
-void Enable_Navigation();
+void Reset_Navigation();
 void Navigation_Process(float x,float y);
-void Pid_Init();
 #endif

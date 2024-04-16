@@ -53,8 +53,8 @@ void All_PID_Init()
     PIDInit(&Image_PID,3.8f,0,0.5f,2.5f,-2.5f);
     PIDInit(&BorderPlace_PID,2.1f,0,0,1.5f,-1.5f);
     PIDInit(&Foward_PID,2.1f,0,0,1.5f,-1.5f);
-    PIDInit(&Turn_PID,1.3f,0,0.3f,5,-5);
-    PIDInit(&Gyroz_PID,1.5f,0,0.5f,5,-5);
+    PIDInit(&Turn_PID,1.15f,0,0.25f,5,-5);   
+    PIDInit(&Gyroz_PID,0.75f,0,0.25f,5,-5);
     PIDInit(&AngleControl_PID,0.44f,0,2,1.5f,-1.5f);
 }
 
@@ -111,16 +111,16 @@ void Turn_Angle(float Target_Angle)
     Turn_Offset += Current_Angle - Angle_Last;
 
     Offset_Erro = (Target_Angle - Turn_Offset)/50.0f;
-    if(Target_Angle - Turn_Offset > 1.5f)
+    if(Target_Angle - Turn_Offset > 2.5f)
     {
         Yaw_Erro = 2 + GetPIDValue(&Turn_PID,Offset_Erro);
-        Set_Car_Speed(0,0,GetPIDValue(&Gyroz_PID,Yaw_Erro - (-IMU_Data.gyro_z)));
+        Set_Car_Speed(0,0,GetPIDValue(&Gyroz_PID,Yaw_Erro - IMU_Data.gyro_z));
         Turn_Finsh = false;
     }
-    else if(Target_Angle - Turn_Offset < -1.5f)
+    else if(Target_Angle - Turn_Offset < -2.5f)
     {
         Yaw_Erro = -2 + GetPIDValue(&Turn_PID,Offset_Erro);
-        Set_Car_Speed(0,0,GetPIDValue(&Gyroz_PID,Yaw_Erro - (-IMU_Data.gyro_z)));
+        Set_Car_Speed(0,0,GetPIDValue(&Gyroz_PID,Yaw_Erro - IMU_Data.gyro_z));
         Turn_Finsh = false;
     }
     else
@@ -143,11 +143,9 @@ float Angle_Control(float Start_Angle)
 {
     float Yaw_Err = 0.0f;
     Yaw_Err = GetPIDValue(&AngleControl_PID,Start_Angle - Gyro_YawAngle_Get());
-    return GetPIDValue(&Gyroz_PID,Yaw_Err - (-IMU_Data.gyro_z));
+    return GetPIDValue(&Gyroz_PID,Yaw_Err - IMU_Data.gyro_z);
 }
 
-float Image_Erro_;
-float Angle_Erro_;
 
 /**@brief   巡线
 -- @param   无
@@ -156,8 +154,7 @@ float Angle_Erro_;
 **/
 void Car_run()
 {
-    Image_Erro_ = GetPIDValue(&Image_PID,(70 - Image_Erro)*0.03f);
-    // Angle_Erro_ = GetPIDValue(&Angle_PID,Gyro_YawAngle_Get() - Image_Erro);
+    float Image_Erro_ = GetPIDValue(&Image_PID,(70 - Image_Erro)*0.03f);
     Set_Car_Speed(0,Forward_Speed,-Image_Erro_);
 #ifdef debug_switch
     printf("line\r\n");
@@ -175,37 +172,58 @@ void Change_Direction(void)
 #ifdef debug_switch
     printf("FIND\r\n");
 #endif
-    // Set_Car_Speed(DirectionPidErr,0,GetPIDValue(&Angle_PID,Navigation.Cur_Angle));  
 }
 
-/**@brief   X轴移动
--- @param   无
--- @auther  庄文标
--- @date    2024/3/23
-**/
-void X_Move_Action()
+void Change_Right(void)
 {
-    float DirectionPidErr = 0.0f;
-    DirectionPidErr = GetPIDValue(&BorderPlace_PID, FINETUNING_DATA.dx);
-    // DirectionPidErr_y = GetPIDValue(&BorderPlace_PID, FINETUNING_DATA.dy);
-    Set_Car_Speed(1.5,0,GetPIDValue(&Angle_PID,Start_Angle - Gyro_YawAngle_Get()));
+    Turn_Angle(90);
 #ifdef debug_switch
-    printf("FIND_X\r\n");
+    printf("FIND\r\n");
 #endif
 }
 
-/**@brief   Y轴移动
+void Return_Right()
+{
+    Turn_Angle(-89);
+}
+
+void Return_Action()
+{
+    Turn_Angle(89);
+}
+
+void Car_Stop_Wait_Data_L()
+{
+    UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);
+    Set_Car_Speed(3,0,Angle_Control(Navigation.Start_Angle));
+#ifdef debug_switch
+    printf("wait\r\n");
+#endif
+}
+
+void Car_Stop_Wait_Data_R()
+{
+    UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);
+    Set_Car_Speed(-3,0,Angle_Control(Navigation.Start_Angle));
+#ifdef debug_switch
+    printf("wait\r\n");
+#endif
+}
+
+/**@brief   移动至目标板前方
 -- @param   无
 -- @auther  庄文标
--- @date    2024/3/16
+-- @date    2024/4/7
 **/
-void Y_Move_Action()
+void Move_Action()
 {
-    float DirectionPidErr_y = 0.0f;
-    DirectionPidErr_y = GetPIDValue(&Foward_PID, FINETUNING_DATA.dy);
-    Set_Car_Speed(0,1,GetPIDValue(&Angle_PID,Start_Angle - Gyro_YawAngle_Get()));
+    Navigation_Process(FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f);
 #ifdef debug_switch
-    printf("x:%f\r\n",Navigation.Cur_Position_X);
+    printf("move\r\n");
+    printf("tx:%f\r\n,",FINETUNING_DATA.dx/10.f);
+    printf("x:%f\r\n",Get_X_Distance());
+    printf("ty:%f\r\n,",FINETUNING_DATA.dy/10.f);
+    printf("y:%f\r\n",Get_Y_Distance());
 #endif
 }
 

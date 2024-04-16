@@ -17,7 +17,7 @@
 
 /* Define\Declare ------------------------------------------------------------*/
 uint16 Start = 2;
-
+uint8 Once = 1;
 /**
  ******************************************************************************
  *  @defgroup 内部调用
@@ -29,7 +29,7 @@ void IMU_Init()
     while (1)
     {
         if (imu660ra_init())
-            tft180_show_string(Row_0, Row_0, "mt9v03x reinit.");
+            tft180_show_string(Row_0, Row_0, "IMU reinit.");
         else
             break;
         system_delay_ms(1000);
@@ -81,16 +81,18 @@ void User_Init()
     Beep_Init();
     // dl1a_init();
     All_PID_Init();
-    Pid_Init();
     // Flash_Init();
     UART_Init();
     My_FSM_Init();
     tft180_show_string(Row_0, Line_5, "Soft Init ...");
     tft180_clear();
+    // system_delay_ms(1000);
     TIM_Init();
+    // timer_init(GPT_TIM_1, TIMER_MS); 
     // Beep(On);
-    // system_delay_ms(100);
+    
     // Beep(Off);
+	interrupt_global_enable(0);
 }
 /**@brief   所有主循环内容
 -- @param   无
@@ -99,5 +101,7 @@ void User_Init()
 **/
 void User_Loop()
 {
-    Menu_Display();
+    // Set_Motor_Speed(LMotor_B,20);
+    //Set_Motor_Speed(RMotor_B,20);
+   Menu_Display();
 }

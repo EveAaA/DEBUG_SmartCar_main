@@ -50,14 +50,15 @@ int main(void)
 {
     clock_init(SYSTEM_CLOCK_600M);  // 不可删除
     debug_init();                   // 调试端口初始化
-
     // 此处编写用户代码 例如外设初始化代码等
     User_Init();
     // 此处编写用户代码 例如外设初始化代码等
     while(1)
     {
         // 此处编写需要循环执行的代码
-        User_Loop();
+
+//				system_delay_ms(50);
+       User_Loop();
         // 此处编写需要循环执行的代码
     }
 }

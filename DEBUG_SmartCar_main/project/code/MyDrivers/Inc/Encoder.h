@@ -9,6 +9,7 @@ float Encoder_YawAngle_Get();
 float Get_X_Distance();
 float Get_Y_Distance();
 float Get_X_Speed();
+float Get_Y_Speed();
 extern float Encoder_Distance[4];
 extern float Encoer_Speed[4];
 #endif

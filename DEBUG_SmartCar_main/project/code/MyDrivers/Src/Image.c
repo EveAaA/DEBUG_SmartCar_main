@@ -985,11 +985,6 @@ void Image_Process()
         Get_Right(Data_Stastics_R);
         //元素处理函数放这里
         Cross_Fill(Bin_Image,L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);//十字补线
-        if(!Image_Flag.Cross_Fill)
-        {
-            Left_Ring(Bin_Image,L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);//左圆环
-        }
-        
     }
     for (int i = Hightest; i < Image_H-1; i++)
     {

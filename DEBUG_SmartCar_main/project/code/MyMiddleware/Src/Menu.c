@@ -116,14 +116,15 @@ static void Page0_Mode()
         tft180_show_float(Row_11,Line_0,Gyro_YawAngle_Get(),3,1);
         tft180_show_string(Row_1,Line_1,"Start:");
         tft180_show_int(Row_7,Line_1,Start,2);
-        tft180_show_string(Row_1,Line_2,"Stop:");
-        tft180_show_string(Row_1,Line_3,"IsFind:");
-        tft180_show_int(Row_8,Line_3,FINDBORDER_DATA.FINDBORDER_FLAG,2);
-        tft180_show_string(Row_1,Line_4,"dir:");
-        tft180_show_int(Row_5, Line_4, FINDBORDER_DATA.dir,1);
+        tft180_show_string(Row_1,Line_2,"dx:");
+        tft180_show_float(Row_4,Line_2,FINETUNING_DATA.dx/10.f,3,1);
+        tft180_show_string(Row_1,Line_3,"dy:");
+        tft180_show_float(Row_4,Line_3,FINETUNING_DATA.dy/10.f,3,1);
+        tft180_show_string(Row_1,Line_4,"sp:");
+        tft180_show_float(Row_4,Line_4,Encoer_Speed[2],3,1);
         tft180_show_string(Row_1,Line_5,"Image");
-        tft180_show_string(Row_1,Line_6,"gyro_z:");
-        tft180_show_float(Row_8,Line_6,IMU_Data.gyro_z,3,1);
+        tft180_show_string(Row_1,Line_6,"my:");
+        tft180_show_float(Row_4,Line_6,Get_Y_Distance(),3,1);
     }
 
     Exit_Dis;
@@ -170,7 +171,7 @@ static void Page0_Mode()
             tft180_draw_point(R_Border[i], i, RGB565_RED);//显示起点 显示右边线
         }
         tft180_show_gray_image(0, 0, (const uint8 *)(Bin_Image), MT9V03X_W, MT9V03X_H, (Row_18), (Line_5), 0);
-        tft180_show_float(Row_8, Line_6, FINETUNING_DATA.FINETUNING_FINISH_FLAG, 3, 3);
+        tft180_show_float(Row_8, Line_6,Image_Erro, 3, 3);
     }
 }
 
