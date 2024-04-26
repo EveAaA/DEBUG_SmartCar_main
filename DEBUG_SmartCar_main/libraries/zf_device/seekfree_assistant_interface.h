@@ -21,7 +21,7 @@
 * 许可证副本在 libraries 文件夹下 即该文件夹下的 LICENSE 文件
 * 欢迎各位使用并传播本程序 但修改内容时必须保留逐飞科技的版权声明（即本声明）
 * 
-* 文件名称          main
+* 文件名称          seekfree_assistant_interface
 * 公司名称          成都逐飞科技有限公司
 * 版本信息          查看 libraries/doc 文件夹内 version 文件 版本说明
 * 开发环境          IAR 8.32.4 or MDK 5.33
@@ -29,37 +29,29 @@
 * 店铺链接          https://seekfree.taobao.com/
 * 
 * 修改记录
-* 日期              作者                备注
-* 2022-09-21        SeekFree            first version
+* 日期             作者             备注
+* 2024-1-11        SeekFree         first version
 ********************************************************************************************************************/
 
-#include "zf_common_headfile.h"
-#include "UserMain.h"
-#include "Motor.h"
-#include "Bluetooth.h"
-#include "math.h"
-// 打开新的工程或者工程移动了位置务必执行以下操作
-// 第一步 关闭上面所有打开的文件
-// 第二步 project->clean  等待下方进度条走完
-// 本例程是开源库移植用空工程
+#ifndef _seekfree_assistant_interface_h_
+#define _seekfree_assistant_interface_h_
 
 
 
-
-int main(void)
+// 数据发送设备枚举
+typedef enum
 {
-    clock_init(SYSTEM_CLOCK_600M);  // 不可删除
-    debug_init();                   // 调试端口初始化
-    // 此处编写用户代码 例如外设初始化代码等
-    User_Init();
-    // 此处编写用户代码 例如外设初始化代码等
-    while(1)
-    {
-        // 此处编写需要循环执行的代码
-       User_Loop();
-        // 此处编写需要循环执行的代码
-    }
-}
+    SEEKFREE_ASSISTANT_DEBUG_UART,      // 调试串口    使用的串口由DEBUG_UART_INDEX宏定义指定
+    SEEKFREE_ASSISTANT_WIRELESS_UART,   // 无线转串口
+    SEEKFREE_ASSISTANT_CH9141,          // CH9141蓝牙
+    SEEKFREE_ASSISTANT_WIFI_UART,       // WIFI转串口
+    SEEKFREE_ASSISTANT_WIFI_SPI,        // 高速WIFI SPI
+    SEEKFREE_ASSISTANT_CUSTOM,          // 自定义通讯方式 需要自行seekfree_assistant_transfer与seekfree_assistant_receive函数
+}seekfree_assistant_transfer_device_enum;
+
+
+void    seekfree_assistant_interface_init   (seekfree_assistant_transfer_device_enum transfer_device);
 
 
 
+#endif

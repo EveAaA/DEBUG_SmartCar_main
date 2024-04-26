@@ -44,6 +44,11 @@ extern ReceiveData After_Analyze_Data;
 extern float *Num_Address[CH_COUNT];
 extern uint8 data_buffer[32];
 extern uint8 data_len;
+extern ReceiveData_Handle Receivedata;
+extern float test_1;
+extern float test_2;
+extern float test_3;
+extern float test_4;
 /*º¯ÊıÉùÃ÷--------------------------------------------------------------------*/
 void Bluetooth_Init(void);
 void Bluetooth_Send_Float(float *float_add[]);

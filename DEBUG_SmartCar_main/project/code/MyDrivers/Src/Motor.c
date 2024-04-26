@@ -62,8 +62,8 @@ void Set_Motor_Speed(MotorHandle Motor, float PWMDuty)
 {
     
     int Forward = 0;
-    double Pwm_Temp = 0;
-    double Pwm_Set = 0;
+    float Pwm_Temp = 0;
+    float Pwm_Set = 0;
     //判断输入的PWM的正负
     if(PWMDuty < 0)
     {
@@ -88,49 +88,49 @@ void Set_Motor_Speed(MotorHandle Motor, float PWMDuty)
         case LMotor_F:
             if(Forward)
             {
-                pwm_set_duty(Motor_LF,Pwm_Set);
+                pwm_set_duty(Motor_LF,(uint32)Pwm_Set);
                 gpio_set_level(Motor_Dir_LF,0);
             }
             else if(!Forward)
             {
-                pwm_set_duty(Motor_LF,Pwm_Set);
+                pwm_set_duty(Motor_LF,(uint32)Pwm_Set);
                 gpio_set_level(Motor_Dir_LF,1);
             }
         break;
         case RMotor_B:
             if(Forward)
             {
-                pwm_set_duty(Motor_RB,Pwm_Set);
+                pwm_set_duty(Motor_RB,(uint32)Pwm_Set);
                 gpio_set_level(Motor_Dir_RB,1);
             }
             else if(!Forward)
             {
-                pwm_set_duty(Motor_RB,Pwm_Set);
+                pwm_set_duty(Motor_RB,(uint32)Pwm_Set);
                 gpio_set_level(Motor_Dir_RB,0);
             }
         break;
         case RMotor_F:
             if(Forward)
             {
-                pwm_set_duty(Motor_RF,Pwm_Set);
-                gpio_set_level(Motor_Dir_RF,1);
+                pwm_set_duty(Motor_RF,(uint32)Pwm_Set);
+                gpio_set_level(Motor_Dir_RF,0);
             }
             else if(!Forward)
             {
-                pwm_set_duty(Motor_RF,Pwm_Set);
-                gpio_set_level(Motor_Dir_RF,0);
+                pwm_set_duty(Motor_RF,(uint32)Pwm_Set);
+                gpio_set_level(Motor_Dir_RF,1);
             }
         break;
         case LMotor_B:
             if(Forward)
             {
-                pwm_set_duty(Motor_LB,Pwm_Set);
-                gpio_set_level(Motor_Dir_LB,1);
+                pwm_set_duty(Motor_LB,(uint32)Pwm_Set);
+                gpio_set_level(Motor_Dir_LB,0);
             }
             else if(!Forward)
             {
-                pwm_set_duty(Motor_LB,Pwm_Set);
-                gpio_set_level(Motor_Dir_LB,0);
+                pwm_set_duty(Motor_LB,(uint32)Pwm_Set);
+                gpio_set_level(Motor_Dir_LB,1);
             }
         break;
         default:

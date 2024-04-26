@@ -25,20 +25,20 @@
 
 Servo_Handle Stretch_Servo = //抬臂舵机
 {
-    .Pin = PWM2_MODULE0_CHA_C6,
-    .Init_Angle = 150,//角度小往下
+    .Pin = PWM1_MODULE3_CHA_D0,
+    .Init_Angle = 0,//角度大往下
     .Servo_Time = 0,
 };
 Servo_Handle Raise_Servo = //抬手舵机
 {
-    .Pin = PWM1_MODULE3_CHB_B11,
+    .Pin = PWM2_MODULE3_CHA_D2,
     .Init_Angle = 50,//角度小往下
     .Servo_Time = 0,
 };
 Servo_Handle Rotary_Servo = //旋转舵机
 {
     .Pin = PWM1_MODULE3_CHA_D0,
-    .Init_Angle = 65,//角度小往下
+    .Init_Angle = 10,//角度大往下
 };
 Servo_Flag_Handle Servo_Flag = {false,false};
 
@@ -58,7 +58,7 @@ void Manipulator_Init()
 {
     pwm_init(Stretch_Servo.Pin,Servo_FREQ,Set_180Servo_Angle(Stretch_Servo.Init_Angle));
     pwm_init(Raise_Servo.Pin,Servo_FREQ,Set_180Servo_Angle(Raise_Servo.Init_Angle));
-    pwm_init(Rotary_Servo.Pin,Servo_FREQ,Set_360Servo_Angle(Rotary_Servo.Init_Angle));
+    // pwm_init(Rotary_Servo.Pin,Servo_FREQ,Set_360Servo_Angle(Rotary_Servo.Init_Angle));
     // pwm_init(PWM2_MODULE2_CHA_C10,Servo_FREQ,6000);
     gpio_init(D27,GPO,0,GPO_PUSH_PULL);
 }
@@ -95,7 +95,7 @@ void Manipulator_PutDown()
     switch (PuDowm_State)
     {
         case 0://先放下抬手舵机
-            Set_Servo_Angle(Raise_Servo,110);
+            Set_Servo_Angle(Raise_Servo,85);
             Electromagnet_On;//打开电磁铁
 #ifdef Servo_Slow
             PuDowm_State = 1;
@@ -105,7 +105,7 @@ void Manipulator_PutDown()
 #endif
         break;
         case 1://缓冲阶段
-            Set_Servo_Angle(Stretch_Servo,30);
+            Set_Servo_Angle(Stretch_Servo,120);
             // printf("%d\r\n",timer_get(GPT_TIM_1));     
             if(Stretch_Servo.Servo_Time >= 100)
             {
@@ -114,7 +114,7 @@ void Manipulator_PutDown()
             }
         break;
         case 2:
-            Set_Servo_Angle(Stretch_Servo,5);
+            Set_Servo_Angle(Stretch_Servo,150);
             PuDowm_State = 0;
             Servo_Flag.Put_Down = true;
         break;
@@ -132,14 +132,19 @@ void Manipulator_PutUp()
     switch (PutUp_State)
     {
         case 0:
-            Set_Servo_Angle(Stretch_Servo,60);//先抬大臂
+            Set_Servo_Angle(Stretch_Servo,120);//先抬大臂
             PutUp_State = 1;
         break;
         case 1:
             Set_Servo_Angle(Raise_Servo,180);
             Electromagnet_Off;
+            PutUp_State = 2;
+        break;
+        case 2:
             PutUp_State = 0;
             Servo_Flag.Put_Up = true;
+            Set_Servo_Angle(Raise_Servo,Raise_Servo.Init_Angle);
+            Set_Servo_Angle(Stretch_Servo,Stretch_Servo.Init_Angle);
         break;
     }
 }

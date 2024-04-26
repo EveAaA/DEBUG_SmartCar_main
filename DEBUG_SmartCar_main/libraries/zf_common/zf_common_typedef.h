@@ -77,6 +77,26 @@ typedef volatile int64      vint64;                                             
 
 #define ZF_TRUE         (1)
 #define ZF_FALSE        (0)
+
+#define ZF_INLINE           static inline
+#define ZF_WEAK             __attribute__((weak))
+
+#if defined(__ICCARM__)
+#define ZF_PACKED           __attribute__((packed))
+#define ZF_PACKED_ENABLE    
+#define ZF_PACKED_DISABLE   
+//#define ZF_PACKED           
+//#define ZF_PACKED_ENABLE    _Pragma("pack(push,1)")
+//#define ZF_PACKED_DISABLE   _Pragma("pack(pop)")
+#elif defined(__GNUC__)
+#define ZF_PACKED           __attribute__((packed))
+#define ZF_PACKED_ENABLE    
+#define ZF_PACKED_DISABLE   
+#else
+#define ZF_PACKED           
+#define ZF_PACKED_ENABLE    _Pragma("pack 2")
+#define ZF_PACKED_DISABLE   _Pragma("pack 0")
+#endif
 #endif
 //=================================================== 类型定义 ===================================================
 

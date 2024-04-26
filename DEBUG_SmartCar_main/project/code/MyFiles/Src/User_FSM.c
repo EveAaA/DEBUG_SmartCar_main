@@ -156,6 +156,8 @@ bool Pick_Card_Finish()
 {
     if(Servo_Flag.Put_Up)
     {
+        Servo_Flag.Put_Up = false;
+        Servo_Flag.Put_Down = false;
         return true;
     }
     return false;

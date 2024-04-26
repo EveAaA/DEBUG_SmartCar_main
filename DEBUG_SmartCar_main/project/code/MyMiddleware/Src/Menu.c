@@ -121,7 +121,10 @@ static void Page0_Mode()
         tft180_show_string(Row_1,Line_3,"dy:");
         tft180_show_float(Row_4,Line_3,FINETUNING_DATA.dy/10.f,3,1);
         tft180_show_string(Row_1,Line_4,"sp:");
-        tft180_show_float(Row_4,Line_4,Encoer_Speed[2],3,1);
+        // tft180_show_float(Row_4,Line_4,Encoer_Speed[0],2,1);
+        // tft180_show_float(Row_8,Line_4,Encoer_Speed[1],2,1);
+        tft180_show_float(Row_4,Line_4,Encoer_Speed[2],2,1);
+        tft180_show_float(Row_8,Line_4,Encoer_Speed[3],2,1);
         tft180_show_string(Row_1,Line_5,"Image");
         tft180_show_string(Row_1,Line_6,"my:");
         tft180_show_float(Row_4,Line_6,Get_Y_Distance(),3,1);
@@ -161,7 +164,6 @@ static void Page0_Mode()
 
     if(Menu.Image_Show)
     {
-
         for (int i = Hightest; i < Image_H-1; i++)
         {
             // Center_Line[i] = (L_Border[i] + R_Border[i]) >> 1;//«Û÷–œﬂ

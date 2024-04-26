@@ -58,16 +58,19 @@ float GetPIDValue(Pid_TypeDef *PID, float error)
 	static float I=0.0f;
 
 	P = error;
-	I = I + error;
+	if(fabs(error) <= 2)
+	{
+		PID->I_Out = PID->I_Out + error;
+	}
+	else
+	{
+		PID->I_Out = 0;
+	}
 	D = error - PID->previousError;
 
-	PID->Output = PID->Kp * P+ PID->Ki * I+ PID->Kd * D;
+	PID->Output = PID->Kp * P+ PID->Ki * PID->I_Out+ PID->Kd * D;
 	PID->previousError = error;
 	
-	if(fabs(I) > 100)
-	{
-		I = 0;
-	}	
 	if(PID->Output > PID->OutputMax)
 	{
 		PID->Output = PID->OutputMax;

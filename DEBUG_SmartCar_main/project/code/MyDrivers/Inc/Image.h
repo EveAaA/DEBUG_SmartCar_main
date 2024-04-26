@@ -23,10 +23,18 @@ typedef struct
     bool Cross_Fill;//十字标志位
 }Flag_Handle;
 
-typedef struct
-{
-    bool Straight_Line;//是否存在长直线
-    uint16_t Straight_Line_Count;
+typedef enum {
+	Ring_Front = 0,//入环前
+	Enter_Ring_First,//第一次进环
+	Leave_Ring_First,//第一次离开环
+}Ring_State_Handle;
+
+typedef struct {
+	bool Stright_Line;//直线
+	bool Ring_Front_Flag;//前方是否存在圆环
+	bool Enter_Ring_First_Flag;
+	bool Leave_Ring_First_Flag;
+	Ring_State_Handle Ring_State;
 }Ring_Handle;
 
 #endif /* MYDRIVERS_INC_IMAGE_H_ */

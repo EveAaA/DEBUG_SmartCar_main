@@ -8,7 +8,7 @@ typedef struct
 	float Kd;//积分系数
 
 	float previousError;
-
+	float I_Out;
 	float OutputMin;//限幅
 	float OutputMax;
 	

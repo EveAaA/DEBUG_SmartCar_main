@@ -46,7 +46,6 @@ void CSI_IRQHandler(void)
     CSI_DriverIRQHandler();     // 调用SDK自带的中断函数 这个函数最后会调用我们设置的回调函数
     __DSB();                    // 数据同步隔离
 }
-extern Pid_TypeDef Angle_PID;
 
 void PIT_IRQHandler(void)
 {
@@ -64,6 +63,7 @@ void PIT_IRQHandler(void)
         {
             Raise_Servo.Servo_Time++;
         }
+
         pit_flag_clear(PIT_CH0);
     }
     
@@ -79,10 +79,8 @@ void PIT_IRQHandler(void)
     
     if(pit_flag_get(PIT_CH2))
     {
-       if(Start == 1)
-       {
-            FSMRun(CURRENT_FSM);
-       }
+        FSMRun(CURRENT_FSM);
+        Set_Car_Speed(Car.Speed_X,Car.Speed_Y,Car.Speed_Z);
         
         pit_flag_clear(PIT_CH2);
     }

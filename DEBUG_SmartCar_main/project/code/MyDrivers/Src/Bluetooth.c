@@ -24,8 +24,8 @@ ReceiveData_Handle Receivedata =
 };
 float test_1 = 0.0;
 float test_2 = 0.0;
-float test_3 = 0.0f;
-
+float test_3 = 0.0;
+float test_4 = 0.0;
 /**@brief     蓝牙初始化(统一封装初始化函数)
 -- @param     None
 -- @auther    戴骐阳
@@ -38,8 +38,10 @@ void Bluetooth_Init(void)
         if(!bluetooth_ch9141_init())
             break;
     }
-//    Bluetooth_Set_Watch_Variable(Num_Address, CH1, &test_1);
-//    Bluetooth_Set_Watch_Variable(Num_Address, CH2, &test_2);
+   Bluetooth_Set_Watch_Variable(Num_Address, CH1, &test_1);
+   Bluetooth_Set_Watch_Variable(Num_Address, CH2, &test_2);
+   Bluetooth_Set_Watch_Variable(Num_Address, CH3, &test_3);
+   Bluetooth_Set_Watch_Variable(Num_Address, CH4, &test_4);
 }
 
 /**@brief     printf重定向
@@ -68,7 +70,7 @@ void Bluetooth_Send_Float(float *float_add[])
     f_num_buffer[CH2] = *float_add[CH2];
     f_num_buffer[CH3] = *float_add[CH3];
     f_num_buffer[CH4] = *float_add[CH4];
-    f_num_buffer[CH5] = *float_add[CH5];
+    // f_num_buffer[CH5] = *float_add[CH5];
     // 发送f_num_buffer当中存储的所有变量数据于指定通道
     bluetooth_ch9141_send_buffer((uint8 *)(f_num_buffer), sizeof(float) * CH_COUNT);
     // 发送帧尾
@@ -140,7 +142,7 @@ void Get_Message()
                     break;
                 }
             }
-            Receivedata.Integer = (Receivedata.RxBuffer[Receivedata.Equal_pos + 1] - '0')*10+(Receivedata.RxBuffer[Receivedata.Equal_pos + 2] - '0');
+            Receivedata.Integer = (Receivedata.RxBuffer[Receivedata.Equal_pos + 1] - '0');
             Receivedata.Decimal = (Receivedata.RxBuffer[Receivedata.Dot_pos + 1] - '0')*0.1f+(Receivedata.RxBuffer[Receivedata.Dot_pos + 2] - '0')*0.01f;
             Receivedata.Real_Data = Receivedata.Integer + Receivedata.Decimal; 
 
@@ -162,7 +164,7 @@ void Get_Message()
                 Receivedata.I_Data = 0;
                 Receivedata.D_Data = Receivedata.Real_Data;
             }
-            printf("%f,%f,%f\r\n",Receivedata.P_Data,Receivedata.I_Data,Receivedata.D_Data);
+            // printf("%f,%f,%f\r\n",Receivedata.P_Data,Receivedata.I_Data,Receivedata.D_Data);
         }
         else//没有找到等号，说明为发车指令
         {
@@ -174,7 +176,7 @@ void Get_Message()
             {
                 Receivedata.Start_Flag = 0;
             }
-            printf("%d\r\n",Receivedata.Start_Flag);
+            // printf("%d\r\n",Receivedata.Start_Flag);
         }
         Receivedata.Receive_Num=0;
     }

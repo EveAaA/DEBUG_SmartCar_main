@@ -18,6 +18,8 @@
 /* Define\Declare ------------------------------------------------------------*/
 uint16 Start = 2;
 uint8 Once = 1;
+uint8 image_copy[MT9V03X_H][MT9V03X_W];
+
 /**
  ******************************************************************************
  *  @defgroup 内部调用
@@ -29,7 +31,8 @@ void IMU_Init()
     while (1)
     {
         if (imu660ra_init())
-            tft180_show_string(Row_0, Row_0, "IMU reinit.");
+            system_delay_ms(1000);
+            // tft180_show_string(Row_0, Row_0, "IMU reinit.");
         else
             break;
         system_delay_ms(1000);
@@ -44,7 +47,8 @@ void Mt9v03x_Init()
     while (1)
     {
         if (mt9v03x_init())
-            tft180_show_string(0, 16, "mt9v03x reinit.");
+            system_delay_ms(1000);
+            // tft180_show_string(0, 16, "mt9v03x reinit.");
         else
             break;
         system_delay_ms(1000); // 闪灯表示异常
@@ -78,7 +82,7 @@ void User_Init()
     Manipulator_Init();
     Motor_Init();
     tft180_show_string(Row_0, Line_4, "Motor Init ...");
-    Beep_Init();
+    // Beep_Init();
     // dl1a_init();
     All_PID_Init();
     // Flash_Init();
@@ -86,14 +90,15 @@ void User_Init()
     My_FSM_Init();
     tft180_show_string(Row_0, Line_5, "Soft Init ...");
     tft180_clear();
-    // system_delay_ms(1000);
+    system_delay_ms(1000);
     TIM_Init();
-    // timer_init(GPT_TIM_1, TIMER_MS); 
+    // timer_init(GPT_TIM_1, TIMER_US); 
     // Beep(On);
-    
     // Beep(Off);
 	interrupt_global_enable(0);
 }
+// 图像备份数组，在发送前将图像备份再进行发送，这样可以避免图像出现撕裂的问题
+uint8 image_copy[MT9V03X_H][MT9V03X_W];
 /**@brief   所有主循环内容
 -- @param   无
 -- @auther  庄文标
@@ -101,7 +106,8 @@ void User_Init()
 **/
 void User_Loop()
 {
-    // Set_Motor_Speed(LMotor_B,20);
-    //Set_Motor_Speed(RMotor_B,20);
-   Menu_Display();
+    // test_1 = 90;
+    // test_2 = Gyro_YawAngle_Get();
+    // Bluetooth_Send_Float(Num_Address);
+    Menu_Display();
 }
