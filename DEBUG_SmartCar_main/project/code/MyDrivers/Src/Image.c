@@ -1,5 +1,6 @@
 #include "Image.h"
 #include <math.h>
+#include "Gyro.h"
 
 Ring_Handle LeftRing = { false, false, true };
 
@@ -235,69 +236,76 @@ void Get_Image(uint8_t(*mt9v03x_image)[Image_W])
 uint8_t Otsu_Threshold(uint8_t* Image, uint16_t col, uint16_t row)
 {
 #define GrayScale 256
-	uint16 width = col;
-	uint16 height = row;
-	int pixelCount[GrayScale];
-	float pixelPro[GrayScale];
-	int i, j, pixelSum = width * height / 4;
-	uint8 threshold = 0;
-	uint8* data = Image;  //指向像素数据的指针
-	for (i = 0; i < GrayScale; i++)
-	{
-		pixelCount[i] = 0;
-		pixelPro[i] = 0;
-	}
+    uint16 Image_Width  = col;
+    uint16 Image_Height = row;
+    int X; uint16 Y;
+    uint8* data = Image;
+    int HistGram[GrayScale] = {0};//????
 
-	uint32 gray_sum = 0;
-	//统计灰度级中每个像素在整幅图像中的个数  
-	for (i = 0; i < height; i += 2)
-	{
-		for (j = 0; j < width; j += 2)
-		{
-			pixelCount[(int)data[i * width + j]]++;  //将当前的点的像素值作为计数数组的下标
-			gray_sum += (int)data[i * width + j];       //灰度值总和
-		}
-	}
-
-	//计算每个像素值的点在整幅图像中的比例  
-
-	for (i = 0; i < GrayScale; i++)
-	{
-		pixelPro[i] = (float)pixelCount[i] / pixelSum;
-
-	}
-
-	//遍历灰度级[0,255]  
-	float w0, w1, u0tmp, u1tmp, u0, u1, u, deltaTmp, deltaMax = 0;
+    uint32 Amount = 0;
+    uint32 Pixel_Back = 0;//????????
+    uint32 Pixel_Integral_Back = 0;//????????????????
+    uint32 Pixel_Integral = 0;//????????
+    int32 Pixel_IntegralFore = 0;//???????????????
+    int32 Pixel_Fore = 0;//???????????????????????
+    double Omega_Back=0, Omega_Fore=0, Micro_Back=0, Micro_Fore=0, SigmaB=0, Sigma=0; // ?????????????????????????????????????????????????????????????????????????;
+    uint8 Min_Value=0, Max_Value=0;
+    uint8 Threshold = 0;//???
 
 
-	w0 = w1 = u0tmp = u1tmp = u0 = u1 = u = deltaTmp = 0;
-	for (j = 0; j < GrayScale; j++)
-	{
+    for (Y = 0; Y <Image_Height; Y++) //Y<Image_Height???Y =Image_Height???????? ?ж????
+    {
+        //Y=Image_Height;
+        for (X = 0; X < Image_Width; X++)
+        {
+            HistGram[(int)data[Y*Image_Width + X]]++; //??????????????????
+        }
+    }
 
-		w0 += pixelPro[j];  //背景部分每个灰度值的像素点所占比例之和   即背景部分的比例
-		u0tmp += j * pixelPro[j];  //背景部分 每个灰度值的点的比例 *灰度值 
 
-		w1 = 1 - w0;
-		u1tmp = gray_sum / pixelSum - u0tmp;
 
-		u0 = u0tmp / w0;              //背景平均灰度
-		u1 = u1tmp / w1;              //前景平均灰度
-		u = u0tmp + u1tmp;            //全局平均灰度
-		deltaTmp = w0 * pow((u0 - u), 2) + w1 * pow((u1 - u), 2);
-		if (deltaTmp > deltaMax)
-		{
-			deltaMax = deltaTmp;
-			threshold = j;
-		}
-		if (deltaTmp < deltaMax)
-		{
-			break;
-		}
 
-	}
+    for (Min_Value = 0; Min_Value < 255 && HistGram[Min_Value] == 0; Min_Value++) ;        //?????С?????
+    for (Max_Value = 255; Max_Value > Min_Value && HistGram[Min_Value] == 0; Max_Value--) ; //??????????
 
-	return threshold;
+    if (Max_Value == Min_Value)
+    {
+        return Max_Value;          // ??????????????
+    }
+    if (Min_Value + 1 == Max_Value)
+    {
+        return Min_Value;      // ???????ж??????
+    }
+
+    for (Y = Min_Value; Y <= Max_Value; Y++)
+    {
+        Amount += HistGram[Y];        //  ????????
+    }
+
+    Pixel_Integral = 0;
+    for (Y = Min_Value; Y <= Max_Value; Y++)
+    {
+        Pixel_Integral += HistGram[Y] * Y;//????????
+    }
+    SigmaB = -1;
+    for (Y = Min_Value; Y < Max_Value; Y++)
+    {
+          Pixel_Back = Pixel_Back + HistGram[Y];    //??????????
+          Pixel_Fore = Amount - Pixel_Back;         //???????????
+          Omega_Back = (double)Pixel_Back / Amount;//??????????
+          Omega_Fore = (double)Pixel_Fore / Amount;//???????????
+          Pixel_Integral_Back += HistGram[Y] * Y;  //???????
+          Pixel_IntegralFore = Pixel_Integral - Pixel_Integral_Back;//????????
+          Micro_Back = (double)Pixel_Integral_Back / Pixel_Back;//?????????
+          Micro_Fore = (double)Pixel_IntegralFore / Pixel_Fore;//??????????
+          Sigma = Omega_Back * Omega_Fore * (Micro_Back - Micro_Fore) * (Micro_Back - Micro_Fore);//g
+          if (Sigma > SigmaB)//?????????????g
+          {
+              SigmaB = Sigma;
+              Threshold = (uint8)Y;
+          }
+    }
+   return Threshold;
 }
 
 /**@brief    大津法图像二值化
@@ -308,7 +316,7 @@ uint8_t Otsu_Threshold(uint8_t* Image, uint16_t col, uint16_t row)
 void Turn_To_Bin(void)
 {
     uint8_t i, j;
-    Image_Thereshold = 1.075f * Otsu_Threshold(Original_Image[0], Image_W, Image_H);//获取大津法阈值
+    Image_Thereshold = 1.075*Otsu_Threshold(Original_Image[0], Image_W, Image_H);//获取大津法阈值
     //   printf("begin");
     for (i = 0;i < Image_H;i++)
     {
@@ -646,55 +654,6 @@ void Get_Right(uint16_t Total_R)
             break;//到最后一行退出
         }
     }
-}
-
-/**@brief    判断是否为直线
--- @param    uint8 Border 需要判断的线
--- @param    uint8 Total_Num 数量
--- @return   是否为直线
--- @auther   none
--- @date     2024/4/22
-**/
-bool Straight_Line_Judge(uint8 *Border,uint8 Total_Num)
-{
-    // 如果数组长度为0或1，直接返回1
-    if (Total_Num <= 1) {
-        return true;
-    }
-
-    // 遍历数组，检查是否单调递减
-    for (int i = Total_Num; i > 1; i--) {
-        // 如果当前元素小于或等于前一个元素，则不是单调递减的
-        if (Border[i] < Border[i - 1]) {
-            //printf("b1[%d] b2[%d]\r\n",i,i-1);
-            return false;
-        }
-
-        if (Border[i] - Border[i - 1] >= 2)
-        {
-            return false;
-        }
-    }
-    if (Total_Num >= 120)
-    {
-        return false;
-    }
-    // 如果没有发现违反以上的情况，返回true
-    return true;
-}
-
-uint16 Find_Salient_Point(uint8* Border, uint8 size)
-{
-    int maxIndex = 0;
-
-    // 遍历数组，找到最大值的索引
-    for (int i = size; i < Image_H - 1; i++) {
-        if (Border[i] > Border[maxIndex]) {
-            maxIndex = i;
-        }
-    }
-
-    return maxIndex;
 }
 
 
@@ -1068,20 +1027,6 @@ uint16 Find_Salient_Point(uint8* Border, uint16 size)
     return maxIndex;
 }
 
-bool Get_K_b(uint16 x1, uint16 y1, uint16 x2, uint16 y2, float* slope_rate, float* intercept)
-{
-    if (x1 == x2) {
-        return false;
-    }
-
-    // 计算斜率
-    *slope_rate = (float)(y2 - y1) / (x2 - x1);
-
-    // 计算截距
-    *intercept = y1 - (*slope_rate * x1);
-
-    return true;
-}
 
 uint16_t findCircleOutPoint(uint8_t* L_Border)
 {
@@ -1143,13 +1088,18 @@ void Left_Ring(uint8_t(*Bin_Image)[Image_W], uint8_t* L_Border, uint8* R_Border,
     uint16_t Break_Num_R_UP = 0;
     uint16 start, end;
     float slope_l_rate = 0, intercept_l = 0;
+    static float Curanglg = 0;
+    static float Lastanglg = 0;
+    static float Angle_Offest = 0;
     //LeftRing.Ring_State = Enter_Ring_First;//入环中
     switch (LeftRing.Ring_State)
     {
     case Ring_Front:
+        // printf("入环前\r\n");
         //cout << "入环前" << endl;
         LeftRing.Stright_Line = Straight_Line_Judge(R_Border, Total_Num_R - 10, RightLine);//判断右边是否为长直线
         Salient_Point = findCircleOutPoint(L_Border);
+        // tft180_Draw_ColorCircle(L_Border[Salient_Point],Salient_Point,5,RGB565_RED);
         for (uint8_t i = Image_H - 2; i > Image_H / 2; --i)
         {
             // 断裂区域横坐标相差很大
@@ -1181,6 +1131,7 @@ void Left_Ring(uint8_t(*Bin_Image)[Image_W], uint8_t* L_Border, uint8* R_Border,
                 }
             }
         }
+        // tft180_Draw_ColorCircle(Points_L[Break_Num_L_DOWN][0],Points_L[Break_Num_L_DOWN][1],5,RGB565_BLUE);
         // 有圆环突出点 右直线 没有左下角点
         if (Salient_Point && LeftRing.Stright_Line && !Break_Num_L_DOWN && LeftRing.Ring_Front_Flag) // 判断是否有圆环突出点并且右侧直线
         {
@@ -1211,14 +1162,16 @@ void Left_Ring(uint8_t(*Bin_Image)[Image_W], uint8_t* L_Border, uint8* R_Border,
             {
                 L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
             }
+            LeftRing.Ring_Front_Flag = true;
         }
-        else
-        {
-            LeftRing.Ring_Front_Flag = false;
-        }
+        // else
+        // {
+        //     LeftRing.Ring_Front_Flag = false;
+        // }
+        // printf("%d,%d,%d,%d\r\n",Bin_Image[Image_H - 5][4],Bin_Image[Image_H - 10][8],Bin_Image[Image_H / 2][Image_W - 2],Bin_Image[Image_H-5][Image_W - 2]);
         // 左下空白 且检测到环左下角点, 右直线, 左圆环突出点, 右边中心为黑色, 右边下方为黑色
         if ((Bin_Image[Image_H - 5][4]) && (Bin_Image[Image_H - 10][8]) && LeftRing.Ring_Front_Flag &&
-            (!Bin_Image[Image_H / 2][Image_W - 2]) && (!Bin_Image[Image_H][Image_W - 2]))//图像左下方为一片白 (Bin_Image[Image_H - 5][4]) && (Bin_Image[Image_H - 10][8]) &&
+            (!Bin_Image[Image_H / 2][Image_W - 2]) && (!Bin_Image[Image_H-5][Image_W - 2]))//图像左下方为一片白 (Bin_Image[Image_H - 5][4]) && (Bin_Image[Image_H - 10][8]) &&
         {
             LeftRing.Ring_Front_Flag = false;
             LeftRing.Ring = true;
@@ -1228,6 +1181,7 @@ void Left_Ring(uint8_t(*Bin_Image)[Image_W], uint8_t* L_Border, uint8* R_Border,
         // waitKey(200);
         break;
     case Enter_Ring_First:
+        // printf("入环中\r\n");
         LeftRing.Stright_Line = Straight_Line_Judge(R_Border, Total_Num_R - 10, RightLine);//判断右边是否为长直线
         Salient_Point = findCircleOutPoint(L_Border);//Find_Salient_Point(L_Border, Image_H / 2 - 10);
         for (i = 1; i < Total_Num_L; i++)
@@ -1263,6 +1217,7 @@ void Left_Ring(uint8_t(*Bin_Image)[Image_W], uint8_t* L_Border, uint8* R_Border,
         }
         break;
     case Leave_Ring_First:
+        // printf("第一次离开环\r\n");
         // cout << "第一次离开环" << endl;
         for (i = 1; i < Total_Num_L; i++)
         {
@@ -1282,11 +1237,11 @@ void Left_Ring(uint8_t(*Bin_Image)[Image_W], uint8_t* L_Border, uint8* R_Border,
 
         if (Break_Num_L_UP) // && (Bin_Image[50][4]) && (Bin_Image[50][8])
         {
-            Get_K_b(Points_L[Break_Num_L_UP][0], Points_L[Break_Num_L_UP][1], R_Border[Image_H - 5], Image_H - 5, &slope_l_rate, &intercept_l);
+            //Get_K_b(2, Image_H - 10, Image_W - 2, Image_H - 5, &slope_l_rate, &intercept_l);
             for (i = Image_H - 1; i > 1; i--)
             {
                 L_Border[i] = Border_Min;
-                R_Border[i] = ((i)-intercept_l) / slope_l_rate;//y = kx+b
+                R_Border[i] = Border_Min;//y = kx+b
                 R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
             }
             LeftRing.Leave_Ring_First_Flag = true;
@@ -1299,6 +1254,14 @@ void Left_Ring(uint8_t(*Bin_Image)[Image_W], uint8_t* L_Border, uint8* R_Border,
         }
         break;
     case In_Ring:
+        // printf("环内\r\n");
+        Curanglg = Gyro_YawAngle_Get();
+        if(Lastanglg == 0)
+        {
+            Lastanglg = Curanglg;
+        }
+        Angle_Offest += Curanglg - Lastanglg;
+        // printf("%f,%f,%f\r\n",Curanglg,Lastanglg,Angle_Offest);
         for (i = 1; i < Total_Num_R; i++)
         {
             uint16_t before = Limit_a_b(i - 8, 0, Total_Num_R);
@@ -1316,36 +1279,52 @@ void Left_Ring(uint8_t(*Bin_Image)[Image_W], uint8_t* L_Border, uint8* R_Border,
         }
         if (Break_Num_R_UP) // && (Bin_Image[50][4]) && (Bin_Image[50][8])
         {
-            Get_K_b(Points_R[Break_Num_R_UP][0], Points_R[Break_Num_R_UP][1], 2, 2, &slope_l_rate, &intercept_l);
+            // Get_K_b(Points_R[Break_Num_R_UP][0], Points_R[Break_Num_R_UP][1], 2, 2, &slope_l_rate, &intercept_l);
             for (i = Image_H - 1; i > 1; i--)
             {
                 L_Border[i] = Border_Min;
-                R_Border[i] = ((i)-intercept_l) / slope_l_rate;//y = kx+b
+                R_Border[i] = Border_Min;//((i)-intercept_l) / slope_l_rate;//y = kx+b
                 R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
             }
         }
+        Lastanglg = Curanglg;
         // 左右两侧都为白色, 准备要出环
-        if (Bin_Image[Image_H - 4][4] == White_Pixel && Bin_Image[Image_H - 2][Image_W - 4] == White_Pixel)
+        if (Bin_Image[Image_H - 4][4] == White_Pixel && Bin_Image[Image_H - 4][Image_W - 4] == White_Pixel && fabs(Angle_Offest) >= 50)
         {
             LeftRing.Ring_State = Ready_Out_Ring;
-           
+            Angle_Offest = 0;
+            Lastanglg = 0;
         }
+        
         break;
     case Ready_Out_Ring:
-        Get_K_b(Image_W, Image_H, 2, Image_H / 2, &slope_l_rate, &intercept_l);
+        // printf("准备出环\r\n");
+        Curanglg = Gyro_YawAngle_Get();
+        if(Lastanglg == 0)
+        {
+            Lastanglg = Curanglg;
+        }
+        Angle_Offest += Curanglg - Lastanglg;
+        // printf("%f,%f,%f\r\n",Curanglg,Lastanglg,Angle_Offest);
+        Get_K_b(Image_W, Image_H, 2, Image_H - 20, &slope_l_rate, &intercept_l);
         for (i = Image_H - 1; i > 1; i--)
         {
             L_Border[i] = Border_Min;
             R_Border[i] = ((i)-intercept_l) / slope_l_rate;//y = kx+b
             R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
         }
+        Lastanglg = Curanglg;
         // 右侧生长线长于左侧生长线则差不多直线, 准备出环
-        if (Data_Stastics_R > Data_Stastics_L)
+        if (Data_Stastics_R > Data_Stastics_L && fabs(Angle_Offest) > 35)
         {
             LeftRing.Ring_State = Leave_Ring;
+            Angle_Offest = 0;
+            Lastanglg = 0;
         }
+        
         break;
     case Leave_Ring:
+        // printf("出环\r\n");
         Break_Num_L_UP = 0;
         //cout << "出环中" << ;
         for (i = 1; i < Total_Num_L; i++)
@@ -1406,6 +1385,7 @@ void Image_Process(void)
     uint16_t i;
     // timer_start(GPT_TIM_1);
     // my_sobel(Original_Image,Bin_Image);
+    Get_Image(mt9v03x_image);
     Turn_To_Bin();//二值化
 
     Image_Filter(Bin_Image);//滤波
@@ -1430,10 +1410,10 @@ void Image_Process(void)
         }
         // 同上
         //Cross_Fill(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);//十字补线
-        if (!Image_Flag.Cross_Fill)
-        {
-            Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
-        }
+        // if (!Image_Flag.Cross_Fill)
+        // {
+        //     Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
+        // }
     }
     
     for (int i = Hightest; i < Image_H-1; i++)

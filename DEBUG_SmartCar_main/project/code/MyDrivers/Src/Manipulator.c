@@ -159,7 +159,10 @@ extern float Pick_Angle;
 void Pick_Card()
 {
     static uint8 Pickup_State = 0;
-    Set_Car_Speed(0,0,Angle_Control(Pick_Angle));
+    Car.Speed_X = 0;
+    Car.Speed_Y = 0;
+    Car.Speed_Z = Angle_Control(Pick_Angle);
+    // Set_Car_Speed(0,0,Angle_Control(Pick_Angle));
     switch(Pickup_State)
     {
         case 0:
