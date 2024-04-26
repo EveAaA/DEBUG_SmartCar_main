@@ -1,49 +1,55 @@
-/**
-  ******************************************************************************
-  * @file    Image.c
-  * @author  none
-  * @brief   Í¼Ïñ²¿·Ö
-  *
-    @verbatim
-    
-    @endverbatim
-  * @{
-**/
-
-/* Includes ------------------------------------------------------------------*/
 #include "Image.h"
-#include "UserMain.h"
+#include <math.h>
 
+Ring_Handle LeftRing = { false, false, true };
+
+typedef struct
+{
+    bool firstFindCircle;
+    bool firstIntoCircle;
+    bool firstFindCircleOut;
+    bool readyIntoCircle;
+    bool areInCircle;
+    bool readyOutCircle;
+    bool outCircle;
+    bool secondSeeOutCircleOut;
+    bool secondReadyOutCircle;
+    bool OutCircle;
+}circleLeftHandle;
+
+circleLeftHandle LeftFlag = { false, false, false, false, false, false, false, false, false, false };
+Flag_Handle Image_Flag = { false };//ÔªËØ±êÖ¾Î»
 /* Define\Declare ------------------------------------------------------------*/
 #define use_num     1   //1¾ÍÊÇ²»Ñ¹Ëõ£¬2¾ÍÊÇÑ¹ËõÒ»±¶
-uint8 Original_Image[Image_H][Image_W];//Ô­Ê¼Í¼ÏñÊı×é
-uint8 Image_Thereshold;//Í¼Ïñ·Ö¸îãĞÖµ
-uint8 Bin_Image[Image_H][Image_W];//¶şÖµ»¯Í¼ÏñÊı×é
-uint8 Start_Point_L[2] = { 0 };//×ó±ßÆğµãµÄx£¬yÖµ
-uint8 Start_Point_R[2] = { 0 };//ÓÒ±ßÆğµãµÄx£¬yÖµ
+uint8_t Original_Image[Image_H][Image_W];//Ô­Ê¼Í¼ÏñÊı×é
+uint8_t Image_Thereshold;//Í¼Ïñ·Ö¸îãĞÖµ
+uint8_t Bin_Image[Image_H][Image_W];//¶şÖµ»¯Í¼ÏñÊı×é
+uint8_t Start_Point_L[2] = { 0 };//×ó±ßÆğµãµÄx£¬yÖµ
+uint8_t Start_Point_R[2] = { 0 };//ÓÒ±ßÆğµãµÄx£¬yÖµ
 
 #define USE_num Image_H*3   //¶¨ÒåÕÒµãµÄÊı×é³ÉÔ±¸öÊı°´ÀíËµ300¸öµãÄÜ·ÅÏÂ£¬µ«ÊÇÓĞĞ©ÌØÊâÇé¿öÈ·ÊµÄÑ¶¥£¬¶à¶¨ÒåÁËÒ»µã
 //´æ·ÅµãµÄx£¬y×ø±ê
-uint16 Points_L[(uint16)USE_num][2] = { {  0 } };//×óÏß
-uint16 Points_R[(uint16)USE_num][2] = { {  0 } };//ÓÒÏß
-uint16 Dir_R[(uint16)USE_num] = { 0 };//ÓÃÀ´´æ´¢ÓÒ±ßÉú³¤·½Ïò
-uint16 Dir_L[(uint16)USE_num] = { 0 };//ÓÃÀ´´æ´¢×ó±ßÉú³¤·½Ïò
-uint16 Data_Stastics_L = 0;//Í³¼Æ×ó±ßÕÒµ½µãµÄ¸öÊı
-uint16 Data_Stastics_R = 0;//Í³¼ÆÓÒ±ßÕÒµ½µãµÄ¸öÊı
-uint8 Hightest = 0;//×î¸ßµã
+uint16_t Points_L[(uint16_t)USE_num][2] = { {  0 } };//×óÏß
+uint16_t Points_R[(uint16_t)USE_num][2] = { {  0 } };//ÓÒÏß
+uint16_t Dir_R[(uint16_t)USE_num] = { 0 };//ÓÃÀ´´æ´¢ÓÒ±ßÉú³¤·½Ïò
+uint16_t Dir_L[(uint16_t)USE_num] = { 0 };//ÓÃÀ´´æ´¢×ó±ßÉú³¤·½Ïò
+uint16_t Data_Stastics_L = 0;//Í³¼Æ×ó±ßÕÒµ½µãµÄ¸öÊı
+uint16_t Data_Stastics_R = 0;//Í³¼ÆÓÒ±ßÕÒµ½µãµÄ¸öÊı
+uint8_t Hightest = 0;//×î¸ßµã
 
-uint8 L_Border[Image_H];//×óÏßÊı×é
-uint8 R_Border[Image_H];//ÓÒÏßÊı×é
-uint8 Center_Line[Image_H];//ÖĞÏßÊı×é
+uint8_t L_Border[Image_H];//×óÏßÊı×é
+uint8_t R_Border[Image_H];//ÓÒÏßÊı×é
+uint8_t Center_Line[Image_H];//ÖĞÏßÊı×é
+uint32_t hashMapIndexL[Image_H];
+uint32_t hashMapIndexR[Image_H];
 
 //¶¨ÒåÅòÕÍºÍ¸¯Ê´µÄãĞÖµÇø¼ä
 #define Threshold_Max   255*5//´Ë²ÎÊı¿É¸ù¾İ×Ô¼ºµÄĞèÇóµ÷½Ú
 #define Threshold_Min   255*2//´Ë²ÎÊı¿É¸ù¾İ×Ô¼ºµÄĞèÇóµ÷½Ú
 
 float Image_Erro;
-uint8 Image_Show = 0;
-Flag_Handle Image_Flag = {false};//ÔªËØ±êÖ¾Î»
-Ring_Handle LeftRing;
+uint8_t Image_Show = 0;
+bool isLeftCircle(uint8_t(*Bin_Image)[Image_W], uint8_t* L_Border, uint8_t* R_Border, uint16_t Total_Num_L, uint16_t Total_Num_R, uint16_t* Dir_L, uint16_t* Dir_R, uint16_t(*Points_L)[2], uint16_t(*Points_R)[2]);
 /**
  ******************************************************************************
  *  @defgroup ÄÚ²¿µ÷ÓÃ
@@ -60,83 +66,83 @@ Ring_Handle LeftRing;
 **/
 int My_Abs(int value)
 {
-    if(value>=0) return value;
+    if (value >= 0) return value;
     else return -value;
 }
 
 
 /**@brief    ÏŞ·ùº¯Êı
--- @param    int16 x ĞèÒªÏŞ·ùµÄÖµ
+-- @param    int16_t x ĞèÒªÏŞ·ùµÄÖµ
 -- @param    int a ×î´óÖµ
 -- @param    int b ×îĞ¡Öµ
 -- @return   x Êä³ö
 -- @auther   none
 -- @date     2023/10/2
 **/
-int16 Limit_a_b(int16 x, int a, int b)
+int16_t Limit_a_b(int16_t x, int a, int b)
 {
-    if(x<a) x = a;
-    if(x>b) x = b;
+    if (x < a) x = a;
+    if (x > b) x = b;
     return x;
 }
 
 
 /**@brief    Çóx,yÖĞµÄ×îĞ¡Öµ
--- @param    int16 x xÖµ
--- @param    int16 y yÖµ
+-- @param    int16_t x xÖµ
+-- @param    int16_t y yÖµ
 -- @return   ·µ»ØÁ½ÖµÖĞµÄ×îĞ¡Öµ
 -- @auther   none
 -- @date     2023/10/2
 **/
-int16 Limit1(int16 x, int16 y)
+int16_t Limit1(int16_t x, int16_t y)
 {
     if (x > y)             return y;
     else if (x < -y)       return -y;
     else                return x;
 }
 
-/** 
+/**
 * @brief ×îĞ¡¶ş³Ë·¨
-* @param uint8 begin				ÊäÈëÆğµã
-* @param uint8 end					ÊäÈëÖÕµã
-* @param uint8 *border				ÊäÈëĞèÒª¼ÆËãĞ±ÂÊµÄ±ß½çÊ×µØÖ·
+* @param uint8_t begin				ÊäÈëÆğµã
+* @param uint8_t end					ÊäÈëÖÕµã
+* @param uint8_t *border				ÊäÈëĞèÒª¼ÆËãĞ±ÂÊµÄ±ß½çÊ×µØÖ·
 *  @see CTest		Slope_Calculate(start, end, border);//Ğ±ÂÊ
 * @return ·µ»ØËµÃ÷
 *     -<em>false</em> fail
 *     -<em>true</em> succeed
 */
-float Slope_Calculate(uint8 begin, uint8 end, uint8 *border)
+float Slope_Calculate(uint8_t begin, uint8_t end, uint8_t* border)
 {
-	float xsum = 0, ysum = 0, xysum = 0, x2sum = 0;
-	int16 i = 0;
-	float result = 0;
-	static float resultlast;
+    float xsum = 0, ysum = 0, xysum = 0, x2sum = 0;
+    int16_t i = 0;
+    float result = 0;
+    static float resultlast;
 
-	for (i = begin; i < end; i++)
-	{
-		xsum += i;
-		ysum += border[i];
-		xysum += i * (border[i]);
-		x2sum += i * i;
+    for (i = begin; i < end; i++)
+    {
+        xsum += i;
+        ysum += border[i];
+        xysum += i * (border[i]);
+        x2sum += i * i;
 
-	}
-	if ((end - begin)*x2sum - xsum * xsum) //ÅĞ¶Ï³ıÊıÊÇ·ñÎªÁã
-	{
-		result = ((end - begin)*xysum - xsum * ysum) / ((end - begin)*x2sum - xsum * xsum);
-		resultlast = result;
-	}
-	else
-	{
-		result = resultlast;
-	}
-	return result;
+    }
+    if ((end - begin) * x2sum - xsum * xsum) //ÅĞ¶Ï³ıÊıÊÇ·ñÎªÁã
+    {
+        result = ((end - begin) * xysum - xsum * ysum) / ((end - begin) * x2sum - xsum * xsum);
+        resultlast = result;
+    }
+    else
+    {
+        result = resultlast;
+    }
+    return result;
 }
 
-/** 
+/**
 * @brief ¼ÆËãĞ±ÂÊ½Ø¾à
-* @param uint8 start				ÊäÈëÆğµã
-* @param uint8 *border				ÊäÈëĞèÒª¼ÆËãĞ±ÂÊµÄ±ß½ç
-* @param uint8 end					ÊäÈëÖÕµã
+* @param uint8_t start				ÊäÈëÆğµã
+* @param uint8_t *border				ÊäÈëĞèÒª¼ÆËãĞ±ÂÊµÄ±ß½ç
+* @param uint8_t end					ÊäÈëÖÕµã
 * @param float *slope_rate			ÊäÈëĞ±ÂÊµØÖ·
 * @param float *intercept			ÊäÈë½Ø¾àµØÖ·
 *  @see CTest		calculate_s_i(start, end, R_Border, &slope_l_rate, &intercept_l);
@@ -144,49 +150,49 @@ float Slope_Calculate(uint8 begin, uint8 end, uint8 *border)
 *     -<em>false</em> fail
 *     -<em>true</em> succeed
 */
-void calculate_s_i(uint8 start, uint8 end, uint8 *border, float *slope_rate, float *intercept)
+void calculate_s_i(uint8_t start, uint8_t end, uint8_t* border, float* slope_rate, float* intercept)
 {
-	uint16 i, num = 0;
-	uint16 xsum = 0, ysum = 0;
-	float y_average, x_average;
+    uint16_t i, num = 0;
+    uint16_t xsum = 0, ysum = 0;
+    float y_average, x_average;
 
-	num = 0;
-	xsum = 0;
-	ysum = 0;
-	y_average = 0;
-	x_average = 0;
-	for (i = start; i < end; i++)
-	{
-		xsum += i;
-		ysum += border[i];
-		num++;
-	}
+    num = 0;
+    xsum = 0;
+    ysum = 0;
+    y_average = 0;
+    x_average = 0;
+    for (i = start; i < end; i++)
+    {
+        xsum += i;
+        ysum += border[i];
+        num++;
+    }
 
-	//¼ÆËã¸÷¸öÆ½¾ùÊı
-	if (num)
-	{
-		x_average = (float)(xsum / num);
-		y_average = (float)(ysum / num);
+    //¼ÆËã¸÷¸öÆ½¾ùÊı
+    if (num)
+    {
+        x_average = (float)(xsum / num);
+        y_average = (float)(ysum / num);
 
-	}
+    }
 
-	/*¼ÆËãĞ±ÂÊ*/
-	*slope_rate = Slope_Calculate(start, end, border);//Ğ±ÂÊ
-	*intercept = y_average - (*slope_rate)*x_average;//½Ø¾à
+    /*¼ÆËãĞ±ÂÊ*/
+    *slope_rate = Slope_Calculate(start, end, border);//Ğ±ÂÊ
+    *intercept = y_average - (*slope_rate) * x_average;//½Ø¾à
 }
 
 /**----------------------------------------------------´ó½ò·¨²¿·Ö------------------------------------------------------------------------**/
 /**@brief    »ñÈ¡Ò»¸±»Ò¶ÈÍ¼Ïñ
--- @param    uint8(*mt9v03x_image)[Image_W] ÉãÏñÍ·²É¼¯Í¼Ïñ¶ÔÓ¦µÄÖ¸Õë
+-- @param    uint8_t(*mt9v03x_image)[Image_W] ÉãÏñÍ·²É¼¯Í¼Ïñ¶ÔÓ¦µÄÖ¸Õë
 -- @auther   none
 -- @date     2023/10/2
 **/
-void Get_Image(uint8(*mt9v03x_image)[Image_W])
+void Get_Image(uint8_t(*mt9v03x_image)[Image_W])
 {
-    uint8 i = 0, j = 0, Row = 0, Line = 0;
+    uint8_t i = 0, j = 0, Row = 0, Line = 0;
     for (i = 0; i < Image_H; i += use_num)
     {
-        for (j = 0; j <Image_W; j += use_num)
+        for (j = 0; j < Image_W; j += use_num)
         {
             Original_Image[Row][Line] = mt9v03x_image[i][j];
             Line++;
@@ -197,43 +203,43 @@ void Get_Image(uint8(*mt9v03x_image)[Image_W])
 }
 
 /**@brief    ´ó½ò·¨»ñÈ¡¶¯Ì¬ãĞÖµ
--- @param    uint8 *image ĞèÒª´¦ÀíµÄÍ¼Ïñ
--- @param    uint16 col ÁĞ³¤¶È
--- @param    uint16 row ĞĞ³¤¶È
+-- @param    uint8_t *image ĞèÒª´¦ÀíµÄÍ¼Ïñ
+-- @param    uint16_t_t col ÁĞ³¤¶È
+-- @param    uint16_t_t row ĞĞ³¤¶È
 -- @auther   none
--- @return   uint8 Threshold ¶¯Ì¬ãĞÖµ
+-- @return   uint8_t Threshold ¶¯Ì¬ãĞÖµ
 -- @date     2023/10/2
 **/
-uint8 Otsu_Threshold(uint8 *Image, uint16 col, uint16 row)
+uint8_t Otsu_Threshold(uint8_t* Image, uint16_t col, uint16_t row)
 {
 #define GrayScale 256
-    uint16 Image_Width  = col;
-    uint16 Image_Height = row;
-    int X; uint16 Y;
-    uint8* data = Image;
-    int HistGram[GrayScale] = {0};//Ö±·½Í¼
+    uint16_t Image_Width = col;
+    uint16_t Image_Height = row;
+    int X; uint16_t Y;
+    uint8_t* data = Image;
+    int HistGram[GrayScale] = { 0 };//Ö±·½Í¼
 
-    uint32 Amount = 0;
-    uint32 Pixel_Back = 0;//±³¾°ÏñËØ
-    uint32 Pixel_Integral_Back = 0;//±³¾°ÏñËØµÄÀÛ»ı»Ò¶ÈÖµ
-    uint32 Pixel_Integral = 0;//ÏñËØÀÛ¼ÆÖµ
-    int32 Pixel_IntegralFore = 0;//Ç°¾°ÏñËØµÄÀÛ»ı»Ò¶ÈÖµ
-    int32 Pixel_Fore = 0;//Ç°¾°ÏñËØ£¬±»ÈÏÎªÊÇÄ¿±êµÄÏñËØ
-    float Omega_Back=0, Omega_Fore=0, Micro_Back=0, Micro_Fore=0, SigmaB=0, Sigma=0; // Àà¼ä·½²î£¬·Ö±ğÎª±³¾°ÏñËØµÄÏà¶ÔÈ¨ÖØ£¬Ç°¾°ÏñËØµÄÏà¶ÔÈ¨ÖØ£¬±³¾°ÏñËØµÄÆ½¾ù»Ò¶ÈÖµ£¬Ç°¾°ÏñËØµÄÆ½¾ù»Ò¶ÈÖµ;
-    uint8 Min_Value=0, Max_Value=0;
-    uint8 Threshold = 0;//ãĞÖµ
+    uint32_t Amount = 0;
+    uint32_t Pixel_Back = 0;//±³¾°ÏñËØ
+    uint32_t Pixel_Integral_Back = 0;//±³¾°ÏñËØµÄÀÛ»ı»Ò¶ÈÖµ
+    uint32_t Pixel_Integral = 0;//ÏñËØÀÛ¼ÆÖµ
+    int32_t Pixel_IntegralFore = 0;//Ç°¾°ÏñËØµÄÀÛ»ı»Ò¶ÈÖµ
+    int32_t Pixel_Fore = 0;//Ç°¾°ÏñËØ£¬±»ÈÏÎªÊÇÄ¿±êµÄÏñËØ
+    float Omega_Back = 0, Omega_Fore = 0, Micro_Back = 0, Micro_Fore = 0, SigmaB = 0, Sigma = 0; // Àà¼ä·½²î£¬·Ö±ğÎª±³¾°ÏñËØµÄÏà¶ÔÈ¨ÖØ£¬Ç°¾°ÏñËØµÄÏà¶ÔÈ¨ÖØ£¬±³¾°ÏñËØµÄÆ½¾ù»Ò¶ÈÖµ£¬Ç°¾°ÏñËØµÄÆ½¾ù»Ò¶ÈÖµ;
+    uint8_t Min_Value = 0, Max_Value = 0;
+    uint8_t Threshold = 0;//ãĞÖµ
 
-    for (Y = 0; Y <Image_Height; Y++) //Y<Image_Height¸ÄÎªY =Image_Height£»ÒÔ±ã½øĞĞ ĞĞ¶şÖµ»¯
+    for (Y = 0; Y < Image_Height; Y++) //Y<Image_Height¸ÄÎªY =Image_Height£»ÒÔ±ã½øĞĞ ĞĞ¶şÖµ»¯
     {
         //Y=Image_Height;
         for (X = 0; X < Image_Width; X++)
         {
-            HistGram[(int)data[Y*Image_Width + X]]++; //Í³¼ÆÃ¿¸ö»Ò¶ÈÖµµÄ¸öÊıĞÅÏ¢
+            HistGram[(int)data[Y * Image_Width + X]]++; //Í³¼ÆÃ¿¸ö»Ò¶ÈÖµµÄ¸öÊıĞÅÏ¢
         }
     }
 
-    for (Min_Value = 0; Min_Value < 255 && HistGram[Min_Value] == 0; Min_Value++) ;        //»ñÈ¡×îĞ¡»Ò¶ÈµÄÖµ
-    for (Max_Value = 255; Max_Value > Min_Value && HistGram[Min_Value] == 0; Max_Value--) ; //»ñÈ¡×î´ó»Ò¶ÈµÄÖµ
+    for (Min_Value = 0; Min_Value < 255 && HistGram[Min_Value] == 0; Min_Value++);        //»ñÈ¡×îĞ¡»Ò¶ÈµÄÖµ
+    for (Max_Value = 255; Max_Value > Min_Value && HistGram[Min_Value] == 0; Max_Value--); //»ñÈ¡×î´ó»Ò¶ÈµÄÖµ
 
     if (Max_Value == Min_Value)
     {
@@ -257,22 +263,22 @@ uint8 Otsu_Threshold(uint8 *Image, uint16 col, uint16 row)
     SigmaB = -1;
     for (Y = Min_Value; Y < Max_Value; Y++)
     {
-          Pixel_Back = Pixel_Back + HistGram[Y];    //Ç°¾°ÏñËØµãÊı
-          Pixel_Fore = Amount - Pixel_Back;         //±³¾°ÏñËØµãÊı
-          Omega_Back = (float)Pixel_Back / Amount;//Ç°¾°ÏñËØ°Ù·Ö±È
-          Omega_Fore = (float)Pixel_Fore / Amount;//±³¾°ÏñËØ°Ù·Ö±È
-          Pixel_Integral_Back += HistGram[Y] * Y;  //Ç°¾°»Ò¶ÈÖµ
-          Pixel_IntegralFore = Pixel_Integral - Pixel_Integral_Back;//±³¾°»Ò¶ÈÖµ
-          Micro_Back = (float)Pixel_Integral_Back / Pixel_Back;//Ç°¾°»Ò¶È°Ù·Ö±È
-          Micro_Fore = (float)Pixel_IntegralFore / Pixel_Fore;//±³¾°»Ò¶È°Ù·Ö±È
-          Sigma = Omega_Back * Omega_Fore * (Micro_Back - Micro_Fore) * (Micro_Back - Micro_Fore);//g
-          if (Sigma > SigmaB)//±éÀú×î´óµÄÀà¼ä·½²îg
-          {
-              SigmaB = Sigma;
-              Threshold = (uint8)Y;
-          }
+        Pixel_Back = Pixel_Back + HistGram[Y];    //Ç°¾°ÏñËØµãÊı
+        Pixel_Fore = Amount - Pixel_Back;         //±³¾°ÏñËØµãÊı
+        Omega_Back = (float)Pixel_Back / Amount;//Ç°¾°ÏñËØ°Ù·Ö±È
+        Omega_Fore = (float)Pixel_Fore / Amount;//±³¾°ÏñËØ°Ù·Ö±È
+        Pixel_Integral_Back += HistGram[Y] * Y;  //Ç°¾°»Ò¶ÈÖµ
+        Pixel_IntegralFore = Pixel_Integral - Pixel_Integral_Back;//±³¾°»Ò¶ÈÖµ
+        Micro_Back = (float)Pixel_Integral_Back / Pixel_Back;//Ç°¾°»Ò¶È°Ù·Ö±È
+        Micro_Fore = (float)Pixel_IntegralFore / Pixel_Fore;//±³¾°»Ò¶È°Ù·Ö±È
+        Sigma = Omega_Back * Omega_Fore * (Micro_Back - Micro_Fore) * (Micro_Back - Micro_Fore);//g
+        if (Sigma > SigmaB)//±éÀú×î´óµÄÀà¼ä·½²îg
+        {
+            SigmaB = Sigma;
+            Threshold = (uint8_t)Y;
+        }
     }
-   return Threshold;
+    return Threshold;
 }
 
 
@@ -283,38 +289,38 @@ uint8 Otsu_Threshold(uint8 *Image, uint16 col, uint16 row)
 **/
 void Turn_To_Bin(void)
 {
-  uint8 i,j;
-  Image_Thereshold = 1.075f * Otsu_Threshold(Original_Image[0], Image_W, Image_H);//»ñÈ¡´ó½ò·¨ãĞÖµ
-//   printf("begin");
-  for(i = 0;i<Image_H;i++)
-  {
-      for(j = 0;j<Image_W;j++)
-      {
-          if(Original_Image[i][j]>Image_Thereshold)
-          {
-              Bin_Image[i][j] = White_Pixel;
-          }
-          else
-          {
-              Bin_Image[i][j] = Black_Pixel;
-          }
-        //   printf(" %d",Bin_Image[i][j]);
-      }
-    //   printf("\r\n");
-  }
-//   printf("end");
+    uint8_t i, j;
+    Image_Thereshold = 1.075f * Otsu_Threshold(Original_Image[0], Image_W, Image_H);//»ñÈ¡´ó½ò·¨ãĞÖµ
+    //   printf("begin");
+    for (i = 0;i < Image_H;i++)
+    {
+        for (j = 0;j < Image_W;j++)
+        {
+            if (Original_Image[i][j] > Image_Thereshold)
+            {
+                Bin_Image[i][j] = White_Pixel;
+            }
+            else
+            {
+                Bin_Image[i][j] = Black_Pixel;
+            }
+            //   printf(" %d",Bin_Image[i][j]);
+        }
+        //   printf("\r\n");
+    }
+    //   printf("end");
 }
 
 
 /**----------------------------------------------------°ËÁìÓò²¿·Ö------------------------------------------------------------------------**/
 /**@brief    Ñ°ÕÒÁ½¸ö±ß½çµÄ±ß½çµã×÷Îª°ËÁÚÓòÑ­»·µÄÆğÊ¼µã
--- @param    uint8 Start_Row ÊäÈëÈÎÒâĞĞÊı
+-- @param    uint8_t Start_Row ÊäÈëÈÎÒâĞĞÊı
 -- @auther   none
 -- @date     2023/10/3
 **/
-uint8 Get_Start_Point(uint8 Start_Row)
+uint8_t Get_Start_Point(uint8_t Start_Row)
 {
-    uint8 i = 0,L_Found = 0,R_Found = 0;
+    uint8_t i = 0, L_Found = 0, R_Found = 0;
     //ÇåÁã
     Start_Point_L[0] = 0;//x
     Start_Point_L[1] = 0;//y
@@ -322,7 +328,7 @@ uint8 Get_Start_Point(uint8 Start_Row)
     Start_Point_R[0] = 0;//x
     Start_Point_R[1] = 0;//y
 
-        //´ÓÖĞ¼äÍù×ó±ß£¬ÏÈÕÒÆğµã
+    //´ÓÖĞ¼äÍù×ó±ß£¬ÏÈÕÒÆğµã
     for (i = Image_W / 2; i > Border_Min; i--)
     {
         Start_Point_L[0] = i;//x
@@ -347,7 +353,7 @@ uint8 Get_Start_Point(uint8 Start_Row)
         }
     }
 
-    if(L_Found&&R_Found)//×ó±ßºÍÓÒ±ß¶¼ÕÒµ½Æğµã
+    if (L_Found && R_Found)//×ó±ßºÍÓÒ±ß¶¼ÕÒµ½Æğµã
     {
         return 1;
     }
@@ -360,44 +366,44 @@ uint8 Get_Start_Point(uint8 Start_Row)
 
 
 /**@brief    °ËÁÚÓòÕÒ×óÓÒ±ßµãµÄº¯Êı
--- @param    uint16 Break_Flag ×î¶àĞèÒªÑ­»·µÄ´ÎÊı
--- @param    uint8(*image)[Image_W] ĞèÒª½øĞĞÕÒµãµÄÍ¼ÏñÊı×é£¬±ØĞëÊÇ¶şÖµÍ¼,ÌîÈëÊı×éÃû³Æ¼´¿É
--- @param    uint16 *L_Stastic Í³¼Æ×ó±ßÊı¾İ£¬ÓÃÀ´ÊäÈë³õÊ¼Êı×é³ÉÔ±µÄĞòºÅºÍÈ¡³öÑ­»·´ÎÊı
--- @param    uint16 *R_Stastic Í³¼ÆÓÒ±ßÊı¾İ£¬ÓÃÀ´ÊäÈë³õÊ¼Êı×é³ÉÔ±µÄĞòºÅºÍÈ¡³öÑ­»·´ÎÊı
--- @param    uint8 L_Start_X ×ó±ßÆğµãºá×ø±ê
--- @param    uint8 L_Start_Y ×ó±ßÆğµã×İ×ø±ê
--- @param    uint8 R_Start_X ÓÒ±ßÆğµãºá×ø±ê
--- @param    uint8 R_Start_Y ÓÒ±ßÆğµã×İ×ø±ê
--- @param    uint8 Hightest Ñ­»·½áÊøËùµÃµ½µÄ×î¸ß¸ß¶È
+-- @param    uint16_t_t Break_Flag ×î¶àĞèÒªÑ­»·µÄ´ÎÊı
+-- @param    uint8_t(*image)[Image_W] ĞèÒª½øĞĞÕÒµãµÄÍ¼ÏñÊı×é£¬±ØĞëÊÇ¶şÖµÍ¼,ÌîÈëÊı×éÃû³Æ¼´¿É
+-- @param    uint16_t_t *L_Stastic Í³¼Æ×ó±ßÊı¾İ£¬ÓÃÀ´ÊäÈë³õÊ¼Êı×é³ÉÔ±µÄĞòºÅºÍÈ¡³öÑ­»·´ÎÊı
+-- @param    uint16_t_t *R_Stastic Í³¼ÆÓÒ±ßÊı¾İ£¬ÓÃÀ´ÊäÈë³õÊ¼Êı×é³ÉÔ±µÄĞòºÅºÍÈ¡³öÑ­»·´ÎÊı
+-- @param    uint8_t L_Start_X ×ó±ßÆğµãºá×ø±ê
+-- @param    uint8_t L_Start_Y ×ó±ßÆğµã×İ×ø±ê
+-- @param    uint8_t R_Start_X ÓÒ±ßÆğµãºá×ø±ê
+-- @param    uint8_t R_Start_Y ÓÒ±ßÆğµã×İ×ø±ê
+-- @param    uint8_t Hightest Ñ­»·½áÊøËùµÃµ½µÄ×î¸ß¸ß¶È
 -- @auther   none
 -- @date     2023/10/3
 **/
-void Search_L_R(uint16 Break_Flag, uint8(*image)[Image_W], uint16 *L_Stastic, uint16 *R_Stastic, uint8 L_Start_X, uint8 L_Start_Y, uint8 R_Start_X, uint8 R_Start_Y, uint8*Hightest)
+void Search_L_R(uint16_t Break_Flag, uint8_t(*image)[Image_W], uint16_t* L_Stastic, uint16_t* R_Stastic, uint8_t L_Start_X, uint8_t L_Start_Y, uint8_t R_Start_X, uint8_t R_Start_Y, uint8_t* Hightest)
 {
 
-    uint8 i = 0, j = 0;
+    uint8_t i = 0, j = 0;
 
     //×ó±ß±äÁ¿
-    uint8 Search_Filds_L[8][2] = {{0}};//Ñ°ÕÒ°ËÁìÓòÊı×é
-    uint8 Index_L = 0;
-    uint8 Temp_L[8][2] = {{0}};
-    uint8 Center_Point_L[2] = {0};
-    uint16 L_Data_Statics;//Í³¼Æ×ó±ßÕÒµ½µÄµã
+    uint8_t Search_Filds_L[8][2] = { {0} };//Ñ°ÕÒ°ËÁìÓòÊı×é
+    uint8_t Index_L = 0;
+    uint8_t Temp_L[8][2] = { {0} };
+    uint8_t Center_Point_L[2] = { 0 };
+    uint16_t L_Data_Statics;//Í³¼Æ×ó±ßÕÒµ½µÄµã
     //¶¨Òå°Ë¸öÁÚÓò
-    static int8 Seeds_L[8][2] = { {0,  1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1},{1,  0},{1, 1}, };
+    static int8_t Seeds_L[8][2] = { {0,  1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1},{1,  0},{1, 1}, };
     //{-1,-1},{0,-1},{+1,-1},
     //{-1, 0},       {+1, 0},
     //{-1,+1},{0,+1},{+1,+1},
     //Õâ¸öÊÇË³Ê±Õë
 
     //ÓÒ±ß±äÁ¿
-    uint8 Search_Filds_R[8][2] = { {  0 } };
-    uint8 Center_Point_R[2] = { 0 };//ÖĞĞÄ×ø±êµã
-    uint8 Index_R = 0;//Ë÷ÒıÏÂ±ê
-    uint8 Temp_R[8][2] = { {  0 } };
-    uint16 R_Data_Statics;//Í³¼ÆÓÒ±ß
+    uint8_t Search_Filds_R[8][2] = { {  0 } };
+    uint8_t Center_Point_R[2] = { 0 };//ÖĞĞÄ×ø±êµã
+    uint8_t Index_R = 0;//Ë÷ÒıÏÂ±ê
+    uint8_t Temp_R[8][2] = { {  0 } };
+    uint16_t R_Data_Statics;//Í³¼ÆÓÒ±ß
     //¶¨Òå°Ë¸öÁÚÓò
-    static int8 Seeds_R[8][2] = { {0,  1},{1,1},{1,0}, {1,-1},{0,-1},{-1,-1}, {-1,  0},{-1, 1}, };
+    static int8_t Seeds_R[8][2] = { {0,  1},{1,1},{1,0}, {1,-1},{0,-1},{-1,-1}, {-1,  0},{-1, 1}, };
     //{-1,-1},{0,-1},{+1,-1},
     //{-1, 0},       {+1, 0},
     //{-1,+1},{0,+1},{+1,+1},
@@ -412,7 +418,7 @@ void Search_L_R(uint16 Break_Flag, uint8(*image)[Image_W], uint16 *L_Stastic, ui
     Center_Point_R[0] = R_Start_X;//x
     Center_Point_R[1] = R_Start_Y;//y
 
-        //¿ªÆôÁÚÓòÑ­»·
+    //¿ªÆôÁÚÓòÑ­»·
     while (Break_Flag--)
     {
 
@@ -474,10 +480,10 @@ void Search_L_R(uint16 Break_Flag, uint8(*image)[Image_W], uint16 *L_Stastic, ui
             }
 
         }
-        if ((Points_R[R_Data_Statics][0]== Points_R[R_Data_Statics-1][0]&& Points_R[R_Data_Statics][0] == Points_R[R_Data_Statics - 2][0]
+        if ((Points_R[R_Data_Statics][0] == Points_R[R_Data_Statics - 1][0] && Points_R[R_Data_Statics][0] == Points_R[R_Data_Statics - 2][0]
             && Points_R[R_Data_Statics][1] == Points_R[R_Data_Statics - 1][1] && Points_R[R_Data_Statics][1] == Points_R[R_Data_Statics - 2][1])
-            ||(Points_L[L_Data_Statics-1][0] == Points_L[L_Data_Statics - 2][0] && Points_L[L_Data_Statics-1][0] == Points_L[L_Data_Statics - 3][0]
-                && Points_L[L_Data_Statics-1][1] == Points_L[L_Data_Statics - 2][1] && Points_L[L_Data_Statics-1][1] == Points_L[L_Data_Statics - 3][1]))
+            || (Points_L[L_Data_Statics - 1][0] == Points_L[L_Data_Statics - 2][0] && Points_L[L_Data_Statics - 1][0] == Points_L[L_Data_Statics - 3][0]
+                && Points_L[L_Data_Statics - 1][1] == Points_L[L_Data_Statics - 2][1] && Points_L[L_Data_Statics - 1][1] == Points_L[L_Data_Statics - 3][1]))
         {
             //printf("Èı´Î½øÈëÍ¬Ò»¸öµã£¬ÍË³ö\n");
             break;
@@ -555,17 +561,17 @@ void Search_L_R(uint16 Break_Flag, uint8(*image)[Image_W], uint16 *L_Stastic, ui
 
 
 /**@brief   ´Ó°ËÁÚÓò±ß½çÀïÌáÈ¡ĞèÒªµÄ×ó±ßÏß
--- @param   uint16 Total_L ÕÒµ½µÄµãµÄ×ÜÊı
+-- @param   uint16_t_t Total_L ÕÒµ½µÄµãµÄ×ÜÊı
 -- @auther  none
 -- @date    2023/10/3
 **/
-void Get_Left(uint16 Total_L)
+void Get_Left(uint16_t Total_L)
 {
-    uint8 i = 0;
-    uint16 j = 0;
-    uint8 h = 0;
+    uint8_t i = 0;
+    uint16_t j = 0;
+    uint8_t h = 0;
     //³õÊ¼»¯
-    for (i = 0;i<Image_H;i++)
+    for (i = 0;i < Image_H;i++)
     {
         L_Border[i] = Border_Min;
     }
@@ -576,7 +582,8 @@ void Get_Left(uint16 Total_L)
         //printf("%d\n", j);
         if (Points_L[j][1] == h)
         {
-            L_Border[h] = Points_L[j][0]+1;
+            L_Border[h] = Points_L[j][0] + 1;
+            hashMapIndexL[h] = j; // ´æÈëEdge±ßÔµµãÈë¹şÏ£±í
         }
         else
         {
@@ -591,15 +598,15 @@ void Get_Left(uint16 Total_L)
 }
 
 /**@brief   ´Ó°ËÁÚÓò±ß½çÀïÌáÈ¡ĞèÒªµÄÓÒ±ßÏß
--- @param   uint16 Total_R ÕÒµ½µÄµãµÄ×ÜÊı
+-- @param   uint16_t_t Total_R ÕÒµ½µÄµãµÄ×ÜÊı
 -- @auther  none
 -- @date    2023/10/3
 **/
-void Get_Right(uint16 Total_R)
+void Get_Right(uint16_t Total_R)
 {
-    uint8 i = 0;
-    uint16 j = 0;
-    uint8 h = 0;
+    uint8_t i = 0;
+    uint16_t j = 0;
+    uint8_t h = 0;
     for (i = 0; i < Image_H; i++)
     {
         R_Border[i] = Border_Max;//ÓÒ±ßÏß³õÊ¼»¯·Åµ½×îÓÒ±ß£¬×ó±ßÏß·Åµ½×î×ó±ß£¬ÕâÑù°ËÁÚÓò±ÕºÏÇøÓòÍâµÄÖĞÏß¾Í»áÔÚÖĞ¼ä£¬²»»á¸ÉÈÅµÃµ½µÄÊı¾İ
@@ -611,6 +618,7 @@ void Get_Right(uint16 Total_R)
         if (Points_R[j][1] == h)
         {
             R_Border[h] = Points_R[j][0] - 1;
+            hashMapIndexR[h] = j;
         }
         else
         {
@@ -626,14 +634,14 @@ void Get_Right(uint16 Total_R)
 
 /**----------------------------------------------------Í¼ÏñÂË²¨²¿·Ö------------------------------------------------------------------------**/
 /**@brief   ĞÎÌ¬Ñ§ÂË²¨
--- @param   uint8(*Bin_Image)[Image_W] ¶şÖµ»¯Í¼Ïñ
+-- @param   uint8_t(*Bin_Image)[Image_W] ¶şÖµ»¯Í¼Ïñ
 -- @auther  none
 -- @date    2023/10/3
 **/
-void Image_Filter(uint8(*Bin_Image)[Image_W])//ĞÎÌ¬Ñ§ÂË²¨£¬¼òµ¥À´Ëµ¾ÍÊÇÅòÕÍºÍ¸¯Ê´µÄË¼Ïë
+void Image_Filter(uint8_t(*Bin_Image)[Image_W])//ĞÎÌ¬Ñ§ÂË²¨£¬¼òµ¥À´Ëµ¾ÍÊÇÅòÕÍºÍ¸¯Ê´µÄË¼Ïë
 {
-    uint16 i, j;
-    uint32 num = 0;
+    uint16_t i, j;
+    uint32_t num = 0;
 
 
     for (i = 1; i < Image_H - 1; i++)
@@ -667,14 +675,14 @@ void Image_Filter(uint8(*Bin_Image)[Image_W])//ĞÎÌ¬Ñ§ÂË²¨£¬¼òµ¥À´Ëµ¾ÍÊÇÅòÕÍºÍ¸¯Ê
 
 
 /**@brief   ¸øÍ¼Ïñ»­Ò»¸öºÚ¿ò
--- @param   uint8(*Image)[Image_W]  Í¼ÏñÊ×µØÖ·
+-- @param   uint8_t(*Image)[Image_W]  Í¼ÏñÊ×µØÖ·
 -- @auther  none
 -- @date    2023/10/3
 **/
-void Image_Draw_Rectan(uint8(*Image)[Image_W])
+void Image_Draw_Rectan(uint8_t(*Image)[Image_W])
 {
 
-    uint8 i = 0;
+    uint8_t i = 0;
     for (i = 0; i < Image_H; i++)
     {
         Image[i][0] = 0;
@@ -701,269 +709,627 @@ void my_sobel(unsigned char imageIn[Image_H][Image_W], unsigned char imageOut[Im
     short yEnd = Image_H - KERNEL_SIZE / 2;
     short i, j;
     short temp[2];
-    short temp1 ,temp2 ;
+    short temp1, temp2;
     //for(i = 0; i < Compress_H; i++)//ËãµÄ¸üÂı²»¹ı¶Ô±ÈÁËÈ«¾ÖÍ¼Ïñ
     for (i = yStart; i < yEnd; i++)   //ÓĞµãµÄÌøÔ¾
-       {
-           //for(j = 0; j < Compress_W; j++)//ËãµÄ¸üÂı²»¹ı¶Ô±ÈÁËÈ«¾ÖÍ¼Ïñ
-           for (j = xStart; j < xEnd; j++)  //ÓĞµãµÄÌøÔ¾
-           {
-               /* ¼ÆËã²»Í¬·½ÏòÌİ¶È·ùÖµ  */
-               temp[0] = -(short) imageIn[i - 1][j - 1] + (short) imageIn[i - 1][j + 1]     //{{-1, 0, 1},
-               - (short) 2*imageIn[i][j - 1] + (short) 2*imageIn[i][j + 1]       // {-2, 0, 2},
-               - (short) imageIn[i + 1][j - 1] + (short) imageIn[i + 1][j + 1];    // {-1, 0, 1}};
+    {
+        //for(j = 0; j < Compress_W; j++)//ËãµÄ¸üÂı²»¹ı¶Ô±ÈÁËÈ«¾ÖÍ¼Ïñ
+        for (j = xStart; j < xEnd; j++)  //ÓĞµãµÄÌøÔ¾
+        {
+            /* ¼ÆËã²»Í¬·½ÏòÌİ¶È·ùÖµ  */
+            temp[0] = -(short)imageIn[i - 1][j - 1] + (short)imageIn[i - 1][j + 1]     //{{-1, 0, 1},
+                - (short)2 * imageIn[i][j - 1] + (short)2 * imageIn[i][j + 1]       // {-2, 0, 2},
+                - (short)imageIn[i + 1][j - 1] + (short)imageIn[i + 1][j + 1];    // {-1, 0, 1}};
 
-               temp[1] = -(short) imageIn[i - 1][j - 1] + (short) imageIn[i + 1][j - 1]     //{{-1, -2, -1},
-               - (short) 2*imageIn[i - 1][j] + (short) 2*imageIn[i + 1][j]       // { 0,  0,  0},
-               - (short) imageIn[i - 1][j + 1] + (short) imageIn[i + 1][j + 1];    // { 1,  2,  1}};
+            temp[1] = -(short)imageIn[i - 1][j - 1] + (short)imageIn[i + 1][j - 1]     //{{-1, -2, -1},
+                - (short)2 * imageIn[i - 1][j] + (short)2 * imageIn[i + 1][j]       // { 0,  0,  0},
+                - (short)imageIn[i - 1][j + 1] + (short)imageIn[i + 1][j + 1];    // { 1,  2,  1}};
 
-               temp[0] = fabs(temp[0]);
-               temp[1] = fabs(temp[1]);
+            temp[0] = fabs(temp[0]);
+            temp[1] = fabs(temp[1]);
 
-               temp1 = temp[0] + temp[1] ;
+            temp1 = temp[0] + temp[1];
 
-               temp2 =  (short) imageIn[i - 1][j - 1] + (short)2* imageIn[i - 1][j] + (short) imageIn[i - 1][j + 1]
-                       + (short)2* imageIn[i][j - 1] + (short) imageIn[i][j] + (short) 2*imageIn[i][j + 1]
-                       + (short) imageIn[i + 1][j - 1] + (short) 2*imageIn[i + 1][j] + (short) imageIn[i + 1][j + 1];
+            temp2 = (short)imageIn[i - 1][j - 1] + (short)2 * imageIn[i - 1][j] + (short)imageIn[i - 1][j + 1]
+                + (short)2 * imageIn[i][j - 1] + (short)imageIn[i][j] + (short)2 * imageIn[i][j + 1]
+                + (short)imageIn[i + 1][j - 1] + (short)2 * imageIn[i + 1][j] + (short)imageIn[i + 1][j + 1];
 
-               if (temp1 > temp2 / 12.0f)
-               {
-                   imageOut[i][j] = Black_Pixel;
-               }
-              else
-              {
-                  imageOut[i][j] = White_Pixel;
-              }
-           }
-       }
+            if (temp1 > temp2 / 12.0f)
+            {
+                imageOut[i][j] = Black_Pixel;
+            }
+            else
+            {
+                imageOut[i][j] = White_Pixel;
+            }
+        }
+    }
 }
 
 /**----------------------------------------------------ÔªËØ²¿·Ö------------------------------------------------------------------------**/
-/** 
+/**
 * @brief Ê®×Ö²¹Ïßº¯Êı
-* @param uint8(*Bin_Image)[Image_W]		ÊäÈë¶şÖµÍ¼Ïñ
-* @param uint8 *L_Border			ÊäÈë×ó±ß½çÊ×µØÖ·
-* @param uint8 *R_Border			ÊäÈëÓÒ±ß½çÊ×µØÖ·
-* @param uint16 Total_Num_L			ÊäÈë×ó±ßÑ­»·×Ü´ÎÊı
-* @param uint16 Total_Num_R			ÊäÈëÓÒ±ßÑ­»·×Ü´ÎÊı
-* @param uint16 *Dir_L				ÊäÈë×ó±ßÉú³¤·½ÏòÊ×µØÖ·
-* @param uint16 *Dir_R				ÊäÈëÓÒ±ßÉú³¤·½ÏòÊ×µØÖ·
-* @param uint16(*Points_L)[2]		ÊäÈë×ó±ßÂÖÀªÊ×µØÖ·
-* @param uint16(*Points_R)[2]		ÊäÈëÓÒ±ßÂÖÀªÊ×µØÖ·
+* @param uint8_t(*Bin_Image)[Image_W]		ÊäÈë¶şÖµÍ¼Ïñ
+* @param uint8_t *L_Border			ÊäÈë×ó±ß½çÊ×µØÖ·
+* @param uint8_t *R_Border			ÊäÈëÓÒ±ß½çÊ×µØÖ·
+* @param uint16_t_t Total_Num_L			ÊäÈë×ó±ßÑ­»·×Ü´ÎÊı
+* @param uint16_t_t Total_Num_R			ÊäÈëÓÒ±ßÑ­»·×Ü´ÎÊı
+* @param uint16_t_t *Dir_L				ÊäÈë×ó±ßÉú³¤·½ÏòÊ×µØÖ·
+* @param uint16_t_t *Dir_R				ÊäÈëÓÒ±ßÉú³¤·½ÏòÊ×µØÖ·
+* @param uint16_t_t(*Points_L)[2]		ÊäÈë×ó±ßÂÖÀªÊ×µØÖ·
+* @param uint16_t_t(*Points_R)[2]		ÊäÈëÓÒ±ßÂÖÀªÊ×µØÖ·
 * @see CTest		Cross_Fill(Bin_Image,L_Border, R_Border, data_statics_l, data_statics_r, Dir_L, Dir_R, Points_L, Points_R);
  */
-void Cross_Fill(uint8(*Bin_Image)[Image_W], uint8 *L_Border, uint8 *R_Border, uint16 Total_Num_L, uint16 Total_Num_R,
-										 uint16 *Dir_L, uint16 *Dir_R, uint16(*Points_L)[2], uint16(*Points_R)[2])
+void Cross_Fill(uint8_t(*Bin_Image)[Image_W],  uint8_t* L_Border, uint8_t* R_Border, uint16_t Total_Num_L, uint16_t Total_Num_R, uint16_t* Dir_L, uint16_t* Dir_R, uint16_t(*Points_L)[2], uint16_t(*Points_R)[2])
 {
-	uint8 i;
-	uint8 Break_Num_L_UP = 0;//¹Õµã
-	uint8 Break_Num_R_UP = 0;
-	uint8 Break_Num_L_DOWN = 0;
-	uint8 Break_Num_R_DOWN = 0;
-	uint8 start, end;
-	float slope_l_rate = 0, intercept_l = 0;
+    uint8_t i;
+    uint8_t Break_Num_L_UP = 0;//¹Õµã
+    uint8_t Break_Num_R_UP = 0;
+    uint8_t Break_Num_L_DOWN = 0;
+    uint8_t Break_Num_R_DOWN = 0;
+    uint8_t start, end;
+    float slope_l_rate = 0, intercept_l = 0;
 
-	for (i = 1; i < Total_Num_L; i++)
-	{
-		if (Dir_L[i - 1] == 2 && Dir_L[i] == 2 && Dir_L[i + 3] == 4 && Dir_L[i + 5] == 4 && Dir_L[i + 7] == 4)//2-4Ìø±ä£¬×óÏÂ¹Õµã
-		{
-			Break_Num_L_DOWN = Points_L[i][1];//´«µİy×ø±ê
+    for (i = 1; i < Total_Num_L; i++)
+    {
+        if (Dir_L[i - 1] == 2 && Dir_L[i] == 2 && Dir_L[i + 3] == 4 && Dir_L[i + 5] == 4 && Dir_L[i + 7] == 4)//2-4Ìø±ä£¬×óÏÂ¹Õµã
+        {
+            Break_Num_L_DOWN = Points_L[i][1];//´«µİy×ø±ê
             // printf("find l_down\r\n");
             // printf("%d %d\r\n",i,Break_Num_L_DOWN);
             // if(Menu.Image_Show)
             // {
             //     tft180_Draw_ColorCircle(L_Border[Break_Num_L_DOWN],Break_Num_L_DOWN,5,RGB565_BLUE);//»­³ö¹Õµã
             // }
-			break;
-		}
-	}
+            break;
+        }
+    }
     for (i = 1; i < Total_Num_R; i++)
-	{
+    {
         // printf("DIR_R[%d] = %d\r\n",i,Dir_R[i]);
-		if (Dir_R[i - 1] == 2 && Dir_R[i] == 2 && Dir_R[i + 3] == 4 && Dir_R[i + 5] == 4 && Dir_R[i + 7] == 4)//2-4Ìø±ä£¬ÓÒÏÂ¹Õµã
-		{
-			Break_Num_R_DOWN = Points_R[i][1];//´«µİy×ø±ê
+        if (Dir_R[i - 1] == 2 && Dir_R[i] == 2 && Dir_R[i + 3] == 4 && Dir_R[i + 5] == 4 && Dir_R[i + 7] == 4)//2-4Ìø±ä£¬ÓÒÏÂ¹Õµã
+        {
+            Break_Num_R_DOWN = Points_R[i][1];//´«µİy×ø±ê
             // printf("find r_down\r\n");
             // printf("%d %d\r\n",R_Border[Break_Num_R_DOWN],Break_Num_R_DOWN);
             // if(Menu.Image_Show)
             // {
             //     tft180_Draw_ColorCircle(R_Border[Break_Num_R_DOWN],Break_Num_R_DOWN,5,RGB565_RED);
             // }
-			break;
-		}
-	}
-	for (i = 1; i < Total_Num_L; i++)
-	{
-		if (Dir_L[i - 1] == 4 && Dir_L[i] == 4 && Dir_L[i + 3] == 6 && Dir_L[i + 5] == 6 && Dir_L[i + 7] == 6)//4-6Ìø±ä£¬×óÉÏ¹Õµã
-		{
-			Break_Num_L_UP = Points_L[i][1];//´«µİy×ø±ê
+            break;
+        }
+    }
+    for (i = 1; i < Total_Num_L; i++)
+    {
+        if (Dir_L[i - 1] == 4 && Dir_L[i] == 4 && Dir_L[i + 3] == 6 && Dir_L[i + 5] == 6 && Dir_L[i + 7] == 6)//4-6Ìø±ä£¬×óÉÏ¹Õµã
+        {
+            Break_Num_L_UP = Points_L[i][1];//´«µİy×ø±ê
             // printf("find l_up\r\n");
             // printf("%d %d\r\n",L_Border[Break_Num_L_UP - 10],Break_Num_L_UP);
             // if(Menu.Image_Show)
             // {
             //     tft180_Draw_ColorCircle(L_Border[Break_Num_L_UP - 10],Break_Num_L_UP,5,RGB565_BLUE);
             // }
-			break;
-		}
-	}
-	for (i = 1; i < Total_Num_R; i++)
-	{
+            break;
+        }
+    }
+    for (i = 1; i < Total_Num_R; i++)
+    {
         // printf("DIR_R[%d] = %d\r\n",i,Dir_R[i]);
-		if (Dir_R[i - 1] == 4 && Dir_R[i] == 4 && Dir_R[i + 3] == 6 && Dir_R[i + 5] == 6 && Dir_R[i + 7] == 6)//4-6Ìø±ä£¬ÓÒÉÏ¹Õµã
-		{
-			Break_Num_R_UP = Points_R[i][1];//´«µİy×ø±ê
+        if (Dir_R[i - 1] == 4 && Dir_R[i] == 4 && Dir_R[i + 3] == 6 && Dir_R[i + 5] == 6 && Dir_R[i + 7] == 6)//4-6Ìø±ä£¬ÓÒÉÏ¹Õµã
+        {
+            Break_Num_R_UP = Points_R[i][1];//´«µİy×ø±ê
             // printf("find R_up\r\n");
             // printf("%d %d\r\n",R_Border[Break_Num_R_UP - 10],Break_Num_R_UP);
             // if(Menu.Image_Show)
             // {
             //     tft180_Draw_ColorCircle(R_Border[Break_Num_R_UP - 10],Break_Num_R_UP,5,RGB565_RED);
             // }
-			break;
-		}
-	}
+            break;
+        }
+    }
 
-	if (Break_Num_L_DOWN && Break_Num_R_DOWN &&(Bin_Image[Image_H - 10][4] == 0) && (Bin_Image[Image_H - 10][Image_W - 4] == 0))//Ê®×ÖÇ°
-	{
+    if (Break_Num_L_DOWN && Break_Num_R_DOWN && (Bin_Image[Image_H - 10][4] == 0) && (Bin_Image[Image_H - 10][Image_W - 4] == 0))//Ê®×ÖÇ°
+    {
         Image_Flag.Cross_Fill = true;
-		//¼ÆËãĞ±ÂÊ,×ó±ßĞ±ÂÊ
+        //¼ÆËãĞ±ÂÊ,×ó±ßĞ±ÂÊ
         start = Break_Num_L_DOWN + 2;
         end = Break_Num_L_DOWN + 7;
         end = Limit_a_b(end, 0, Image_H);//ÏŞ·ù
 
-		calculate_s_i(start, end, L_Border, &slope_l_rate, &intercept_l);
-		// printf("slope_l_rate:%f\nintercept_l:%f\n", slope_l_rate, intercept_l);
-		for (i = Break_Num_L_DOWN; i < Image_H - 1; i--)
-		{
-			L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
-			L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//ÏŞ·ù
-		}
+        calculate_s_i(start, end, L_Border, &slope_l_rate, &intercept_l);
+        // printf("slope_l_rate:%f\nintercept_l:%f\n", slope_l_rate, intercept_l);
+        for (i = Break_Num_L_DOWN; i < Image_H - 1; i--)
+        {
+            L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+            L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//ÏŞ·ù
+        }
 
-		//¼ÆËãĞ±ÂÊ,ÓÒ±ßĞ±ÂÊ
+        //¼ÆËãĞ±ÂÊ,ÓÒ±ßĞ±ÂÊ
         start = Break_Num_R_DOWN + 2;
         end = Break_Num_R_DOWN + 7;
         end = Limit_a_b(end, 0, Image_H);//ÏŞ·ù
-		calculate_s_i(start, end, R_Border, &slope_l_rate, &intercept_l);
-		//printf("slope_l_rate:%d\nintercept_l:%d\n", slope_l_rate, intercept_l);
-		for (i = Break_Num_R_DOWN + 2; i < Image_H - 1; i--)
-		{
-			R_Border[i] = slope_l_rate * (i)+intercept_l;
-			R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);
-		}
+        calculate_s_i(start, end, R_Border, &slope_l_rate, &intercept_l);
+        //printf("slope_l_rate:%d\nintercept_l:%d\n", slope_l_rate, intercept_l);
+        for (i = Break_Num_R_DOWN + 2; i < Image_H - 1; i--)
+        {
+            R_Border[i] = slope_l_rate * (i)+intercept_l;
+            R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);
+        }
         // tft180_show_string(Row_10,Line_7,"fuck");
-	}
-	else if (Break_Num_L_UP && Break_Num_R_UP && Bin_Image[Image_H - 10][4] && Bin_Image[Image_H - 10][Image_W - 4])//Ê®×ÖÖĞ
-	{
-        Image_Flag.Cross_Fill = true;
-		//¼ÆËãĞ±ÂÊ
-		start = Break_Num_L_UP - 15;
-		start = Limit_a_b(start, 0, Image_H);
-		end = Break_Num_L_UP - 5;
-		calculate_s_i(start, end, L_Border, &slope_l_rate, &intercept_l);
-		// printf("slope_l_rate:%f\nintercept_l:%f\n", slope_l_rate, intercept_l);
-		for (i = Break_Num_L_UP - 5; i < Image_H - 1; i++)
-		{
-			L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
-			L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//ÏŞ·ù
-		}
-
-		//¼ÆËãĞ±ÂÊ
-		start = Break_Num_R_UP - 15;//Æğµã
-		start = Limit_a_b(start, 0, Image_H);//ÏŞ·ù
-		end = Break_Num_R_UP - 5;//ÖÕµã
-		calculate_s_i(start, end, R_Border, &slope_l_rate, &intercept_l);
-		//printf("slope_l_rate:%d\nintercept_l:%d\n", slope_l_rate, intercept_l);
-		for (i = Break_Num_R_UP - 5; i < Image_H - 1; i++)
-		{
-			R_Border[i] = slope_l_rate * (i)+intercept_l;
-			R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);
-		}
-        // tft180_show_string(Row_10,Line_7,"aaaa");
-	}
-
-}
-
-/** 
-* @brief ×óÔ²»·²¹Ïßº¯Êı
-* @param uint8(*Bin_Image)[Image_W]		ÊäÈë¶şÖµÍ¼Ïñ
-* @param uint8 *L_Border			ÊäÈë×ó±ß½çÊ×µØÖ·
-* @param uint8 *R_Border			ÊäÈëÓÒ±ß½çÊ×µØÖ·
-* @param uint16 Total_Num_L			ÊäÈë×ó±ßÑ­»·×Ü´ÎÊı
-* @param uint16 Total_Num_R			ÊäÈëÓÒ±ßÑ­»·×Ü´ÎÊı
-* @param uint16 *Dir_L				ÊäÈë×ó±ßÉú³¤·½ÏòÊ×µØÖ·
-* @param uint16 *Dir_R				ÊäÈëÓÒ±ßÉú³¤·½ÏòÊ×µØÖ·
-* @param uint16(*Points_L)[2]		ÊäÈë×ó±ßÂÖÀªÊ×µØÖ·
-* @param uint16(*Points_R)[2]		ÊäÈëÓÒ±ßÂÖÀªÊ×µØÖ·
-* @see CTest		Left_Ring(Bin_Image,L_Border, R_Border, data_statics_l, data_statics_r, Dir_L, Dir_R, Points_L, Points_R);
- */
-void Left_Ring(uint8(*Bin_Image)[Image_W], uint8 *L_Border, uint8 *R_Border, uint16 Total_Num_L, uint16 Total_Num_R,
-										 uint16 *Dir_L, uint16 *Dir_R, uint16(*Points_L)[2], uint16(*Points_R)[2])
-{
-    int i;
-    uint8 Break_Num_L_UP = 0;//¹Õµã
-    uint8 Break_Num_L_DOWN = 0;
-	uint8 start, end;
-	float slope_l_rate = 0, intercept_l = 0;
-
-    if(Total_Num_R <= 120)//³¤Ö±ÏßÕÒµ½µÄµãÒª±È¶ªÊ§±ßÏßÕÒµ½µÄµãÀ´µÄÉÙ
+    }
+    else if (Break_Num_L_UP && Break_Num_R_UP && Bin_Image[Image_H - 10][4] && Bin_Image[Image_H - 10][Image_W - 4])//Ê®×ÖÖĞ
     {
-        LeftRing.Straight_Line = true;
+        Image_Flag.Cross_Fill = true;
+        //¼ÆËãĞ±ÂÊ
+        start = Break_Num_L_UP - 15;
+        start = Limit_a_b(start, 0, Image_H);
+        end = Break_Num_L_UP - 5;
+        calculate_s_i(start, end, L_Border, &slope_l_rate, &intercept_l);
+        // printf("slope_l_rate:%f\nintercept_l:%f\n", slope_l_rate, intercept_l);
+        for (i = Break_Num_L_UP - 5; i < Image_H - 1; i++)
+        {
+            L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+            L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//ÏŞ·ù
+        }
+
+        //¼ÆËãĞ±ÂÊ
+        start = Break_Num_R_UP - 15;//Æğµã
+        start = Limit_a_b(start, 0, Image_H);//ÏŞ·ù
+        end = Break_Num_R_UP - 5;//ÖÕµã
+        calculate_s_i(start, end, R_Border, &slope_l_rate, &intercept_l);
+        //printf("slope_l_rate:%d\nintercept_l:%d\n", slope_l_rate, intercept_l);
+        for (i = Break_Num_R_UP - 5; i < Image_H - 1; i++)
+        {
+            R_Border[i] = slope_l_rate * (i)+intercept_l;
+            R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);
+        }
+        // tft180_show_string(Row_10,Line_7,"aaaa");
+    }
+
+ }
+
+
+/**@brief    ÅĞ¶ÏÊÇ·ñÎªÖ±Ïß
+-- @param    uint16 Border ĞèÒªÅĞ¶ÏµÄÏß
+-- @param    uint16 Total_Num ÊıÁ¿
+-- @return   ÊÇ·ñÎªÖ±Ïß
+-- @auther   none
+-- @date     2023/10/2
+**/
+bool Straight_Line_Judge(uint8* Border, uint16 Total_Num, lineTypeDef lineMode)
+{
+    uint8_t StraightPoint = 0; // ¼ÇÂ¼ÊÇÖ±ÏßµÄµãµÄ¸öÊı
+    // Èç¹ûÊı×é³¤¶ÈÎª0»ò1£¬Ö±½Ó·µ»Ø1
+    if (Total_Num <= 1) {
+        return true;
+    }
+    /*
+    * 
+                       \               
+                        \
+                         \
+                          \
+                           \
+     */
+
+    // ±éÀúÊı×é£¬¼ì²éÊÇ·ñµ¥µ÷µİ¼õ
+    for (int i = Image_H - 2; i > Hightest; i-= 1) {
+        // Èç¹ûµ±Ç°ÔªËØĞ¡ÓÚ»òµÈÓÚÇ°Ò»¸öÔªËØ£¬Ôò²»ÊÇµ¥µ÷µİ¼õµÄ
+        // uint8_t before = Limit_a_b(i - 1, Hightest, Image_H - 2);
+        // uint8_t next = Limit_a_b(i - 1, Hightest, Image_H - 2);
+       // printf("µ±Ç°: % d ºóÒ»¸öµã : % d \n", Border[i], Border[i - 1]);
+        if (lineMode == RightLine)
+        {             
+            if (Border[i] - Border[i - 1] >= 0 && Border[i] - Border[i - 1] < 2)
+            {
+                StraightPoint += 1;
+                //circle(frame, Point(Border[i], i), 0, Scalar(255, 0, 0), 1);
+            }
+            // ¶ÏÁÑµãÖ±½ÓÇåÁã
+            else if (abs(Border[i] - Border[i - 1]) > 5)
+            {
+                // circle(frame, Point(Border[i], i), 0, Scalar(0, 0, 255), 1);
+                StraightPoint = 0;
+                //break;
+            }
+            else
+            {
+                //circle(frame, Point(Border[i], i), 0, Scalar(0, 0, 255), 1);
+                //return false;
+            }
+            if (StraightPoint > 70)
+            {
+                break;
+            }
+            //imshow("Ô­Í¼Ïñ", frame);
+            //waitKey(2);
+        }
+        if (lineMode == LeftLine)
+        {
+            // if (Border[i - 1] - Border[i] >= 0 && Border[i - 1] - Border[i] < 2)
+            // {
+            //     //circle(frame, Point(Border[i], i), 0, Scalar(255, 0, 0), 1);
+            // }
+            // else
+            // {
+            //     //circle(frame, Point(Border[i], i), 0, Scalar(0, 0, 255), 1);
+            //     //return false;
+            // }
+        }
+        //if (Border[i] < Border[i - 1]) {
+        //    //printf("b1[%d] b2[%d]\r\n",i,i-1);
+        //    //return false;
+        //}
+
+        //if (Border[i] - Border[i - 1] >= 2)
+        //{
+        //    //return false;
+        //}
+
+    }
+    // printf("Line: %d \n", StraightPoint);
+    if (StraightPoint >= 68)
+    {
+        //printf("Line\n");
+        return true;
     }
     else
     {
-        LeftRing.Straight_Line = false;
+        //printf("Not Line");
+        return false;
     }
-
-    for (i = 1; i < Total_Num_L; i++)//ÕÒ¹Õµã
-	{
-		if (Dir_L[i - 1] == 2 && Dir_L[i] == 2 && Dir_L[i + 3] == 4 && Dir_L[i + 5] == 4 && Dir_L[i + 7] == 4)//2-4Ìø±ä£¬×óÏÂ¹Õµã
-		{
-			Break_Num_L_DOWN = Points_L[i][1];//´«µİy×ø±ê
-            // printf("find l_down\r\n");
-            // printf("%d %d\r\n",i,Break_Num_L_DOWN);
-            // if(Menu.Image_Show)
-            // {
-            //     tft180_Draw_ColorCircle(L_Border[Break_Num_L_DOWN],Break_Num_L_DOWN,5,RGB565_BLUE);//»­³ö¹Õµã
-            // }
-			break;
-		}
-	}
-    //²¹Ïß
-    if (Break_Num_L_DOWN && LeftRing.Straight_Line && (Bin_Image[Image_H - 10][4] == 0) && (Bin_Image[Image_H - 10][Image_W - 4] == 0))//Ê®×ÖÇ°
-	{
-		//¼ÆËãĞ±ÂÊ,×ó±ßĞ±ÂÊ
-        start = Break_Num_L_DOWN + 2;
-        end = Break_Num_L_DOWN + 7;
-        end = Limit_a_b(end, 0, Image_H);//ÏŞ·ù
-
-		calculate_s_i(start, end, L_Border, &slope_l_rate, &intercept_l);
-		// printf("slope_l_rate:%f\nintercept_l:%f\n", slope_l_rate, intercept_l);
-		for (i = Break_Num_L_DOWN; i < Image_H - 1; i--)
-		{
-			L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
-			L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//ÏŞ·ù
-		}
-        // tft180_show_string(Row_10,Line_7,"fuck");
-	}
-
+    //if (Total_Num >= 120)
+    //{
+    //    return false;
+    //}
+    // Èç¹ûÃ»ÓĞ·¢ÏÖÎ¥·´ÒÔÉÏµÄÇé¿ö£¬·µ»Øtrue
+    //return true;
 }
 
-/**
- ******************************************************************************
- *  @defgroup Íâ²¿µ÷ÓÃ
- *  @brief
- *
-**/
+
+uint16 Find_Salient_Point(uint8* Border, uint16 size)
+{
+    int maxIndex = 0;
+
+    // ±éÀúÊı×é£¬ÕÒµ½×î´óÖµµÄË÷Òı
+    for (int i = size; i < Image_H - 1; i++) {
+        if (Border[i] > Border[maxIndex]) {
+            maxIndex = i;
+        }
+    }
+
+    return maxIndex;
+}
+
+bool Get_K_b(uint16 x1, uint16 y1, uint16 x2, uint16 y2, float* slope_rate, float* intercept)
+{
+    if (x1 == x2) {
+        return false;
+    }
+
+    // ¼ÆËãĞ±ÂÊ
+    *slope_rate = (float)(y2 - y1) / (x2 - x1);
+
+    // ¼ÆËã½Ø¾à
+    *intercept = y1 - (*slope_rate * x1);
+
+    return true;
+}
+
+uint16_t findCircleOutPoint(uint8_t* L_Border)
+{
+    // Ñ°ÕÒÔ²»·ÓÒ¶¥µã
+    for (uint8_t i = 8; i < Image_H - 8; i++)
+    {
+        uint8_t before = Limit_a_b(i - 5, 0, Image_H - 2);
+        uint8_t next = Limit_a_b(i + 5, 0, Image_H - 2);
+        //circle(frame, Point(L_Border[i], i), 0, Scalar(255, 255, 0), 1);
+        //circle(frame, Point(L_Border[before], before), 0, Scalar(0, 255, 0), 1);
+        //circle(frame, Point(L_Border[next], next), 0, Scalar(0, 0, 255), 1);
+        // printf("now - before: %d now - next: %d \n", L_Border[i] - L_Border[before], L_Border[i] - L_Border[next]);
+        if ((L_Border[i] - L_Border[before] > 0) && (L_Border[i] - L_Border[next] > 0)
+            && (L_Border[i] - L_Border[before] < 10) && (L_Border[i] - L_Border[next] < 10)
+            && L_Border[i] > Border_Min + 5 && L_Border[before] > Border_Min + 5 && L_Border[next] > Border_Min + 5 && i < Image_H - 20)
+        {
+  /*          circlePoint[0] = i;
+            circlePoint[1] = L_Border[i];*/
+            //circleFlag = true;
+            //circle(frame, Point(L_Border[i], i), 5, Scalar(255, 0, 0), 1);
+            return i;
+        }
+        //imshow("Ô­Í¼Ïñ", frame);
+        //waitKey(5);
+    }
+    return NULL;
+}
+
+// ÓÒÔ²»·
+//void Right_Ring(uint8_t(*Bin_Image)[Image_W], uint8_t* L_Border, uint8* R_Border, uint16 Total_Num_L, uint16 Total_Num_R,
+//    uint16* Dir_L, uint16* Dir_R, uint16(*Points_L)[2], uint16(*Points_R)[2])
+//{
+//    int i;
+//    static uint8_t WhitePixel_Time = 0;
+//    uint8_t hashKey[Image_H] = { 0 };
+//    uint8_t offset = 0;
+//    uint8_t StraightNum = 0;
+//    uint8_t circlePoint[2];
+//    uint16 Break_Num_R_UP = 0;//¹Õµã
+//    uint16 Break_Num_R_DOWN = 0;
+//    uint16 Salient_Point = 0;//Ô²»·Í¹µã
+//    uint16_t Break_Num_R_UP = 0;
+//    uint16 start, end;
+//    float slope_l_rate = 0, intercept_l = 0;
+//}
+
+void Left_Ring(uint8_t(*Bin_Image)[Image_W], uint8_t* L_Border, uint8* R_Border, uint16 Total_Num_L, uint16 Total_Num_R,
+    uint16* Dir_L, uint16* Dir_R, uint16(*Points_L)[2], uint16(*Points_R)[2])
+{
+    int i;
+    static uint8_t WhitePixel_Time = 0;
+    uint8_t hashKey[Image_H] = { 0 };
+    uint8_t offset = 0;
+    uint8_t StraightNum = 0;
+    uint8_t circlePoint[2];
+    uint16 Break_Num_L_UP = 0;//¹Õµã
+    uint16 Break_Num_L_DOWN = 0;
+    uint16 Salient_Point = 0;//Ô²»·Í¹µã
+    uint16_t Break_Num_R_UP = 0;
+    uint16 start, end;
+    float slope_l_rate = 0, intercept_l = 0;
+    //LeftRing.Ring_State = Enter_Ring_First;//Èë»·ÖĞ
+    switch (LeftRing.Ring_State)
+    {
+    case Ring_Front:
+        //cout << "Èë»·Ç°" << endl;
+        LeftRing.Stright_Line = Straight_Line_Judge(R_Border, Total_Num_R - 10, RightLine);//ÅĞ¶ÏÓÒ±ßÊÇ·ñÎª³¤Ö±Ïß
+        Salient_Point = findCircleOutPoint(L_Border);
+        for (uint8_t i = Image_H - 2; i > Image_H / 2; --i)
+        {
+            // ¶ÏÁÑÇøÓòºá×ø±êÏà²îºÜ´ó
+            if (L_Border[i] - L_Border[i - 1] > 10 && i > Image_H / 2)
+            {
+                hashKey[offset] = i;
+                offset++;
+                break;
+            }
+
+        }
+        if (offset > 0)
+        {
+            for (uint8_t i = 0;i < offset; i++)
+            {
+                uint8_t edgeIndex = hashMapIndexL[hashKey[i]];
+                uint16_t start = Limit_a_b((edgeIndex - 2), 0, Data_Stastics_L);
+                uint16_t end = Limit_a_b((edgeIndex + 7), 0, Data_Stastics_L);
+                for (uint16_t j = start; j < end; j++)
+                {
+                    uint16_t before = Limit_a_b(j - 5, start, end);
+                    uint16_t next = Limit_a_b(j + 5, start, end);
+                    if (Points_L[j][1] < Points_L[j - 5][1] && Points_L[j][1] < Points_L[j + 5][1]
+                        && Points_L[j][0] < Points_L[j - 5][0] && Points_L[j][0] > Points_L[j + 5][0] && Points_L[j][0] > Border_Min + 5)
+                    {
+                        Break_Num_L_DOWN = j;
+                        break;
+                    }
+                }
+            }
+        }
+        // ÓĞÔ²»·Í»³öµã ÓÒÖ±Ïß Ã»ÓĞ×óÏÂ½Çµã
+        if (Salient_Point && LeftRing.Stright_Line && !Break_Num_L_DOWN && LeftRing.Ring_Front_Flag) // ÅĞ¶ÏÊÇ·ñÓĞÔ²»·Í»³öµã²¢ÇÒÓÒ²àÖ±Ïß
+        {
+            Get_K_b(L_Border[Salient_Point], Salient_Point, 0, Image_H - 1, &slope_l_rate, &intercept_l);
+            for (i = Image_H - 1; i > 1; i--)
+            {
+                L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+                L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//ÏŞ·ù
+            }
+        }
+        //ÓĞÔ²»·Í»³öµã, ÓÒÖ±Ïß, ÓĞ×óÏÂ½Çµã
+        else if (Break_Num_L_DOWN && LeftRing.Stright_Line && Salient_Point) //  && (!Bin_Image[Image_H - 10][4]) && (!Bin_Image[Image_H - 10][Image_W - 4])
+        {
+            //¼ÆËãĞ±ÂÊ,×ó±ßĞ±ÂÊ
+            Get_K_b(Salient_Point, L_Border[Salient_Point], Points_L[Break_Num_L_DOWN][1], Points_L[Break_Num_L_DOWN][0], &slope_l_rate, &intercept_l);
+            for (i = Salient_Point; i < Points_L[Break_Num_L_DOWN][1]; i++)
+            {
+                L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+                L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//ÏŞ·ù
+            }
+            LeftRing.Ring_Front_Flag = true;
+        }
+        // Ã»ÓĞÔ²»·Í»³öµã, ÓÒÖ±Ïß£¬ ÓĞ×óÏÂ½Çµã
+        else if (Break_Num_L_DOWN && LeftRing.Stright_Line && !Salient_Point)
+        {
+            Get_K_b(Points_L[Break_Num_L_DOWN][1], Points_L[Break_Num_L_DOWN][0], 1, (Image_W / 2 - 10), &slope_l_rate, &intercept_l);
+            for (i = Points_L[Break_Num_L_DOWN][1]; i >= 1; --i)
+            {
+                L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+            }
+        }
+        else
+        {
+            LeftRing.Ring_Front_Flag = false;
+        }
+        // ×óÏÂ¿Õ°× ÇÒ¼ì²âµ½»·×óÏÂ½Çµã, ÓÒÖ±Ïß, ×óÔ²»·Í»³öµã, ÓÒ±ßÖĞĞÄÎªºÚÉ«, ÓÒ±ßÏÂ·½ÎªºÚÉ«
+        if ((Bin_Image[Image_H - 5][4]) && (Bin_Image[Image_H - 10][8]) && LeftRing.Ring_Front_Flag &&
+            (!Bin_Image[Image_H / 2][Image_W - 2]) && (!Bin_Image[Image_H][Image_W - 2]))//Í¼Ïñ×óÏÂ·½ÎªÒ»Æ¬°× (Bin_Image[Image_H - 5][4]) && (Bin_Image[Image_H - 10][8]) &&
+        {
+            LeftRing.Ring_Front_Flag = false;
+            LeftRing.Ring = true;
+            LeftRing.Ring_State = Enter_Ring_First;//Èë»·ÖĞ Enter_Ring_First
+        }
+        //imshow("Ô­Í¼Ïñ", frame);
+        // waitKey(200);
+        break;
+    case Enter_Ring_First:
+        LeftRing.Stright_Line = Straight_Line_Judge(R_Border, Total_Num_R - 10, RightLine);//ÅĞ¶ÏÓÒ±ßÊÇ·ñÎª³¤Ö±Ïß
+        Salient_Point = findCircleOutPoint(L_Border);//Find_Salient_Point(L_Border, Image_H / 2 - 10);
+        for (i = 1; i < Total_Num_L; i++)
+        {
+            uint16_t before = Limit_a_b(i - 5, 0, Total_Num_L);
+            uint16_t next = Limit_a_b(i + 5, 0, Total_Num_L);
+            if (before == Total_Num_L || next == Total_Num_L)
+            {
+                break;
+            }
+            if (Points_L[i][1] > Points_L[before][1] && Points_L[i][1] > Points_L[next][1]
+                && Points_L[i][0] > Points_L[before][0] && Points_L[i][0] < Points_L[next][0] && Points_L[i][0] > Border_Min + 5)
+            {
+                Break_Num_L_UP = i;//´«µİy×ø±ê
+                break;
+            }
+        }
+        if (Salient_Point && LeftRing.Stright_Line) // ÅĞ¶ÏÊÇ·ñÓĞÔ²»·Í»³öµã²¢ÇÒÓÒ²àÖ±Ïß
+        {
+            Get_K_b(L_Border[Salient_Point], Salient_Point, 0, Image_H - 1, &slope_l_rate, &intercept_l);
+            for (i = Image_H - 1; i > 1; i--)
+            {
+                L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+                L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//ÏŞ·ù
+            }
+            LeftRing.Enter_Ring_First_Flag = true;
+        }
+        // µÚÒ»´ÎÈë»·±êÖ¾Î», ÕÒµ½ÉÏ½Çµã, ÕÒ²»µ½Ô²»·Í»³öµã, ÓÒÖ±Ïß
+        if (LeftRing.Enter_Ring_First_Flag && Salient_Point == NULL && Break_Num_L_UP)    //&& (Bin_Image[20][4]) && (Bin_Image[20][8]) && (Bin_Image[Image_H - 2][4]) && (Bin_Image[Image_H - 2][8])
+        {
+            LeftRing.Enter_Ring_First_Flag = false;
+            LeftRing.Ring_State = Leave_Ring_First;//µÚÒ»´ÎÀë¿ª»·
+        }
+        break;
+    case Leave_Ring_First:
+        // cout << "µÚÒ»´ÎÀë¿ª»·" << endl;
+        for (i = 1; i < Total_Num_L; i++)
+        {
+            uint16_t before = Limit_a_b(i - 5, 0, Total_Num_L);
+            uint16_t next = Limit_a_b(i + 5, 0, Total_Num_L);
+            if (before == Total_Num_L || next == Total_Num_L)
+            {
+                break;
+            }
+            if (Points_L[i][1] > Points_L[before][1] && Points_L[i][1] > Points_L[next][1]
+                && Points_L[i][0] > Points_L[before][0] && Points_L[i][0] < Points_L[next][0] && Points_L[i][0] > Border_Min + 5)
+            {
+                Break_Num_L_UP = i;//´«µİy×ø±ê
+                break;
+            }
+        }
+
+        if (Break_Num_L_UP) // && (Bin_Image[50][4]) && (Bin_Image[50][8])
+        {
+            Get_K_b(Points_L[Break_Num_L_UP][0], Points_L[Break_Num_L_UP][1], R_Border[Image_H - 5], Image_H - 5, &slope_l_rate, &intercept_l);
+            for (i = Image_H - 1; i > 1; i--)
+            {
+                L_Border[i] = Border_Min;
+                R_Border[i] = ((i)-intercept_l) / slope_l_rate;//y = kx+b
+                R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//ÏŞ·ù
+            }
+            LeftRing.Leave_Ring_First_Flag = true;
+        }
+        // ×óÏÂÒ»Æ¬¿Õ°×, ÕÒ²»µ½×óÉÏ½Çµã
+        if (Bin_Image[Image_H - 10][20] && Bin_Image[Image_H - 10][25] && !Break_Num_L_UP)
+        {
+            LeftRing.Leave_Ring_First_Flag = true;
+            LeftRing.Ring_State = In_Ring;
+        }
+        break;
+    case In_Ring:
+        for (i = 1; i < Total_Num_R; i++)
+        {
+            uint16_t before = Limit_a_b(i - 8, 0, Total_Num_R);
+            uint16_t next = Limit_a_b(i + 8, 0, Total_Num_R);
+            if (before == Total_Num_R || next == Total_Num_R)
+            {
+                break;
+            }
+            if (Points_R[i][1] < Points_R[before][1] && Points_R[i][1] > Points_R[next][1]
+                && Points_R[i][0] < Points_R[before][0] && Points_R[i][0] < Points_R[next][0] && Points_R[i][0] < Border_Max - 5)
+            {
+                Break_Num_R_UP = i;//´«µİy×ø±ê
+                break;
+            }
+        }
+        if (Break_Num_R_UP) // && (Bin_Image[50][4]) && (Bin_Image[50][8])
+        {
+            Get_K_b(Points_R[Break_Num_R_UP][0], Points_R[Break_Num_R_UP][1], 2, 2, &slope_l_rate, &intercept_l);
+            for (i = Image_H - 1; i > 1; i--)
+            {
+                L_Border[i] = Border_Min;
+                R_Border[i] = ((i)-intercept_l) / slope_l_rate;//y = kx+b
+                R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//ÏŞ·ù
+            }
+        }
+        // ×óÓÒÁ½²à¶¼Îª°×É«, ×¼±¸Òª³ö»·
+        if (Bin_Image[Image_H - 4][4] == White_Pixel && Bin_Image[Image_H - 2][Image_W - 4] == White_Pixel)
+        {
+            LeftRing.Ring_State = Ready_Out_Ring;
+           
+        }
+        break;
+    case Ready_Out_Ring:
+        Get_K_b(Image_W, Image_H, 2, Image_H / 2, &slope_l_rate, &intercept_l);
+        for (i = Image_H - 1; i > 1; i--)
+        {
+            L_Border[i] = Border_Min;
+            R_Border[i] = ((i)-intercept_l) / slope_l_rate;//y = kx+b
+            R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//ÏŞ·ù
+        }
+        // ÓÒ²àÉú³¤Ïß³¤ÓÚ×ó²àÉú³¤ÏßÔò²î²»¶àÖ±Ïß, ×¼±¸³ö»·
+        if (Data_Stastics_R > Data_Stastics_L)
+        {
+            LeftRing.Ring_State = Leave_Ring;
+        }
+        break;
+    case Leave_Ring:
+        Break_Num_L_UP = 0;
+        //cout << "³ö»·ÖĞ" << ;
+        for (i = 1; i < Total_Num_L; i++)
+        {
+            uint16_t before = Limit_a_b(i - 10, 0, Total_Num_L);
+            uint16_t next = Limit_a_b(i + 10, 0, Total_Num_L);
+            if (before == Total_Num_L || next == Total_Num_L || Points_L[i][1] < 20)
+            {
+                break;
+            }
+            if (Dir_L[before] == 6 && Dir_L[i] == 4 && Dir_L[next] == 4 && Dir_L[next-1] == 4 && Dir_L[next-2] == 4)
+            {
+                Break_Num_L_UP = i;//´«µİy×ø±ê
+                break;
+            }
+        }
+
+        if (LeftRing.Leave_Ring_First_Flag && Break_Num_L_UP)
+        {
+            Get_K_b(Points_L[Break_Num_L_UP][1], Points_L[Break_Num_L_UP][0], Image_H - 1, 2, &slope_l_rate, &intercept_l);
+            for (i = Points_L[Break_Num_L_UP][1]; i <= Image_H - 1; ++i)
+            {
+                L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+                L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//ÏŞ·ù
+            }
+        }
+        // ¼ì²âµ½ÒÑ¾­¿´¼û¹ı»·µÄ±êÖ¾Î», ÓÒÏÂ½ÇÎªºÚÉ«, ²¢ÇÒ¿´²»µ½ÉÏ½Çµã, ´ú±íÒÑ¾­³ö»·
+        else if (LeftRing.Leave_Ring_First_Flag && Bin_Image[Image_H - 4][4] == Black_Pixel && Bin_Image[Image_H - 2][Image_W - 4] == Black_Pixel 
+                && !Break_Num_L_UP)
+        {
+            LeftRing.Ring_Front_Flag = false; // ³ö»·
+            LeftRing.Enter_Ring_First_Flag = false;
+            LeftRing.Leave_Ring_First_Flag = false;
+            LeftRing.Stright_Line = false;
+            LeftRing.Ring = false;
+            LeftRing.Ring_State = Ring_Front;
+        }
+        // waitKey(200);
+        break;
+    }
+}
 
 /**@brief   ×îÖÕµ÷ÓÃµÄÍ¼Ïñ´¦ÀíµÄº¯Êı
 -- @param   ÎŞ
 -- @auther  none
 -- @date    2023/10/3
 **/
-void Image_Process()
+void Image_Process(void)
 {
-    uint16 i;
-
-    Get_Image(mt9v03x_image);//»ñÈ¡Ò»¸±Í¼Ïñ
+    uint16_t i;
     // timer_start(GPT_TIM_1);
     // my_sobel(Original_Image,Bin_Image);
     Turn_To_Bin();//¶şÖµ»¯
@@ -975,17 +1341,27 @@ void Image_Process()
     Data_Stastics_L = 0;
     Data_Stastics_R = 0;
 
-    if(Get_Start_Point(Image_H - 2))//´ÓÍ¼ÏñµÄ×îÏÂÃæ¿ªÊ¼ÕÒ£¬ÕÒµ½ÆğµãÁË£¬ÔÙÖ´ĞĞ°ËÁìÓò£¬Ã»ÕÒµ½¾ÍÒ»Ö±ÕÒ
+    if (Get_Start_Point(Image_H - 2))//´ÓÍ¼ÏñµÄ×îÏÂÃæ¿ªÊ¼ÕÒ£¬ÕÒµ½ÆğµãÁË£¬ÔÙÖ´ĞĞ°ËÁìÓò£¬Ã»ÕÒµ½¾ÍÒ»Ö±ÕÒ
     {
-//        printf("ÕıÔÚ¿ªÊ¼°ËÁìÓò\n");
-        Search_L_R((uint16)USE_num, Bin_Image, &Data_Stastics_L, &Data_Stastics_R, Start_Point_L[0], Start_Point_L[1], Start_Point_R[0], Start_Point_R[1], &Hightest);
-//        printf("°ËÁÚÓòÒÑ½áÊø\n");
-        // ´ÓÅÀÈ¡µÄ±ß½çÏßÄÚÌáÈ¡±ßÏß £¬ Õâ¸ö²ÅÊÇ×îÖÕÓĞÓÃµÄ±ßÏß
+        //        printf("ÕıÔÚ¿ªÊ¼°ËÁìÓò\n");
+        Search_L_R((uint16_t)USE_num, Bin_Image, &Data_Stastics_L, &Data_Stastics_R, Start_Point_L[0], Start_Point_L[1], Start_Point_R[0], Start_Point_R[1], &Hightest);
+        //        printf("°ËÁÚÓòÒÑ½áÊø\n");
+                // ´ÓÅÀÈ¡µÄ±ß½çÏßÄÚÌáÈ¡±ßÏß £¬ Õâ¸ö²ÅÊÇ×îÖÕÓĞÓÃµÄ±ßÏß
         Get_Left(Data_Stastics_L);
         Get_Right(Data_Stastics_R);
-        //ÔªËØ´¦Àíº¯Êı·ÅÕâÀï
-        Cross_Fill(Bin_Image,L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);//Ê®×Ö²¹Ïß
+        // ÓÅÏÈÅĞ¶ÏÊÇ·ñÊÇÊ®×ÖÈç¹ûÊÇÊ®×ÖÔò²»¶ÔÔ²»·ÅĞ¶Ï
+        if (!LeftRing.Ring)
+        {
+            Cross_Fill(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);//Ê®×Ö²¹Ïß
+        }
+        // Í¬ÉÏ
+        //Cross_Fill(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);//Ê®×Ö²¹Ïß
+        if (!Image_Flag.Cross_Fill)
+        {
+            Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
+        }
     }
+    
     for (int i = Hightest; i < Image_H-1; i++)
     {
         Center_Line[i] = (L_Border[i] + R_Border[i]) >> 1;//ÇóÖĞÏß
@@ -993,4 +1369,3 @@ void Image_Process()
     Image_Erro = (Center_Line[69])*0.375f + (Center_Line[70])*0.5f + (Center_Line[71])*0.1f;
     Image_Flag.Cross_Fill = false;
 }
-
