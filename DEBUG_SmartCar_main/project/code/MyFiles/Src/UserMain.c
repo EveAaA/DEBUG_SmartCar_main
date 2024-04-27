@@ -14,11 +14,10 @@
 #include "UserMain.h"
 #include "zf_common_headfile.h"
 #include "User_FSM.h"
-
+#include "My_FSM.h"
 /* Define\Declare ------------------------------------------------------------*/
 uint16 Start = 2;
 uint8 Once = 1;
-uint8 image_copy[MT9V03X_H][MT9V03X_W];
 
 /**
  ******************************************************************************
@@ -87,7 +86,6 @@ void User_Init()
     All_PID_Init();
     // Flash_Init();
     UART_Init();
-    My_FSM_Init();
     tft180_show_string(Row_0, Line_5, "Soft Init ...");
     tft180_clear();
     system_delay_ms(1000);
@@ -97,8 +95,7 @@ void User_Init()
     // Beep(Off);
 	interrupt_global_enable(0);
 }
-// 图像备份数组，在发送前将图像备份再进行发送，这样可以避免图像出现撕裂的问题
-uint8 image_copy[MT9V03X_H][MT9V03X_W];
+
 /**@brief   所有主循环内容
 -- @param   无
 -- @auther  庄文标

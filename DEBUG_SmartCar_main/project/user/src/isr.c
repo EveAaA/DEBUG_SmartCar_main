@@ -38,9 +38,10 @@
 #include "isr.h"
 #include "UserMain.h"
 #include "User_FSM.h"
+#include "My_FSM.h"
 
 extern uint16 Start; 
-
+extern uint16 wait_time;
 void CSI_IRQHandler(void)
 {
     CSI_DriverIRQHandler();     // 调用SDK自带的中断函数 这个函数最后会调用我们设置的回调函数
@@ -63,7 +64,10 @@ void PIT_IRQHandler(void)
         {
             Raise_Servo.Servo_Time++;
         }
-
+        if(wait_time > 0)
+        {
+            wait_time++;
+        }
         pit_flag_clear(PIT_CH0);
     }
     
@@ -79,9 +83,8 @@ void PIT_IRQHandler(void)
     
     if(pit_flag_get(PIT_CH2))
     {
-        FSMRun(CURRENT_FSM);
-        Set_Car_Speed(Car.Speed_X,Car.Speed_Y,Car.Speed_Z);
-        
+        FSM_main();
+        // FSMRun(CURRENT_FSM);
         pit_flag_clear(PIT_CH2);
     }
     

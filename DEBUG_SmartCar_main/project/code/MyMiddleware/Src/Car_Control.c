@@ -44,6 +44,7 @@ Turn_Handle Turn =
     .Offset = 0,
     .Finish = false,
 };
+
 /**
  ******************************************************************************
  *  @defgroup 外部调用
@@ -115,15 +116,16 @@ void Turn_Angle(float Target_Angle)
     }
 
     Turn.Offset += Turn.Current_Angle - Turn.Angle_Last;
-
+    Turn.Angle_Last = Turn.Current_Angle;
     Offset_Erro = (Target_Angle - Turn.Offset)/50.0f;
+    // printf("%f,%f,%f\r\n",Turn.Offset,Turn.Current_Angle,Turn.Angle_Last);
     if(Target_Angle - Turn.Offset >= 2.5f)
     {
         Yaw_Erro = 2 + GetPIDValue(&Turn_PID,Offset_Erro);
         Car.Speed_X = 0;
         Car.Speed_Y = 0;
         Car.Speed_Z = GetPIDValue(&Gyroz_Pid,Yaw_Erro - IMU_Data.gyro_z);
-        Turn_Finsh = false;
+        Turn.Finish = false;
     }
     else if(Target_Angle - Turn.Offset <= -2.5f)
     {
@@ -131,18 +133,17 @@ void Turn_Angle(float Target_Angle)
         Car.Speed_X = 0;
         Car.Speed_Y = 0;
         Car.Speed_Z = GetPIDValue(&Gyroz_Pid,Yaw_Erro - IMU_Data.gyro_z);
-        Turn_Finsh = false;
+        Turn.Finish = false;
     }
     else
     {
         Car.Speed_X = 0;
         Car.Speed_Y = 0;
         Car.Speed_Z = 0;
-        Turn_Finsh = true;
         Turn.Finish = true;
+        Turn.Offset = 0;
+        Turn.Angle_Last = 0;
     }
-
-    Turn.Angle_Last = Turn.Current_Angle;
 }
 
 void Turn_Reset()
@@ -161,7 +162,7 @@ float Angle_Control(float Start_Angle)
 {
     float Yaw_Err = 0.0f;
     Yaw_Err = GetPIDValue(&AngleControl_PID,Start_Angle - Gyro_YawAngle_Get());
-    return GetPIDValue(&Gyroz_PID,Yaw_Err - IMU_Data.gyro_z);
+    return Yaw_Err;
 }
 
 

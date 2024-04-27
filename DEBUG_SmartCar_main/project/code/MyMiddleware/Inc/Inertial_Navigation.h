@@ -11,6 +11,7 @@ typedef struct
     float Cur_Position_Y;//当前Y坐标
     float Start_Angle;//初始角度
     float Cur_Angle;//当前角度
+    float End_Angle;//结束角度
     float Target_Position_X;//目标X坐标
     float Target_Position_Y;//目标Y坐标
     bool Start_Flag;//启动惯性导航

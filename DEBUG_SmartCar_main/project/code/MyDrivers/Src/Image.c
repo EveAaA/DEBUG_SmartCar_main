@@ -240,66 +240,66 @@ uint8_t Otsu_Threshold(uint8_t* Image, uint16_t col, uint16_t row)
     uint16 Image_Height = row;
     int X; uint16 Y;
     uint8* data = Image;
-    int HistGram[GrayScale] = {0};//????
+    int HistGram[GrayScale] = {0};
 
     uint32 Amount = 0;
-    uint32 Pixel_Back = 0;//????????
-    uint32 Pixel_Integral_Back = 0;//????????????????
-    uint32 Pixel_Integral = 0;//????????
-    int32 Pixel_IntegralFore = 0;//???????????????
-    int32 Pixel_Fore = 0;//???????????????????????
-    double Omega_Back=0, Omega_Fore=0, Micro_Back=0, Micro_Fore=0, SigmaB=0, Sigma=0; // ?????????????????????????????????????????????????????????????????????????;
+    uint32 Pixel_Back = 0;
+    uint32 Pixel_Integral_Back = 0;
+    uint32 Pixel_Integral = 0;
+    int32 Pixel_IntegralFore = 0;
+    int32 Pixel_Fore = 0;
+    double Omega_Back=0, Omega_Fore=0, Micro_Back=0, Micro_Fore=0, SigmaB=0, Sigma=0; 
     uint8 Min_Value=0, Max_Value=0;
     uint8 Threshold = 0;//???
 
 
-    for (Y = 0; Y <Image_Height; Y++) //Y<Image_Height???Y =Image_Height???????? ?ж????
+    for (Y = 0; Y <Image_Height; Y++) 
     {
         //Y=Image_Height;
         for (X = 0; X < Image_Width; X++)
         {
-            HistGram[(int)data[Y*Image_Width + X]]++; //??????????????????
+            HistGram[(int)data[Y*Image_Width + X]]++; 
         }
     }
 
 
 
 
-    for (Min_Value = 0; Min_Value < 255 && HistGram[Min_Value] == 0; Min_Value++) ;        //?????С?????
-    for (Max_Value = 255; Max_Value > Min_Value && HistGram[Min_Value] == 0; Max_Value--) ; //??????????
+    for (Min_Value = 0; Min_Value < 255 && HistGram[Min_Value] == 0; Min_Value++) ;        
+    for (Max_Value = 255; Max_Value > Min_Value && HistGram[Min_Value] == 0; Max_Value--) ; 
 
     if (Max_Value == Min_Value)
     {
-        return Max_Value;          // ??????????????
+        return Max_Value;          
     }
     if (Min_Value + 1 == Max_Value)
     {
-        return Min_Value;      // ???????ж??????
+        return Min_Value;      
     }
 
     for (Y = Min_Value; Y <= Max_Value; Y++)
     {
-        Amount += HistGram[Y];        //  ????????
+        Amount += HistGram[Y];        
     }
 
     Pixel_Integral = 0;
     for (Y = Min_Value; Y <= Max_Value; Y++)
     {
-        Pixel_Integral += HistGram[Y] * Y;//????????
+        Pixel_Integral += HistGram[Y] * Y;
     }
     SigmaB = -1;
     for (Y = Min_Value; Y < Max_Value; Y++)
     {
-          Pixel_Back = Pixel_Back + HistGram[Y];    //??????????
-          Pixel_Fore = Amount - Pixel_Back;         //???????????
-          Omega_Back = (double)Pixel_Back / Amount;//??????????
-          Omega_Fore = (double)Pixel_Fore / Amount;//???????????
-          Pixel_Integral_Back += HistGram[Y] * Y;  //???????
-          Pixel_IntegralFore = Pixel_Integral - Pixel_Integral_Back;//????????
-          Micro_Back = (double)Pixel_Integral_Back / Pixel_Back;//?????????
-          Micro_Fore = (double)Pixel_IntegralFore / Pixel_Fore;//??????????
-          Sigma = Omega_Back * Omega_Fore * (Micro_Back - Micro_Fore) * (Micro_Back - Micro_Fore);//g
-          if (Sigma > SigmaB)//?????????????g
+          Pixel_Back = Pixel_Back + HistGram[Y];    
+          Pixel_Fore = Amount - Pixel_Back;         
+          Omega_Back = (double)Pixel_Back / Amount;
+          Omega_Fore = (double)Pixel_Fore / Amount;
+          Pixel_Integral_Back += HistGram[Y] * Y;  
+          Pixel_IntegralFore = Pixel_Integral - Pixel_Integral_Back;
+          Micro_Back = (double)Pixel_Integral_Back / Pixel_Back;
+          Micro_Fore = (double)Pixel_IntegralFore / Pixel_Fore;
+          Sigma = Omega_Back * Omega_Fore * (Micro_Back - Micro_Fore) * (Micro_Back - Micro_Fore);
+          if (Sigma > SigmaB)
           {
               SigmaB = Sigma;
               Threshold = (uint8)Y;
@@ -1410,10 +1410,10 @@ void Image_Process(void)
         }
         // 同上
         //Cross_Fill(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);//十字补线
-        // if (!Image_Flag.Cross_Fill)
-        // {
-        //     Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
-        // }
+        if (!Image_Flag.Cross_Fill)
+        {
+            Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
+        }
     }
     
     for (int i = Hightest; i < Image_H-1; i++)

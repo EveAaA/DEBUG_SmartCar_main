@@ -16,7 +16,7 @@
 #include "math.h"
 
 /* Define\Declare ------------------------------------------------------------*/
-Navigation_Handle Navigation = {0,0,0,0,0,0,0,0,0,0};
+Navigation_Handle Navigation = {0,0,0,0,0,0,0,0,0,0,0};
 Pid_TypeDef DistanceX_PID = 
 {
     .Kp = 0.2f,
@@ -103,7 +103,6 @@ void Reset_Navigation()
         Navigation.Cur_Position_X = 0;
         Navigation.Cur_Position_Y = 0;
         Navigation.Start_Flag = false;//关闭惯性导航
-        Navigation.Finish_Flag = false;
         Navigation_State = Start_State;//状态清零
     }
 }
@@ -134,6 +133,7 @@ void Navigation_Process(float x,float y)
             if(fabs(x - Navigation.Cur_Position_X) <= 1.0f && fabs(y - Navigation.Cur_Position_Y) <= 1.0f)
             {
                 Navigation_State = Move_Finish;
+                Navigation.End_Angle = Gyro_YawAngle_Get();
             }
 
             if(x - Navigation.Cur_Position_X >= 0)
@@ -181,15 +181,16 @@ void Navigation_Process(float x,float y)
                     Car.Speed_Y = -Basic_Speed + GetPIDValue(&DistanceY_PID_M,(y - Navigation.Cur_Position_Y));
                 }
             }
-            Car.Speed_Z = Angle_Control(0);
+            Car.Speed_Z = Angle_Control(Navigation.Start_Angle);
         break;
         case Move_Finish:
-            Car.Speed_X = 0;//先停一会
+            Navigation.Finish_Flag = true;//一次惯性导航完成
+            Car.Speed_X = 0;
             Car.Speed_Y = 0;
-            Car.Speed_Z = Angle_Control(0);
+            Car.Speed_Z = Angle_Control(Navigation.End_Angle);
             DistanceX_PID_M.I_Out = 0;
             DistanceY_PID_M.I_Out = 0;
-            Navigation.Finish_Flag = true;//一次惯性导航完成
+            Reset_Navigation();
         break;
     }
 } 
