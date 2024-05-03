@@ -26,7 +26,7 @@ UnpackDataTypeDef UnpackFlag = {false, false, false}; // 判断帧头帧尾是否到达
 /**@brief    初始化串口(外部调用)
 -- @param    None
 -- @return   None
--- @auther   戴骐阳
+-- @author   戴骐阳
 -- @date     2023/12/23
 **/
 void UART_Init(void)
@@ -39,7 +39,7 @@ void UART_Init(void)
 /**@brief    初始化串口(内部调用)
 -- @param    传入结构体地址, 传入中断组
 -- @return   None
--- @auther   戴骐阳
+-- @author   戴骐阳
 -- @date     2023/12/23
 **/
 void UART_init(UART *uart, IRQn_Type UART_PRIORITY, uart_index_enum UART_INDEX)
@@ -73,7 +73,7 @@ void UART_init(UART *uart, IRQn_Type UART_PRIORITY, uart_index_enum UART_INDEX)
 /**@brief    读取缓存当中的数据
 -- @param    传入想要获取数据的结构体地址
 -- @return   返回double类型数据
--- @auther   戴骐阳
+-- @author   戴骐阳
 -- @date     2023/12/23
 **/
 double UART_ReadBuffer(UART *uart)

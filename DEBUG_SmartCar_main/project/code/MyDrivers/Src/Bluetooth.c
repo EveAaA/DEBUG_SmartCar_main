@@ -28,7 +28,7 @@ float test_3 = 0.0;
 float test_4 = 0.0;
 /**@brief     蓝牙初始化(统一封装初始化函数)
 -- @param     None
--- @auther    戴骐阳
+-- @author    戴骐阳
 -- @date      2023/11/2
 **/
 void Bluetooth_Init(void)
@@ -46,7 +46,7 @@ void Bluetooth_Init(void)
 
 /**@brief     printf重定向
 -- @param     None
--- @auther    庄文标
+-- @author    庄文标
 -- @date      2023/12/6
 **/
 int32_t fputc (int32_t ch, FILE* f)
@@ -57,7 +57,7 @@ int32_t fputc (int32_t ch, FILE* f)
 
 /**@brief     发送浮点数(通信协议遵守VOFA+ <JustFloat>, 多通道)
 -- @param     f_num:需要传输的浮点数
--- @auther    戴骐阳
+-- @author    戴骐阳
 -- @date      2023/11/2
 **/
 void Bluetooth_Send_Float(float *float_add[])
@@ -79,7 +79,7 @@ void Bluetooth_Send_Float(float *float_add[])
 
 /**@brief     设置需要观察的数据变量
 -- @param     *float_add[]:存储变量地址的数组   CH:选择通道   Set_Num:需要观察的变量
--- @auther    戴骐阳
+-- @author    戴骐阳
 -- @date      2023/11/2
 **/
 void Bluetooth_Set_Watch_Variable(float *float_add[], CH_NUM CH, float *Set_Num)
@@ -94,7 +94,7 @@ void Bluetooth_Set_Watch_Variable(float *float_add[], CH_NUM CH, float *Set_Num)
 
 /**@brief     获取上位机传输的数据
 -- @param     None
--- @auther    戴骐阳
+-- @author    戴骐阳
 -- @date      2023/11/3
 **/
 void Bluetooth_Get_Message(void)
@@ -110,7 +110,7 @@ void Bluetooth_Get_Message(void)
 
 /**@brief     获取上位机传输的数据，并解包
 -- @param     None
--- @auther    庄文标
+-- @author    庄文标
 -- @date      2024/4/16
 **/
 void Get_Message()
@@ -176,6 +176,14 @@ void Get_Message()
             {
                 Receivedata.Start_Flag = 0;
             }
+            else if(Receivedata.RxBuffer[0] == 'P' && Receivedata.RxBuffer[Receivedata.Receive_Num - 1] == 't')
+            {
+                Receivedata.Start_Flag = 3;
+            }
+            else if(Receivedata.RxBuffer[0] == 'I' && Receivedata.RxBuffer[Receivedata.Receive_Num - 1] == 't')
+            {
+                Receivedata.Start_Flag = 4;
+            }
             // printf("%d\r\n",Receivedata.Start_Flag);
         }
         Receivedata.Receive_Num=0;
@@ -188,7 +196,7 @@ void Get_Message()
 
 /**@brief     解析获取到的数据
 -- @param     None
--- @auther    戴骐阳
+-- @author    戴骐阳
 -- @date      2023/11/3
 **/
 ReceiveData Bluetooth_Analyse_Data(void)
@@ -224,7 +232,7 @@ ReceiveData Bluetooth_Analyse_Data(void)
 
 /**@brief     储存上位机输出获得到的数据
 -- @param     None
--- @auther    戴骐阳
+-- @author    戴骐阳
 -- @date      2023/11/3
 **/
 void Bluetooth_Store_Data(void)
@@ -252,7 +260,7 @@ void Bluetooth_Store_Data(void)
 
 /**@brief     获取哈希值
 -- @param     str: 输入字符串转换为哈希值
--- @auther    戴骐阳
+-- @author    戴骐阳
 -- @date      2023/11/4
 **/
 int Hash_Function(char *str)
@@ -267,7 +275,7 @@ int Hash_Function(char *str)
 
 /**@brief     创建哈希表
 -- @param     inputAddress: 输入需要访问的地址
--- @auther    戴骐阳
+-- @author    戴骐阳
 -- @date      2023/11/4
 **/
 void Process_Hash(char *inputAddress)
@@ -312,7 +320,7 @@ void Process_Hash(char *inputAddress)
 
 /**@brief     处理LFP函数(改变LF轮kp数值)
 -- @param     None
--- @auther    戴骐阳
+-- @author    戴骐阳
 -- @date      2023/11/4
 **/
 void Handle_LFP_Case(void)
@@ -322,7 +330,7 @@ void Handle_LFP_Case(void)
 
 /**@brief     处理LFI函数(改变LF轮ki数值)
 -- @param     None
--- @auther    戴骐阳
+-- @author    戴骐阳
 -- @date      2023/11/4
 **/
 void Handle_LFI_Case(void)
@@ -331,7 +339,7 @@ void Handle_LFI_Case(void)
 
 /**@brief     处理RFP函数(改变RF轮kp数值)
 -- @param     None
--- @auther    戴骐阳
+-- @author    戴骐阳
 -- @date      2023/11/4
 **/
 void Handle_RFP_Case(void)
@@ -340,7 +348,7 @@ void Handle_RFP_Case(void)
 
 /**@brief     处理RFI函数(改变RF轮kI数值)
 -- @param     None
--- @auther    戴骐阳
+-- @author    戴骐阳
 -- @date      2023/11/4
 **/
 void Handle_RFI_Case(void)
@@ -349,7 +357,7 @@ void Handle_RFI_Case(void)
 
 /**@brief     处理RBP函数(改变RB轮kp数值)
 -- @param     None
--- @auther    戴骐阳
+-- @author    戴骐阳
 -- @date      2023/11/4
 **/
 void Handle_RBP_Case(void)
@@ -359,7 +367,7 @@ void Handle_RBP_Case(void)
 
 /**@brief     处理RBI函数(改变RB轮ki数值)
 -- @param     None
--- @auther    戴骐阳
+-- @author    戴骐阳
 -- @date      2023/11/4
 **/
 void Handle_RBI_Case(void)
@@ -368,7 +376,7 @@ void Handle_RBI_Case(void)
 
 /**@brief     处理LBP函数(改变LB轮kp数值)
 -- @param     None
--- @auther    戴骐阳
+-- @author    戴骐阳
 -- @date      2023/11/4
 **/
 void Handle_LBP_Case(void)
@@ -378,7 +386,7 @@ void Handle_LBP_Case(void)
 
 /**@brief     处理LBI函数(改变LB轮ki数值)
 -- @param     None
--- @auther    戴骐阳
+-- @author    戴骐阳
 -- @date      2023/11/4
 **/
 void Handle_LBI_Case(void)
@@ -388,7 +396,7 @@ void Handle_LBI_Case(void)
 
 /**@brief     处理GYP函数(改变角度环kp数值)
 -- @param     None
--- @auther    戴骐阳
+-- @author    戴骐阳
 -- @date      2023/11/4
 **/
 void Handle_GYP_Case(void)
@@ -398,7 +406,7 @@ void Handle_GYP_Case(void)
 
 /**@brief     处理GYI函数(改变角度环ki数值)
 -- @param     None
--- @auther    戴骐阳
+-- @author    戴骐阳
 -- @date      2023/11/4
 **/
 void Handle_GYI_Case(void)
@@ -408,7 +416,7 @@ void Handle_GYI_Case(void)
 
 /**@brief     处理GYD函数(改变角度环kd数值)
 -- @param     None
--- @auther    戴骐阳
+-- @author    戴骐阳
 -- @date      2023/11/4
 **/
 void Handle_GYD_Case(void)
@@ -418,7 +426,7 @@ void Handle_GYD_Case(void)
 
 /**@brief     处理GYK函数(改变角度环K数值)
 -- @param     None
--- @auther    戴骐阳
+-- @author    戴骐阳
 -- @date      2023/11/4
 **/
 void Handle_GYK_Case(void)

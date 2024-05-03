@@ -19,6 +19,8 @@ Incremental_PID_TypeDef RMotor_F_Speed;
 Incremental_PID_TypeDef LMotor_B_Speed;
 Incremental_PID_TypeDef RMotor_B_Speed;
 Pid_TypeDef Image_PID;
+Pid_TypeDef ImageX_PID;
+Pid_TypeDef ImageF_PID;
 Pid_TypeDef BorderPlace_PID;
 Pid_TypeDef Turn_PID;
 Pid_TypeDef Gyroz_PID;
@@ -54,7 +56,7 @@ Turn_Handle Turn =
 
 /**@brief   所有PID参数初始化
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/11/5
 **/
 void All_PID_Init()
@@ -66,6 +68,8 @@ void All_PID_Init()
     Incremental_PID_Init(&RMotor_B_Speed,0.5f,0.35f,0.5f,40,-40);
     PIDInit(&Angle_PID,0.44f,0,2,1.5f,-1.5f);
     PIDInit(&Image_PID,3.8f,0,0.5f,2.5f,-2.5f);
+    PIDInit(&ImageX_PID,3.8f,0,0.5f,2.5f,-2.5f);
+    PIDInit(&ImageF_PID,3.8f,0,0.5f,2.5f,-2.5f);
     PIDInit(&BorderPlace_PID,2.1f,0,0,1.5f,-1.5f);
     PIDInit(&Foward_PID,2.1f,0,0,1.5f,-1.5f);
     PIDInit(&Turn_PID,2.55f,0,0.6f,5,-5);   
@@ -79,7 +83,7 @@ void All_PID_Init()
 -- @param   float Speed_X X轴速度，既横向速度
 -- @param   float Speed_Y Y轴速度，既前向速度
 -- @param   float Speed_Z Z轴速度，既旋转速度，正的为顺时针旋转
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/11/5
 **/
 void Set_Car_Speed(float Speed_X,float Speed_Y,float Speed_Z)
@@ -101,7 +105,7 @@ void Set_Car_Speed(float Speed_X,float Speed_Y,float Speed_Z)
 
 /**@brief   转动指定角度
 -- @param   float Target_Angle 需要转动的角度
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2024/3/31
 **/
 void Turn_Angle(float Target_Angle)
@@ -146,15 +150,10 @@ void Turn_Angle(float Target_Angle)
     }
 }
 
-void Turn_Reset()
-{
-    Turn.Offset = 0;
-    Turn.Finish = false;
-}
 
 /**@brief   角度控制
 -- @param   需要维持的角度
--- @auther  庄文标
+-- @author  庄文标
 -- @return  PID值
 -- @date    2024/3/31
 **/
@@ -168,7 +167,7 @@ float Angle_Control(float Start_Angle)
 
 /**@brief   巡线
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/12/23
 **/
 void Car_run()
@@ -177,40 +176,45 @@ void Car_run()
     Car.Speed_X = 0;
     Car.Speed_Y = Forward_Speed;
     Car.Speed_Z = -Image_Erro_;
-#ifdef debug_switch
-    printf("line\r\n");
-#endif
+}
+
+/**@brief   横向巡线
+-- @param   无
+-- @author  庄文标
+-- @date    2024/5/3
+**/
+void Car_run_X()
+{
+    float Image_ErroX_ = GetPIDValue(&ImageX_PID,(70 - Image_Erro_Y)*0.03f);
+    float Image_ErroF_ = GetPIDValue(&ImageF_PID,(46 - Hightest)*0.03f);
+    Car.Speed_X = 4;
+    Car.Speed_Y = -Image_ErroF_;
+    Car.Speed_Z = Image_ErroX_;
 }
 
 /**@brief   改变小车行进方向朝向为目标板方向
 -- @param   无
--- @auther  戴骐阳
+-- @author  戴骐阳
 -- @date    2023/12/23
 **/
 void Change_Direction(void)
 {
     Turn_Angle(-90);
-#ifdef debug_switch
-    printf("FIND\r\n");
-#endif
 }
 
 /**@brief   右转到右边赛道
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2024/4/26
 **/
 void Change_Right(void)
 {
     Turn_Angle(90);
-#ifdef debug_switch
-    printf("FIND\r\n");
-#endif
 }
 
 /**@brief   右边返回赛道
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2024/4/26
 **/
 void Return_Right()
@@ -220,7 +224,7 @@ void Return_Right()
 
 /**@brief   左边返回赛道
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2024/4/26
 **/
 void Return_Action()
@@ -230,7 +234,7 @@ void Return_Action()
 
 /**@brief   左边等待微调串口发来的数据
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2024/4/26
 **/
 void Car_Stop_Wait_Data_L()
@@ -239,14 +243,11 @@ void Car_Stop_Wait_Data_L()
     Car.Speed_X = 3;
     Car.Speed_Y = 0;
     Car.Speed_Z = Angle_Control(Navigation.Start_Angle);
-#ifdef debug_switch
-    printf("wait\r\n");
-#endif
 }
 
 /**@brief   右边等待微调串口发来的数据
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2024/4/26
 **/
 void Car_Stop_Wait_Data_R()
@@ -255,25 +256,15 @@ void Car_Stop_Wait_Data_R()
     Car.Speed_X = -3;
     Car.Speed_Y = 0;
     Car.Speed_Z = Angle_Control(Navigation.Start_Angle);
-#ifdef debug_switch
-    printf("wait\r\n");
-#endif
 }
 
 /**@brief   移动至目标板前方
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2024/4/7
 **/
 void Move_Action()
 {
     Navigation_Process(FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f);
-#ifdef debug_switch
-    printf("move\r\n");
-    printf("tx:%f\r\n,",FINETUNING_DATA.dx/10.f);
-    printf("x:%f\r\n",Get_X_Distance());
-    printf("ty:%f\r\n,",FINETUNING_DATA.dy/10.f);
-    printf("y:%f\r\n",Get_Y_Distance());
-#endif
 }
 

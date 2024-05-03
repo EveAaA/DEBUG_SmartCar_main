@@ -23,7 +23,7 @@
 **/
 
 /**@brief   状态机初始化
--- @auther  庄文标
+-- @author  庄文标
 -- @param   FSM_t *fsm 状态机名称
 -- @param   uint8 state 初始状态
 -- @param   FSMTable_t *fsmtable 状态表 
@@ -37,7 +37,7 @@ void FSMInit(FSM_t *fsm, uint8 state, FSMTable_t *fsmtable,uint8 Number)
 }
 
 /**@brief   状态机运行
--- @auther  庄文标
+-- @author  庄文标
 -- @param   FSM_t *fsm 状态机名称
 -- @date    2024/3/13
 **/

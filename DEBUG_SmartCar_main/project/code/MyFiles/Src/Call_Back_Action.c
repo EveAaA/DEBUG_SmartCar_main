@@ -30,7 +30,7 @@
 
 /**@brief   定时器初始化
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/11/4
 **/
 void TIM_Init()
@@ -44,7 +44,7 @@ void TIM_Init()
 
 /**@brief   传感器中断函数
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/11/4
 **/
 void Sensor_Handler()
@@ -55,7 +55,7 @@ void Sensor_Handler()
 
 /**@brief   找目标板openart串口
 -- @param   无
--- @auther  戴骐阳
+-- @author  戴骐阳
 -- @date    2023/12/23
 **/
 void Uart_Findborder_Receive(void)
@@ -71,7 +71,7 @@ void Uart_Findborder_Receive(void)
 
 /**@brief   微调openart串口
 -- @param   无
--- @auther  戴骐阳
+-- @author  戴骐阳
 -- @date    2023/12/23
 **/
 void Uart_Fine_Tuning_Receive(void)

@@ -33,7 +33,7 @@ uint16 Key_Time[5] = {0,0,0,0,0};
 
 /**@brief   所有按键初始化
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/11/5
 **/
 void All_Button_Init()
@@ -49,7 +49,7 @@ void All_Button_Init()
 
 /**@brief    所有按键扫描
 -- @param    无
--- @auther   庄文标
+-- @author   庄文标
 -- @verbatim 包括轻触按键和拨码按键
 -- @verbatim 需要具体获取哪个按键的状态就判断对应的键值，例如按键0就判断Button_Value[0],判断完记得清零
 -- @date     2023/11/5
@@ -69,7 +69,7 @@ void All_Button_Scan()
 
 /**@brief   所有按键消抖
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2024/1/21
 **/
 void Key_Delay()
@@ -92,7 +92,7 @@ void Key_Delay()
 
 /**@brief    获取轻触按键键值
 -- @param    无
--- @auther   庄文标
+-- @author   庄文标
 -- @verbatim 采用状态机的方法
 -- @date     2023/11/5
 **/
@@ -140,7 +140,7 @@ void Get_Button_Value(int8 KeyNum)
 
 /**@brief    获取拨码按键键值
 -- @param    无
--- @auther   庄文标
+-- @author   庄文标
 -- @date     2023/11/7
 **/
 void Get_Switch_Button_Value(int8 KeyNum)

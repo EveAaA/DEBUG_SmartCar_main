@@ -31,7 +31,7 @@ int Show_Mode;
 
 /**@brief   显示箭头
 -- @param   int Row 需要显示的行号
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/11/13
 **/
 static void Arrow_Display(int Line)
@@ -55,7 +55,7 @@ static void Arrow_Display(int Line)
 
 /**@brief   行切换
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2024/2/16
 **/
 static void Line_Change()
@@ -75,7 +75,7 @@ static void Line_Change()
 
 /**@brief   页面选择模式
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2024/2/16
 **/
 static void Page_Select_Mode()
@@ -103,7 +103,7 @@ static void Page_Select_Mode()
 /**@brief    第零页显示
 -- @param    无
 -- @verbatim 用于查看传感器的数值
--- @auther   庄文标
+-- @author   庄文标
 -- @date     2024/2/16
 **/
 static void Page0_Mode()
@@ -145,14 +145,14 @@ static void Page0_Mode()
     {
         Rotary.Press = 0;
         Start = 1;
-        // Menu.Image_Show = true;
+        Menu.Image_Show = true;
     }
-    if(Menu.Set_Line == 2 && Rotary.Press)//发车
-    {
-        Rotary.Press = 0;
-        Start = 3;
-        // Menu.Image_Show = true;
-    }
+    // if(Menu.Set_Line == 2 && Rotary.Press)//发车
+    // {
+    //     Rotary.Press = 0;
+    //     Start = 3;
+    //     // Menu.Image_Show = true;
+    // }
 
     if(Menu.Set_Line == 5 && Rotary.Press)//显示图像
     {
@@ -173,13 +173,14 @@ static void Page0_Mode()
             tft180_draw_point(R_Border[i], i, RGB565_RED);//显示起点 显示右边线
         }
         tft180_show_gray_image(0, 0, (const uint8 *)(Bin_Image), MT9V03X_W, MT9V03X_H, (Row_18), (Line_5), 0);
-        tft180_show_float(Row_8, Line_6,Image_Erro, 3, 3);
+        tft180_show_float(Row_8, Line_6,Image_Erro_Y, 3, 3);
+        tft180_show_float(Row_8, Line_7,Hightest, 3, 3);
     }
 }
 
 /**@brief   第一页显示
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2024/2/18
 **/
 static void Page1_Mode()
@@ -246,7 +247,7 @@ static void Page1_Mode()
 
 /**@brief   Flash初始化
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2024/2/18
 **/
 void Flash_Init()
@@ -271,7 +272,7 @@ void Flash_Init()
 
 /**@brief   每页显示的内容
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/11/13
 **/
 void Menu_Display()

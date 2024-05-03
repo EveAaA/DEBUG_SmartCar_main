@@ -27,7 +27,7 @@
 //  **/
 
 // /**@brief   发车选择
-// -- @auther  庄文标
+// -- @author  庄文标
 // -- @date    2024/3/13
 // **/
 // bool Depart_Select()
@@ -40,7 +40,7 @@
 // }
 
 // /**@brief   找到卡片
-// -- @auther  庄文标
+// -- @author  庄文标
 // -- @date    2024/3/13
 // **/
 // bool Board_Find()
@@ -65,7 +65,7 @@
 // }
 
 // /**@brief   找到卡片
-// -- @auther  庄文标
+// -- @author  庄文标
 // -- @date    2024/3/13
 // **/
 // bool TurnAction_Finish()
@@ -80,7 +80,7 @@
 // }
 
 // /**@brief   移动结束
-// -- @auther  庄文标
+// -- @author  庄文标
 // -- @date    2024/4/4
 // **/
 // bool Move_Finish_()
@@ -95,7 +95,7 @@
 // float Pick_Angle = 0;
 
 // /**@brief   确认移动到位
-// -- @auther  庄文标
+// -- @author  庄文标
 // -- @date    2024/4/4
 // **/
 // bool Confirm_OK()
@@ -111,7 +111,7 @@
 // }
 
 // /**@brief   确认移动到位右边
-// -- @auther  庄文标
+// -- @author  庄文标
 // -- @date    2024/4/4
 // **/
 // bool Confirm_OK_Right()
@@ -126,7 +126,7 @@
 // }
 
 // /**@brief   确认移动是否收到串口发的数据
-// -- @auther  庄文标
+// -- @author  庄文标
 // -- @date    2024/4/4
 // **/
 // bool Data_Receive()
@@ -139,7 +139,7 @@
 // }
 
 // /**@brief   等待转向结束
-// -- @auther  庄文标
+// -- @author  庄文标
 // -- @date    2024/4/4
 // **/
 // bool Wait()
@@ -207,7 +207,7 @@
 //  **/
 
 // /**@brief   状态机初始化
-// -- @auther  庄文标
+// -- @author  庄文标
 // -- @date    2024/3/13
 // **/
 // void My_FSM_Init()

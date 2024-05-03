@@ -25,7 +25,7 @@
 
 /**@brief   蜂鸣器初始化
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/11/13
 **/
 void Beep_Init()
@@ -35,7 +35,7 @@ void Beep_Init()
 
 /**@brief   蜂鸣器控制
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/11/13
 **/
 void Beep(Beep_Handle Mode)

@@ -47,16 +47,16 @@ typedef enum                                                                    
     //PWM1_MODULE0_CHA_D12与PWM1_MODULE1_CHA_D14虽然是同一个PWM模块但是属于不同的子模块可以输出不同频率的PWM
     
     PWM1_MODULE0_CHB_D13=1*40+5*0,                                                                      // PWM1 子模块0 通道B  引脚可选范围
-    PWM1_MODULE0_CHA_D12=1*40+5*1,                                                                      // PWM1 子模块0 通道A  引脚可选范围 mo
+    PWM1_MODULE0_CHA_D12=1*40+5*1,//D12                                                                      // PWM1 子模块0 通道A  引脚可选范围 mo
                                                                                                             
-    PWM1_MODULE1_CHB_D15=1*40+5*2,                                                                      // PWM1 子模块1 通道B  引脚可选范围mo
+    PWM1_MODULE1_CHB_D15=1*40+5*2,//D15                                                                      // PWM1 子模块1 通道B  引脚可选范围mo
     PWM1_MODULE1_CHA_D14=1*40+5*3,                                                                      // PWM1 子模块1 通道A  引脚可选范围
                                                                                                             
     PWM1_MODULE2_CHB_D17=1*40+5*4,                                                                      // PWM1 子模块2 通道B  引脚可选范围
     PWM1_MODULE2_CHA_D16=1*40+5*5,                                                                      // PWM1 子模块2 通道A  引脚可选范围
 
-    PWM1_MODULE3_CHB_B11=1*40+5*6,  PWM1_MODULE3_CHB_C17,   PWM1_MODULE3_CHB_D1,                        // PWM1 子模块3 通道B  引脚可选范围
-    PWM1_MODULE3_CHA_B10=1*40+5*7,  PWM1_MODULE3_CHA_C16,   PWM1_MODULE3_CHA_D0,                        // PWM1 子模块3 通道A  引脚可选范围
+    PWM1_MODULE3_CHB_B11=1*40+5*6,  PWM1_MODULE3_CHB_C17,   PWM1_MODULE3_CHB_D1, //B11                       // PWM1 子模块3 通道B  引脚可选范围
+    PWM1_MODULE3_CHA_B10=1*40+5*7,  PWM1_MODULE3_CHA_C16,   PWM1_MODULE3_CHA_D0,//D0                     // PWM1 子模块3 通道A  引脚可选范围
     
     //-----------------------------------------------------------------------------
     PWM2_MODULE0_CHB_C7 =2*40+5*0,                                                                      // PWM2 子模块0 通道B  引脚可选范围
@@ -65,11 +65,11 @@ typedef enum                                                                    
     PWM2_MODULE1_CHB_C9 =2*40+5*2,                                                                      // PWM2 子模块1 通道B  引脚可选范围
     PWM2_MODULE1_CHA_C8 =2*40+5*3,                                                                      // PWM2 子模块1 通道A  引脚可选范围
                                                                                                             
-    PWM2_MODULE2_CHB_C11=2*40+5*4,                                                                      // PWM2 子模块2 通道B  引脚可选范围mo
+    PWM2_MODULE2_CHB_C11=2*40+5*4,//C11                                                                      // PWM2 子模块2 通道B  引脚可选范围mo
     PWM2_MODULE2_CHA_C10=2*40+5*5,                                                                      // PWM2 子模块2 通道A  引脚可选范围
                         
-    PWM2_MODULE3_CHB_B1 =2*40+5*6,  PWM2_MODULE3_CHB_C19,   PWM2_MODULE3_CHB_D3,                        // PWM2 子模块3 通道B  引脚可选范围
-    PWM2_MODULE3_CHA_B0 =2*40+5*7,  PWM2_MODULE3_CHA_C18,   PWM2_MODULE3_CHA_D2,    PWM2_MODULE3_CHA_B9,// PWM2 子模块3 通道A  引脚可选范围
+    PWM2_MODULE3_CHB_B1 =2*40+5*6,  PWM2_MODULE3_CHB_C19,   PWM2_MODULE3_CHB_D3,//D3                        // PWM2 子模块3 通道B  引脚可选范围
+    PWM2_MODULE3_CHA_B0 =2*40+5*7,  PWM2_MODULE3_CHA_C18,   PWM2_MODULE3_CHA_D2,    PWM2_MODULE3_CHA_B9,//D2// PWM2 子模块3 通道A  引脚可选范围
     
     //-----------------------------------------------------------------------------
     //PWM3模块的引脚全部被SDRAM所占用
@@ -79,7 +79,7 @@ typedef enum                                                                    
                                                                                                            
     PWM4_MODULE1_CHA_B25=4*40+5*3,                                                                      // PWM4 子模块1 通道A  引脚可选范围
                                                                                                            
-    PWM4_MODULE2_CHA_C30=4*40+5*5,                                                                      // PWM4 子模块2 通道A  引脚可选范围mo
+    PWM4_MODULE2_CHA_C30=4*40+5*5,//C30                                                                      // PWM4 子模块2 通道A  引脚可选范围mo
                                                                                                            
     PWM4_MODULE3_CHA_C31=4*40+5*7,                                                                      // PWM4 子模块3 通道A  引脚可选范围
 }pwm_channel_enum;

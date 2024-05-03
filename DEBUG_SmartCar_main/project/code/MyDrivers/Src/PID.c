@@ -32,7 +32,7 @@
 -- @param     float Kd 设定的Kd
 -- @param     float outPutMin 限幅
 -- @param     float outPutMax 限幅
--- @auther    庄文标
+-- @author    庄文标
 -- @date      2023/9/6
 **/
 void PIDInit(Pid_TypeDef *PID, float Kp, float Ki, float Kd, float OutputMax, float OutputMin)
@@ -49,7 +49,7 @@ void PIDInit(Pid_TypeDef *PID, float Kp, float Ki, float Kd, float OutputMax, fl
 -- @param     Pid_TypeDef *PID PID结构体
 -- @param     float error 误差值
 -- @return    float outPut 输出
--- @auther    庄文标
+-- @author    庄文标
 -- @date      2023/9/6
 **/
 float GetPIDValue(Pid_TypeDef *PID, float error)
@@ -91,7 +91,7 @@ float GetPIDValue(Pid_TypeDef *PID, float error)
 -- @param     float Kd 设定的Kd
 -- @param     float outPutMin 限幅
 -- @param     float outPutMax 限幅
--- @auther    庄文标
+-- @author    庄文标
 -- @date      2023/9/12
 **/
 void Incremental_PID_Init(Incremental_PID_TypeDef *PID, float Kp, float Ki, float Kd, float Out_Put_Max, float Out_Put_Min)
@@ -111,7 +111,7 @@ void Incremental_PID_Init(Incremental_PID_TypeDef *PID, float Kp, float Ki, floa
 -- @param     float Target_Value 目标值
 -- @param     float Error 误差
 -- @return    float Output 输出
--- @auther    庄文标
+-- @author    庄文标
 -- @date   	  2023/9/12
 **/
 float Get_Incremental_PID_Value(Incremental_PID_TypeDef *PID, float Error)

@@ -17,12 +17,17 @@ typedef struct
 {
     bool Put_Down;
     bool Put_Up;
+    bool Put_Depot;
+    bool Put_Out;
 }Servo_Flag_Handle;
 
 void Manipulator_Init();
 void Set_Servo_Angle(Servo_Handle Servo,float Angle);
 void Manipulator_PutDown();
+void Manipulator_PutUp();
 void Pick_Card();
+void Put_Depot();
+void Take_Card_Out();
 extern Servo_Handle Raise_Servo;
 extern Servo_Handle Stretch_Servo;
 extern Servo_Flag_Handle Servo_Flag;

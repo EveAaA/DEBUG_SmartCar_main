@@ -25,7 +25,7 @@ Rotary_Handle Rotary = {0,0,0};
 
 /**@brief   旋转编码器初始化
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2024/2/16
 **/
 void Rotary_Init()

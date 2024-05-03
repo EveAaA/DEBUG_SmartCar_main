@@ -37,7 +37,7 @@ float YawAngle_Trans = 0;//转换后的偏航角，归到0-360
 
 /**@brief   倒数的根号
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/7/4
 **/
 static float My_Rsqrt(float num)
@@ -55,7 +55,7 @@ static float My_Rsqrt(float num)
 
 /**@brief   六轴数据的滤波和转换
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/7/4
 **/
 static void IMU_Get_Values(void)
@@ -76,7 +76,7 @@ static void IMU_Get_Values(void)
 
 /**@brief   六轴四原数的获取
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/7/4
 **/
 static void IMU_AHRS_update(IMU_Param_t* IMU)
@@ -154,7 +154,7 @@ static void IMU_AHRS_update(IMU_Param_t* IMU)
 
 /**@brief   陀螺仪数据的初始化，避免零点飘逸
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/7/4
 **/
 void Gyro_Offset_Init(void)
@@ -179,7 +179,7 @@ void Gyro_Offset_Init(void)
 
 /**@brief   获取滚动角
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @return  Gyro_Angle->RollAngle 滚动角
 -- @date    2023/6/29
 **/
@@ -190,7 +190,7 @@ float Gyro_RollAngle_Get(void)
 
 /**@brief   获取俯仰角
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @return  Gyro_Angle->PitchAngle 俯仰角
 -- @date    2023/6/29
 **/
@@ -201,7 +201,7 @@ float Gyro_PitchAngle_Get(void)
 
 /**@brief   获取偏航角
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @return  Gyro_Angle->YawAngle 偏航角
 -- @date    2023/11/04
 **/
@@ -212,7 +212,7 @@ float Gyro_YawAngle_Get(void)
 
 /**@brief   获取陀螺仪数据
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/7/4
 **/
 void Gyro_Get_All_Angles()

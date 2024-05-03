@@ -12,6 +12,7 @@ void Image_Process();
 #define Border_Min  1   //边界最小值
 extern uint8 Original_Image[Image_H][Image_W];
 extern float Image_Erro;
+extern float Image_Erro_Y;
 extern uint8 Image_Thereshold;
 extern uint8 L_Border[Image_H];//左线数组
 extern uint8 R_Border[Image_H];//右线数组

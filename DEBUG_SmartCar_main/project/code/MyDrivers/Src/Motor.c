@@ -35,7 +35,7 @@
 
 /**@brief     电机初始化
 -- @param     无
--- @auther    庄文标
+-- @author    庄文标
 -- @date      2023/11/2
 **/
 void Motor_Init()
@@ -55,7 +55,7 @@ void Motor_Init()
 /**@brief     电机速度设置
 -- @param     MotorHandle Motor 选择左右电机
 -- @param     uint16 PWMDuty PWM波占空比，对应0-100的速度
--- @auther    庄文标
+-- @author    庄文标
 -- @date      2023/11/2
 **/
 void Set_Motor_Speed(MotorHandle Motor, float PWMDuty)
@@ -140,7 +140,7 @@ void Set_Motor_Speed(MotorHandle Motor, float PWMDuty)
 
 /**@brief     电机失能
 -- @param     无
--- @auther    庄文标
+-- @author    庄文标
 -- @date      2024/3/13
 **/
 void Motor_Disable()

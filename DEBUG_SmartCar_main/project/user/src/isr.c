@@ -83,7 +83,11 @@ void PIT_IRQHandler(void)
     
     if(pit_flag_get(PIT_CH2))
     {
-        FSM_main();
+        if(Start==1)
+        {
+            Car_run_X();
+        }
+        // FSM_main();
         // FSMRun(CURRENT_FSM);
         pit_flag_clear(PIT_CH2);
     }

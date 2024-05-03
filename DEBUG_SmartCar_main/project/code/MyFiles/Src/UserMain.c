@@ -64,7 +64,7 @@ void Mt9v03x_Init()
 
 /**@brief   所有初始化内容
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/11/4
 **/
 void User_Init()
@@ -98,7 +98,7 @@ void User_Init()
 
 /**@brief   所有主循环内容
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/9/12
 **/
 void User_Loop()
@@ -107,4 +107,36 @@ void User_Loop()
     // test_2 = Gyro_YawAngle_Get();
     // Bluetooth_Send_Float(Num_Address);
     Menu_Display();
+    // if(Receivedata.Start_Flag == 1)
+    // {
+    //     if(Servo_Flag.Put_Up == 0)//卡片拿起来
+    //     {
+    //         Pick_Card();
+    //     }
+    //     Servo_Flag.Put_Depot = false;   
+    // }
+    // else if(Receivedata.Start_Flag == 0)
+    // {
+    //     if(Servo_Flag.Put_Depot == false)//放进仓库
+    //     {
+    //         Put_Depot();
+    //     }
+    //     Servo_Flag.Put_Down = false;
+    //     Servo_Flag.Put_Up = false;
+    //     Servo_Flag.Put_Out = false;
+    // }
+    // else if(Receivedata.Start_Flag == 3)
+    // {
+    //     if(Servo_Flag.Put_Out == false)//卡片拿出来
+    //     {
+    //         Take_Card_Out();
+    //     }
+    //     Servo_Flag.Put_Depot = false; 
+    // }
+    // else if(Receivedata.Start_Flag == 4)
+    // {
+    //     Set_Servo_Angle(Stretch_Servo,Stretch_Servo.Init_Angle);
+    //     Set_Servo_Angle(Raise_Servo,Raise_Servo.Init_Angle);
+    //     Servo_Flag.Put_Out = false;
+    // }
 }

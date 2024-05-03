@@ -48,7 +48,7 @@ const float Cm_Per = 0.0082832f;
 
 /**@brief   获取编码器速度
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/11/4
 **/
 static void Get_Encoder_Pulses()
@@ -61,7 +61,7 @@ static void Get_Encoder_Pulses()
 
 /**@brief   获取左前轮速度
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/11/4
 **/
 static float Get_LF_Speed()
@@ -74,7 +74,7 @@ static float Get_LF_Speed()
 
 /**@brief   获取右前轮速度
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/11/4
 **/
 static float Get_RF_Speed()
@@ -87,7 +87,7 @@ static float Get_RF_Speed()
 
 /**@brief   获取左后轮速度
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/11/4
 **/
 static float Get_LB_Speed()
@@ -100,7 +100,7 @@ static float Get_LB_Speed()
 
 /**@brief   获取右后轮速度
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/11/4
 **/
 static float Get_RB_Speed()
@@ -113,7 +113,7 @@ static float Get_RB_Speed()
 
 /**@brief   获取距离
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/12/6
 **/
 static void Get_Distance()
@@ -149,7 +149,7 @@ static void Get_Distance()
 
 /**@brief   所有编码器初始化
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/11/4
 **/
 void All_Encoder_Init()
@@ -162,7 +162,7 @@ void All_Encoder_Init()
 
 /**@brief   编码器进程
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/12/7
 **/
 void Encoder_Process()
@@ -181,7 +181,7 @@ void Encoder_Process()
 
 /**@brief   编码器偏航角获取
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/12/7
 **/
 float Encoder_YawAngle_Get()
@@ -193,7 +193,7 @@ float Encoder_YawAngle_Get()
 
 /**@brief   X轴距离获取
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/12/7
 **/
 float Get_X_Distance()
@@ -203,7 +203,7 @@ float Get_X_Distance()
 
 /**@brief   Y轴距离获取
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/12/7
 **/
 float Get_Y_Distance()
@@ -213,7 +213,7 @@ float Get_Y_Distance()
 
 /**@brief   X轴速度获取
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/12/7
 **/
 float Get_X_Speed()
@@ -223,7 +223,7 @@ float Get_X_Speed()
 
 /**@brief   Y轴速度获取
 -- @param   无
--- @auther  庄文标
+-- @author  庄文标
 -- @date    2023/12/7
 **/
 float Get_Y_Speed()
