@@ -9,6 +9,7 @@ void Set_Car_Speed(float Speed_X,float Speed_Y,float Speed_Z);
 void Turn_Angle(float Target_Angle);
 float Angle_Control(float Start_Angle);
 void Car_run();
+void Car_run_X();
 void Change_Direction(void);
 void Change_Right(void);
 void Return_Right();

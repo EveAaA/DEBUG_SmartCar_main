@@ -2,7 +2,7 @@
 #define _INERTIALNAVIGATION_H
 
 #include "zf_common_headfile.h"
-
+#include "PID.h"
 typedef struct
 {
     float Start_Position_X;//³õÊ¼X×ø±ê
@@ -28,7 +28,9 @@ typedef enum
 }State;
 
 extern Navigation_Handle Navigation;
-
+extern Pid_TypeDef DistanceX_PID;
+extern Pid_TypeDef DistanceY_PID;
 void Reset_Navigation();
 void Navigation_Process(float x,float y);
+void Navigation_Process_Image(float x,float y);
 #endif

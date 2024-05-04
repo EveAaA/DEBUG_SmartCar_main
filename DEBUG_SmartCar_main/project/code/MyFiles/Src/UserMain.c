@@ -84,7 +84,7 @@ void User_Init()
     // Beep_Init();
     // dl1a_init();
     All_PID_Init();
-    // Flash_Init();
+    Flash_Init();
     UART_Init();
     tft180_show_string(Row_0, Line_5, "Soft Init ...");
     tft180_clear();

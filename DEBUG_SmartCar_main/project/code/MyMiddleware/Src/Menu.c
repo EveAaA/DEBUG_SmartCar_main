@@ -185,9 +185,9 @@ static void Page0_Mode()
 **/
 static void Page1_Mode()
 {
-    tft180_show_string(Row_1,Line_0,"tKP:");
+    tft180_show_string(Row_1,Line_0,"XKP:");
     tft180_show_float(Row_7,Line_0,flash_union_buffer[0].float_type,2,2);
-    tft180_show_string(Row_1,Line_1,"tKD:");
+    tft180_show_string(Row_1,Line_1,"YKD:");
     tft180_show_float(Row_7,Line_1,flash_union_buffer[1].float_type,2,2);
 	
     Exit_Dis;
@@ -255,16 +255,16 @@ void Flash_Init()
     flash_init();//逐飞flash初始化
     if(!flash_check(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX))//如果没有数据                      // 判断是否有数据
     {
-        flash_union_buffer[0].float_type = Turn_PID.Kp;
-        flash_union_buffer[1].float_type = Turn_PID.Kd;
+        flash_union_buffer[0].float_type = 0.45;
+        flash_union_buffer[1].float_type = 0.4;
         flash_write_page_from_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
         flash_buffer_clear();
     }
     else
     {
         flash_read_page_to_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
-        Turn_PID.Kp = flash_union_buffer[0].float_type;
-        Turn_PID.Kd = flash_union_buffer[1].float_type;
+        DistanceX_PID.Kp = flash_union_buffer[0].float_type;
+        DistanceY_PID.Kd = flash_union_buffer[1].float_type;
         flash_buffer_clear();
     }
     flash_read_page_to_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);

@@ -38,7 +38,7 @@ Servo_Handle Raise_Servo = //抬手舵机
 Servo_Handle Rotary_Servo = //旋转舵机
 {
     .Pin = PWM1_MODULE3_CHB_B11,
-    .Init_Angle = 105,//角度大逆时针转
+    .Init_Angle = 102//角度大逆时针转
 };
 Servo_Handle Door_Servo = //门电机
 {
@@ -64,7 +64,7 @@ void Manipulator_Init()
     pwm_init(Stretch_Servo.Pin,Servo_FREQ,Set_180Servo_Angle(Stretch_Servo.Init_Angle));
     pwm_init(Raise_Servo.Pin,Servo_FREQ,Set_180Servo_Angle(Raise_Servo.Init_Angle));
     pwm_init(Rotary_Servo.Pin,Servo_FREQ,Set_360Servo_Angle(Rotary_Servo.Init_Angle));
-    pwm_init(Door_Servo.Pin,Servo_FREQ,Set_180Servo_Angle(Door_Servo.Init_Angle));
+    // pwm_init(Door_Servo.Pin,Servo_FREQ,Set_180Servo_Angle(Door_Servo.Init_Angle));
     gpio_init(D27,GPO,0,GPO_PUSH_PULL);
 }
 
@@ -144,11 +144,16 @@ void Manipulator_PutUp()
     {
         case 0:
             Set_Servo_Angle(Stretch_Servo,120);//先抬大臂
+            Stretch_Servo.Servo_Time = 1;
             PutUp_State = 1;
         break;
         case 1:
-            Set_Servo_Angle(Raise_Servo,140);
-            PutUp_State = 2;
+            if(Stretch_Servo.Servo_Time >= 100)
+            {
+                Set_Servo_Angle(Raise_Servo,140);
+                Stretch_Servo.Servo_Time = 0;
+                PutUp_State = 2;
+            }
         break;
         case 2:
             PutUp_State = 0;
@@ -157,6 +162,7 @@ void Manipulator_PutUp()
             // Set_Servo_Angle(Stretch_Servo,Stretch_Servo.Init_Angle);
         break;
     }
+    // printf("%d\r\n",PutUp_State);
 }
 
 
@@ -189,10 +195,32 @@ void Pick_Card()
             }
         break;
         case 2:
-            Manipulator_PutUp();
-            Pickup_State = 0;
+            if(!Servo_Flag.Put_Up)
+            {
+                Manipulator_PutUp();
+            }
+            else
+            {
+                if(Raise_Servo.Servo_Time == 0)
+                {
+                    Raise_Servo.Servo_Time = 1;
+                }
+                if(Raise_Servo.Servo_Time >= 200)
+                {
+                    Raise_Servo.Servo_Time = 0;
+                    Pickup_State = 3;
+                }
+            }
+        break;
+        case 3:
+            Put_Depot();
+            if(Servo_Flag.Put_Depot)
+            {
+                Pickup_State = 0;
+            }
         break;
     }
+
 }
 
 /**@brief   把卡片放入指定仓库
