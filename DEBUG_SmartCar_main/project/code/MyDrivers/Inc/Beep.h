@@ -11,5 +11,7 @@ typedef enum
 
 void Beep_Init();
 void Beep(Beep_Handle Mode);
+void Beep_On();
+void Set_Beeptime(uint16 Set_Time);
 
 #endif

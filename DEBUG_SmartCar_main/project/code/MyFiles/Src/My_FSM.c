@@ -87,17 +87,19 @@ void Left_BoardFsm()
             #ifdef debug_switch
                 printf("Move\r\n");    
             #endif 
-            printf("%f,%f,%d\r\n",FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f,0);
+            // printf("%f,%f,%d\r\n",FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f,0);
             if(Navigation.Finish_Flag == false)
             {
                 Navigation_Process_Image(0,0);//移动
             }
             else
             {
+                Set_Beeptime(500);
                 Navigation.Finish_Flag = false;
                 FINETUNING_DATA.dx = 0;
                 FINETUNING_DATA.dy = 0;
-                MyFSM.LeftBoard_State = Confirm;//确认是否移动到位
+                Staic_Angle = Gyro_YawAngle_Get();
+                MyFSM.LeftBoard_State = Pick;//确认是否移动到位
             }
         break;
         case Confirm://确认是否移动到位
@@ -223,17 +225,19 @@ void Right_BoardFsm()
             #ifdef debug_switch
                 printf("Move\r\n");    
             #endif 
-            printf("%f,%f\r\n",FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f);
+            // printf("%f,%f\r\n",FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f);
             if(Navigation.Finish_Flag == false)
             {
                 Navigation_Process_Image(0,0);//移动
             }
             else
             {
+                Set_Beeptime(500);
                 Navigation.Finish_Flag = false;
                 FINETUNING_DATA.dx = 0;
                 FINETUNING_DATA.dy = 0;
-                MyFSM.RightBoard_State = Confirm;//确认是否移动到位
+                Staic_Angle = Gyro_YawAngle_Get();
+                MyFSM.RightBoard_State = Pick;//确认是否移动到位
             }
         break;
         case Confirm://确认是否移动到位
@@ -320,7 +324,7 @@ void FSM_main()
     switch (MyFSM.CurState)
     {
         case Line_Patrol://巡线状态
-            if(Receivedata.Start_Flag == 1)
+            if(Start == 1)
             {
                 #ifdef debug_switch
                     printf("Line\r\n");    

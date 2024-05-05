@@ -19,8 +19,8 @@
 Navigation_Handle Navigation = {0,0,0,0,0,0,0,0,0,0,0};
 Pid_TypeDef DistanceX_PID = 
 {
-    .Kp = 0.45f,
-    .Ki = 0.0f,
+    .Kp = 0.35f,
+    .Ki = 0.01f,
     .Kd = 0.5f,
     .OutputMax = 5,
     .OutputMin = -5,
@@ -37,9 +37,9 @@ Pid_TypeDef DistanceX_PID_M =
 
 Pid_TypeDef DistanceY_PID = 
 {
-    .Kp = 0.4f,
-    .Ki = 0.0f,
-    .Kd = 1,
+    .Kp = 0.3f,
+    .Ki = 0.01f,
+    .Kd = 0.5f,
     .OutputMax = 5,
     .OutputMin = -5,
 };
@@ -205,10 +205,11 @@ void Navigation_Process(float x,float y)
 -- @param   float x 目标X坐标
 -- @param   float y 目标Y坐标
 -- @author  庄文标
--- @date    2024/4/3
+-- @date    2024/5/3
 **/
 void Navigation_Process_Image(float x,float y)
 {
+    static uint16 Wait_Time = 0;//等待的时间
     switch(Navigation_State)
     {
         case Start_State:
@@ -224,10 +225,19 @@ void Navigation_Process_Image(float x,float y)
         case X_State:
             Navigation.Cur_Position_X = FINETUNING_DATA.dx/10.0f;
             Navigation.Cur_Position_Y = FINETUNING_DATA.dy/10.f;
-            if(fabs(x - Navigation.Cur_Position_X) <= 0.3f && fabs(y - Navigation.Cur_Position_Y) <= 0.3f)
+            if(fabs(x - Navigation.Cur_Position_X) <= 0.4f && fabs(y - Navigation.Cur_Position_Y) <= 0.4f && fabs(Get_X_Speed()) <= 0.1 && fabs(Get_Y_Speed()) <= 0.1)
             {
-                Navigation_State = Move_Finish;
-                Navigation.End_Angle = Gyro_YawAngle_Get();
+                Wait_Time++;
+                if(Wait_Time >= 18)//大约0.35s
+                {
+                    Wait_Time = 0;
+                    Navigation_State = Move_Finish;
+                    Navigation.End_Angle = Gyro_YawAngle_Get();
+                }
+            }
+            else
+            {
+                Wait_Time = 0;
             }
 
             if(x - Navigation.Cur_Position_X >= 0)
@@ -260,7 +270,6 @@ void Navigation_Process_Image(float x,float y)
             }
             if(y - Navigation.Cur_Position_Y >= 0)
             {
-
                 Car.Speed_Y = Large_Speed + GetPIDValue(&DistanceY_PID,(y - Navigation.Cur_Position_Y));
             }
             else

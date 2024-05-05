@@ -53,6 +53,7 @@ void PIT_IRQHandler(void)
     if(pit_flag_get(PIT_CH0))
     {
         Sensor_Handler();
+        Beep_On();
         UART_UnpackDataV2(&UnpackFlag);
         UART_ResetUnpackFlag(&UnpackFlag);
         if(Stretch_Servo.Servo_Time > 0)
@@ -85,7 +86,8 @@ void PIT_IRQHandler(void)
     {
         // if(Start==1)
         // {
-        //     Car_run_X();
+        //     Start = 0;
+        //     Set_Beeptime(500);
         // }
         FSM_main();
         

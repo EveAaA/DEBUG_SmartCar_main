@@ -81,7 +81,7 @@ void User_Init()
     Manipulator_Init();
     Motor_Init();
     tft180_show_string(Row_0, Line_4, "Motor Init ...");
-    // Beep_Init();
+    Beep_Init();
     // dl1a_init();
     All_PID_Init();
     Flash_Init();

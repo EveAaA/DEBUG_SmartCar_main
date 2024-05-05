@@ -15,6 +15,7 @@
 
 /* Define\Declare ------------------------------------------------------------*/
 #define Beep_Pin B21
+uint16 Beep_Time = 0;
 
 /**
  ******************************************************************************
@@ -48,5 +49,36 @@ void Beep(Beep_Handle Mode)
         case Off:
             gpio_set_level(Beep_Pin,0);
         break;
+    }
+}
+
+/**@brief   设置蜂鸣器响固定时间
+-- @param   无
+-- @author  庄文标
+-- @date    2024/5/5
+**/
+void Beep_On()
+{
+    if(Beep_Time > 0)
+    {
+        Beep_Time-=1;
+        Beep(On);
+    }
+    else
+    {
+        Beep(Off);
+    }
+}
+
+/**@brief   设置蜂鸣器响的时间
+-- @param   uint16 Set_Time 时间,单位是ms
+-- @author  庄文标
+-- @date    2024/5/5
+**/
+void Set_Beeptime(uint16 Set_Time)
+{
+    if(Beep_Time == 0)
+    {
+        Beep_Time = Set_Time/5;
     }
 }

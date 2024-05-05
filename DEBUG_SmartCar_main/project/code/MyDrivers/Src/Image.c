@@ -14,8 +14,9 @@
 #include "Image.h"
 #include <math.h>
 #include "Gyro.h"
-
+#include "Beep.h"
 /* Define\Declare ------------------------------------------------------------*/
+// #define Left_Ring_debug //是否开启左圆环调试
 Ring_Handle LeftRing = { false, false, true };
 
 typedef struct
@@ -1182,10 +1183,10 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
         LeftRing.Stright_Line = Straight_Line_Judge(R_Border, Total_Num_R - 10, RightLine);//判断右边是否为长直线
         Salient_Point = findCircleOutPoint(L_Border);
         // tft180_Draw_ColorCircle(L_Border[Salient_Point],Salient_Point,5,RGB565_RED);
-        for (uint8 i = Image_H - 2; i > Image_H / 2; --i)
+        for (uint8 i = Image_H - 2; i > 10; --i)
         {
             // 断裂区域横坐标相差很大
-            if (L_Border[i] - L_Border[i - 1] > 10 && i > Image_H / 2)
+            if (L_Border[i] - L_Border[i - 1] > 10 && LeftRing.Stright_Line)
             {
                 hashKey[offset] = i;
                 offset++;
@@ -1208,6 +1209,7 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                         && Points_L[j][0] < Points_L[j - 5][0] && Points_L[j][0] > Points_L[j + 5][0] && Points_L[j][0] > Border_Min + 5)
                     {
                         Break_Num_L_DOWN = j;
+                        Set_Beeptime(500);
                         break;
                     }
                 }
@@ -1215,29 +1217,29 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
         }
         // tft180_Draw_ColorCircle(Points_L[Break_Num_L_DOWN][0],Points_L[Break_Num_L_DOWN][1],5,RGB565_BLUE);
         // 有圆环突出点 右直线 没有左下角点
-        if (Salient_Point && LeftRing.Stright_Line && !Break_Num_L_DOWN && LeftRing.Ring_Front_Flag) // 判断是否有圆环突出点并且右侧直线
-        {
-            Get_K_b(L_Border[Salient_Point], Salient_Point, 0, Image_H - 1, &slope_l_rate, &intercept_l);
-            for (i = Image_H - 1; i > 1; i--)
-            {
-                L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
-                L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
-            }
-        }
+        // if (Salient_Point && LeftRing.Stright_Line && !Break_Num_L_DOWN && LeftRing.Ring_Front_Flag) // 判断是否有圆环突出点并且右侧直线
+        // {
+        //     Get_K_b(L_Border[Salient_Point], Salient_Point, 0, Image_H - 1, &slope_l_rate, &intercept_l);
+        //     for (i = Image_H - 1; i > 1; i--)
+        //     {
+        //         L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+        //         L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
+        //     }
+        // }
         //有圆环突出点, 右直线, 有左下角点
-        else if (Break_Num_L_DOWN && LeftRing.Stright_Line && Salient_Point) //  && (!Bin_Image[Image_H - 10][4]) && (!Bin_Image[Image_H - 10][Image_W - 4])
-        {
-            //计算斜率,左边斜率
-            Get_K_b(Salient_Point, L_Border[Salient_Point], Points_L[Break_Num_L_DOWN][1], Points_L[Break_Num_L_DOWN][0], &slope_l_rate, &intercept_l);
-            for (i = Salient_Point; i < Points_L[Break_Num_L_DOWN][1]; i++)
-            {
-                L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
-                L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
-            }
-            LeftRing.Ring_Front_Flag = true;
-        }
+        // else if (Break_Num_L_DOWN && LeftRing.Stright_Line && Salient_Point) //  && (!Bin_Image[Image_H - 10][4]) && (!Bin_Image[Image_H - 10][Image_W - 4])
+        // {
+        //     //计算斜率,左边斜率
+        //     Get_K_b(Salient_Point, L_Border[Salient_Point], Points_L[Break_Num_L_DOWN][1], Points_L[Break_Num_L_DOWN][0], &slope_l_rate, &intercept_l);
+        //     for (i = Salient_Point; i < Points_L[Break_Num_L_DOWN][1]; i++)
+        //     {
+        //         L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+        //         L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
+        //     }
+        //     LeftRing.Ring_Front_Flag = true;
+        // }
         // 没有圆环突出点, 右直线， 有左下角点
-        else if (Break_Num_L_DOWN && LeftRing.Stright_Line && !Salient_Point)
+        if (Break_Num_L_DOWN && LeftRing.Stright_Line)
         {
             Get_K_b(Points_L[Break_Num_L_DOWN][1], Points_L[Break_Num_L_DOWN][0], 1, (Image_W / 2 - 10), &slope_l_rate, &intercept_l);
             for (i = Points_L[Break_Num_L_DOWN][1]; i >= 1; --i)
@@ -1253,7 +1255,7 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
         // printf("%d,%d,%d,%d\r\n",Bin_Image[Image_H - 5][4],Bin_Image[Image_H - 10][8],Bin_Image[Image_H / 2][Image_W - 2],Bin_Image[Image_H-5][Image_W - 2]);
         // 左下空白 且检测到环左下角点, 右直线, 左圆环突出点, 右边中心为黑色, 右边下方为黑色
         if ((Bin_Image[Image_H - 5][4]) && (Bin_Image[Image_H - 10][8]) && LeftRing.Ring_Front_Flag &&
-            (!Bin_Image[Image_H / 2][Image_W - 2]) && (!Bin_Image[Image_H-5][Image_W - 2]))//图像左下方为一片白 (Bin_Image[Image_H - 5][4]) && (Bin_Image[Image_H - 10][8]) &&
+            (!Bin_Image[Image_H / 2][Image_W - 2]) && (!Bin_Image[Image_H-5][Image_W - 2]) && Salient_Point)//图像左下方为一片白 (Bin_Image[Image_H - 5][4]) && (Bin_Image[Image_H - 10][8]) &&
         {
             LeftRing.Ring_Front_Flag = false;
             LeftRing.Ring = true;
@@ -1263,7 +1265,9 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
         // waitKey(200);
         break;
     case Enter_Ring_First:
-        // printf("入环中\r\n");
+#ifdef Left_Ring_debug
+        printf("入环中\r\n");
+#endif
         LeftRing.Stright_Line = Straight_Line_Judge(R_Border, Total_Num_R - 10, RightLine);//判断右边是否为长直线
         Salient_Point = findCircleOutPoint(L_Border);//Find_Salient_Point(L_Border, Image_H / 2 - 10);
         for (i = 1; i < Total_Num_L; i++)
@@ -1299,7 +1303,15 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
         }
         break;
     case Leave_Ring_First:
-        // printf("第一次离开环\r\n");
+#ifdef Left_Ring_debug
+        printf("第一次离开环\r\n");
+#endif
+        Curanglg = Gyro_YawAngle_Get();
+        if(Lastanglg == 0)
+        {
+            Lastanglg = Curanglg;
+        }
+        Angle_Offest += Curanglg - Lastanglg;
         // cout << "第一次离开环" << endl;
         for (i = 1; i < Total_Num_L; i++)
         {
@@ -1328,15 +1340,20 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
             }
             LeftRing.Leave_Ring_First_Flag = true;
         }
+        Lastanglg = Curanglg;
         // 左下一片空白, 找不到左上角点
-        if (Bin_Image[Image_H - 10][20] && Bin_Image[Image_H - 10][25] && !Break_Num_L_UP)
+        if (Bin_Image[Image_H - 10][20] && Bin_Image[Image_H - 10][25] && !Break_Num_L_UP && fabs(Angle_Offest) >= 50)
         {
             LeftRing.Leave_Ring_First_Flag = true;
             LeftRing.Ring_State = In_Ring;
+            Lastanglg = 0;
+            Angle_Offest = 0;
         }
         break;
     case In_Ring:
-        // printf("环内\r\n");
+#ifdef Left_Ring_debug
+        printf("环内\r\n");
+#endif
         Curanglg = Gyro_YawAngle_Get();
         if(Lastanglg == 0)
         {
@@ -1380,7 +1397,9 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
         
         break;
     case Ready_Out_Ring:
-        // printf("准备出环\r\n");
+#ifdef Left_Ring_debug
+        printf("准备出环\r\n");
+#endif
         Curanglg = Gyro_YawAngle_Get();
         if(Lastanglg == 0)
         {
@@ -1406,7 +1425,9 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
         
         break;
     case Leave_Ring:
-        // printf("出环\r\n");
+#ifdef Left_Ring_debug
+        printf("出环\r\n");
+#endif
         Break_Num_L_UP = 0;
         //cout << "出环中" << ;
         for (i = 1; i < Total_Num_L; i++)
@@ -1494,10 +1515,10 @@ void Image_Process(void)
         }
         // 同上
         //Cross_Fill(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);//十字补线
-        // if (!Image_Flag.Cross_Fill)
-        // {
-        //     Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
-        // }
+        if (!Image_Flag.Cross_Fill)
+        {
+            Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
+        }
     }
     
     for (int i = Hightest; i < Image_H-1; i++)
