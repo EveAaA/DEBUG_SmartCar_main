@@ -17,8 +17,8 @@
 #include "Beep.h"
 /* Define\Declare ------------------------------------------------------------*/
 // #define Left_Ring_debug //是否开启左圆环调试
-Ring_Handle LeftRing = { false, false, true };
-
+Ring_Handle LeftRing = { false, false, false };
+Ring_Handle RightRing = { false, false, false };
 typedef struct
 {
     bool firstFindCircle;
@@ -1008,22 +1008,22 @@ bool Straight_Line_Judge(uint8* Border, uint16 Total_Num, lineTypeDef lineMode)
         return true;
     }
     /*
-    * 
-                       \               
+    *
+                       \
                         \
                          \
                           \
                            \
      */
 
-    // 遍历数组，检查是否单调递减
-    for (int i = Image_H - 2; i > Hightest; i-= 1) {
+     // 遍历数组，检查是否单调递减
+    for (int i = Image_H - 2; i > Hightest; i -= 1) {
         // 如果当前元素小于或等于前一个元素，则不是单调递减的
         // uint8 before = Limit_a_b(i - 1, Hightest, Image_H - 2);
         // uint8 next = Limit_a_b(i - 1, Hightest, Image_H - 2);
        // printf("当前: % d 后一个点 : % d \n", Border[i], Border[i - 1]);
         if (lineMode == RightLine)
-        {             
+        {
             if (Border[i] - Border[i - 1] >= 0 && Border[i] - Border[i - 1] < 2)
             {
                 StraightPoint += 1;
@@ -1045,33 +1045,36 @@ bool Straight_Line_Judge(uint8* Border, uint16 Total_Num, lineTypeDef lineMode)
             {
                 break;
             }
-            //imshow("原图像", frame);
-            //waitKey(2);
+
         }
         if (lineMode == LeftLine)
         {
-            // if (Border[i - 1] - Border[i] >= 0 && Border[i - 1] - Border[i] < 2)
-            // {
-            //     //circle(frame, Point(Border[i], i), 0, Scalar(255, 0, 0), 1);
-            // }
-            // else
-            // {
-            //     //circle(frame, Point(Border[i], i), 0, Scalar(0, 0, 255), 1);
-            //     //return false;
-            // }
+            if (Border[i] - Border[i - 1] <= 0 && Border[i] - Border[i - 1] > -2)
+            {
+                StraightPoint += 1;
+                //circle(resizeFrame, Point(Border[i], i), 0, Scalar(255, 0, 0), 1);
+            }
+            // 断裂点直接清零
+            else if (abs(Border[i] - Border[i - 1]) > 5)
+            {
+                //circle(resizeFrame, Point(Border[i], i), 0, Scalar(0, 0, 255), 1);
+                StraightPoint = 0;
+                //break;
+            }
+            else
+            {
+                //circle(resizeFrame, Point(Border[i], i), 0, Scalar(0, 0, 255), 1);
+                //return false;
+            }
+            if (StraightPoint > 70)
+            {
+                break;
+            }
+    /*        imshow("原图像", resizeFrame);
+            waitKey(2);*/
         }
-        //if (Border[i] < Border[i - 1]) {
-        //    //printf("b1[%d] b2[%d]\r\n",i,i-1);
-        //    //return false;
-        //}
-
-        //if (Border[i] - Border[i - 1] >= 2)
-        //{
-        //    //return false;
-        //}
-
     }
-    // printf("Line: %d \n", StraightPoint);
+    //printf("Line: %d \n", StraightPoint);
     if (StraightPoint >= 68)
     {
         //printf("Line\n");
@@ -1082,12 +1085,6 @@ bool Straight_Line_Judge(uint8* Border, uint16 Total_Num, lineTypeDef lineMode)
         //printf("Not Line");
         return false;
     }
-    //if (Total_Num >= 120)
-    //{
-    //    return false;
-    //}
-    // 如果没有发现违反以上的情况，返回true
-    //return true;
 }
 
 /**@brief    寻找圆环凸点
@@ -1470,6 +1467,349 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
     }
 }
 
+uint16_t findCircleOutPoint_R(uint8* R_Border)
+{
+    // 寻找圆环右顶点
+    for (uint8 i = 8; i < Image_H - 8; i++)
+    {
+        uint8 before = Limit_a_b(i - 5, 0, Image_H - 2);
+        uint8 next = Limit_a_b(i + 5, 0, Image_H - 2);
+        //circle(resizeFrame, Point(R_Border[i], i), 0, Scalar(255, 255, 0), 1);
+        //circle(resizeFrame, Point(R_Border[before], before), 0, Scalar(0, 255, 0), 1);
+        //circle(resizeFrame, Point(R_Border[next], next), 0, Scalar(0, 0, 255), 1);
+        //printf("now - before: %d now - next: %d \n", R_Border[i] - R_Border[before], R_Border[i] - R_Border[next]);
+        if ((R_Border[i] - R_Border[before] < 0) && (R_Border[i] - R_Border[next] < 0)
+            && (R_Border[i] - R_Border[before] <= -1) && (R_Border[i] - R_Border[next] <= -1)
+            && (R_Border[i] - R_Border[before] > -10) && (R_Border[i] - R_Border[next] > -10)
+            && R_Border[i] < Border_Max - 5 && R_Border[before] < Border_Max - 5 && R_Border[next] < Border_Max - 5 && i < Image_H - 20)
+        {
+            /*          circlePoint[0] = i;
+                      circlePoint[1] = L_Border[i];*/
+                      //circleFlag = true;
+                      //circle(resizeFrame, Point(R_Border[i], i), 5, Scalar(255, 0, 0), 1);
+            return i;
+        }
+        //imshow("原图像", resizeFrame);
+        //waitKey(50);
+    }
+    return NULL;
+}
+
+void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uint16 Total_Num_L, uint16 Total_Num_R,
+    uint16* Dir_L, uint16* Dir_R, uint16(*Points_L)[2], uint16(*Points_R)[2])
+{
+    int i;
+    static uint8 WhitePixel_Time = 0;
+    uint8 hashKey[Image_H] = { 0 };
+    uint8 offset = 0;
+    uint8 StraightNum = 0;
+    uint8 circlePoint[2];
+    uint16 Break_Num_L_UP = 0;//拐点
+    uint16 Break_Num_R_UP = 0;//拐点
+    uint16 Break_Num_R_DOWN = 0;
+    uint16 Salient_Point = 0;//圆环凸点
+    uint16 start, end;
+    float slope_l_rate = 0, intercept_l = 0;
+    switch (RightRing.Ring_State)
+    {
+    case Ring_Front:
+        //printf("环外\r\n");
+        RightRing.Stright_Line = Straight_Line_Judge(L_Border, Total_Num_L - 10, LeftLine);
+        // Salient_Point = findCircleOutPoint_R(R_Border);
+        for (uint8_t i = Image_H - 2; i > 10; --i)
+        {
+            if (R_Border[i] - R_Border[i - 1] < -10)
+            {
+                hashKey[offset] = i;
+                offset++;
+                break;
+            }
+        }
+        if (offset > 0)
+        {
+            for (uint8_t i = 0;i < offset; i++)
+            {
+                uint8_t edgeIndex = hashMapIndexL[hashKey[i]];
+                uint16_t start = Limit_a_b((edgeIndex - 2), 0, Data_Stastics_R);
+                uint16_t end = Limit_a_b((edgeIndex + 7), 0, Data_Stastics_R);
+                for (uint16_t j = start; j < end; j++)
+                {
+                    uint16_t before = Limit_a_b(j - 5, start, end);
+                    uint16_t next = Limit_a_b(j + 5, start, end);
+                    //circle(resizeFrame, Point(Points_R[j][0], Points_R[j][1]), 0, Scalar(255, 255, 0), 1);
+                    //circle(resizeFrame, Point(Points_R[before][0], Points_R[before][1]), 0, Scalar(0, 255, 0), 1);
+                    //circle(resizeFrame, Point(Points_R[next][0], Points_R[next][1]), 0, Scalar(0, 0, 255), 1);
+                    //printf("now - before: %d now - next: %d \n", R_Border[i] - R_Border[before], R_Border[i] - R_Border[next]);
+                    if (Points_R[j][1] < Points_R[before][1] && Points_R[j][1] < Points_R[next][1]
+                        && Points_R[j][0] > Points_R[before][0] && Points_R[j][0] < Points_R[next][0] && Points_R[j][0] < Border_Max - 5)
+                    {
+                        // circle(resizeFrame, Point(Points_R[j][0], Points_R[j][1]), 5, Scalar(0, 255, 0), 1);
+                        Break_Num_R_DOWN = j;
+                        break;
+                    }
+                    //imshow("原图像", resizeFrame);
+                    //waitKey(50);
+                }
+            }
+            if (Break_Num_R_DOWN && RightRing.Stright_Line)
+            {
+                Get_K_b(Points_R[Break_Num_R_DOWN][1], Points_R[Break_Num_R_DOWN][0], 1, (Image_W / 2 - 10), &slope_l_rate, &intercept_l);
+                for (i = Points_R[Break_Num_R_DOWN][1]; i >= 1; --i)
+                {
+                    R_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+                }
+                RightRing.Ring_Front_Flag = true;
+            }
+        }
+        if ((Bin_Image[Image_H - 5][Image_W - 4]) && (Bin_Image[Image_H - 10][Image_W - 8])
+            && RightRing.Ring_Front_Flag && (!Bin_Image[Image_H / 2][4]) && (!Bin_Image[Image_H - 5][5]))
+        {
+            RightRing.Ring_Front_Flag = false;
+            RightRing.Ring = true;
+            RightRing.Ring_State = Enter_Ring_First;
+        }
+        break;
+    case Enter_Ring_First:
+        //printf("初入环\r\n");
+        RightRing.Stright_Line = Straight_Line_Judge(L_Border, Total_Num_L - 10, LeftLine);
+        for (i = 1; i < Total_Num_R; i++)
+        {
+            uint16 before = Limit_a_b(i - 5, 0, Total_Num_R);
+            uint16 next = Limit_a_b(i + 5, 0, Total_Num_R);
+            if (before == Total_Num_R || next == Total_Num_R)
+            {
+                break;
+            }
+            if (Points_R[i][1] > Points_R[before][1] && Points_R[i][1] > Points_R[next][1]
+                && Points_R[i][0] < Points_R[before][0] && Points_R[i][0] > Points_R[next][0] && Points_R[i][0] < Border_Max - 5)
+            {
+                Break_Num_R_UP = i;//传递y坐标
+                //circle(resizeFrame, Point(Points_R[i][0], Points_R[i][1]), 3, Scalar(0, 255, 255));
+                break;
+            }
+        }
+        if (!Break_Num_R_UP)
+        {
+            Salient_Point = findCircleOutPoint_R(R_Border);
+        }
+        if (Salient_Point && RightRing.Stright_Line) // 判断是否有圆环突出点并且左侧直线
+        {
+            // line(resizeFrame, Point(R_Border[Salient_Point], Salient_Point), Point(Image_W, Image_H - 1), Scalar(255, 0, 0));
+            Get_K_b(Salient_Point, R_Border[Salient_Point], Image_H - 1, Image_W, &slope_l_rate, &intercept_l);
+            for (i = Image_H - 1; i > 1; i--)
+            {
+                R_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+                R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
+            }
+            RightRing.Enter_Ring_First_Flag = true;
+        }
+        if (RightRing.Enter_Ring_First_Flag && Salient_Point == NULL && Break_Num_R_UP)
+        {
+            RightRing.Enter_Ring_First_Flag = false;
+            RightRing.Ring_State = Leave_Ring_First;
+        }
+        break;
+    case Leave_Ring_First:
+        // cout << "第一次出环" << endl;
+
+        /*
+        
+        
+        加入陀螺仪辅助判断
+        
+        
+        */
+        
+        for (i = Total_Num_R - 5; i > 1; --i)
+        {
+            uint16 before = Limit_a_b(i - 7, 0, Total_Num_R);
+            uint16 next = Limit_a_b(i + 7, 0, Total_Num_R);
+            if (before == 1 || next == 1)
+            {
+                break;
+            }
+            //circle(resizeFrame, Point(Points_R[i][0], Points_R[i][1]), 0, Scalar(255, 255, 0), 1);
+            //circle(resizeFrame, Point(Points_R[before][0], Points_R[before][1]), 0, Scalar(0, 255, 0), 1);
+            //circle(resizeFrame, Point(Points_R[next][0], Points_R[next][1]), 0, Scalar(0, 0, 255), 1);
+            //printf("前点: %d 当前: %d, 后点: %d \n", Points_R[before][1], Points_R[i][1], Points_R[next][1]);
+            if (Points_R[i][1] > Points_R[before][1] && Points_R[i][1] > Points_R[next][1]
+                && Points_R[i][0] < Points_R[before][0] && Points_R[i][0] > Points_R[next][0] && Points_R[i][0] < Border_Max - 5)
+            {
+                //circle(resizeFrame, Point(Points_R[i][0], Points_R[i][1]), 3, Scalar(0, 255, 255));
+                Break_Num_R_UP = i;//传递y坐标
+                break;
+            }
+            //imshow("原图像", resizeFrame);
+            //waitKey(50);
+        }
+
+        if (Break_Num_R_UP) // && (Bin_Image[50][4]) && (Bin_Image[50][8])
+        {
+            //Get_K_b(2, Image_H - 10, Image_W - 2, Image_H - 5, &slope_l_rate, &intercept_l);
+            for (i = Image_H - 1; i > 1; i--)
+            {
+                L_Border[i] = Border_Max;
+                R_Border[i] = Border_Max;//y = kx+b
+                R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
+            }
+            RightRing.Leave_Ring_First_Flag = true;
+        }
+        if (Bin_Image[Image_H - 10][Image_W - 8] && Bin_Image[Image_H - 10][Image_W - 5] && !Break_Num_R_UP )//&& fabs(Angle_Offest) >= 50)
+        {
+            RightRing.Leave_Ring_First_Flag = true;
+            RightRing.Ring_State = In_Ring;
+            // Lastanglg = 0;
+            // Angle_Offest = 0;
+        }
+        break;
+    case In_Ring:
+        // printf("环内\r\n");
+#ifdef Left_Ring_debug
+        printf("环内\r\n");
+#endif
+        /*
+        
+            
+                陀螺仪辅助出环判断
+        
+        */
+        //Curanglg = Gyro_YawAngle_Get();
+        //if (Lastanglg == 0)
+        //{
+        //    Lastanglg = Curanglg;
+        //}
+        //Angle_Offest += Curanglg - Lastanglg;
+        // printf("%f,%f,%f\r\n",Curanglg,Lastanglg,Angle_Offest);
+        for (i = 1; i < Total_Num_L; i++)
+        {
+            uint16 before = Limit_a_b(i - 8, 0, Total_Num_L);
+            uint16 next = Limit_a_b(i + 8, 0, Total_Num_L);
+            if (before == Total_Num_L || next == Total_Num_L)
+            {
+                break;
+            }
+            //circle(resizeFrame, Point(Points_L[i][0], Points_L[i][1]), 0, Scalar(255, 255, 0), 1);
+            //circle(resizeFrame, Point(Points_L[before][0], Points_L[before][1]), 0, Scalar(0, 255, 0), 1);
+            //circle(resizeFrame, Point(Points_L[next][0], Points_L[next][1]), 0, Scalar(0, 0, 255), 1);
+            //printf("前点: %d 当前: %d, 后点: %d \n", Points_L[before][1], Points_L[i][1], Points_L[next][1]);
+            if (Points_L[i][1] < Points_L[before][1] && Points_L[i][1] > Points_L[next][1]
+                && Points_L[i][0] > Points_L[before][0] && Points_L[i][0] > Points_L[next][0] && Points_L[i][0] > Border_Min + 5)
+            {
+                //circle(resizeFrame, Point(Points_L[i][0], Points_L[i][1]), 3, Scalar(0, 255, 255));
+
+                Break_Num_L_UP = i;//传递y坐标
+                break;
+            }
+            //imshow("原图像", resizeFrame);
+            //waitKey(10);
+        }
+        // 狠补线
+        if (Break_Num_L_UP) // && (Bin_Image[50][4]) && (Bin_Image[50][8])
+        {
+            // Get_K_b(Points_R[Break_Num_R_UP][0], Points_R[Break_Num_R_UP][1], 2, 2, &slope_l_rate, &intercept_l);
+            for (i = Image_H - 1; i > 1; i--)
+            {
+                L_Border[i] = Border_Max;
+                R_Border[i] = Border_Max;//((i)-intercept_l) / slope_l_rate;//y = kx+b
+                R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
+            }
+        }
+       // Lastanglg = Curanglg;
+        // 左右两侧都为白色, 准备要出环
+        if (Bin_Image[Image_H - 4][4] == White_Pixel && Bin_Image[Image_H - 4][Image_W - 4] == White_Pixel
+            && Bin_Image[Image_H / 2 + 10][4] == White_Pixel && Bin_Image[Image_H / 2 + 10][Image_W - 4] == White_Pixel) //&& fabs(Angle_Offest) >= 50)
+        {
+            RightRing.Ring_State = Ready_Out_Ring;
+            // Angle_Offest = 0;
+            //Lastanglg = 0;
+        }
+
+        break;
+    case Ready_Out_Ring:
+        // printf("准备出环\r\n");
+#ifdef Left_Ring_debug
+        printf("准备出环\r\n");
+#endif
+        //Curanglg = Gyro_YawAngle_Get();
+        //if (Lastanglg == 0)
+        //{
+        //    Lastanglg = Curanglg;
+        //}
+        //Angle_Offest += Curanglg - Lastanglg;
+        // printf("%f,%f,%f\r\n",Curanglg,Lastanglg,Angle_Offest);
+        Get_K_b(2, Image_H, Image_W, Image_H - 20, &slope_l_rate, &intercept_l);
+        for (i = Image_H - 1; i > 1; i--)
+        {
+            R_Border[i] = Border_Max;
+            L_Border[i] = ((i)-intercept_l) / slope_l_rate;//y = kx+b
+            L_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
+        }
+        //Lastanglg = Curanglg;
+        // 右侧生长线长于左侧生长线则差不多直线, 准备出环
+        if (Data_Stastics_R < Data_Stastics_L)//&& fabs(Angle_Offest) > 35)
+        {
+            RightRing.Ring_State = Leave_Ring;
+            //Angle_Offest = 0;
+            //Lastanglg = 0;
+        }
+
+        break;
+    case Leave_Ring:
+        // printf("出环\r\n");
+#ifdef Left_Ring_debug
+        printf("出环\r\n");
+#endif
+        Break_Num_L_UP = 0;
+        //cout << "出环中" << ;
+        for (i = Total_Num_R - 5; i > 1; --i)
+        {
+            uint16 before = Limit_a_b(i - 7, 0, Total_Num_R);
+            uint16 next = Limit_a_b(i + 7, 0, Total_Num_R);
+            if (before == 1 || next == 1)
+            {
+                break;
+            }
+            //circle(resizeFrame, Point(Points_R[i][0], Points_R[i][1]), 0, Scalar(255, 255, 0), 1);
+            //circle(resizeFrame, Point(Points_R[before][0], Points_R[before][1]), 0, Scalar(0, 255, 0), 1);
+            //circle(resizeFrame, Point(Points_R[next][0], Points_R[next][1]), 0, Scalar(0, 0, 255), 1);
+            //printf("前点: %d 当前: %d, 后点: %d \n", Points_R[before][1], Points_R[i][1], Points_R[next][1]);
+            if (Points_R[i][1] > Points_R[before][1] && Points_R[i][1] > Points_R[next][1]
+                && Points_R[i][0] < Points_R[before][0] && Points_R[i][0] > Points_R[next][0] && Points_R[i][0] < Border_Max - 5)
+            {
+                // circle(resizeFrame, Point(Points_R[i][0], Points_R[i][1]), 3, Scalar(0, 255, 255));
+                Break_Num_R_UP = i;//传递y坐标
+                break;
+            }
+            //imshow("原图像", resizeFrame);
+            //waitKey(50);
+        }
+
+        if (RightRing.Leave_Ring_First_Flag && Break_Num_R_UP)
+        {
+            Get_K_b(Points_R[Break_Num_R_UP][1], Points_R[Break_Num_R_UP][0], Image_H - 1, Image_W - 2, &slope_l_rate, &intercept_l);
+            for (i = Points_R[Break_Num_R_UP][1]; i <= Image_H - 1; ++i)
+            {
+                R_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+                R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
+            }
+        }
+        // 检测到已经看见过环的标志位, 右下角为黑色, 并且看不到上角点, 代表已经出环
+        else if (RightRing.Leave_Ring_First_Flag && Bin_Image[Image_H - 4][4] == Black_Pixel && Bin_Image[Image_H - 2][Image_W - 4] == Black_Pixel
+            && !Break_Num_R_UP)
+        {
+            RightRing.Ring_Front_Flag = false; // 出环
+            RightRing.Enter_Ring_First_Flag = false;
+            RightRing.Leave_Ring_First_Flag = false;
+            RightRing.Stright_Line = false;
+            RightRing.Ring = false;
+            RightRing.Ring_State = Ring_Front;
+        }
+        // waitKey(200);
+        break;
+    } 
+
+}
+
 void Test()
 {
     Get_Image(mt9v03x_image);//获取一副图像
@@ -1509,15 +1849,19 @@ void Image_Process(void)
         Get_Left_Y(Data_Stastics_L);
         Get_Right_Y(Data_Stastics_R);
         // 优先判断是否是十字如果是十字则不对圆环判断
-        if (!LeftRing.Ring)
+        if (!LeftRing.Ring && !RightRing.Ring)
         {
             Cross_Fill(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);//十字补线
         }
         // 同上
         //Cross_Fill(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);//十字补线
-        if (!Image_Flag.Cross_Fill)
+        if (!Image_Flag.Cross_Fill && !RightRing.Ring)
         {
             Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
+        }
+        if (!Image_Flag.Cross_Fill && !LeftRing.Ring)
+        {
+            Right_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
         }
     }
     
