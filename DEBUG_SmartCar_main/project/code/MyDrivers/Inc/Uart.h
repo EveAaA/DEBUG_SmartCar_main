@@ -10,6 +10,9 @@
 #define UART_FINE_TUNING (UART_2)
 #define UART_RECOGNIZE_PLACE (UART_5)
 #define START_FINETUNING (0x05) // 开始获取微调信息的数据
+#define UART_CLASSIFY_PIC (0x06) // 开始识别分类的图像
+#define UART_CLASSIFY_SMALLPLACE (0x07) // 开始识别小类放置区域
+#define UART_CLASSIFY_BIGPLACE  (0x08)  // 开始识别大类放置区域
 
 typedef struct Uart
 {
@@ -21,6 +24,34 @@ typedef struct Uart
     uint32 fifo_data_count; // fifo 数据个数
 	fifo_struct uart_data_fifo;
 }UART;
+
+typedef enum Place
+{
+    nil = -2,
+    A = 0,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H,
+    I,
+    J,
+    K,
+    L,
+    M,
+    N,
+    O,
+}Place_t;
+
+typedef enum MainType
+{
+    None = -1,
+    WEAPONS,        // 武器
+    MATERIAL,       // 物资
+    TRANSPORTATION  // 交通工具
+}MainType_t;
 
 typedef enum Dir{
     LEFT = 0,
@@ -45,6 +76,20 @@ typedef struct FINETUNING
     float dz;
 }FINETUNINGtypeDef;
 
+// 放置位置结构体
+typedef struct PLACE
+{
+    bool IS_PLACE;
+    Place_t place;
+}PLACEtypeDef;
+
+typedef struct CLASSIFY
+{
+    bool IS_CLASSIFY;
+    Place_t place;
+    MainType_t type;
+}CLASSIFYtypeDef;
+
 typedef struct UnpackData
 {
     bool FINDBORDER_DATA_FLAG;
@@ -53,15 +98,30 @@ typedef struct UnpackData
     // 第三个摄像头启用的时候再写
 }UnpackDataTypeDef;
 
+
+typedef struct wareHouse
+{
+    PLACEtypeDef  SMALL_PLACE;
+    PLACEtypeDef  BIG_PLACE;
+}wareHouse_t;
+
+
 /*
     外部调用串口结构体
 */
 extern UnpackDataTypeDef UnpackFlag;
 extern FINETUNINGtypeDef FINETUNING_DATA;
 extern FINDBORDERtypeDef FINDBORDER_DATA;
+extern CLASSIFYtypeDef   CLASSIFY_DATA;
+extern PLACEtypeDef      SMALL_PLACE_DATA;
+extern PLACEtypeDef      BIG_PLACE_DATA;
 extern UART _UART_FINDBORDER;
 extern UART _UART_FINE_TUNING;
 extern UART _UART_RECOGNIZE_PLACE;
+extern const Place_t PLACE_TABLE[16];
+extern const MainType_t  MAIN_TABLE[5];
+extern const char* HUGE_PLACE_STR[3];
+extern const char* PLACE_TABLE_STR[16];
 
 void UART_Init(void);
 void UART_init(UART *uart, IRQn_Type UART_PRIORITY, uart_index_enum UART_INDEX);

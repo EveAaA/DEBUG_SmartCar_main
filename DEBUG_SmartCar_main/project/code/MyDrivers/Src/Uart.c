@@ -19,14 +19,21 @@
 UART _UART_FINDBORDER;
 UART _UART_FINE_TUNING;
 UART _UART_RECOGNIZE_PLACE;
-FINETUNINGtypeDef FINETUNING_DATA = {false, false, 0.0f, 0.0f, 0.0f};
-FINDBORDERtypeDef FINDBORDER_DATA = {false, 0.0f, STRAIGHT};  
-UnpackDataTypeDef UnpackFlag = {false, false, false}; // 判断帧头帧尾是否到达
+const MainType_t  MAIN_TABLE[5]    = {None, WEAPONS, MATERIAL, TRANSPORTATION};
+const char*     PLACE_TABLE_STR[16] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O"};
+const char*     HUGE_PLACE_STR[3]  =  {"1", "2", "3"};
+const Place_t     PLACE_TABLE[16]  = {nil, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O};
+CLASSIFYtypeDef   CLASSIFY_DATA    = {false, nil, None};
+PLACEtypeDef      SMALL_PLACE_DATA = {false, nil};
+PLACEtypeDef      BIG_PLACE_DATA   = {false, nil};
+FINETUNINGtypeDef FINETUNING_DATA  = {false, false, 0.0f, 0.0f, 0.0f};
+FINDBORDERtypeDef FINDBORDER_DATA  = {false, 0.0f, STRAIGHT};  
+UnpackDataTypeDef UnpackFlag       = {false, false, false}; // 判断帧头帧尾是否到达
 
 /**@brief    初始化串口(外部调用)
 -- @param    None
 -- @return   None
--- @author   戴骐阳
+-- @auther   戴骐阳
 -- @date     2023/12/23
 **/
 void UART_Init(void)
@@ -39,7 +46,7 @@ void UART_Init(void)
 /**@brief    初始化串口(内部调用)
 -- @param    传入结构体地址, 传入中断组
 -- @return   None
--- @author   戴骐阳
+-- @auther   戴骐阳
 -- @date     2023/12/23
 **/
 void UART_init(UART *uart, IRQn_Type UART_PRIORITY, uart_index_enum UART_INDEX)
@@ -73,7 +80,7 @@ void UART_init(UART *uart, IRQn_Type UART_PRIORITY, uart_index_enum UART_INDEX)
 /**@brief    读取缓存当中的数据
 -- @param    传入想要获取数据的结构体地址
 -- @return   返回double类型数据
--- @author   戴骐阳
+-- @auther   戴骐阳
 -- @date     2023/12/23
 **/
 double UART_ReadBuffer(UART *uart)
@@ -194,7 +201,10 @@ void UART_ResetUnpackFlag(UnpackDataTypeDef *UnpackFlag)
 
 /**
  * @brief: 串口发送一个字节 
- * @param: 串口索引, 发送的字节  
+ * @param: 串口索引, 发送的字节
+ * @param: #define UART_CLASSIFY_PIC (0x06) // 开始识别分类的图像
+   @param: #define UART_CLASSIFY_SMALLPLACE (0x07) // 开始识别小类放置区域
+   @param: #define UART_CLASSIFY_BIGPLACE  (0x08)  // 开始识别大类放置区域
  * @return： None
  */
 void UART_SendByte(UART* uart, uint8_t data)
