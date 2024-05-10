@@ -144,13 +144,12 @@ void Left_BoardFsm()
             {
                 Servo_Flag.Put_Up = false;
                 Servo_Flag.Put_Down = false;
-                Servo_Flag.Put_Depot = false;
                 wait_time = 0;
                 MyFSM.LeftBoard_State = Return_Line;
             } 
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
-            Car.Speed_Z = 0; 
+            Car.Speed_Z = Angle_Control(Staic_Angle); 
         break;
         case Return_Line:
             #ifdef debug_switch
@@ -281,13 +280,12 @@ void Right_BoardFsm()
             {
                 Servo_Flag.Put_Up = false;
                 Servo_Flag.Put_Down = false;
-                Servo_Flag.Put_Depot = false;
                 wait_time = 0;
                 MyFSM.RightBoard_State = Return_Line;//返回赛道
             } 
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
-            Car.Speed_Z = 0; 
+            Car.Speed_Z = Angle_Control(Staic_Angle);
         break;
         case Return_Line://返回赛道
             #ifdef debug_switch
@@ -341,7 +339,6 @@ void FSM_main()
                 if(FINDBORDER_DATA.dir == LEFT)
                 {
                     MyFSM.CurState = Line_Left_Board;//左边卡片
-                    //Staic_Angle = Gyro_YawAngle_Get();
                 }
                 else if(FINDBORDER_DATA.dir == RIGHT)
                 {

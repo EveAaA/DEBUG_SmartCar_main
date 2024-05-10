@@ -68,8 +68,8 @@ void All_PID_Init()
     Incremental_PID_Init(&RMotor_B_Speed,0.5f,0.35f,0.5f,40,-40);
     PIDInit(&Angle_PID,0.44f,0,2,1.5f,-1.5f);
     PIDInit(&Image_PID,3.8f,0,0.5f,2.5f,-2.5f);
-    PIDInit(&ImageX_PID,3.8f,0,0.5f,2.5f,-2.5f);
-    PIDInit(&ImageF_PID,3.8f,0,0.5f,2.5f,-2.5f);
+    PIDInit(&ImageX_PID,1.8f,0,0.5f,2.0f,-2.0f);
+    PIDInit(&ImageF_PID,5.6f,0,0.0f,5.0f,-5.0f);
     PIDInit(&BorderPlace_PID,2.1f,0,0,1.5f,-1.5f);
     PIDInit(&Foward_PID,2.1f,0,0,1.5f,-1.5f);
     PIDInit(&Turn_PID,2.55f,0,0.6f,5,-5);   
@@ -185,10 +185,10 @@ void Car_run()
 **/
 void Car_run_X()
 {
-    float Image_ErroX_ = GetPIDValue(&ImageX_PID,(70 - Image_Erro_Y)*0.03f);
-    float Image_ErroF_ = GetPIDValue(&ImageF_PID,(46 - Hightest)*0.03f);
-    Car.Speed_X = 4;
-    Car.Speed_Y = -Image_ErroF_;
+    float Image_ErroX_ = GetPIDValue(&ImageX_PID,(0 - Image_Erro_Y));
+    float Image_ErroF_ = GetPIDValue(&ImageF_PID,100*((50 - Hightest)/(50 + Hightest)));
+    Car.Speed_X = 2.5;
+    Car.Speed_Y = Image_ErroF_;
     Car.Speed_Z = Image_ErroX_;
 }
 

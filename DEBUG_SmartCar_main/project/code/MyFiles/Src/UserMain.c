@@ -107,36 +107,22 @@ void User_Loop()
     // test_2 = Gyro_YawAngle_Get();
     // Bluetooth_Send_Float(Num_Address);
     Menu_Display();
-    // if(Receivedata.Start_Flag == 1)
-    // {
-    //     if(Servo_Flag.Put_Up == 0)//卡片拿起来
-    //     {
-    //         Pick_Card();
-    //     }
-    //     Servo_Flag.Put_Depot = false;   
-    // }
-    // else if(Receivedata.Start_Flag == 0)
-    // {
-    //     if(Servo_Flag.Put_Depot == false)//放进仓库
-    //     {
-    //         Put_Depot();
-    //     }
-    //     Servo_Flag.Put_Down = false;
-    //     Servo_Flag.Put_Up = false;
-    //     Servo_Flag.Put_Out = false;
-    // }
-    // else if(Receivedata.Start_Flag == 3)
-    // {
-    //     if(Servo_Flag.Put_Out == false)//卡片拿出来
-    //     {
-    //         Take_Card_Out();
-    //     }
-    //     Servo_Flag.Put_Depot = false; 
-    // }
-    // else if(Receivedata.Start_Flag == 4)
-    // {
-    //     Set_Servo_Angle(Stretch_Servo,Stretch_Servo.Init_Angle);
-    //     Set_Servo_Angle(Raise_Servo,Raise_Servo.Init_Angle);
-    //     Servo_Flag.Put_Out = false;
-    // }
+    if(Receivedata.Start_Flag == 1)
+    {
+        Servo_Flag.Put_Depot = false;
+        if(Servo_Flag.Pick_End == false)
+        {
+            Pick_Card();
+        }
+    }
+    else if(Receivedata.Start_Flag == 0)
+    {
+        Servo_Flag.Put_Up = false;
+        Servo_Flag.Put_Down = false;
+        Servo_Flag.Pick_End = false;
+        if(Servo_Flag.Put_Depot == false)
+        {
+            Put_Depot();
+        }
+    }
 }

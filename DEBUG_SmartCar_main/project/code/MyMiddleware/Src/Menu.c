@@ -231,7 +231,7 @@ static void Page1_Mode()
     {
         Menu.Flash_Set = 0;
         Turn_PID.Kp = flash_union_buffer[0].float_type;
-				Turn_PID.Kd = flash_union_buffer[1].float_type;
+		Turn_PID.Kd = flash_union_buffer[1].float_type;
         flash_write_page_from_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
     }
 

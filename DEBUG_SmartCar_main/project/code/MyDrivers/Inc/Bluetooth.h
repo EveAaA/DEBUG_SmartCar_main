@@ -37,6 +37,7 @@ typedef struct
     float I_Data;
     float D_Data;
     uint8 Start_Flag;
+    uint8 Servo_Rotary;
 }ReceiveData_Handle;
 
 extern HashNode hashTable[1024];

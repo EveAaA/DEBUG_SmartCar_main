@@ -65,7 +65,7 @@ typedef enum {
 typedef struct {
 	bool LeftStraightLine; // 左侧是否是直线
 	bool Stright_Line;//直线
-	bool Ring_Front_Flag;//前方是否存在圆环
+	uint8 Ring_Front_Flag;//前方是否存在圆环
 	bool Ring;
 	bool Enter_Ring_First_Flag;
 	bool Leave_Ring_First_Flag;

@@ -17,7 +17,7 @@
 #include "Beep.h"
 /* Define\Declare ------------------------------------------------------------*/
 // #define Left_Ring_debug //是否开启左圆环调试
-Ring_Handle LeftRing = { false, false, true };
+Ring_Handle LeftRing = {false,false,0};
 
 typedef struct
 {
@@ -58,6 +58,8 @@ uint8 R_Border[Image_H];//右线数组
 uint8 Center_Line[Image_H];//中线数组
 uint8 L_Border_Y[Image_W];//左线数组,横向
 uint8 R_Border_Y[Image_W];//右线数组,横向
+uint16 Left_White = 0;
+uint16 Right_White = 0;
 uint32 hashMapIndexL[Image_H];
 uint32 hashMapIndexR[Image_H];
 
@@ -267,8 +269,7 @@ uint8 Otsu_Threshold(uint8* Image, uint16 col, uint16 row)
     int32 Pixel_Fore = 0;
     double Omega_Back=0, Omega_Fore=0, Micro_Back=0, Micro_Fore=0, SigmaB=0, Sigma=0; 
     uint8 Min_Value=0, Max_Value=0;
-    uint8 Threshold = 0;//???
-
+    uint8 Threshold = 0;
 
     for (Y = 0; Y <Image_Height; Y++) 
     {
@@ -278,9 +279,6 @@ uint8 Otsu_Threshold(uint8* Image, uint16 col, uint16 row)
             HistGram[(int)data[Y*Image_Width + X]]++; 
         }
     }
-
-
-
 
     for (Min_Value = 0; Min_Value < 255 && HistGram[Min_Value] == 0; Min_Value++) ;        
     for (Max_Value = 255; Max_Value > Min_Value && HistGram[Min_Value] == 0; Max_Value--) ; 
@@ -334,6 +332,8 @@ void Turn_To_Bin(void)
 {
     uint8 i, j;
     Image_Thereshold = 1.075*Otsu_Threshold(Original_Image[0], Image_W, Image_H);//获取大津法阈值
+    Left_White = 0;
+    Right_White = 0;
     //   printf("begin");
     for (i = 0;i < Image_H;i++)
     {
@@ -346,6 +346,14 @@ void Turn_To_Bin(void)
             else
             {
                 Bin_Image[i][j] = Black_Pixel;
+            }
+            if ((i >= 50) && (j <= Image_W / 2 - 1) && (j >= Image_W / 2 - 60) && (Bin_Image[i][j] == White_Pixel))
+            {
+                Left_White += 1;
+            }
+            if ((i >= 50) && (j >= Image_W / 2 + 1) && (j <= Image_W / 2 + 60) && (Bin_Image[i][j] == White_Pixel))
+            {
+                Right_White += 1;
             }
             //   printf(" %d",Bin_Image[i][j]);
         }
@@ -1227,26 +1235,29 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
         //     }
         // }
         //有圆环突出点, 右直线, 有左下角点
-        // else if (Break_Num_L_DOWN && LeftRing.Stright_Line && Salient_Point) //  && (!Bin_Image[Image_H - 10][4]) && (!Bin_Image[Image_H - 10][Image_W - 4])
-        // {
-        //     //计算斜率,左边斜率
-        //     Get_K_b(Salient_Point, L_Border[Salient_Point], Points_L[Break_Num_L_DOWN][1], Points_L[Break_Num_L_DOWN][0], &slope_l_rate, &intercept_l);
-        //     for (i = Salient_Point; i < Points_L[Break_Num_L_DOWN][1]; i++)
-        //     {
-        //         L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
-        //         L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
-        //     }
-        //     LeftRing.Ring_Front_Flag = true;
-        // }
-        // 没有圆环突出点, 右直线， 有左下角点
-        if (Break_Num_L_DOWN && LeftRing.Stright_Line)
+        if (Break_Num_L_DOWN && LeftRing.Stright_Line && Salient_Point) //  && (!Bin_Image[Image_H - 10][4]) && (!Bin_Image[Image_H - 10][Image_W - 4])
+        {
+            //计算斜率,左边斜率
+            Get_K_b(Salient_Point, L_Border[Salient_Point], Points_L[Break_Num_L_DOWN][1], Points_L[Break_Num_L_DOWN][0], &slope_l_rate, &intercept_l);
+            for (i = Salient_Point; i < Points_L[Break_Num_L_DOWN][1]; i++)
+            {
+                L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+                L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
+            }
+            LeftRing.Ring_Front_Flag = 1;
+        }
+        else if (Break_Num_L_DOWN && LeftRing.Stright_Line)// 没有圆环突出点, 右直线， 有左下角点
         {
             Get_K_b(Points_L[Break_Num_L_DOWN][1], Points_L[Break_Num_L_DOWN][0], 1, (Image_W / 2 - 10), &slope_l_rate, &intercept_l);
             for (i = Points_L[Break_Num_L_DOWN][1]; i >= 1; --i)
             {
                 L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
             }
-            LeftRing.Ring_Front_Flag = true;
+            LeftRing.Ring_Front_Flag = 2;
+        }
+        if((LeftRing.Ring_Front_Flag == 2) && Salient_Point)
+        {
+            LeftRing.Ring_Front_Flag = 1;
         }
         // else
         // {
@@ -1254,7 +1265,7 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
         // }
         // printf("%d,%d,%d,%d\r\n",Bin_Image[Image_H - 5][4],Bin_Image[Image_H - 10][8],Bin_Image[Image_H / 2][Image_W - 2],Bin_Image[Image_H-5][Image_W - 2]);
         // 左下空白 且检测到环左下角点, 右直线, 左圆环突出点, 右边中心为黑色, 右边下方为黑色
-        if ((Bin_Image[Image_H - 5][4]) && (Bin_Image[Image_H - 10][8]) && LeftRing.Ring_Front_Flag &&
+        if ((Bin_Image[Image_H - 5][4]) && (Bin_Image[Image_H - 10][8]) && (LeftRing.Ring_Front_Flag == 1) &&
             (!Bin_Image[Image_H / 2][Image_W - 2]) && (!Bin_Image[Image_H-5][Image_W - 2]) && Salient_Point)//图像左下方为一片白 (Bin_Image[Image_H - 5][4]) && (Bin_Image[Image_H - 10][8]) &&
         {
             LeftRing.Ring_Front_Flag = false;
@@ -1506,8 +1517,6 @@ void Image_Process(void)
                 // 从爬取的边界线内提取边线 ， 这个才是最终有用的边线
         Get_Left(Data_Stastics_L);
         Get_Right(Data_Stastics_R);
-        Get_Left_Y(Data_Stastics_L);
-        Get_Right_Y(Data_Stastics_R);
         // 优先判断是否是十字如果是十字则不对圆环判断
         if (!LeftRing.Ring)
         {
@@ -1526,6 +1535,6 @@ void Image_Process(void)
         Center_Line[i] = (L_Border[i] + R_Border[i]) >> 1;//求中线
     }
     Image_Erro = (Center_Line[69])*0.375f + (Center_Line[70])*0.5f + (Center_Line[71])*0.1f;
-    Image_Erro_Y = 0.7f * (R_Border_Y[Image_W / 2 + 20] - L_Border_Y[Image_W / 2 - 20]) + 0.3f * (R_Border_Y[Image_W / 2 + 2] - L_Border_Y[Image_W / 2 - 2]);
+    Image_Erro_Y = 10*((float)(Right_White - Left_White)/(float)(Right_White + Left_White));
     Image_Flag.Cross_Fill = false;
 }

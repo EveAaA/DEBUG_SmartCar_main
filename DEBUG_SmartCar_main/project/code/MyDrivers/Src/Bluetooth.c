@@ -21,6 +21,7 @@ ReceiveData_Handle Receivedata =
     .Equal_pos = 0,
     .Dot_pos = 0,
     .Start_Flag = 2,
+    .Servo_Rotary = 5,
 };
 float test_1 = 0.0;
 float test_2 = 0.0;
@@ -184,7 +185,27 @@ void Get_Message()
             {
                 Receivedata.Start_Flag = 4;
             }
-            // printf("%d\r\n",Receivedata.Start_Flag);
+            else if(Receivedata.RxBuffer[0] == 'G' && Receivedata.RxBuffer[Receivedata.Receive_Num - 1] == 'n')
+            {
+                Receivedata.Servo_Rotary = 0;
+            }
+            else if(Receivedata.RxBuffer[0] == 'B' && Receivedata.RxBuffer[Receivedata.Receive_Num - 1] == 'k')
+            {
+                Receivedata.Servo_Rotary = 1;
+            }
+            else if(Receivedata.RxBuffer[0] == 'Y' && Receivedata.RxBuffer[Receivedata.Receive_Num - 1] == 'w')
+            {
+                Receivedata.Servo_Rotary = 2;
+            }
+            else if(Receivedata.RxBuffer[0] == 'R' && Receivedata.RxBuffer[Receivedata.Receive_Num - 1] == 'd')
+            {
+                Receivedata.Servo_Rotary = 3;
+            }
+            else if(Receivedata.RxBuffer[0] == 'W' && Receivedata.RxBuffer[Receivedata.Receive_Num - 1] == 'e')
+            {
+                Receivedata.Servo_Rotary = 4;
+            }
+            printf("%d\r\n",Receivedata.Start_Flag);
         }
         Receivedata.Receive_Num=0;
     }

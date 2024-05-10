@@ -69,6 +69,10 @@ void PIT_IRQHandler(void)
         {
             wait_time++;
         }
+        if(Rotary_Servo.Servo_Time > 0)
+        {
+            Rotary_Servo.Servo_Time++;
+        }
         pit_flag_clear(PIT_CH0);
     }
     
@@ -86,10 +90,11 @@ void PIT_IRQHandler(void)
     {
         // if(Start==1)
         // {
-        //     Start = 0;
-        //     Set_Beeptime(500);
+        //     Car_run_X();
+        //     Set_Car_Speed(Car.Speed_X,Car.Speed_Y,Car.Speed_Z);
         // }
-        FSM_main();
+        
+        // FSM_main();
         
         pit_flag_clear(PIT_CH2);
     }
