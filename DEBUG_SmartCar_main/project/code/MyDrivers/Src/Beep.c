@@ -85,7 +85,11 @@ void Set_Beeptime(uint16 Set_Time)
     }
 }
 
-bool Bufcnt_Beep(bool Cond,uint16 Cnt)
+/**@brief   蜂鸣器判断时间
+-- @author  庄文标
+-- @date    2024/5/5
+**/
+static bool Bufcnt_Beep(bool Cond,uint16 Cnt)
 {
     if(Cond)//满足条件
     {

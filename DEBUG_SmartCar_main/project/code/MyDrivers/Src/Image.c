@@ -870,7 +870,7 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W],  uint8* L_Border, uint8* R_Border, u
 
     for (i = 1; i < Total_Num_L; i++)
     {
-        if (Dir_L[i - 1] == 2 && Dir_L[i] == 2 && Dir_L[i + 3] == 4 && Dir_L[i + 5] == 4 && Dir_L[i + 7] == 4)//2-4跳变，左下拐点
+        if ((Dir_L[i - 1] == 2) && (Dir_L[i] == 2) && (Dir_L[i + 3] == 4) && (Dir_L[i + 5] == 4) && (Dir_L[i + 7] == 4))//2-4跳变，左下拐点
         {
             Break_Num_L_DOWN = Points_L[i][1];//传递y坐标
             // printf("find l_down\r\n");
@@ -885,7 +885,7 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W],  uint8* L_Border, uint8* R_Border, u
     for (i = 1; i < Total_Num_R; i++)
     {
         // printf("DIR_R[%d] = %d\r\n",i,Dir_R[i]);
-        if (Dir_R[i - 1] == 2 && Dir_R[i] == 2 && Dir_R[i + 3] == 4 && Dir_R[i + 5] == 4 && Dir_R[i + 7] == 4)//2-4跳变，右下拐点
+        if ((Dir_R[i - 1] == 2) && (Dir_R[i] == 2) && (Dir_R[i + 3] == 4) && (Dir_R[i + 5] == 4) && (Dir_R[i + 7] == 4))//2-4跳变，右下拐点
         {
             Break_Num_R_DOWN = Points_R[i][1];//传递y坐标
             // printf("find r_down\r\n");
@@ -899,7 +899,7 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W],  uint8* L_Border, uint8* R_Border, u
     }
     for (i = 1; i < Total_Num_L; i++)
     {
-        if (Dir_L[i - 1] == 4 && Dir_L[i] == 4 && Dir_L[i + 3] == 6 && Dir_L[i + 5] == 6 && Dir_L[i + 7] == 6)//4-6跳变，左上拐点
+        if ((Dir_L[i - 1] == 4) && (Dir_L[i] == 4) && (Dir_L[i + 3] == 6) && (Dir_L[i + 5] == 6) && (Dir_L[i + 7] == 6))//4-6跳变，左上拐点
         {
             Break_Num_L_UP = Points_L[i][1];//传递y坐标
             // printf("find l_up\r\n");
@@ -914,7 +914,7 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W],  uint8* L_Border, uint8* R_Border, u
     for (i = 1; i < Total_Num_R; i++)
     {
         // printf("DIR_R[%d] = %d\r\n",i,Dir_R[i]);
-        if (Dir_R[i - 1] == 4 && Dir_R[i] == 4 && Dir_R[i + 3] == 6 && Dir_R[i + 5] == 6 && Dir_R[i + 7] == 6)//4-6跳变，右上拐点
+        if ((Dir_R[i - 1] == 4) && (Dir_R[i] == 4 )&& (Dir_R[i + 3] == 6) && (Dir_R[i + 5] == 6) && (Dir_R[i + 7] == 6))//4-6跳变，右上拐点
         {
             Break_Num_R_UP = Points_R[i][1];//传递y坐标
             // printf("find R_up\r\n");
@@ -927,7 +927,7 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W],  uint8* L_Border, uint8* R_Border, u
         }
     }
 
-    if (Break_Num_L_DOWN && Break_Num_R_DOWN && (Bin_Image[Image_H - 10][4] == 0) && (Bin_Image[Image_H - 10][Image_W - 4] == 0))//十字前
+    if ((Break_Num_L_DOWN) && (Break_Num_R_DOWN) && (Bin_Image[Image_H - 10][4] == 0) && (Bin_Image[Image_H - 10][Image_W - 4] == 0))//十字前
     {
         Image_Flag.Cross_Fill = true;
         //计算斜率,左边斜率
@@ -956,7 +956,7 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W],  uint8* L_Border, uint8* R_Border, u
         }
         // tft180_show_string(Row_10,Line_7,"fuck");
     }
-    else if (Break_Num_L_UP && Break_Num_R_UP && Bin_Image[Image_H - 10][4] && Bin_Image[Image_H - 10][Image_W - 4])//十字中
+    else if ((Break_Num_L_UP) && (Break_Num_R_UP) && (Bin_Image[Image_H - 10][4]) && (Bin_Image[Image_H - 10][Image_W - 4]))//十字中
     {
         Image_Flag.Cross_Fill = true;
         //计算斜率
@@ -1044,7 +1044,7 @@ bool Straight_Line_Judge(uint8* Border, uint16 Total_Num, lineTypeDef lineMode)
         }
         if (lineMode == LeftLine)
         {
-            if (Border[i] - Border[i - 1] <= 0 && Border[i] - Border[i - 1] > -2)
+            if ((Border[i] - Border[i - 1] <= 0 ) && (Border[i] - Border[i - 1] > -2))
             {
                 StraightPoint += 1;
                 //circle(resizeFrame, Point(Border[i], i), 0, Scalar(255, 0, 0), 1);
@@ -1101,7 +1101,7 @@ uint16 findCircleOutPoint(uint8* L_Border)
         // printf("now - before: %d now - next: %d \n", L_Border[i] - L_Border[before], L_Border[i] - L_Border[next]);
         if ((L_Border[i] - L_Border[before] > 0) && (L_Border[i] - L_Border[next] > 0)
             && (L_Border[i] - L_Border[before] < 10) && (L_Border[i] - L_Border[next] < 10)
-            && L_Border[i] > Border_Min + 5 && L_Border[before] > Border_Min + 5 && L_Border[next] > Border_Min + 5 && i < Image_H - 20)
+            && (L_Border[i] > Border_Min + 5) && (L_Border[before] > Border_Min + 5) && (L_Border[next] > Border_Min + 5) && (i < Image_H - 20))
         {
   /*          circlePoint[0] = i;
             circlePoint[1] = L_Border[i];*/
@@ -1204,7 +1204,7 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
             //     }
             // }
             //有圆环突出点, 右直线, 有左下角点
-            if (Break_Num_L_DOWN && LeftRing.Stright_Line && Salient_Point) //  && (!Bin_Image[Image_H - 10][4]) && (!Bin_Image[Image_H - 10][Image_W - 4])
+            if ((Break_Num_L_DOWN) && (LeftRing.Stright_Line) && (Salient_Point)) //  && (!Bin_Image[Image_H - 10][4]) && (!Bin_Image[Image_H - 10][Image_W - 4])
             {
                 //计算斜率,左边斜率
                 Get_K_b(Salient_Point, L_Border[Salient_Point], Points_L[Break_Num_L_DOWN][1], Points_L[Break_Num_L_DOWN][0], &slope_l_rate, &intercept_l);
@@ -1215,7 +1215,7 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                 }
                 LeftRing.Ring_Front_Flag = 1;
             }
-            else if (Break_Num_L_DOWN && LeftRing.Stright_Line)// 没有圆环突出点, 右直线， 有左下角点
+            else if ((Break_Num_L_DOWN) && (LeftRing.Stright_Line))// 没有圆环突出点, 右直线， 有左下角点
             {
                 Get_K_b(Points_L[Break_Num_L_DOWN][1], Points_L[Break_Num_L_DOWN][0], 1, (Image_W / 2 - 10), &slope_l_rate, &intercept_l);
                 for (i = Points_L[Break_Num_L_DOWN][1]; i >= 1; --i)
@@ -1224,7 +1224,7 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                 }
                 LeftRing.Ring_Front_Flag = 2;
             }
-            if((LeftRing.Ring_Front_Flag == 2) && Salient_Point)
+            if((LeftRing.Ring_Front_Flag == 2) && (Salient_Point))
             {
                 LeftRing.Ring_Front_Flag = 1;
             }
@@ -1235,7 +1235,7 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
             // printf("%d,%d,%d,%d\r\n",Bin_Image[Image_H - 5][4],Bin_Image[Image_H - 10][8],Bin_Image[Image_H / 2][Image_W - 2],Bin_Image[Image_H-5][Image_W - 2]);
             // 左下空白 且检测到环左下角点, 右直线, 左圆环突出点, 右边中心为黑色, 右边下方为黑色
             if ((Bin_Image[Image_H - 5][4]) && (Bin_Image[Image_H - 10][8]) && (LeftRing.Ring_Front_Flag == 1) &&
-                (!Bin_Image[Image_H / 2][Image_W - 2]) && (!Bin_Image[Image_H-5][Image_W - 2]) && Salient_Point && LeftRing.Stright_Line)//图像左下方为一片白 (Bin_Image[Image_H - 5][4]) && (Bin_Image[Image_H - 10][8]) &&
+                (!Bin_Image[Image_H / 2][Image_W - 2]) && (!Bin_Image[Image_H-5][Image_W - 2]) && (Salient_Point) && (LeftRing.Stright_Line))//图像左下方为一片白 (Bin_Image[Image_H - 5][4]) && (Bin_Image[Image_H - 10][8]) &&
             {
                 LeftRing.Ring_Front_Flag = false;
                 Image_Flag.Left_Ring = true;
@@ -1258,8 +1258,8 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                 {
                     break;
                 }
-                if (Points_L[i][1] > Points_L[before][1] && Points_L[i][1] > Points_L[next][1]
-                    && Points_L[i][0] > Points_L[before][0] && Points_L[i][0] < Points_L[next][0] && Points_L[i][0] > Border_Min + 5)
+                if ((Points_L[i][1] > Points_L[before][1]) && (Points_L[i][1] > Points_L[next][1])
+                    && (Points_L[i][0] > Points_L[before][0]) && (Points_L[i][0] < Points_L[next][0]) && (Points_L[i][0] > Border_Min + 5))
                 {
                     Break_Num_L_UP = i;//传递y坐标
                     break;
@@ -1276,7 +1276,7 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                 LeftRing.Enter_Ring_First_Flag = true;
             }
             // 第一次入环标志位, 找到上角点, 找不到圆环突出点, 右直线
-            if (LeftRing.Enter_Ring_First_Flag && Salient_Point == NULL && Break_Num_L_UP)    //&& (Bin_Image[20][4]) && (Bin_Image[20][8]) && (Bin_Image[Image_H - 2][4]) && (Bin_Image[Image_H - 2][8])
+            if ((LeftRing.Enter_Ring_First_Flag) && (Salient_Point == NULL) && (Break_Num_L_UP))    //&& (Bin_Image[20][4]) && (Bin_Image[20][8]) && (Bin_Image[Image_H - 2][4]) && (Bin_Image[Image_H - 2][8])
             {
                 LeftRing.Enter_Ring_First_Flag = false;
                 LeftRing.Ring_State = Leave_Ring_First;//第一次离开环
@@ -1853,16 +1853,16 @@ void Image_Process(void)
         Get_Left(Data_Stastics_L);
         Get_Right(Data_Stastics_R);
         // 优先判断是否是十字如果是十字则不对圆环判断
-        if(!RightRing.Ring && !LeftRing.Ring)
+        if((!RightRing.Ring) && (!LeftRing.Ring))
         {
             Cross_Fill(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);//十字补线
         }
         // 同上
-        // if (!Image_Flag.Cross_Fill && !Image_Flag.Right_Ring)
+        // if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Right_Ring))
         // {
         //     Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
         // }
-        // if (!Image_Flag.Cross_Fill && !Image_Flag.Left_Ring)
+        // if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Left_Ring))
         // {
         //     Right_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
         // }

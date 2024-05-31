@@ -23,7 +23,7 @@ FSM_Handle MyFSM = {
 
 uint16 wait_time = 0;
 #define Static_Time 100 //等待静止的时间，大约0.5秒
-#define debug_switch  //是否调试
+// #define debug_switch  //是否调试
 
 /**
  ******************************************************************************
@@ -67,7 +67,8 @@ void Line_BoardFsm()
             #ifdef debug_switch
                 printf("Wait_Data\r\n");    
             #endif 
-            if(FINETUNING_DATA.dx!=0 || FINETUNING_DATA.dy!=0)
+            UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
+            if((FINETUNING_DATA.dx!=0) || (FINETUNING_DATA.dy!=0))
             {
                 if(Bufcnt(true,500))
                 {
@@ -89,7 +90,6 @@ void Line_BoardFsm()
                 }
                 Car.Speed_Y = 0;
                 Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
-                UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
             }
         break;
         case Move://移动到卡片前面
@@ -138,6 +138,7 @@ void Line_BoardFsm()
                 Set_Servo_Angle(Raise_Servo,Raise_Servo.Init_Angle - 30);
                 MyFSM.Line_Board_State = Pick;//捡起卡片
                 MyFSM.Big_Board = CLASSIFY_DATA.type;//记录分类
+                printf("class = %d\r\n",CLASSIFY_DATA.type);
                 CLASSIFY_DATA.type = None;
                 MyFSM.Static_Angle = Gyro_YawAngle_Get();
                 Set_Beepfreq(MyFSM.Big_Board+1);
@@ -239,7 +240,7 @@ void FSM_main()
                 {
                     Forward_Speed = 5;
                 }
-                if(FINDBORDER_DATA.dir == LEFT || FINDBORDER_DATA.dir == RIGHT)
+                if((FINDBORDER_DATA.dir == LEFT) || (FINDBORDER_DATA.dir == RIGHT))
                 {
                     MyFSM.Board_Dir = FINDBORDER_DATA.dir;
                     MyFSM.CurState = Line_Board;//左边卡片

@@ -58,13 +58,8 @@ void PIT_IRQHandler(void)
         Beep_On();//蜂鸣器
         UART_UnpackDataV2(&UnpackFlag);
         UART_ResetUnpackFlag(&UnpackFlag);
-        speed_time++;
-        if(speed_time >= 2)
-        {
-            speed_time = 0;
-            Set_Car_Speed(Car.Speed_X,Car.Speed_Y,Car.Speed_Z);//控制速度的线程
-        }
-        
+        // speed_time++;
+        Set_Car_Speed(Car.Speed_X,Car.Speed_Y,Car.Speed_Z);//控制速度的线程
         pit_flag_clear(PIT_CH0);
     }
     
@@ -80,6 +75,18 @@ void PIT_IRQHandler(void)
     
     if(pit_flag_get(PIT_CH2))
     {
+        // if(Start == 1)
+        // {
+        //     Car.Speed_X = 3;
+        //     Car.Speed_Y = 0;
+        //     Car.Speed_Z = Angle_Control(0);
+        // }
+        // else if(Start == 0)
+        // {
+        //     Car.Speed_X = 0;
+        //     Car.Speed_Y = 0;
+        //     Car.Speed_Z = 0;
+        // }
         FSM_main();
         pit_flag_clear(PIT_CH2);
     }
@@ -189,16 +196,6 @@ void GPIO1_Combined_0_15_IRQHandler(void)
         exti_flag_clear(B0);// 清除中断标志位
     }
     dl1a_int_handler();
-    // if(exti_flag_get(Rotary_B))
-    // {
-    //     if(gpio_get_level(Rotary_A) == 1)//正转
-    //     {
-    //         Rotary.Anticlockwise = 1;
-    //         Rotary.Clockwise = 0;
-    //         Rotary.Press = 0;
-    //     }
-    //     exti_flag_clear(Rotary_B); // 清除中断标志位
-    // }
 }
 
 int8 flag = 0;
@@ -211,23 +208,11 @@ void GPIO1_Combined_16_31_IRQHandler(void)
     {
         exti_flag_clear(B16); // 清除中断标志位
     }
-
-    // if(exti_flag_get(Rotary_A))
-    // {
-    //     if(gpio_get_level(Rotary_B) == 1)//正转
-    //     {
-    //         Rotary.Clockwise = 1;
-    //         Rotary.Anticlockwise = 0;
-    //         Rotary.Press = 0;
-    //     }
-
-    //     exti_flag_clear(Rotary_A); // 清除中断标志位
-    // }
     if(exti_flag_get(Rotary_A))
     {
         int8 alv = gpio_get_level(Rotary_A);
         int8 blv = gpio_get_level(Rotary_B);
-        if(flag == 0 && alv == 0)
+        if((flag == 0) && (alv == 0))
         {
             CW_1 = blv;
             flag = 1;

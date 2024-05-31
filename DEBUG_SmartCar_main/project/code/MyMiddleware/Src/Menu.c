@@ -132,7 +132,7 @@ static void Page0_Mode()
 
     Exit_Dis;
 
-    if(Menu.Set_Line == 7 && Rotary.Press)//退出
+    if((Menu.Set_Line == 7) && (Rotary.Press))//退出
     {
         Rotary.Press = 0;
         Menu_Mode = 8;
@@ -141,20 +141,21 @@ static void Page0_Mode()
         tft180_clear();
     } 
 
-    if(Menu.Set_Line == 1 && Rotary.Press)//发车
+    if((Menu.Set_Line == 1) && (Rotary.Press))//发车
     {
         Rotary.Press = 0;
         Start = 1;
         // Menu.Image_Show = true;
     }
-    // if(Menu.Set_Line == 2 && Rotary.Press)//发车
-    // {
-    //     Rotary.Press = 0;
-    //     Start = 3;
-    //     // Menu.Image_Show = true;
-    // }
+    
+    if((Menu.Set_Line == 2) && (Rotary.Press))//发车
+    {
+        Rotary.Press = 0;
+        Start = 0;
+        // Menu.Image_Show = true;
+    }
 
-    if(Menu.Set_Line == 5 && Rotary.Press)//显示图像
+    if((Menu.Set_Line == 5) && (Rotary.Press))//显示图像
     {
         Rotary.Press = 0;
         Menu.Set_Line = 6;
@@ -200,14 +201,14 @@ static void Page1_Mode()
     Exit_Dis;
     if(Menu.Set_Mode == Normal_Mode)
     {
-        if(Menu.Set_Line == 7 && Rotary.Press)//退出
+        if((Menu.Set_Line == 7) && (Rotary.Press))//退出
         {
             Rotary.Press = 0;
             Menu_Mode = 8;//退出到第一页
             Menu.Set_Line = 0;
             tft180_clear();
         }
-        else if(Menu.Set_Line != 7 && Rotary.Press)
+        else if((Menu.Set_Line != 7) && (Rotary.Press))
         {
             Rotary.Press = 0;
             Menu.Set_Mode = Flash_Mode;

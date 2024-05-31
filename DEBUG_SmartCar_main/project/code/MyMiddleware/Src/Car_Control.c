@@ -75,7 +75,7 @@ void All_PID_Init()
     PIDInit(&Turn_PID,2.55f,0,0.6f,5,-5);   
     PIDInit(&Gyroz_PID,1.75f,0,0.25f,5,-5);
     PIDInit(&Gyroz_Pid,0.65f,0,0.25f,5,-5);
-    PIDInit(&AngleControl_PID,0.44f,0,0.5,1.5f,-1.5f);
+    PIDInit(&AngleControl_PID,0.44f,0,0.5,3.0f,-3.0f);
 }
 
 
@@ -122,7 +122,7 @@ void Turn_Angle(float Target_Angle)
     Turn.Offset += Turn.Current_Angle - Turn.Angle_Last;
     Turn.Angle_Last = Turn.Current_Angle;
     Offset_Erro = (Target_Angle - Turn.Offset)/50.0f;
-    // printf("%f,%f,%f\r\n",Turn.Offset,Turn.Current_Angle,Turn.Angle_Last);
+    
     if(Target_Angle - Turn.Offset >= 2.5f)
     {
         Yaw_Erro = 2 + GetPIDValue(&Turn_PID,Offset_Erro);
@@ -160,9 +160,11 @@ void Turn_Angle(float Target_Angle)
 float Angle_Control(float Start_Angle)
 {
     float Yaw_Err = 0.0f;
-    Yaw_Err = GetPIDValue(&AngleControl_PID,Start_Angle - Gyro_YawAngle_Get());
-    //GetPIDValue(&Gyroz_Pid,Yaw_Err - IMU_Data.gyro_z)
-    return Yaw_Err;
+    static float Yaw_Filter = 0;
+    Yaw_Filter = 0.2f*Gyro_YawAngle_Get() + 0.8f*Yaw_Filter;
+    Yaw_Err = GetPIDValue(&AngleControl_PID,Start_Angle - Yaw_Filter);
+    
+    return GetPIDValue(&Gyroz_Pid,Yaw_Err - IMU_Data.gyro_z);
 }
 
 
