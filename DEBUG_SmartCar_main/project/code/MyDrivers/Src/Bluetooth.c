@@ -34,15 +34,16 @@ float test_4 = 0.0;
 **/
 void Bluetooth_Init(void)
 {
-    while(1)
-    {
-        if(!bluetooth_ch9141_init())
-            break;
-    }
-   Bluetooth_Set_Watch_Variable(Num_Address, CH1, &test_1);
-   Bluetooth_Set_Watch_Variable(Num_Address, CH2, &test_2);
-   Bluetooth_Set_Watch_Variable(Num_Address, CH3, &test_3);
-   Bluetooth_Set_Watch_Variable(Num_Address, CH4, &test_4);
+    // while(1)
+    // {
+    //     if(!wireless_uart_init())
+    //         break;
+    // }
+    wireless_uart_init();
+//    Bluetooth_Set_Watch_Variable(Num_Address, CH1, &test_1);
+//    Bluetooth_Set_Watch_Variable(Num_Address, CH2, &test_2);
+//    Bluetooth_Set_Watch_Variable(Num_Address, CH3, &test_3);
+//    Bluetooth_Set_Watch_Variable(Num_Address, CH4, &test_4);
 }
 
 /**@brief     printf÷ÿ∂®œÚ
@@ -52,7 +53,7 @@ void Bluetooth_Init(void)
 **/
 int32_t fputc (int32_t ch, FILE* f)
 {
-    bluetooth_ch9141_send_byte((ch & 0xFF));
+    wireless_uart_send_byte((ch & 0xFF));
     return ch;
 }
 
@@ -185,7 +186,7 @@ void Get_Message()
             {
                 Receivedata.Start_Flag = 4;
             }
-            else if(Receivedata.RxBuffer[0] == 'G' && Receivedata.RxBuffer[Receivedata.Receive_Num - 1] == 'n')
+            else if(Receivedata.RxBuffer[0] == 'W' && Receivedata.RxBuffer[Receivedata.Receive_Num - 1] == 'e')
             {
                 Receivedata.Servo_Rotary = 0;
             }
@@ -193,19 +194,19 @@ void Get_Message()
             {
                 Receivedata.Servo_Rotary = 1;
             }
-            else if(Receivedata.RxBuffer[0] == 'Y' && Receivedata.RxBuffer[Receivedata.Receive_Num - 1] == 'w')
+            else if(Receivedata.RxBuffer[0] == 'R' && Receivedata.RxBuffer[Receivedata.Receive_Num - 1] == 'd')
             {
                 Receivedata.Servo_Rotary = 2;
             }
-            else if(Receivedata.RxBuffer[0] == 'R' && Receivedata.RxBuffer[Receivedata.Receive_Num - 1] == 'd')
+            else if(Receivedata.RxBuffer[0] == 'Y' && Receivedata.RxBuffer[Receivedata.Receive_Num - 1] == 'w')
             {
                 Receivedata.Servo_Rotary = 3;
             }
-            else if(Receivedata.RxBuffer[0] == 'W' && Receivedata.RxBuffer[Receivedata.Receive_Num - 1] == 'e')
-            {
-                Receivedata.Servo_Rotary = 4;
-            }
-            printf("%d\r\n",Receivedata.Start_Flag);
+            // else if(Receivedata.RxBuffer[0] == 'W' && Receivedata.RxBuffer[Receivedata.Receive_Num - 1] == 'e')
+            // {
+            //     Receivedata.Servo_Rotary = 4;
+            // }
+            // printf("%d\r\n",Receivedata.Start_Flag);
         }
         Receivedata.Receive_Num=0;
     }

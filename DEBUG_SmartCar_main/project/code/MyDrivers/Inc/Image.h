@@ -36,22 +36,9 @@ typedef enum {
 typedef struct
 {
     bool Cross_Fill;//十字标志位
+	bool Left_Ring;
+	bool Right_Ring;
 }Flag_Handle;
-
-//元素参数结构体
-typedef struct {
-	uint8 forkpoint;//三岔点
-	uint8 cross_up;//十字上拐点
-	uint8 cross_down;//十字下拐点
-	uint8 circle_up;//环岛上拐点
-	uint8 circle_down;//环岛下拐点
-	uint8 circlepoint;//环岛中心点
-	uint8 garage_up;//车库上拐点
-	uint8 garage_down;//车库下拐点
-	uint8 fill_start;//补线起点 tip：起点必须小于终点
-	uint8 fill_end;//补线终点
-}Element_Typedef;
-
 
 typedef enum {
 	Ring_Front = 0,//入环前
@@ -78,22 +65,5 @@ typedef struct {
 	bool dir[Image_H];//有标标志位
 	uint8 valid_num; //边界有效数据统计
 }Pram_Typedef;
-
-//赛道参数结构体
-typedef struct {
-	uint8 white_num;					 //白点数
-	uint8 black_num;					 //黑点数
-	Border_Typedef l_border[Image_H];   //左边线数组
-	Border_Typedef r_border[Image_H];   //右边线数组
-	Border_Typedef center_line[Image_H];//定义中线数组
-	Pram_Typedef   l_pram;				 //左边界的参数
-	Pram_Typedef   r_pram;				 //右边界的参数
-	Element_Typedef   l_elem;			 //左边界的元素参数
-	Element_Typedef   r_elem;			 //右边界的元素参数
-	uint8 l_start;						 //右边搜索起点
-	uint8 r_start;						 //右边搜索起点
-	uint8 hightest;					 //最长列
-	uint8 longest;						 //最长列坐标
-}Road_Typedef;
 
 #endif /* MYDRIVERS_INC_IMAGE_H_ */

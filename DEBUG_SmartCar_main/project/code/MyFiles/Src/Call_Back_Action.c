@@ -37,8 +37,9 @@ void TIM_Init()
 {
     pit_ms_init(Sensor_CH, 5);                                                  // 初始化 PIT_CH0 为周期中断 5ms 周期
     interrupt_set_priority(Sensor_PRIORITY, 0); 
-    pit_ms_init(PIT_CH1, 10);                                                  // 初始化 PIT_CH1 为周期中断 15ms 周期
-    pit_ms_init(PIT_CH2, 15);                                                  // 初始化 PIT_CH2 为周期中断 10ms 周期
+    pit_ms_init(PIT_CH1, 10);                                                  // 初始化 PIT_CH1 为周期中断 10ms 周期
+    pit_ms_init(PIT_CH2, 15);                                                  // 初始化 PIT_CH2 为周期中断 15ms 周期
+    pit_ms_init(PIT_CH3, 1);                                                  // 初始化 PIT_CH2 为周期中断 15ms 周期
 }
 
 
@@ -60,7 +61,6 @@ void Sensor_Handler()
 **/
 void Uart_Findborder_Receive(void)
 {
-	
     uart_query_byte(UART_1, &_UART_FINDBORDER.get_data);
     fifo_write_buffer(&_UART_FINDBORDER.uart_data_fifo, &_UART_FINDBORDER.get_data, 1);
     if(_UART_FINDBORDER.get_data == 0x80)
@@ -86,23 +86,23 @@ void Uart_Fine_Tuning_Receive(void)
   // 微调状态
   if (_UART_FINE_TUNING.get_data == 0xbf && lastData == 0xfc)
   {
-    /*
-    printf("+++++++++++++++++\n");
+      /*
+      printf("+++++++++++++++++\n");
 
-    for (uint32_t i = 0; i < _UART_FINE_TUNING.index; i++)
-    {
-    printf("%x \n", _UART_FINE_TUNING.fifo_get_data[i]);
-    }
-    */
-    // 两字节转浮点数
-    UnpackFlag.FINETUNING_DATA_FLAG = true;
-    FINETUNING_DATA.dx = (float)((_UART_FINE_TUNING.fifo_get_data[1] >> 7) == 0) ? ((_UART_FINE_TUNING.fifo_get_data[0] + (_UART_FINE_TUNING.fifo_get_data[1] << 8))) : (-(65536 - (_UART_FINE_TUNING.fifo_get_data[0] + (_UART_FINE_TUNING.fifo_get_data[1] << 8))));
-    FINETUNING_DATA.dy = (float)((_UART_FINE_TUNING.fifo_get_data[3] >> 7) == 0) ? ((_UART_FINE_TUNING.fifo_get_data[2] + (_UART_FINE_TUNING.fifo_get_data[3] << 8))) : (-(65536 - (_UART_FINE_TUNING.fifo_get_data[2] + (_UART_FINE_TUNING.fifo_get_data[3] << 8))));
-    FINETUNING_DATA.FINETUNING_FINISH_FLAG = (_UART_FINE_TUNING.fifo_get_data[4] == 0x01) ? (true) : (false);
-    // printf("dx:%f dy:%f tuning: %d \n", FINETUNING_DATA.dx, FINETUNING_DATA.dy,  FINETUNING_DATA.FINETUNING_FINISH_FLAG);
-    // printf("+++++++++++++++++\n");
-    memset(_UART_FINE_TUNING.fifo_get_data, 0, sizeof(_UART_FINE_TUNING.fifo_get_data));
-    _UART_FINE_TUNING.index = 0;
+      for (uint32_t i = 0; i < _UART_FINE_TUNING.index; i++)
+      {
+      printf("%x \n", _UART_FINE_TUNING.fifo_get_data[i]);
+      }
+      */
+      // 两字节转浮点数
+      UnpackFlag.FINETUNING_DATA_FLAG = true;
+      FINETUNING_DATA.dx = (float)((_UART_FINE_TUNING.fifo_get_data[1] >> 7) == 0) ? ((_UART_FINE_TUNING.fifo_get_data[0] + (_UART_FINE_TUNING.fifo_get_data[1] << 8))) : (-(65536 - (_UART_FINE_TUNING.fifo_get_data[0] + (_UART_FINE_TUNING.fifo_get_data[1] << 8))));
+      FINETUNING_DATA.dy = (float)((_UART_FINE_TUNING.fifo_get_data[3] >> 7) == 0) ? ((_UART_FINE_TUNING.fifo_get_data[2] + (_UART_FINE_TUNING.fifo_get_data[3] << 8))) : (-(65536 - (_UART_FINE_TUNING.fifo_get_data[2] + (_UART_FINE_TUNING.fifo_get_data[3] << 8))));
+      FINETUNING_DATA.FINETUNING_FINISH_FLAG = (_UART_FINE_TUNING.fifo_get_data[4] == 0x01) ? (true) : (false);
+      // printf("dx:%f dy:%f tuning: %d \n", FINETUNING_DATA.dx, FINETUNING_DATA.dy,  FINETUNING_DATA.FINETUNING_FINISH_FLAG);
+      // printf("+++++++++++++++++\n");
+      memset(_UART_FINE_TUNING.fifo_get_data, 0, sizeof(_UART_FINE_TUNING.fifo_get_data));
+      _UART_FINE_TUNING.index = 0;
   }
   // 识别目标板接收识别种类状态
   else if (_UART_FINE_TUNING.get_data == 0xcf && lastData == 0xfb)
@@ -111,14 +111,14 @@ void Uart_Fine_Tuning_Receive(void)
     // 接收到这个就代表没有卡片了
     if (_UART_FINE_TUNING.fifo_get_data[0] == 0xbc)
     {
-      CLASSIFY_DATA.IS_CLASSIFY = false;
-      CLASSIFY_DATA.place = nil;
-      CLASSIFY_DATA.type = None;
+        CLASSIFY_DATA.IS_CLASSIFY = false;
+        CLASSIFY_DATA.place = nil;
+        CLASSIFY_DATA.type = None;
     }
     else
     {
-      CLASSIFY_DATA.IS_CLASSIFY = true;
-      CLASSIFY_DATA.place = PLACE_TABLE[_UART_FINE_TUNING.fifo_get_data[0] + offset];
+        CLASSIFY_DATA.IS_CLASSIFY = true;
+        CLASSIFY_DATA.place = PLACE_TABLE[_UART_FINE_TUNING.fifo_get_data[0] + offset];
       /*
        *  武器WEAPONS: 枪支A, 爆炸物B, 匕首C, 警棍D, 消防斧E
        *  物资MATERIAL:急救包F, 手电筒G, 对讲机H, 防弹背心I, 望远镜J, 头盔K
@@ -126,19 +126,19 @@ void Uart_Fine_Tuning_Receive(void)
        */
       if (CLASSIFY_DATA.place == A || CLASSIFY_DATA.place == B || CLASSIFY_DATA.place == C || CLASSIFY_DATA.place == D || CLASSIFY_DATA.place == E)
       {
-        CLASSIFY_DATA.type = WEAPONS;
+          CLASSIFY_DATA.type = WEAPONS;
       }
       else if (CLASSIFY_DATA.place == F || CLASSIFY_DATA.place == G || CLASSIFY_DATA.place == H || CLASSIFY_DATA.place == I || CLASSIFY_DATA.place == J || CLASSIFY_DATA.place == K)
       {
-        CLASSIFY_DATA.type = MATERIAL;
+          CLASSIFY_DATA.type = MATERIAL;
       }
       else if (CLASSIFY_DATA.place == L || CLASSIFY_DATA.place == M || CLASSIFY_DATA.place == N || CLASSIFY_DATA.place == O)
       {
-        CLASSIFY_DATA.type = TRANSPORTATION;
+          CLASSIFY_DATA.type = TRANSPORTATION;
       }
       else
       {
-        CLASSIFY_DATA.type = None;
+          CLASSIFY_DATA.type = None;
       }
     }
     memset(_UART_FINE_TUNING.fifo_get_data, 0, sizeof(_UART_FINE_TUNING.fifo_get_data));

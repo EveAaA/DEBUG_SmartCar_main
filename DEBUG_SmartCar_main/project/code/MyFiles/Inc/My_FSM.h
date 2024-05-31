@@ -6,8 +6,7 @@
 typedef enum
 {
     Line_Patrol = 0,//巡线
-    Line_Left_Board,//卡片在赛道左边
-    Line_Right_Board,//卡片在赛道右边
+    Line_Board,//散落卡片
 }Current_State;
 
 typedef enum
@@ -15,16 +14,19 @@ typedef enum
     Find = 0,//找到卡片
     Wait_Data,//等待数据
     Move,//移动到卡片前面
-    Confirm,//确认是否移动到位
+    Confirm,//识别类别
     Pick,//捡起卡片
+    Classify,//识别分类
     Return_Line,//返回赛道
 }Line_Board_Handle;
 
 typedef struct 
 {
-    Current_State CurState;
-    Line_Board_Handle LeftBoard_State;
-    Line_Board_Handle RightBoard_State;
+    Current_State CurState;//当前处于哪个状态机
+    Line_Board_Handle Line_Board_State;//散落在赛道旁的卡片
+    float Static_Angle;//静止的角度
+    int8 Board_Dir;//散落在赛道的哪一边
+    int8 Big_Board;//卡片大类
 }FSM_Handle;
 void FSM_main();
 

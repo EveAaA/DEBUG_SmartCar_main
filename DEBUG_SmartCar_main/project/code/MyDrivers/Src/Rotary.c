@@ -5,7 +5,7 @@
   * @brief   旋转编码器驱动
   * @date    2/16/2024
     @verbatim
-    
+    读取键值写中断里了，直接调用结构体就可以
     @endverbatim
   * @{
 **/

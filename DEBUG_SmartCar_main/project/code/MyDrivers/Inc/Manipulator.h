@@ -10,16 +10,16 @@ typedef struct
     float Min_Angle;//最小角度
     float Init_Angle;//初始化角度
     float Set_Angle;//控制的时候设置的角度
-    uint16 Servo_Time;
+    volatile uint16 Servo_Time;
 }Servo_Handle;
 
 typedef struct
 {
-    bool Put_Down;
-    bool Put_Up;
-    bool Put_Depot;
-    bool Put_Out;
-    bool Pick_End;
+    volatile bool Put_Down;
+    volatile bool Put_Up;
+    volatile bool Put_Depot;
+    volatile bool Put_Out;
+    volatile bool Pick_End;
 }Servo_Flag_Handle;
 
 typedef enum
@@ -31,12 +31,12 @@ typedef enum
 }Rotaryservo_Handle;
 
 void Manipulator_Init();
-void Set_Servo_Angle(Servo_Handle Servo,uint16 Angle);
-void Manipulator_PutDown();
-void Manipulator_PutUp();
 void Pick_Card();
-void Put_Depot();
+void Rotary_Switch(Rotaryservo_Handle RotaryServo,bool Door);
+void Put_Depot(int8 Card_Class);
 void Take_Card_Out();
+void Set_Servo_Angle(Servo_Handle Servo,uint16 Angle);
+
 extern Servo_Handle Raise_Servo;
 extern Servo_Handle Stretch_Servo;
 extern Servo_Handle Rotary_Servo;

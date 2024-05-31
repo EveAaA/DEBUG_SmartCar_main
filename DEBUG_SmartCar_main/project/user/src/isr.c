@@ -48,31 +48,23 @@ void CSI_IRQHandler(void)
     __DSB();                    // 数据同步隔离
 }
 
+uint8 speed_time = 0;
 void PIT_IRQHandler(void)
 {
     if(pit_flag_get(PIT_CH0))
     {
-        Sensor_Handler();
-        Beep_On();
+        Sensor_Handler();//传感器
+        Beep_Freq();
+        Beep_On();//蜂鸣器
         UART_UnpackDataV2(&UnpackFlag);
         UART_ResetUnpackFlag(&UnpackFlag);
-        if(Stretch_Servo.Servo_Time > 0)
+        speed_time++;
+        if(speed_time >= 2)
         {
-            Stretch_Servo.Servo_Time++;
+            speed_time = 0;
+            Set_Car_Speed(Car.Speed_X,Car.Speed_Y,Car.Speed_Z);//控制速度的线程
         }
-
-        if(Raise_Servo.Servo_Time > 0)
-        {
-            Raise_Servo.Servo_Time++;
-        }
-        if(wait_time > 0)
-        {
-            wait_time++;
-        }
-        if(Rotary_Servo.Servo_Time > 0)
-        {
-            Rotary_Servo.Servo_Time++;
-        }
+        
         pit_flag_clear(PIT_CH0);
     }
     
@@ -88,19 +80,20 @@ void PIT_IRQHandler(void)
     
     if(pit_flag_get(PIT_CH2))
     {
-        // if(Start==1)
-        // {
-        //     Car_run_X();
-        //     Set_Car_Speed(Car.Speed_X,Car.Speed_Y,Car.Speed_Z);
-        // }
-        
-        // FSM_main();
-        
+        FSM_main();
         pit_flag_clear(PIT_CH2);
     }
     
     if(pit_flag_get(PIT_CH3))
     {
+        if((Time_Cnt > 0) && (Time_Cnt < 60000))//Bufunt计时用
+        {
+            Time_Cnt++;
+        }
+        if((Beep_Cnt > 0) && (Beep_Cnt < 60000))//Bufunt计时用
+        {
+            Beep_Cnt++;
+        }
         pit_flag_clear(PIT_CH3);
     }
 
@@ -182,7 +175,7 @@ void LPUART8_IRQHandler(void)
     {
         // 接收中断
         wireless_module_uart_handler();
-	    Get_Message();
+	    // Get_Message();
     }
         
     LPUART_ClearStatusFlags(LPUART8, kLPUART_RxOverrunFlag);    // 不允许删除

@@ -145,7 +145,7 @@ static void Page0_Mode()
     {
         Rotary.Press = 0;
         Start = 1;
-        Menu.Image_Show = true;
+        // Menu.Image_Show = true;
     }
     // if(Menu.Set_Line == 2 && Rotary.Press)//发车
     // {
@@ -186,10 +186,17 @@ static void Page0_Mode()
 static void Page1_Mode()
 {
     tft180_show_string(Row_1,Line_0,"XKP:");
-    tft180_show_float(Row_7,Line_0,flash_union_buffer[0].float_type,2,2);
+    tft180_show_float(Row_5,Line_0,flash_union_buffer[0].float_type,2,2);
     tft180_show_string(Row_1,Line_1,"YKP:");
-    tft180_show_float(Row_7,Line_1,flash_union_buffer[1].float_type,2,2);
-	
+    tft180_show_float(Row_5,Line_1,flash_union_buffer[1].float_type,2,2);
+    tft180_show_string(Row_1,Line_2,"XKD:");
+    tft180_show_float(Row_5,Line_2,flash_union_buffer[2].float_type,2,2);
+    tft180_show_string(Row_1,Line_3,"YKD:");
+    tft180_show_float(Row_5,Line_3,flash_union_buffer[3].float_type,2,2);
+    tft180_show_string(Row_1,Line_4,"AngleP:");
+    tft180_show_float(Row_8,Line_4,flash_union_buffer[4].float_type,2,2);
+    tft180_show_string(Row_1,Line_5,"AngleD:");
+    tft180_show_float(Row_8,Line_5,flash_union_buffer[5].float_type,2,2);
     Exit_Dis;
     if(Menu.Set_Mode == Normal_Mode)
     {
@@ -230,8 +237,12 @@ static void Page1_Mode()
     if(Menu.Flash_Set)//调参结束
     {
         Menu.Flash_Set = 0;
-        Turn_PID.Kp = flash_union_buffer[0].float_type;
-		Turn_PID.Kd = flash_union_buffer[1].float_type;
+        DistanceX_PID.Kp = flash_union_buffer[0].float_type;
+		DistanceY_PID.Kp = flash_union_buffer[1].float_type;
+        DistanceX_PID.Kd = flash_union_buffer[2].float_type;
+		DistanceY_PID.Kd = flash_union_buffer[3].float_type;
+        AngleControl_PID.Kp =  flash_union_buffer[4].float_type;
+        AngleControl_PID.Kd =  flash_union_buffer[5].float_type;
         flash_write_page_from_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
     }
 
@@ -255,8 +266,12 @@ void Flash_Init()
     flash_init();//逐飞flash初始化
     if(!flash_check(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX))//如果没有数据                      // 判断是否有数据
     {
-        flash_union_buffer[0].float_type = 0.35;
-        flash_union_buffer[1].float_type = 0.3;
+        flash_union_buffer[0].float_type = 0.15f;//微调X轴P
+        flash_union_buffer[1].float_type = 0.3f;//微调Y轴P
+        flash_union_buffer[2].float_type = 0.21f;//微调X轴D
+        flash_union_buffer[3].float_type = 0.5f;//微调Y轴D
+        flash_union_buffer[4].float_type = 0.44f;//角度环P
+        flash_union_buffer[5].float_type = 0.5f;//角度环D
         flash_write_page_from_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
         flash_buffer_clear();
     }
@@ -265,6 +280,10 @@ void Flash_Init()
         flash_read_page_to_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
         DistanceX_PID.Kp = flash_union_buffer[0].float_type;
         DistanceY_PID.Kp = flash_union_buffer[1].float_type;
+        DistanceX_PID.Kd = flash_union_buffer[2].float_type;
+        DistanceY_PID.Kd = flash_union_buffer[3].float_type;
+        AngleControl_PID.Kp = flash_union_buffer[4].float_type;
+        AngleControl_PID.Kd = flash_union_buffer[5].float_type;
         flash_buffer_clear();
     }
     flash_read_page_to_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);

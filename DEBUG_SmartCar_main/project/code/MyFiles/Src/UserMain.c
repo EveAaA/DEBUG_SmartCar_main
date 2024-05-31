@@ -17,7 +17,7 @@
 #include "My_FSM.h"
 /* Define\Declare ------------------------------------------------------------*/
 uint16 Start = 2;
-uint8 Once = 1;
+uint16 Time_Cnt = 0;
 
 /**
  ******************************************************************************
@@ -31,7 +31,6 @@ void IMU_Init()
     {
         if (imu660ra_init())
             system_delay_ms(1000);
-            // tft180_show_string(Row_0, Row_0, "IMU reinit.");
         else
             break;
         system_delay_ms(1000);
@@ -62,6 +61,33 @@ void Mt9v03x_Init()
  *
  **/
 
+/**@brief   判断时间
+-- @param   bool Cond 计时条件
+-- @param   uint16 Cnt 计时时间
+-- @author  庄文标
+-- @date    2024/5/23
+**/
+bool Bufcnt(bool Cond,uint16 Cnt)
+{
+    if(Cond)//满足条件
+    {
+        if(Time_Cnt == 0)
+        {
+            Time_Cnt = 1;//开始计时
+        }
+    }
+
+    if(Time_Cnt >= Cnt)
+    {
+        Time_Cnt = 0;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 /**@brief   所有初始化内容
 -- @param   无
 -- @author  庄文标
@@ -76,7 +102,7 @@ void User_Init()
     All_Encoder_Init();
     tft180_show_string(Row_0, Line_2, "Encoder Init ...");
     Rotary_Init();
-    Bluetooth_Init();
+    wireless_uart_init();
     tft180_show_string(Row_0, Line_3, "Rotary Init ...");
     Manipulator_Init();
     Motor_Init();
@@ -90,7 +116,6 @@ void User_Init()
     tft180_clear();
     system_delay_ms(1000);
     TIM_Init();
-    // timer_init(GPT_TIM_1, TIMER_US); 
     // Beep(On);
     // Beep(Off);
 	interrupt_global_enable(0);
@@ -103,26 +128,5 @@ void User_Init()
 **/
 void User_Loop()
 {
-    // test_1 = 90;
-    // test_2 = Gyro_YawAngle_Get();
-    // Bluetooth_Send_Float(Num_Address);
     Menu_Display();
-    if(Receivedata.Start_Flag == 1)
-    {
-        Servo_Flag.Put_Depot = false;
-        if(Servo_Flag.Pick_End == false)
-        {
-            Pick_Card();
-        }
-    }
-    else if(Receivedata.Start_Flag == 0)
-    {
-        Servo_Flag.Put_Up = false;
-        Servo_Flag.Put_Down = false;
-        Servo_Flag.Pick_End = false;
-        if(Servo_Flag.Put_Depot == false)
-        {
-            Put_Depot();
-        }
-    }
 }

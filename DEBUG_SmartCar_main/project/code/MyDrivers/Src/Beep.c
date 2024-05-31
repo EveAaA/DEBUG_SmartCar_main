@@ -12,11 +12,13 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "Beep.h"
+#include "UserMain.h"
 
 /* Define\Declare ------------------------------------------------------------*/
 #define Beep_Pin B21
-uint16 Beep_Time = 0;
-
+int16 Beep_Time = 0;
+uint8 Beep_Count = 0;
+uint16 Beep_Cnt = 0;
 /**
  ******************************************************************************
  *  @defgroup 外部调用
@@ -81,4 +83,78 @@ void Set_Beeptime(uint16 Set_Time)
     {
         Beep_Time = Set_Time/5;
     }
+}
+
+bool Bufcnt_Beep(bool Cond,uint16 Cnt)
+{
+    if(Cond)//满足条件
+    {
+        if(Beep_Cnt == 0)
+        {
+            Beep_Cnt = 1;//开始计时
+        }
+    }
+
+    if(Beep_Cnt >= Cnt)
+    {
+        Beep_Cnt = 0;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+/**@brief   蜂鸣器响固定次数
+-- @param   无
+-- @author  庄文标
+-- @date    2024/5/30
+**/
+void Beep_Freq()
+{
+    static uint8 Beep_State = 0;
+    switch (Beep_State)
+    {
+        case 0:
+            if(Beep_Count > 0)
+            {
+                Beep_State = 1;
+            }
+        break;
+        case 1:
+            Set_Beeptime(100);
+            if(Bufcnt_Beep(true,100))
+            {
+                Beep_State = 2;
+                Beep_Count -=1;
+            }
+        break;
+        case 2:
+            if(Bufcnt_Beep(true,100))
+            {
+                Beep_State = 3;
+            }
+        break;
+        case 3:
+            if(Beep_Count == 0)
+            {
+                Beep_State = 0;
+            }
+            else
+            {
+                Beep_State = 1;
+            }
+        break;
+    }
+}
+
+/**@brief   设置蜂鸣器响的次数
+-- @param   uint8 Count 蜂鸣器响的次数
+-- @author  庄文标
+-- @date    2024/5/30
+**/
+void Set_Beepfreq(uint8 Count)
+{
+    Beep_Count = Count;
 }

@@ -44,4 +44,5 @@ extern Pid_TypeDef Foward_PID;
 extern Pid_TypeDef Turn_PID;
 extern Car_Handle Car;
 extern Turn_Handle Turn;
+extern Pid_TypeDef AngleControl_PID;
 #endif

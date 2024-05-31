@@ -19,9 +19,9 @@
 Navigation_Handle Navigation = {0,0,0,0,0,0,0,0,0,0,0};
 Pid_TypeDef DistanceX_PID = 
 {
-    .Kp = 0.35f,
-    .Ki = 0.01f,
-    .Kd = 0.5f,
+    .Kp = 0.15f,
+    .Ki = 0.0f,
+    .Kd = 0.21f,
     .OutputMax = 5,
     .OutputMin = -5,
 };
@@ -137,25 +137,11 @@ void Navigation_Process(float x,float y)
 
             if(x - Navigation.Cur_Position_X >= 0)
             {
-                if(x - Navigation.Cur_Position_X > 5)
-                {
-                    Car.Speed_X = Large_Speed + GetPIDValue(&DistanceX_PID,(x - Navigation.Cur_Position_X));
-                }
-                else if(x - Navigation.Cur_Position_X <= 5)
-                {
-                    Car.Speed_X = Basic_Speed + GetPIDValue(&DistanceX_PID_M,(x - Navigation.Cur_Position_X));
-                }
+                Car.Speed_X = Large_Speed + GetPIDValue(&DistanceX_PID,(x - Navigation.Cur_Position_X));
             }
             else
             {
-                if(x - Navigation.Cur_Position_X < -5)
-                {
-                    Car.Speed_X = -Large_Speed + GetPIDValue(&DistanceX_PID,(x - Navigation.Cur_Position_X));
-                }
-                else if(x - Navigation.Cur_Position_X > -5)
-                {
-                    Car.Speed_X = -Basic_Speed + GetPIDValue(&DistanceX_PID_M,(x - Navigation.Cur_Position_X));
-                }
+                Car.Speed_X = -Large_Speed + GetPIDValue(&DistanceX_PID,(x - Navigation.Cur_Position_X));
             }
             Car.Speed_Z = Angle_Control(Navigation.Start_Angle);
         break;
@@ -168,26 +154,13 @@ void Navigation_Process(float x,float y)
             }
             if(y - Navigation.Cur_Position_Y >= 0)
             {
-                if(y - Navigation.Cur_Position_Y > 5)
-                {
-                    Car.Speed_Y = Large_Speed + GetPIDValue(&DistanceY_PID,(y - Navigation.Cur_Position_Y));
-                }
-                else if(y - Navigation.Cur_Position_Y <= 5)
-                {
-                    Car.Speed_Y = Basic_Speed + GetPIDValue(&DistanceY_PID_M,(y - Navigation.Cur_Position_Y));
-                }
+                Car.Speed_Y = Large_Speed + GetPIDValue(&DistanceY_PID,(y - Navigation.Cur_Position_Y));
             }
             else
             {
-                if(y - Navigation.Cur_Position_Y < -5)
-                {
-                    Car.Speed_Y = -Large_Speed + GetPIDValue(&DistanceY_PID,(y - Navigation.Cur_Position_Y));
-                }
-                else if(y - Navigation.Cur_Position_Y > -5)
-                {
-                    Car.Speed_Y = -Basic_Speed + GetPIDValue(&DistanceY_PID_M,(y - Navigation.Cur_Position_Y));
-                }
+                Car.Speed_Y = -Large_Speed + GetPIDValue(&DistanceY_PID,(y - Navigation.Cur_Position_Y));
             }
+            Car.Speed_Z = Angle_Control(Navigation.Start_Angle);
         break;
         case Move_Finish:
             Navigation.Finish_Flag = true;//一次惯性导航完成

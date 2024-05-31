@@ -16,14 +16,14 @@
 /* Define\Declare ------------------------------------------------------------*/
 FSM_Handle MyFSM = {
     .CurState = Line_Patrol,
-    .LeftBoard_State = Find,
-    .RightBoard_State = Find,
+    .Line_Board_State = Find,
+    .Static_Angle = 0,
+    .Board_Dir = -1,
 };
 
 uint16 wait_time = 0;
-float Staic_Angle = 0;
-#define Static_Time 100 //等待静止的时间，大约一秒
-// #define debug_switch  //是否调试
+#define Static_Time 100 //等待静止的时间，大约0.5秒
+#define debug_switch  //是否调试
 
 /**
  ******************************************************************************
@@ -32,14 +32,14 @@ float Staic_Angle = 0;
  *
 **/
 
-/**@brief   左边卡片状态机
+/**@brief   散落在赛道旁的卡片状态机
 -- @param   无
 -- @author  庄文标
--- @date    2024/4/27
+-- @date    2024/5/10
 **/
-void Left_BoardFsm()
+void Line_BoardFsm()
 {
-    switch (MyFSM.LeftBoard_State)
+    switch (MyFSM.Line_Board_State)
     {
         case Find://找到卡片
             #ifdef debug_switch
@@ -47,12 +47,19 @@ void Left_BoardFsm()
             #endif 
             if(Turn.Finish == false)
             {
-                Turn_Angle(-90);//转动九十度
+                if(MyFSM.Board_Dir == LEFT)
+                {
+                    Turn_Angle(-90);//转动九十度
+                }
+                else if(MyFSM.Board_Dir == RIGHT)
+                {
+                    Turn_Angle(90);//转动九十度
+                }
             }
             else
             {
-                MyFSM.LeftBoard_State = Wait_Data;//等待移动数据的发回
-                Staic_Angle = Gyro_YawAngle_Get();
+                MyFSM.Line_Board_State = Wait_Data;//等待移动数据的发回
+                MyFSM.Static_Angle = Gyro_YawAngle_Get();
                 Turn.Finish = false;
             }
         break;
@@ -62,216 +69,104 @@ void Left_BoardFsm()
             #endif 
             if(FINETUNING_DATA.dx!=0 || FINETUNING_DATA.dy!=0)
             {
-                if(wait_time==0)
+                if(Bufcnt(true,500))
                 {
-                    wait_time = 1;
-                }
-                if(wait_time >= Static_Time)
-                {
-                    wait_time = 0; 
-                    MyFSM.LeftBoard_State = Move;//开始移动到卡片前面
+                    MyFSM.Line_Board_State = Move;//开始移动到卡片前面
                 }
                 Car.Speed_X = 0;
                 Car.Speed_Y = 0;
-                Car.Speed_Z = Angle_Control(Staic_Angle);
+                Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
             }
             else
             {
-                Car.Speed_X = 3;//往右前移动一点防止看不到卡片
+                if(MyFSM.Board_Dir == LEFT)
+                {
+                    Car.Speed_X = 3;//往右移动一点防止看不到卡片
+                }
+                else if(MyFSM.Board_Dir == RIGHT)
+                {
+                    Car.Speed_X = -3;//往左移动一点防止看不到卡片
+                }
                 Car.Speed_Y = 0;
-                Car.Speed_Z = Angle_Control(Staic_Angle);
+                Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
+                UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
             }
-            // UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
         break;
         case Move://移动到卡片前面
             #ifdef debug_switch
-                printf("Move\r\n");    
+                // printf("Move\r\n");    
+                printf("%f,%f\r\n",FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f);
             #endif 
-            // printf("%f,%f,%d\r\n",FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f,0);
             if(Navigation.Finish_Flag == false)
             {
-                Navigation_Process_Image(0,0);//移动
+                Navigation_Process(FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f);//移动
             }
             else
             {
-                Set_Beeptime(500);
                 Navigation.Finish_Flag = false;
                 FINETUNING_DATA.dx = 0;
                 FINETUNING_DATA.dy = 0;
-                Staic_Angle = Gyro_YawAngle_Get();
-                MyFSM.LeftBoard_State = Pick;//确认是否移动到位
+                MyFSM.Static_Angle = Gyro_YawAngle_Get();
+                MyFSM.Line_Board_State = Confirm;//识别分类
             }
         break;
         case Confirm://确认是否移动到位
             #ifdef debug_switch
                 printf("Confirm\r\n");    
             #endif
-            // UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
-            // printf("%f,%f\r\n",FINETUNING_DATA.dx,FINETUNING_DATA.dy);
-            if(FINETUNING_DATA.FINETUNING_FINISH_FLAG == false)//没有移动到位
+            UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
+            if(FINETUNING_DATA.FINETUNING_FINISH_FLAG == false)
             {
-                if(FINETUNING_DATA.dx!=0 || FINETUNING_DATA.dy!=0)//确保有数据
-                {
-                    
-                    MyFSM.LeftBoard_State = Move;
-                }
+                MyFSM.Line_Board_State = Move;//移动
             }
             else
             {
-                MyFSM.LeftBoard_State = Pick;//捡起卡片
-                Staic_Angle = Gyro_YawAngle_Get();
+                Set_Beeptime(200);
+                MyFSM.Line_Board_State = Classify;//识别分类
             }
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
-            Car.Speed_Z = 0; 
+            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle); 
+        break;
+        case Classify:
+            #ifdef debug_switch
+                printf("Classify\r\n");    
+            #endif 
+            if(CLASSIFY_DATA.type != None)//识别到了分类
+            {
+                Set_Servo_Angle(Stretch_Servo,Stretch_Servo.Init_Angle + 30);//抬起机械臂以免卡到卡片
+                Set_Servo_Angle(Raise_Servo,Raise_Servo.Init_Angle - 30);
+                MyFSM.Line_Board_State = Pick;//捡起卡片
+                MyFSM.Big_Board = CLASSIFY_DATA.type;//记录分类
+                CLASSIFY_DATA.type = None;
+                MyFSM.Static_Angle = Gyro_YawAngle_Get();
+                Set_Beepfreq(MyFSM.Big_Board+1);
+                Rotary_Switch(MyFSM.Big_Board,false);//转动转盘
+                MyFSM.Big_Board = None;
+            }
+            else
+            {
+                UART_SendByte(&_UART_FINE_TUNING, UART_CLASSIFY_PIC);//发送数据，接收分类数据
+            }
+            Car.Speed_X = 0;
+            Car.Speed_Y = 0;
+            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle); 
         break;
         case Pick://捡起卡片
             #ifdef debug_switch
                 printf("Pick\r\n");    
             #endif
-            if(wait_time==0)
+            if(Servo_Flag.Pick_End == false)
             {
-                wait_time = 1;
-            }
-            if(Servo_Flag.Put_Depot == false)
-            {
-                if(wait_time >= Static_Time)
+                if(wait_time != 1)
                 {
-                    Pick_Card();
+                    if(Bufcnt(true,200))//等待一会让车停下来
+                    {
+                        wait_time = 1;
+                    }
                 }
-            }
-            else
-            {
-                Servo_Flag.Put_Up = false;
-                Servo_Flag.Put_Down = false;
-                wait_time = 0;
-                MyFSM.LeftBoard_State = Return_Line;
-            } 
-            Car.Speed_X = 0;
-            Car.Speed_Y = 0;
-            Car.Speed_Z = Angle_Control(Staic_Angle); 
-        break;
-        case Return_Line:
-            #ifdef debug_switch
-                printf("Return\r\n");    
-            #endif
-            if(Turn.Finish == false)
-            {
-                Turn_Angle(90);
-            }
-            else
-            {
-                Turn.Finish = false;
-                MyFSM.LeftBoard_State = Find;
-                MyFSM.CurState = Line_Patrol;
-            }
-        break;
-    }
-}
 
-/**@brief   右边卡片状态机
--- @param   无
--- @author  庄文标
--- @date    2024/4/27
-**/
-void Right_BoardFsm()
-{
-    switch (MyFSM.RightBoard_State)
-    {
-        case Find://找到卡片
-            #ifdef debug_switch
-                printf("Find\r\n");    
-            #endif 
-            if(Turn.Finish == false)
-            {
-                Turn_Angle(90);//转动九十度
-            }
-            else
-            {
-                MyFSM.RightBoard_State = Wait_Data;//等待移动数据的发回
-                Staic_Angle = Gyro_YawAngle_Get();
-                Turn.Finish = false;
-            }
-        break;
-        case Wait_Data://等待串口数据回传
-            #ifdef debug_switch
-                printf("Wait_Data\r\n");    
-            #endif 
-            if(FINETUNING_DATA.dx!=0 || FINETUNING_DATA.dy!=0)
-            {
-                if(wait_time==0)
-                {
-                    wait_time = 1;
-                }
-                if(wait_time >= Static_Time)
-                {
-                    MyFSM.RightBoard_State = Move;//开始移动到卡片前面
-                    wait_time = 0;
-                }
-                Car.Speed_X = 0;
-                Car.Speed_Y = 0;
-                Car.Speed_Z = Angle_Control(Staic_Angle);
-            }
-            else
-            {
-                Car.Speed_X = -3;//往左前移动一点防止看不到卡片
-                Car.Speed_Y = 0;
-                Car.Speed_Z = Angle_Control(Staic_Angle);
-            }
-            // UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
-        break;
-        case Move://移动到卡片前面
-            #ifdef debug_switch
-                printf("Move\r\n");    
-            #endif 
-            // printf("%f,%f\r\n",FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f);
-            if(Navigation.Finish_Flag == false)
-            {
-                Navigation_Process_Image(0,0);//移动
-            }
-            else
-            {
-                Set_Beeptime(500);
-                Navigation.Finish_Flag = false;
-                FINETUNING_DATA.dx = 0;
-                FINETUNING_DATA.dy = 0;
-                Staic_Angle = Gyro_YawAngle_Get();
-                MyFSM.RightBoard_State = Pick;//确认是否移动到位
-            }
-        break;
-        case Confirm://确认是否移动到位
-            #ifdef debug_switch
-                printf("Confirm\r\n");    
-            #endif
-            // UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
-            // printf("%f,%f\r\n",FINETUNING_DATA.dx,FINETUNING_DATA.dy);
-            if(FINETUNING_DATA.FINETUNING_FINISH_FLAG == false)//没有移动到位
-            {
-                if(FINETUNING_DATA.dx!=0 || FINETUNING_DATA.dy!=0)
-                {
-                    MyFSM.RightBoard_State = Move;
-                }
-            }
-            else
-            {
-                MyFSM.RightBoard_State = Pick;//捡起卡片
-                Staic_Angle = Gyro_YawAngle_Get();
-            }
-            Car.Speed_X = 0;
-            Car.Speed_Y = 0;
-            Car.Speed_Z = 0; 
-        break;
-        case Pick://捡起卡片
-            #ifdef debug_switch
-                printf("Pick\r\n");    
-            #endif
-            if(wait_time==0)
-            {
-                wait_time = 1;
-            }
-            if(Servo_Flag.Put_Depot == false)
-            {
-                if(wait_time >= 50)//等待一会让车停下来
+                if(wait_time == 1)
                 {
                     Pick_Card();
                 }
@@ -280,12 +175,13 @@ void Right_BoardFsm()
             {
                 Servo_Flag.Put_Up = false;
                 Servo_Flag.Put_Down = false;
+                Servo_Flag.Pick_End = false;
                 wait_time = 0;
-                MyFSM.RightBoard_State = Return_Line;//返回赛道
+                MyFSM.Line_Board_State = Return_Line;//返回赛道
             } 
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
-            Car.Speed_Z = Angle_Control(Staic_Angle);
+            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
         break;
         case Return_Line://返回赛道
             #ifdef debug_switch
@@ -293,12 +189,19 @@ void Right_BoardFsm()
             #endif
             if(Turn.Finish == false)
             {
-                Turn_Angle(-90);
+                if(MyFSM.Board_Dir == LEFT)
+                {
+                    Turn_Angle(90);
+                }
+                else if(MyFSM.Board_Dir == RIGHT)
+                {
+                    Turn_Angle(-90);
+                }
             }
             else
             {
                 Turn.Finish = false;
-                MyFSM.RightBoard_State = Find;
+                MyFSM.Line_Board_State = Find;
                 MyFSM.CurState = Line_Patrol;
             }
         break;
@@ -336,14 +239,15 @@ void FSM_main()
                 {
                     Forward_Speed = 5;
                 }
-                if(FINDBORDER_DATA.dir == LEFT)
+                if(FINDBORDER_DATA.dir == LEFT || FINDBORDER_DATA.dir == RIGHT)
                 {
-                    MyFSM.CurState = Line_Left_Board;//左边卡片
+                    MyFSM.Board_Dir = FINDBORDER_DATA.dir;
+                    MyFSM.CurState = Line_Board;//左边卡片
                 }
-                else if(FINDBORDER_DATA.dir == RIGHT)
-                {
-                    MyFSM.CurState = Line_Right_Board;//右边卡片
-                }
+                // else if(FINDBORDER_DATA.dir == RIGHT)
+                // {
+                //     MyFSM.CurState = Line_Right_Board;//右边卡片
+                // }
             }
             else
             {
@@ -352,13 +256,9 @@ void FSM_main()
                 Car.Speed_Z = 0;
             }
         break;
-        case Line_Left_Board:
-            Left_BoardFsm();
-        break;
-        case Line_Right_Board:
-            Right_BoardFsm();
+        case Line_Board://赛道散落卡片
+            Line_BoardFsm();
         break;
     }
-    Set_Car_Speed(Car.Speed_X,Car.Speed_Y,Car.Speed_Z);//控制速度的线程
 }
 

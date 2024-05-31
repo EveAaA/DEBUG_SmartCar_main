@@ -75,7 +75,7 @@ void All_PID_Init()
     PIDInit(&Turn_PID,2.55f,0,0.6f,5,-5);   
     PIDInit(&Gyroz_PID,1.75f,0,0.25f,5,-5);
     PIDInit(&Gyroz_Pid,0.65f,0,0.25f,5,-5);
-    PIDInit(&AngleControl_PID,0.44f,0,2,1.5f,-1.5f);
+    PIDInit(&AngleControl_PID,0.44f,0,0.5,1.5f,-1.5f);
 }
 
 
@@ -161,6 +161,7 @@ float Angle_Control(float Start_Angle)
 {
     float Yaw_Err = 0.0f;
     Yaw_Err = GetPIDValue(&AngleControl_PID,Start_Angle - Gyro_YawAngle_Get());
+    //GetPIDValue(&Gyroz_Pid,Yaw_Err - IMU_Data.gyro_z)
     return Yaw_Err;
 }
 
