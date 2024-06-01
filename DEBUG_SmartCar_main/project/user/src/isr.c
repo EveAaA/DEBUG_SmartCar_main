@@ -58,7 +58,6 @@ void PIT_IRQHandler(void)
         Beep_On();//蜂鸣器
         UART_UnpackDataV2(&UnpackFlag);
         UART_ResetUnpackFlag(&UnpackFlag);
-        // speed_time++;
         Set_Car_Speed(Car.Speed_X,Car.Speed_Y,Car.Speed_Z);//控制速度的线程
         pit_flag_clear(PIT_CH0);
     }

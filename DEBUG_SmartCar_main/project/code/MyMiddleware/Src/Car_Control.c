@@ -167,6 +167,16 @@ float Angle_Control(float Start_Angle)
     return GetPIDValue(&Gyroz_Pid,Yaw_Err - IMU_Data.gyro_z);
 }
 
+/**@brief   根据赛道边线的角度控制
+-- @author  庄文标
+-- @return  PID值
+-- @date    2024/6/1
+**/
+float Get_Image_Errox()
+{
+    float Image_ErroX_ = GetPIDValue(&ImageX_PID,(0 - Image_Erro_Y));
+    return GetPIDValue(&Gyroz_Pid,Image_ErroX_ - IMU_Data.gyro_z);
+}
 
 /**@brief   巡线
 -- @param   无
@@ -186,13 +196,12 @@ void Car_run()
 -- @author  庄文标
 -- @date    2024/5/3
 **/
-void Car_run_X()
+void Car_run_X(float Speed)
 {
-    float Image_ErroX_ = GetPIDValue(&ImageX_PID,(0 - Image_Erro_Y));
     float Image_ErroF_ = GetPIDValue(&ImageF_PID,100*((50 - Hightest)/(50 + Hightest)));
-    Car.Speed_X = 2.5;
+    Car.Speed_X = Speed;
     Car.Speed_Y = Image_ErroF_;
-    Car.Speed_Z = Image_ErroX_;
+    Car.Speed_Z = Get_Image_Errox();
 }
 
 

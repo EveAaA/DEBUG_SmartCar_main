@@ -76,20 +76,18 @@ void Line_BoardFsm()
                 }
                 Car.Speed_X = 0;
                 Car.Speed_Y = 0;
-                Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
+                Car.Speed_Z = 0;
             }
             else
             {
                 if(MyFSM.Board_Dir == LEFT)
                 {
-                    Car.Speed_X = 3;//往右移动一点防止看不到卡片
+                    Car_run_X(3.0f);//往右移动一点防止看不到卡片
                 }
                 else if(MyFSM.Board_Dir == RIGHT)
                 {
-                    Car.Speed_X = -3;//往左移动一点防止看不到卡片
+                    Car_run_X(-3.0f);//往左移动一点防止看不到卡片
                 }
-                Car.Speed_Y = 0;
-                Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
             }
         break;
         case Move://移动到卡片前面
@@ -107,7 +105,7 @@ void Line_BoardFsm()
                 FINETUNING_DATA.dx = 0;
                 FINETUNING_DATA.dy = 0;
                 MyFSM.Static_Angle = Gyro_YawAngle_Get();
-                MyFSM.Line_Board_State = Confirm;//识别分类
+                MyFSM.Line_Board_State = Classify;//识别分类
             }
         break;
         case Confirm://确认是否移动到位
@@ -134,8 +132,6 @@ void Line_BoardFsm()
             #endif 
             if(CLASSIFY_DATA.type != None)//识别到了分类
             {
-                Set_Servo_Angle(Stretch_Servo,Stretch_Servo.Init_Angle + 30);//抬起机械臂以免卡到卡片
-                Set_Servo_Angle(Raise_Servo,Raise_Servo.Init_Angle - 30);
                 MyFSM.Line_Board_State = Pick;//捡起卡片
                 MyFSM.Big_Board = CLASSIFY_DATA.type;//记录分类
                 printf("class = %d\r\n",CLASSIFY_DATA.type);
@@ -245,10 +241,6 @@ void FSM_main()
                     MyFSM.Board_Dir = FINDBORDER_DATA.dir;
                     MyFSM.CurState = Line_Board;//左边卡片
                 }
-                // else if(FINDBORDER_DATA.dir == RIGHT)
-                // {
-                //     MyFSM.CurState = Line_Right_Board;//右边卡片
-                // }
             }
             else
             {

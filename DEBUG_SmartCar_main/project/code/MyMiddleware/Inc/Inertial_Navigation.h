@@ -14,6 +14,8 @@ typedef struct
     float End_Angle;//结束角度
     float Target_Position_X;//目标X坐标
     float Target_Position_Y;//目标Y坐标
+    float X_Speed;//X轴速度
+    float Y_Speed;//Y轴速度
     bool Start_Flag;//启动惯性导航
     bool Finish_Flag;//惯性导航结束
 }Navigation_Handle;
@@ -22,7 +24,7 @@ typedef enum
 {
     Start_State = 0,//开始状态，记录初始值
     X_State,//X轴移动状态
-    Stop,//X轴移动结束
+    Stop,//X轴移动结束,判断是否移动到位
     Y_State,//Y轴移动状态
     Move_Finish,//移动结束
 }State;

@@ -35,7 +35,6 @@ void Pick_Card();
 void Rotary_Switch(Rotaryservo_Handle RotaryServo,bool Door);
 void Put_Depot(int8 Card_Class);
 void Take_Card_Out();
-void Set_Servo_Angle(Servo_Handle Servo,uint16 Angle);
 
 extern Servo_Handle Raise_Servo;
 extern Servo_Handle Stretch_Servo;

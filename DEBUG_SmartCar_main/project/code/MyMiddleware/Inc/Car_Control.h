@@ -8,15 +8,10 @@ void All_PID_Init();
 void Set_Car_Speed(float Speed_X,float Speed_Y,float Speed_Z);
 void Turn_Angle(float Target_Angle);
 float Angle_Control(float Start_Angle);
+float Get_Image_Errox();
 void Car_run();
-void Car_run_X();
-void Change_Direction(void);
-void Change_Right(void);
-void Return_Right();
-void Return_Action();
-void Car_Stop_Wait_Data_L();
-void Car_Stop_Wait_Data_R();
-void Move_Action();
+void Car_run_X(float Speed);
+
 typedef struct 
 {
     float Speed_X;

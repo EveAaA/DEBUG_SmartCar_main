@@ -56,6 +56,33 @@ Servo_Flag_Handle Servo_Flag = {false,false,false,false,false};
  *
 **/
 
+/**@brief   设置舵机角度,180度舵机
+-- @param   ServoHandle Servo 选择舵机
+-- @param   float Angle 设置的角度
+-- @author  庄文标
+-- @date    2023/11/5
+**/
+static void Set_Servo_Angle(Servo_Handle Servo,uint16 Angle)
+{
+    Servo.Set_Angle = Angle;
+    // if(Angle > Servo.Max_Angle)//限幅
+    // {
+    //     Servo.Set_Angle = Servo.Max_Angle;
+    // }
+    // else if(Angle < Servo.Min_Angle)
+    // {
+    //     Servo.Set_Angle = Servo.Min_Angle;
+    // }
+    if(Servo.Pin == Rotary_Servo.Pin)//如果是360度舵机
+    {
+        pwm_set_duty(Servo.Pin,Set_360Servo_Angle(Servo.Set_Angle));
+    }
+    else
+    {
+        pwm_set_duty(Servo.Pin,Set_180Servo_Angle(Servo.Set_Angle));
+    }   
+}
+
 /**@brief   机械臂放下拿卡片动作
 -- @param   无
 -- @author  庄文标
@@ -155,32 +182,7 @@ void Manipulator_Init()
     gpio_init(D27,GPO,0,GPO_PUSH_PULL);
 }
 
-/**@brief   设置舵机角度,180度舵机
--- @param   ServoHandle Servo 选择舵机
--- @param   float Angle 设置的角度
--- @author  庄文标
--- @date    2023/11/5
-**/
-void Set_Servo_Angle(Servo_Handle Servo,uint16 Angle)
-{
-    Servo.Set_Angle = Angle;
-    // if(Angle > Servo.Max_Angle)//限幅
-    // {
-    //     Servo.Set_Angle = Servo.Max_Angle;
-    // }
-    // else if(Angle < Servo.Min_Angle)
-    // {
-    //     Servo.Set_Angle = Servo.Min_Angle;
-    // }
-    if(Servo.Pin == Rotary_Servo.Pin)//如果是360度舵机
-    {
-        pwm_set_duty(Servo.Pin,Set_360Servo_Angle(Servo.Set_Angle));
-    }
-    else
-    {
-        pwm_set_duty(Servo.Pin,Set_180Servo_Angle(Servo.Set_Angle));
-    }   
-}
+
 
 /**@brief   机械臂捡起卡片
 -- @param   无
@@ -228,6 +230,8 @@ void Pick_Card()
 **/
 void Rotary_Switch(Rotaryservo_Handle RotaryServo,bool Door)
 {
+    Set_Servo_Angle(Stretch_Servo,Stretch_Servo.Init_Angle + 30);//抬起机械臂以免卡到卡片
+    Set_Servo_Angle(Raise_Servo,Raise_Servo.Init_Angle - 30);
     switch (RotaryServo)
     {
         case White:
