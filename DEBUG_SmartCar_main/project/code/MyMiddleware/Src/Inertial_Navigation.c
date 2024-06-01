@@ -20,7 +20,7 @@ Navigation_Handle Navigation = {0,0,0,0,0,0,0,0,0,0,0};
 Pid_TypeDef DistanceX_PID = 
 {
     .Kp = 0.15f,
-    .Ki = 0.0f,
+    .Ki = 0.005f,
     .Kd = 0.21f,
     .OutputMax = 5,
     .OutputMin = -5,
@@ -103,14 +103,12 @@ void Reset_Navigation()
     }
 }
 
-bool Delay = false;
 /**@brief   惯性导航进程
 -- @param   float x 目标X坐标
--- @param   float y 目标Y坐标
 -- @author  庄文标
 -- @date    2024/4/3
 **/
-void Navigation_Process(float x,float y)
+void Navigation_Process(float x)
 {
     switch(Navigation_State)
     {
@@ -126,58 +124,62 @@ void Navigation_Process(float x,float y)
         break;
         case X_State:
             Navigation.Cur_Position_X = Get_X_Distance();
+            Car.Speed_Y = 0;
             if(fabs(x - Navigation.Cur_Position_X) <= 1.0f)
             {
-                Navigation_State = Stop;
+                Navigation_State = Move_Finish;
                 Navigation.End_Angle = Gyro_YawAngle_Get();
             }
             else
             {
                 if(x - Navigation.Cur_Position_X >= 0)
                 {
-                    Navigation.X_Speed = Large_Speed + GetPIDValue(&DistanceX_PID,(x - Navigation.Cur_Position_X));
+                    Car.Speed_X = Large_Speed + GetPIDValue(&DistanceX_PID,(x - Navigation.Cur_Position_X));
                 }
                 else
                 {
-                    Navigation.X_Speed = -Large_Speed + GetPIDValue(&DistanceX_PID,(x - Navigation.Cur_Position_X));
+                    Car.Speed_X = -Large_Speed + GetPIDValue(&DistanceX_PID,(x - Navigation.Cur_Position_X));
                 }
-                Car_run_X(Navigation.X_Speed);
             }
+            Car.Speed_Z = Angle_Control(Navigation.Start_Angle);
         break;
-        case Stop:
+        case Move_Finish:
+            Navigation.Finish_Flag = true;//一次惯性导航完成
+            DistanceX_PID.I_Out = 0;
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
             Car.Speed_Z = Angle_Control(Navigation.End_Angle);
-            UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据,获取误差
-            if((Bufcnt(true,500)) && (!Delay))
-            {
-                Delay = true;
-            }
+            Reset_Navigation();
+        break;
+    }
+} 
 
-            if(Delay)
+/**@brief   惯性导航进程
+-- @param   float y 目标Y坐标
+-- @author  庄文标
+-- @date    2024/6/2
+**/
+void Navigation_Process_Y(float y)
+{
+    switch(Navigation_State)
+    {
+        case Start_State:
+            Car.Speed_X = 0;//先停一会
+            Car.Speed_Y = 0;
+            Car.Speed_Z = 0;
+            if(fabs(Get_X_Speed()) <= 0.1 && fabs(Get_Y_Speed()) <= 0.1)
             {
-                if(fabs(x) <= 1.0f)
-                {
-                    Navigation.Start_Flag = false;//清一下编码器的值
-                    if(Bufcnt(true,20))
-                    {
-                        Navigation_State = Y_State;
-                        Navigation.Start_Flag = true;
-                        Delay = false;
-                    }
-                }
-                else 
-                {
-                    Reset_Navigation();
-                }
+                Navigation_State = Y_State;
+                Enable_Navigation();
             }
         break;
         case Y_State:
-            Car.Speed_X = 0;
             Navigation.Cur_Position_Y = Get_Y_Distance();
+            Car.Speed_X = 0;
             if(fabs(y - Navigation.Cur_Position_Y) <= 1.0f)
             {
                 Navigation_State = Move_Finish;
+                Navigation.End_Angle = Gyro_YawAngle_Get();
             }
             else
             {
@@ -187,13 +189,14 @@ void Navigation_Process(float x,float y)
                 }
                 else
                 {
-                    Car.Speed_Y = -Large_Speed + GetPIDValue(&DistanceY_PID,(y - Navigation.Cur_Position_Y));
+                    Car.Speed_Y = -Large_Speed + GetPIDValue(&DistanceX_PID,(y - Navigation.Cur_Position_Y));
                 }
-                Car.Speed_Z = Angle_Control(Navigation.End_Angle);
             }
+            Car.Speed_Z = Angle_Control(Navigation.Start_Angle);
         break;
         case Move_Finish:
             Navigation.Finish_Flag = true;//一次惯性导航完成
+            DistanceX_PID.I_Out = 0;
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
             Car.Speed_Z = Angle_Control(Navigation.End_Angle);

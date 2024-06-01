@@ -58,14 +58,14 @@ float GetPIDValue(Pid_TypeDef *PID, float error)
 	static float I=0.0f;
 
 	P = error;
-	if(fabs(error) <= 0.5)
-	{
-		PID->I_Out = PID->I_Out + error;
-	}
-	else
-	{
-		PID->I_Out = 0;
-	}
+	// if(fabs(error) <= 0.5)
+	// {
+	PID->I_Out = PID->I_Out + error;
+	// }
+	// else
+	// {
+	// 	PID->I_Out = 0;
+	// }
 	D = error - PID->previousError;
 
 	PID->Output = PID->Kp * P+ PID->Ki * PID->I_Out+ PID->Kd * D;

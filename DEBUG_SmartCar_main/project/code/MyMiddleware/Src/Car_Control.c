@@ -68,8 +68,8 @@ void All_PID_Init()
     Incremental_PID_Init(&RMotor_B_Speed,0.5f,0.35f,0.5f,40,-40);
     PIDInit(&Angle_PID,0.44f,0,2,1.5f,-1.5f);
     PIDInit(&Image_PID,3.8f,0,0.5f,2.5f,-2.5f);
-    PIDInit(&ImageX_PID,1.8f,0,0.5f,2.0f,-2.0f);
-    PIDInit(&ImageF_PID,5.6f,0,0.0f,5.0f,-5.0f);
+    PIDInit(&ImageX_PID,0.44f,0,2.0f,3.0f,-3.0f);
+    PIDInit(&ImageF_PID,3.6f,0,0.2f,5.0f,-5.0f);
     PIDInit(&BorderPlace_PID,2.1f,0,0,1.5f,-1.5f);
     PIDInit(&Foward_PID,2.1f,0,0,1.5f,-1.5f);
     PIDInit(&Turn_PID,2.55f,0,0.6f,5,-5);   
@@ -175,7 +175,7 @@ float Angle_Control(float Start_Angle)
 float Get_Image_Errox()
 {
     float Image_ErroX_ = GetPIDValue(&ImageX_PID,(0 - Image_Erro_Y));
-    return GetPIDValue(&Gyroz_Pid,Image_ErroX_ - IMU_Data.gyro_z);
+    return GetPIDValue(&Gyroz_Pid,Image_ErroX_ - IMU_Data.gyro_z);//
 }
 
 /**@brief   巡线
@@ -202,83 +202,5 @@ void Car_run_X(float Speed)
     Car.Speed_X = Speed;
     Car.Speed_Y = Image_ErroF_;
     Car.Speed_Z = Get_Image_Errox();
-}
-
-
-/*------------------以下原状态机使用，现在没用了-----------------------*/
-/**@brief   改变小车行进方向朝向为目标板方向
--- @param   无
--- @author  戴骐阳
--- @date    2023/12/23
-**/
-void Change_Direction(void)
-{
-    Turn_Angle(-90);
-}
-
-/**@brief   右转到右边赛道
--- @param   无
--- @author  庄文标
--- @date    2024/4/26
-**/
-void Change_Right(void)
-{
-    Turn_Angle(90);
-}
-
-/**@brief   右边返回赛道
--- @param   无
--- @author  庄文标
--- @date    2024/4/26
-**/
-void Return_Right()
-{
-    Turn_Angle(-89);
-}
-
-/**@brief   左边返回赛道
--- @param   无
--- @author  庄文标
--- @date    2024/4/26
-**/
-void Return_Action()
-{
-    Turn_Angle(89);
-}
-
-/**@brief   左边等待微调串口发来的数据
--- @param   无
--- @author  庄文标
--- @date    2024/4/26
-**/
-void Car_Stop_Wait_Data_L()
-{
-    UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);
-    Car.Speed_X = 3;
-    Car.Speed_Y = 0;
-    Car.Speed_Z = Angle_Control(Navigation.Start_Angle);
-}
-
-/**@brief   右边等待微调串口发来的数据
--- @param   无
--- @author  庄文标
--- @date    2024/4/26
-**/
-void Car_Stop_Wait_Data_R()
-{
-    UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);
-    Car.Speed_X = -3;
-    Car.Speed_Y = 0;
-    Car.Speed_Z = Angle_Control(Navigation.Start_Angle);
-}
-
-/**@brief   移动至目标板前方
--- @param   无
--- @author  庄文标
--- @date    2024/4/7
-**/
-void Move_Action()
-{
-    Navigation_Process(FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f);
 }
 

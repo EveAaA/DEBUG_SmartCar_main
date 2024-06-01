@@ -15,6 +15,8 @@ typedef enum
     Wait_Data,//等待数据
     Move,//移动到卡片前面
     Confirm,//识别类别
+    Move_Y,//移动到卡片前面
+    Confirm_Y,//识别类别
     Pick,//捡起卡片
     Classify,//识别分类
     Return_Line,//返回赛道

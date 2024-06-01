@@ -76,9 +76,7 @@ void PIT_IRQHandler(void)
     {
         // if(Start == 1)
         // {
-        //     Car.Speed_X = 3;
-        //     Car.Speed_Y = 0;
-        //     Car.Speed_Z = Angle_Control(0);
+        //     Car_run_X(2.5f);
         // }
         // else if(Start == 0)
         // {
