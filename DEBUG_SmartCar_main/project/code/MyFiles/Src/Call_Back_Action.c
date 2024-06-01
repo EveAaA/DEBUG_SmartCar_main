@@ -98,7 +98,7 @@ void Uart_Fine_Tuning_Receive(void)
         UnpackFlag.FINETUNING_DATA_FLAG = true;
         FINETUNING_DATA.dx = (float)((_UART_FINE_TUNING.fifo_get_data[1] >> 7) == 0) ? ((_UART_FINE_TUNING.fifo_get_data[0] + (_UART_FINE_TUNING.fifo_get_data[1] << 8))) : (-(65536 - (_UART_FINE_TUNING.fifo_get_data[0] + (_UART_FINE_TUNING.fifo_get_data[1] << 8))));
         FINETUNING_DATA.dy = (float)((_UART_FINE_TUNING.fifo_get_data[3] >> 7) == 0) ? ((_UART_FINE_TUNING.fifo_get_data[2] + (_UART_FINE_TUNING.fifo_get_data[3] << 8))) : (-(65536 - (_UART_FINE_TUNING.fifo_get_data[2] + (_UART_FINE_TUNING.fifo_get_data[3] << 8))));
-        FINETUNING_DATA.FINETUNING_FINISH_FLAG = (_UART_FINE_TUNING.fifo_get_data[4] == 0x01) ? (true) : (false);
+        FINETUNING_DATA.FINETUNING_FINISH_FLAG = _UART_FINE_TUNING.fifo_get_data[4];
         // printf("dx:%f dy:%f tuning: %d \n", FINETUNING_DATA.dx, FINETUNING_DATA.dy,  FINETUNING_DATA.FINETUNING_FINISH_FLAG);
         // printf("+++++++++++++++++\n");
         memset(_UART_FINE_TUNING.fifo_get_data, 0, sizeof(_UART_FINE_TUNING.fifo_get_data));

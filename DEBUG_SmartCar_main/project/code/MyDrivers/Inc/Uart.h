@@ -69,7 +69,12 @@ typedef struct FINDBORDER
 
 typedef struct FINETUNING
 {
-    bool FINETUNING_FINISH_FLAG; // 只需要判断是否开始微调标志位
+    uint8_t FINETUNING_FINISH_FLAG; // 只需要判断是否开始微调标志位
+    /**
+     * 0x00:  完全未完成调参标志位 
+     * 0x01:  完全完成调参标志位
+     * 0x02:  X轴完成标志位
+     */
 	bool IS_BORDER_ALIVE;
     float dx;
     float dy;

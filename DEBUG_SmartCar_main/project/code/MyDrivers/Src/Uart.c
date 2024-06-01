@@ -26,7 +26,7 @@ const Place_t     PLACE_TABLE[16]  = {nil, A, B, C, D, E, F, G, H, I, J, K, L, M
 CLASSIFYtypeDef   CLASSIFY_DATA    = {false, nil, None};
 PLACEtypeDef      SMALL_PLACE_DATA = {false, nil};
 PLACEtypeDef      BIG_PLACE_DATA   = {false, nil};
-FINETUNINGtypeDef FINETUNING_DATA  = {false, false, 0.0f, 0.0f, 0.0f};
+FINETUNINGtypeDef FINETUNING_DATA  = {0, false, 0.0f, 0.0f, 0.0f};
 FINDBORDERtypeDef FINDBORDER_DATA  = {false, 0.0f, STRAIGHT};  
 UnpackDataTypeDef UnpackFlag       = {false, false, false}; // 判断帧头帧尾是否到达
 
