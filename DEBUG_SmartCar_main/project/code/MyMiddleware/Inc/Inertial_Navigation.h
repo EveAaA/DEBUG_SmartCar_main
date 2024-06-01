@@ -33,6 +33,7 @@ extern Navigation_Handle Navigation;
 extern Pid_TypeDef DistanceX_PID;
 extern Pid_TypeDef DistanceY_PID;
 void Reset_Navigation();
-void Navigation_Process(float x,float y);
+void Navigation_Process(float x);
+void Navigation_Process_Y(float y);
 void Navigation_Process_Image(float x,float y);
 #endif

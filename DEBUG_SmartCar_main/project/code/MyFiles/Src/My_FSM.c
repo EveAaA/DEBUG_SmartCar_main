@@ -23,7 +23,7 @@ FSM_Handle MyFSM = {
 
 uint16 wait_time = 0;
 #define Static_Time 100 //等待静止的时间，大约0.5秒
-// #define debug_switch  //是否调试
+#define debug_switch  //是否调试
 
 /**
  ******************************************************************************
@@ -75,29 +75,29 @@ void Line_BoardFsm()
                     MyFSM.Line_Board_State = Move;//开始移动到卡片前面
                 }
                 Car.Speed_X = 0;
-                Car.Speed_Y = 0;
-                Car.Speed_Z = 0;
             }
             else
             {
                 if(MyFSM.Board_Dir == LEFT)
                 {
-                    Car_run_X(3.0f);//往右移动一点防止看不到卡片
+                    Car.Speed_X = 2.0f;//往右移动一点防止看不到卡片
                 }
-                else if(MyFSM.Board_Dir == RIGHT)
+                else
                 {
-                    Car_run_X(-3.0f);//往左移动一点防止看不到卡片
+                    Car.Speed_X = -2.0f;//往左移动一点防止看不到卡片
                 }
             }
+            Car.Speed_Y = 0;
+            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
         break;
         case Move://移动到卡片前面
             #ifdef debug_switch
                 // printf("Move\r\n");    
-                printf("%f,%f\r\n",FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f);
+                printf("%f,%d\r\n",FINETUNING_DATA.dx/10.f,FINETUNING_DATA.FINETUNING_FINISH_FLAG);
             #endif 
             if(Navigation.Finish_Flag == false)
             {
-                Navigation_Process(FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f);//移动
+                Navigation_Process(FINETUNING_DATA.dx/10.f);//移动
             }
             else
             {
@@ -105,7 +105,7 @@ void Line_BoardFsm()
                 FINETUNING_DATA.dx = 0;
                 FINETUNING_DATA.dy = 0;
                 MyFSM.Static_Angle = Gyro_YawAngle_Get();
-                MyFSM.Line_Board_State = Classify;//识别分类
+                MyFSM.Line_Board_State = Confirm;//确认是否移动到位
             }
         break;
         case Confirm://确认是否移动到位
@@ -113,13 +113,50 @@ void Line_BoardFsm()
                 printf("Confirm\r\n");    
             #endif
             UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
-            if(FINETUNING_DATA.FINETUNING_FINISH_FLAG == false)
+            if(FINETUNING_DATA.FINETUNING_FINISH_FLAG != 2)
             {
                 MyFSM.Line_Board_State = Move;//移动
             }
             else
             {
                 Set_Beeptime(200);
+                MyFSM.Line_Board_State = Move_Y;//Y轴移动
+            }
+            Car.Speed_X = 0;
+            Car.Speed_Y = 0;
+            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle); 
+        break;
+        case Move_Y:
+            #ifdef debug_switch
+                // printf("Move\r\n");    
+                printf("%f\r\n",FINETUNING_DATA.dy/10.f);
+            #endif 
+            if(Navigation.Finish_Flag == false)
+            {
+                Navigation_Process_Y(FINETUNING_DATA.dy/10.f);//移动
+            }
+            else
+            {
+                Navigation.Finish_Flag = false;
+                FINETUNING_DATA.dx = 0;
+                FINETUNING_DATA.dy = 0;
+                MyFSM.Static_Angle = Gyro_YawAngle_Get();
+                MyFSM.Line_Board_State = Confirm_Y;//确认是否移动到位
+            }
+        break;
+        case Confirm_Y:
+            #ifdef debug_switch
+                printf("Confirm_Y\r\n");    
+            #endif
+            UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
+            if(FINETUNING_DATA.FINETUNING_FINISH_FLAG != 1)
+            {
+                MyFSM.Line_Board_State = Move_Y;//移动
+            }
+            else
+            {
+                Set_Beeptime(200);
+                UART_SendByte(&_UART_FINE_TUNING, UART_CLASSIFY_PIC);//发送数据，接收分类数据
                 MyFSM.Line_Board_State = Classify;//识别分类
             }
             Car.Speed_X = 0;
@@ -143,11 +180,14 @@ void Line_BoardFsm()
             }
             else
             {
-                UART_SendByte(&_UART_FINE_TUNING, UART_CLASSIFY_PIC);//发送数据，接收分类数据
+                if(Bufcnt(true,3000))
+                {
+                    UART_SendByte(&_UART_FINE_TUNING, UART_CLASSIFY_PIC);//发送数据，接收分类数据
+                }
             }
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
-            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle); 
+            Car.Speed_Z = 0; 
         break;
         case Pick://捡起卡片
             #ifdef debug_switch
