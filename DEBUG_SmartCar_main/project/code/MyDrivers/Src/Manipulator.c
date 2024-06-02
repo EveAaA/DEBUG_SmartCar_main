@@ -241,14 +241,19 @@ void Dodge_Board()
 **/
 void Rotary_Switch(Rotaryservo_Handle RotaryServo,uint8 Rotary_Speed)
 {
-    static uint8 Cur_Depot = 85;
-    static uint8 Tar_Depot = 0;
+    static uint16 Cur_Depot = 85;
+    static uint16 Tar_Depot = 0;
     static uint16 Set_Angle = 85;
     static uint8 Percent = 1;
     Tar_Depot = RotaryServo*90 + 85;                  
 
     if(Tar_Depot!=Cur_Depot)
     {
+        if(abs(Tar_Depot - Cur_Depot) > 90)
+        {
+            Rotary_Speed *=2;
+        }
+        
         Set_Angle = Cur_Depot + (Tar_Depot - Cur_Depot)*(Percent/(float)Rotary_Speed);
         Percent +=1;
     }

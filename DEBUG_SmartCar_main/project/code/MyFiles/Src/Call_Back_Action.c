@@ -38,7 +38,7 @@ void TIM_Init()
   interrupt_set_priority(Sensor_PRIORITY, 0);
   pit_ms_init(PIT_CH1, 10); // 初始化 PIT_CH1 为周期中断 10ms 周期
   pit_ms_init(PIT_CH2, 15); // 初始化 PIT_CH2 为周期中断 15ms 周期
-  pit_ms_init(PIT_CH3, 1);  // 初始化 PIT_CH2 为周期中断 15ms 周期
+  pit_ms_init(PIT_CH3, 1);  // 初始化 PIT_CH3 为周期中断 1ms 周期
 }
 
 /**@brief   传感器中断函数
