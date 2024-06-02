@@ -222,59 +222,86 @@ void Pick_Card()
     }
 }
 
-/**@brief   设置转盘舵机转到哪个地方
--- @param   Rotaryservo_Handle RotaryServo 选择颜色
--- @param   bool Door 是否是卸货
+/**@brief   躲避卡片
+-- @param   无
 -- @author  庄文标
--- @date    2024/5/6
+-- @date    2024/6/2
 **/
-void Rotary_Switch(Rotaryservo_Handle RotaryServo,bool Door)
+void Dodge_Board()
 {
     Set_Servo_Angle(Stretch_Servo,Stretch_Servo.Init_Angle + 30);//抬起机械臂以免卡到卡片
     Set_Servo_Angle(Raise_Servo,Raise_Servo.Init_Angle - 30);
-    switch (RotaryServo)
+}
+
+/**@brief   设置转盘舵机转到哪个地方
+-- @param   Rotaryservo_Handle RotaryServo 选择颜色
+-- @param   uint8 Rotary_Speed 速度
+-- @author  庄文标
+-- @date    2024/5/6
+**/
+void Rotary_Switch(Rotaryservo_Handle RotaryServo,uint8 Rotary_Speed)
+{
+    static uint8 Cur_Depot = 85;
+    static uint8 Tar_Depot = 0;
+    static uint16 Set_Angle = 85;
+    static uint8 Percent = 1;
+    Tar_Depot = RotaryServo*90 + 85;                  
+
+    if(Tar_Depot!=Cur_Depot)
     {
-        case White:
-            if(Door == false)//正前方
-            {
-                Set_Servo_Angle(Rotary_Servo,85);       
-            }
-            else
-            {
-                Set_Servo_Angle(Rotary_Servo,185);
-            }
-        break;
-        case Black:
-            if(Door == false)//正前方
-            {
-                Set_Servo_Angle(Rotary_Servo,175);
-            }
-            else
-            {
-                Set_Servo_Angle(Rotary_Servo,275);
-            }
-        break;
-        case Red:
-            if(Door == false)//正前方
-            {
-                Set_Servo_Angle(Rotary_Servo,265);
-            }
-            else
-            {
-                Set_Servo_Angle(Rotary_Servo,5);
-            }
-        break;
-        case Yellow:
-            if(Door == false)//正前方
-            {
-                Set_Servo_Angle(Rotary_Servo,355);
-            }
-            else
-            {
-                Set_Servo_Angle(Rotary_Servo,95);
-            }
-        break;
+        Set_Angle = Cur_Depot + (Tar_Depot - Cur_Depot)*(Percent/(float)Rotary_Speed);
+        Percent +=1;
     }
+
+    if(Percent >= Rotary_Speed)
+    {
+        Cur_Depot = Tar_Depot;
+        Percent = 1;
+    }
+    Set_Servo_Angle(Rotary_Servo,Set_Angle); 
+    // switch (RotaryServo)
+    // {
+    //     case White:
+    //         if(Door == false)//正前方
+    //         {
+    //             Set_Servo_Angle(Rotary_Servo,85);       
+    //         }
+    //         else
+    //         {
+    //             Set_Servo_Angle(Rotary_Servo,185);
+    //         }
+    //     break;
+    //     case Black:
+    //         if(Door == false)//正前方
+    //         {
+    //             Set_Servo_Angle(Rotary_Servo,175);
+    //         }
+    //         else
+    //         {
+    //             Set_Servo_Angle(Rotary_Servo,275);
+    //         }
+    //     break;
+    //     case Red:
+    //         if(Door == false)//正前方
+    //         {
+    //             Set_Servo_Angle(Rotary_Servo,265);
+    //         }
+    //         else
+    //         {
+    //             Set_Servo_Angle(Rotary_Servo,5);
+    //         }
+    //     break;
+    //     case Yellow:
+    //         if(Door == false)//正前方
+    //         {
+    //             Set_Servo_Angle(Rotary_Servo,355);
+    //         }
+    //         else
+    //         {
+    //             Set_Servo_Angle(Rotary_Servo,95);
+    //         }
+    //     break;
+    // }
 }
 
 /**@brief   把卡片放入指定仓库
@@ -289,7 +316,7 @@ void Put_Depot(int8 Card_Class)
     switch(Depot_State)
     {
         case 0:
-            Rotary_Switch(Card_Class,false);
+            // Rotary_Switch(Card_Class);
             if(Bufcnt(true,1500))
             {
                 Depot_State = 1;

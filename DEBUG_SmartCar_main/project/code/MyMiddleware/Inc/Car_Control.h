@@ -17,6 +17,7 @@ typedef struct
     float Speed_X;
     float Speed_Y;
     float Speed_Z;
+    Rotaryservo_Handle Depot_Pos;
 }Car_Handle;
 
 typedef struct 

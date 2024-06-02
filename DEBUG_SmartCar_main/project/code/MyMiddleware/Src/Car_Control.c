@@ -38,6 +38,7 @@ Car_Handle Car =
     .Speed_X = 0,
     .Speed_Y = 0,
     .Speed_Z = 0,
+    .Depot_Pos = White,
 };
 Turn_Handle Turn = 
 {

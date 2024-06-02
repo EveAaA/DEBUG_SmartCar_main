@@ -56,6 +56,7 @@ void PIT_IRQHandler(void)
         Sensor_Handler();//传感器
         Beep_Freq();
         Beep_On();//蜂鸣器
+        Rotary_Switch(Car.Depot_Pos,100);
         UART_UnpackDataV2(&UnpackFlag);
         UART_ResetUnpackFlag(&UnpackFlag);
         Set_Car_Speed(Car.Speed_X,Car.Speed_Y,Car.Speed_Z);//控制速度的线程
@@ -74,17 +75,22 @@ void PIT_IRQHandler(void)
     
     if(pit_flag_get(PIT_CH2))
     {
-        // if(Start == 1)
-        // {
-        //     Car_run_X(2.5f);
-        // }
+        if(Start == 1)
+        {
+            // Start = 0;
+            Car.Depot_Pos = Black;
+        }
+        else if(Start == 0)
+        {
+            Car.Depot_Pos = White;
+        }
         // else if(Start == 0)
         // {
         //     Car.Speed_X = 0;
         //     Car.Speed_Y = 0;
         //     Car.Speed_Z = 0;
         // }
-        FSM_main();
+        // FSM_main();
         pit_flag_clear(PIT_CH2);
     }
     

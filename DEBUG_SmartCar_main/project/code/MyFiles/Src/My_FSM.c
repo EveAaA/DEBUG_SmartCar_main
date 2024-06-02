@@ -169,18 +169,18 @@ void Line_BoardFsm()
             #endif 
             if(CLASSIFY_DATA.type != None)//识别到了分类
             {
+                Dodge_Board();
                 MyFSM.Line_Board_State = Pick;//捡起卡片
                 MyFSM.Big_Board = CLASSIFY_DATA.type;//记录分类
-                printf("class = %d\r\n",CLASSIFY_DATA.type);
                 CLASSIFY_DATA.type = None;
                 MyFSM.Static_Angle = Gyro_YawAngle_Get();
                 Set_Beepfreq(MyFSM.Big_Board+1);
-                Rotary_Switch(MyFSM.Big_Board,false);//转动转盘
+                Car.Depot_Pos = MyFSM.Big_Board;
                 MyFSM.Big_Board = None;
             }
             else
             {
-                if(Bufcnt(true,3000))
+                if(Bufcnt(true,3000))//3s发送一次
                 {
                     UART_SendByte(&_UART_FINE_TUNING, UART_CLASSIFY_PIC);//发送数据，接收分类数据
                 }
@@ -195,25 +195,13 @@ void Line_BoardFsm()
             #endif
             if(Servo_Flag.Pick_End == false)
             {
-                if(wait_time != 1)
-                {
-                    if(Bufcnt(true,200))//等待一会让车停下来
-                    {
-                        wait_time = 1;
-                    }
-                }
-
-                if(wait_time == 1)
-                {
-                    Pick_Card();
-                }
+                Pick_Card();
             }
             else
             {
                 Servo_Flag.Put_Up = false;
                 Servo_Flag.Put_Down = false;
                 Servo_Flag.Pick_End = false;
-                wait_time = 0;
                 MyFSM.Line_Board_State = Return_Line;//返回赛道
             } 
             Car.Speed_X = 0;
