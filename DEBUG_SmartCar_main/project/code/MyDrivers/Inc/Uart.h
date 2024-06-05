@@ -13,6 +13,9 @@
 #define UART_CLASSIFY_PIC (0x06) // 开始识别分类的图像
 #define UART_CLASSIFY_SMALLPLACE (0x07) // 开始识别小类放置区域
 #define UART_CLASSIFY_BIGPLACE  (0x08)  // 开始识别大类放置区域
+#define UART_FINDBORDER_GETBIGPLACE (0x20) // 开始获取大类放置区域
+#define UART_FINDBORDER_GETBORDER (0x21)   // 开始获取道路边缘的目标板
+#define UART_STARTFINETUNING_PLACE (0x10)  // 开始对数字版微调整
 
 typedef struct Uart
 {
@@ -63,6 +66,7 @@ typedef enum Dir{
 typedef struct FINDBORDER
 {
     bool FINDBORDER_FLAG; // 只需要判断是否找到卡片标志位
+    bool FINDBIGPLACE_FLAG; // 只需要判断是否找到大类放置标志位
     float dx;
     Dir_t dir;
 }FINDBORDERtypeDef;
