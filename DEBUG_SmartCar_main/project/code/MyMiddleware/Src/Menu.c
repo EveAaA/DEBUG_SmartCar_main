@@ -123,11 +123,11 @@ static void Page0_Mode()
         tft180_show_string(Row_1,Line_4,"sp:");
         // tft180_show_float(Row_4,Line_4,Encoer_Speed[0],2,1);
         // tft180_show_float(Row_8,Line_4,Encoer_Speed[1],2,1);
-        tft180_show_float(Row_4,Line_4,Encoer_Speed[2],2,1);
-        tft180_show_float(Row_8,Line_4,Encoer_Speed[3],2,1);
+        tft180_show_float(Row_4,Line_4,Encoer_Speed[0],2,1);
+        tft180_show_float(Row_8,Line_4,Encoer_Speed[1],2,1);
         tft180_show_string(Row_1,Line_5,"Image");
-        tft180_show_string(Row_1,Line_6,"my:");
-        tft180_show_float(Row_4,Line_6,Get_Y_Distance(),3,1);
+        // tft180_show_string(Row_1,Line_6,"my:");
+        // tft180_show_float(Row_4,Line_6,Get_Y_Distance(),3,1);
     }
 
     Exit_Dis;
@@ -145,15 +145,15 @@ static void Page0_Mode()
     {
         Rotary.Press = 0;
         Start = 1;
-        // Menu.Image_Show = true;
+        Menu.Image_Show = true;
     }
     
-    if((Menu.Set_Line == 2) && (Rotary.Press))//发车
-    {
-        Rotary.Press = 0;
-        Start = 0;
-        // Menu.Image_Show = true;
-    }
+    // if((Menu.Set_Line == 2) && (Rotary.Press))//发车
+    // {
+    //     Rotary.Press = 0;
+    //     Start = 0;
+    //     // Menu.Image_Show = true;
+    // }
 
     if((Menu.Set_Line == 5) && (Rotary.Press))//显示图像
     {
@@ -174,8 +174,8 @@ static void Page0_Mode()
             tft180_draw_point(R_Border[i], i, RGB565_RED);//显示起点 显示右边线
         }
         tft180_show_gray_image(0, 0, (const uint8 *)(Bin_Image), MT9V03X_W, MT9V03X_H, (Row_18), (Line_5), 0);
-        tft180_show_float(Row_8, Line_6,Image_Erro_Y, 3, 3);
-        tft180_show_float(Row_8, Line_7,Hightest, 3, 3);
+        tft180_show_float(Row_8, Line_6,Image_Erro, 3, 3);
+        tft180_show_float(Row_8, Line_7,Image_Erro_Y, 3, 3);
     }
 }
 
@@ -265,7 +265,7 @@ static void Page1_Mode()
 void Flash_Init()
 {
     flash_init();//逐飞flash初始化
-    if(!flash_check(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX))//如果没有数据                      // 判断是否有数据
+    if(!flash_check(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX))//判断是否有数据，如果没有数据
     {
         flash_union_buffer[0].float_type = 0.15f;//微调X轴P
         flash_union_buffer[1].float_type = 0.3f;//微调Y轴P

@@ -20,7 +20,6 @@ extern uint8 Center_Line[Image_H];//中线数组
 extern uint8 Bin_Image[Image_H][Image_W];//二值化图像数组
 extern uint8 Hightest;//最高点
 
-
 //坐标点结构体
 typedef struct {
 	uint8 x;//横坐标
@@ -35,9 +34,10 @@ typedef enum {
 
 typedef struct
 {
-    bool Cross_Fill;//十字标志位
+    uint8 Cross_Fill;//十字标志位
 	bool Left_Ring;
 	bool Right_Ring;
+	bool Zerba;
 }Flag_Handle;
 
 typedef enum {
@@ -57,6 +57,7 @@ typedef struct {
 	bool Enter_Ring_First_Flag;
 	bool Leave_Ring_First_Flag;
 	Ring_State_Handle Ring_State;
+	uint16 Clear_Time;
 }Ring_Handle;
 
 typedef struct {
@@ -65,5 +66,7 @@ typedef struct {
 	bool dir[Image_H];//有标标志位
 	uint8 valid_num; //边界有效数据统计
 }Pram_Typedef;
+extern Ring_Handle RightRing;
+extern Ring_Handle LeftRing;
 
 #endif /* MYDRIVERS_INC_IMAGE_H_ */

@@ -65,7 +65,7 @@ void PIT_IRQHandler(void)
     
     if(pit_flag_get(PIT_CH1))
     {
-        if (mt9v03x_finish_flag)
+        if ((mt9v03x_finish_flag) && (Car.Image_Flag))
         {
             Image_Process();
             mt9v03x_finish_flag = 0;
@@ -77,8 +77,9 @@ void PIT_IRQHandler(void)
     {
         // if(Start == 1)
         // {
+        //     Car.Speed_Y = 3;
         //     // Start = 0;
-        //     Car.Depot_Pos = Red;
+        //     // Car.Depot_Pos = Red;
         // }
         // else if(Start == 0)
         // {
@@ -99,6 +100,15 @@ void PIT_IRQHandler(void)
         if((Beep_Cnt > 0) && (Beep_Cnt < 60000))//Bufunt¼ÆÊ±ÓÃ
         {
             Beep_Cnt++;
+        }
+        if(RightRing.Clear_Time > 0)
+        {
+            RightRing.Clear_Time+=1;
+        }
+        
+        if(LeftRing.Clear_Time > 0)
+        {
+            LeftRing.Clear_Time+=1;
         }
         pit_flag_clear(PIT_CH3);
     }

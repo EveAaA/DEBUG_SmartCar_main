@@ -15,7 +15,7 @@
 
 /* Define\Declare ------------------------------------------------------------*/
 FSM_Handle MyFSM = {
-    .CurState = Line_Patrol,
+    .CurState = Depart,
     .Line_Board_State = Find,
     .Static_Angle = 0,
     .Board_Dir = -1,
@@ -23,7 +23,7 @@ FSM_Handle MyFSM = {
 
 uint16 wait_time = 0;
 #define Static_Time 100 //等待静止的时间，大约0.5秒
-#define debug_switch  //是否调试
+// #define debug_switch  //是否调试
 
 /**
  ******************************************************************************
@@ -32,12 +32,67 @@ uint16 wait_time = 0;
  *
 **/
 
+/**@brief   发车状态机
+-- @param   无
+-- @author  庄文标
+-- @date    2024/6/5
+**/
+static void Depart_Fsm()
+{
+    if(Start == 1)
+    {
+        if(Navigation.Finish_Flag == false)
+        {
+            Navigation_Process_Y(30);
+        }
+        else
+        {
+            Navigation.Finish_Flag = false;
+            MyFSM.CurState = Line_Patrol;
+            Car.Image_Flag = true;
+        }
+    }
+    else
+    {
+        Car.Speed_X = 0;
+        Car.Speed_Y = 0;
+        Car.Speed_Z = 0;
+    }
+}
+
+/**@brief    巡线状态机
+-- @param    无
+-- @verbatim 在此状态机跳转到其他卡片的状态机
+-- @author   庄文标
+-- @date     2024/6/5
+**/
+static void Line_PatrolFsm()
+{
+    #ifdef debug_switch
+        printf("Line_Patrol\r\n");    
+    #endif 
+    // if(FINDBORDER_DATA.FINDBORDER_FLAG == true)
+    // {
+    //     Forward_Speed = 3;
+    // }
+    // else
+    // {
+        Forward_Speed = 5;
+    // }
+    Car_run(Forward_Speed);
+    // if((FINDBORDER_DATA.dir == LEFT) || (FINDBORDER_DATA.dir == RIGHT))
+    // {
+    //     MyFSM.Board_Dir = FINDBORDER_DATA.dir;
+    //     MyFSM.CurState = Line_Board;//散落卡片
+    // }
+}
+
 /**@brief   散落在赛道旁的卡片状态机
 -- @param   无
 -- @author  庄文标
 -- @date    2024/5/10
 **/
-void Line_BoardFsm()
+static void Line_BoardFsm()
 {
     switch (MyFSM.Line_Board_State)
     {
@@ -249,33 +304,11 @@ void FSM_main()
 {
     switch (MyFSM.CurState)
     {
+        case Depart://发车状态
+            Depart_Fsm();
+        break;
         case Line_Patrol://巡线状态
-            if(Start == 1)
-            {
-                #ifdef debug_switch
-                    printf("Line\r\n");    
-                #endif 
-                Car_run();
-                if(FINDBORDER_DATA.FINDBORDER_FLAG == true)
-                {
-                    Forward_Speed = 3;
-                }
-                else
-                {
-                    Forward_Speed = 5;
-                }
-                if((FINDBORDER_DATA.dir == LEFT) || (FINDBORDER_DATA.dir == RIGHT))
-                {
-                    MyFSM.Board_Dir = FINDBORDER_DATA.dir;
-                    MyFSM.CurState = Line_Board;//左边卡片
-                }
-            }
-            else
-            {
-                Car.Speed_X = 0;
-                Car.Speed_Y = 0;
-                Car.Speed_Z = 0;
-            }
+            Line_PatrolFsm();
         break;
         case Line_Board://赛道散落卡片
             Line_BoardFsm();

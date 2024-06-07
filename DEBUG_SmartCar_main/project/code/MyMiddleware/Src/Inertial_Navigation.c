@@ -26,32 +26,15 @@ Pid_TypeDef DistanceX_PID =
     .OutputMin = -5,
 };
 
-Pid_TypeDef DistanceX_PID_M = 
-{
-    .Kp = 0.3f,
-    .Ki = 0.0f,
-    .Kd = 5,
-    .OutputMax = 5,
-    .OutputMin = -5,
-};
-
 Pid_TypeDef DistanceY_PID = 
 {
     .Kp = 0.3f,
-    .Ki = 0.01f,
+    .Ki = 0.005f,
     .Kd = 0.5f,
-    .OutputMax = 5,
-    .OutputMin = -5,
+    .OutputMax = 4,
+    .OutputMin = -4,
 };
 
-Pid_TypeDef DistanceY_PID_M = 
-{
-    .Kp = 0.3f,
-    .Ki = 0.0f,
-    .Kd = 5,
-    .OutputMax = 5,
-    .OutputMin = -5,
-};
 
 State Navigation_State = 0;
 float Basic_Speed = 0.0f;
@@ -116,7 +99,7 @@ void Navigation_Process(float x)
             Car.Speed_X = 0;//先停一会
             Car.Speed_Y = 0;
             Car.Speed_Z = 0;
-            if(fabs(Get_X_Speed()) <= 0.1 && fabs(Get_Y_Speed()) <= 0.1)
+            if(Bufcnt((fabs(Get_X_Speed()) <= 0.1f && fabs(Get_Y_Speed()) <= 0.1f),500))
             {
                 Navigation_State = X_State;
                 Enable_Navigation();
@@ -167,7 +150,7 @@ void Navigation_Process_Y(float y)
             Car.Speed_X = 0;//先停一会
             Car.Speed_Y = 0;
             Car.Speed_Z = 0;
-            if(fabs(Get_X_Speed()) <= 0.1 && fabs(Get_Y_Speed()) <= 0.1)
+            if(Bufcnt((fabs(Get_X_Speed()) <= 0.1 && fabs(Get_Y_Speed()) <= 0.1),500))
             {
                 Navigation_State = Y_State;
                 Enable_Navigation();
@@ -189,14 +172,14 @@ void Navigation_Process_Y(float y)
                 }
                 else
                 {
-                    Car.Speed_Y = -Large_Speed + GetPIDValue(&DistanceX_PID,(y - Navigation.Cur_Position_Y));
+                    Car.Speed_Y = -Large_Speed + GetPIDValue(&DistanceY_PID,(y - Navigation.Cur_Position_Y));
                 }
             }
             Car.Speed_Z = Angle_Control(Navigation.Start_Angle);
         break;
         case Move_Finish:
             Navigation.Finish_Flag = true;//一次惯性导航完成
-            DistanceX_PID.I_Out = 0;
+            DistanceY_PID.I_Out = 0;
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
             Car.Speed_Z = Angle_Control(Navigation.End_Angle);
@@ -287,8 +270,6 @@ void Navigation_Process_Image(float x,float y)
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
             Car.Speed_Z = Angle_Control(Navigation.End_Angle);
-            DistanceX_PID_M.I_Out = 0;
-            DistanceY_PID_M.I_Out = 0;
             Reset_Navigation();
         break;
     }

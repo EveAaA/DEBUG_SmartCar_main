@@ -128,5 +128,6 @@ void User_Init()
 **/
 void User_Loop()
 {
+    // printf("speed = %f\r\n",Encoer_Speed[0]);
     Menu_Display();
 }

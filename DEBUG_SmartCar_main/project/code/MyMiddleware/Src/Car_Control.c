@@ -39,6 +39,7 @@ Car_Handle Car =
     .Speed_Y = 0,
     .Speed_Z = 0,
     .Depot_Pos = White,
+    .Image_Flag = false,
 };
 Turn_Handle Turn = 
 {
@@ -176,7 +177,7 @@ float Angle_Control(float Start_Angle)
 float Get_Image_Errox()
 {
     float Image_ErroX_ = GetPIDValue(&ImageX_PID,(0 - Image_Erro_Y));
-    return GetPIDValue(&Gyroz_Pid,Image_ErroX_ - IMU_Data.gyro_z);//
+    return GetPIDValue(&Gyroz_Pid,Image_ErroX_ - IMU_Data.gyro_z);
 }
 
 /**@brief   Ñ²Ïß
@@ -184,11 +185,11 @@ float Get_Image_Errox()
 -- @author  ×¯ÎÄ±ê
 -- @date    2023/12/23
 **/
-void Car_run()
+void Car_run(float Speed)
 {
-    float Image_Erro_ = GetPIDValue(&Image_PID,(70 - Image_Erro)*0.03f);
+    float Image_Erro_ = GetPIDValue(&Image_PID,(74 - Image_Erro)*0.03f);
     Car.Speed_X = 0;
-    Car.Speed_Y = Forward_Speed;
+    Car.Speed_Y = Speed;
     Car.Speed_Z = -Image_Erro_;
 }
 

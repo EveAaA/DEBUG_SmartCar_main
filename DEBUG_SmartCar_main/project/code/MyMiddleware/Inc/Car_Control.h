@@ -9,7 +9,7 @@ void Set_Car_Speed(float Speed_X,float Speed_Y,float Speed_Z);
 void Turn_Angle(float Target_Angle);
 float Angle_Control(float Start_Angle);
 float Get_Image_Errox();
-void Car_run();
+void Car_run(float Speed);
 void Car_run_X(float Speed);
 
 typedef struct 
@@ -18,6 +18,7 @@ typedef struct
     float Speed_Y;
     float Speed_Z;
     Rotaryservo_Handle Depot_Pos;
+    bool Image_Flag;
 }Car_Handle;
 
 typedef struct 

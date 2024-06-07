@@ -5,7 +5,8 @@
 
 typedef enum
 {
-    Line_Patrol = 0,//巡线
+    Depart = 0,//发车
+    Line_Patrol,//巡线
     Line_Board,//散落卡片
 }Current_State;
 

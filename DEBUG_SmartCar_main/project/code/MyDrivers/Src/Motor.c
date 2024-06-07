@@ -54,13 +54,12 @@ void Motor_Init()
 
 /**@brief     电机速度设置
 -- @param     MotorHandle Motor 选择左右电机
--- @param     uint16 PWMDuty PWM波占空比，对应0-100的速度
+-- @param     float PWMDuty PWM波占空比，对应0-100的速度
 -- @author    庄文标
 -- @date      2023/11/2
 **/
 void Set_Motor_Speed(MotorHandle Motor, float PWMDuty)
 {
-    
     int Forward = 0;
     float Pwm_Temp = 0;
     float Pwm_Set = 0;
