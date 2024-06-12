@@ -76,6 +76,10 @@ bool Bufcnt(bool Cond,uint16 Cnt)
             Time_Cnt = 1;//开始计时
         }
     }
+    else
+    {
+        Time_Cnt = 0;
+    }
 
     if(Time_Cnt >= Cnt)
     {

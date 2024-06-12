@@ -24,7 +24,7 @@ typedef enum
     Return_Line,//返回赛道
     Find_Zebra,//找到斑马线
     Wait_Big_Data,//等待大类放置区域数据
-    Unload_Last,
+    Unload_Next,//前往下一个卸货点
     Unload_Board,//卸货
 }Fsm_State_Handle;
 
@@ -38,6 +38,7 @@ typedef struct
     int8 Board_Dir;//散落在赛道的哪一边
     int8 Big_Board;//卡片大类
     uint8 Big_Count;//大类次数
+    bool Stop_Flag;
 }FSM_Handle;
 void FSM_main();
 

@@ -21,6 +21,7 @@ FSM_Handle MyFSM = {
     .Static_Angle = 0,
     .Board_Dir = -1,
     .Big_Count = 0,
+    .Stop_Flag = false,
 };
 
 uint16 wait_time = 0;
@@ -133,11 +134,12 @@ static void Line_BoardFsm()
                 printf("Wait_Data\r\n");    
             #endif 
             UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
-            if((FINETUNING_DATA.dx!=0) || (FINETUNING_DATA.dy!=0))
+            if(UnpackFlag.FINETUNING_DATA_FLAG)
             {
                 if(Bufcnt(true,500))
                 {
                     MyFSM.Line_Board_State = Move;//开始移动到卡片前面
+                    UnpackFlag.FINETUNING_DATA_FLAG = false;
                 }
                 Car.Speed_X = 0;
             }
@@ -347,12 +349,14 @@ static void Unload_Fsm()
             #ifdef debug_switch
                 printf("Wait_Data\r\n");    
             #endif 
+            Dodge_Carmar();
             UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE);//发送对数字板微调信息
-            if((FINETUNING_DATA.dx!=0) || (FINETUNING_DATA.dy!=0))
+            if(UnpackFlag.FINETUNING_DATA_FLAG)
             {
                 if(Bufcnt(true,500))
                 {
                     MyFSM.Unload_State = Move;//开始移动到卡片前面
+                    UnpackFlag.FINETUNING_DATA_FLAG = false;
                 }
             }
             Car.Speed_X = 0;
@@ -388,7 +392,7 @@ static void Unload_Fsm()
                 printf("Confirm\r\n");    
             #endif
             UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE);//发送数据
-            if(FINETUNING_DATA.FINETUNING_FINISH_FLAG != 2)
+            if(FINETUNING_DATA.FINETUNING_FINISH_FLAG == 0)
             {
                 MyFSM.Unload_State = Move;//移动
             }
@@ -450,7 +454,7 @@ static void Unload_Fsm()
                 Set_Beepfreq(MyFSM.Big_Board+1);
                 Car.Depot_Pos = MyFSM.Big_Board;
                 MyFSM.Big_Board = None;
-                MyFSM.Unload_State = Unload_Last;
+                MyFSM.Unload_State = Unload_Next;
                 MyFSM.Big_Count +=1;
             }
             else
@@ -464,9 +468,9 @@ static void Unload_Fsm()
             Car.Speed_Y = 0;
             Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
         break;
-        case Unload_Last:
+        case Unload_Next:
             #ifdef debug_switch
-                printf("Unload_Last\r\n");    
+                printf("Unload_Next\r\n");    
             #endif
             if(MyFSM.Big_Count < 3)
             {
@@ -513,16 +517,15 @@ static void Unload_Fsm()
         break;
         case Return_Line:
             #ifdef debug_switch
-                printf("Return_Line\r\n");    
+                printf("Return_Line = %d %d\r\n",Image_Flag.Zerba,MyFSM.Stop_Flag);    
             #endif
-            static bool Stop_Flag = false;
             Dodge_Carmar();
-            if(Bufcnt(Image_Flag.Zerba,1000))
+            if(Bufcnt(Image_Flag.Zerba,2000))
             {
-                Stop_Flag = true;
+                MyFSM.Stop_Flag = true;
             }
 
-            if(Stop_Flag)
+            if(MyFSM.Stop_Flag)
             {
                 Car.Speed_X = 0;
                 Car.Speed_Y = 0;
@@ -530,7 +533,7 @@ static void Unload_Fsm()
             }
             else
             {
-                Car_run(Forward_Speed);
+                Car_run(5);
             }
         break;
     }

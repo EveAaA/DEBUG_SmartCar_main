@@ -57,8 +57,8 @@ void PIT_IRQHandler(void)
         Beep_Freq();
         Beep_On();//蜂鸣器
         Rotary_Switch(Car.Depot_Pos,100);
-        UART_UnpackDataV2(&UnpackFlag);
-        UART_ResetUnpackFlag(&UnpackFlag);
+        // UART_UnpackDataV2(&UnpackFlag);
+        // UART_ResetUnpackFlag(&UnpackFlag);
         Set_Car_Speed(Car.Speed_X,Car.Speed_Y,Car.Speed_Z);//控制速度的线程
         pit_flag_clear(PIT_CH0);
     }
