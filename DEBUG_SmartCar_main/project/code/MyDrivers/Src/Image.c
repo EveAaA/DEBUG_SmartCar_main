@@ -1855,10 +1855,6 @@ void Zebra_Seek(uint8(*Bin_Image)[Image_W])
         Image_Flag.Zerba = true;
         Set_Beepfreq(2);
     }
-    else
-    {
-        Image_Flag.Zerba = false;
-    }
 }
 
 void Test()

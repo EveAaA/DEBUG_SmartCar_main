@@ -131,7 +131,7 @@ void Navigation_Process(float x)
             DistanceX_PID.I_Out = 0;
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
-            Car.Speed_Z = Angle_Control(Navigation.End_Angle);
+            Car.Speed_Z = 0;
             Reset_Navigation();
         break;
     }
@@ -182,7 +182,7 @@ void Navigation_Process_Y(float y)
             DistanceY_PID.I_Out = 0;
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
-            Car.Speed_Z = Angle_Control(Navigation.End_Angle);
+            Car.Speed_Z = 0;
             Reset_Navigation();
         break;
     }

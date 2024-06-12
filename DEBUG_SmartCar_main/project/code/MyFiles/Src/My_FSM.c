@@ -20,11 +20,12 @@ FSM_Handle MyFSM = {
     .Unload_State = Find_Zebra,
     .Static_Angle = 0,
     .Board_Dir = -1,
+    .Big_Count = 0,
 };
 
 uint16 wait_time = 0;
 #define Static_Time 100 //等待静止的时间，大约0.5秒
-// #define debug_switch  //是否调试
+#define debug_switch  //是否调试
 
 /**
  ******************************************************************************
@@ -81,15 +82,17 @@ static void Line_PatrolFsm()
         Forward_Speed = 5;
     }
     Car_run(Forward_Speed);
+    Dodge_Carmar();
     if((FINDBORDER_DATA.dir == LEFT) || (FINDBORDER_DATA.dir == RIGHT))
     {
         MyFSM.Board_Dir = FINDBORDER_DATA.dir;
         Car.Image_Flag = false;
         MyFSM.CurState = Line_Board;//散落卡片
     }
-    else if(Image_Flag.Zerba == true)
+    else if(Bufcnt(Image_Flag.Zerba,500))
     {
         Car.Image_Flag = false;
+        Image_Flag.Zerba = false;
         MyFSM.CurState = Unload;//卸货
     }
 }
@@ -353,7 +356,14 @@ static void Unload_Fsm()
                 }
             }
             Car.Speed_X = 0;
-            Car.Speed_Y = 0;
+            if(MyFSM.Big_Count == 0)
+            {
+                Car.Speed_Y = 2;
+            }
+            else
+            {
+                Car.Speed_Y = 0;
+            }
             Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
         break;
         case Move://移动到卡片前面
@@ -370,7 +380,6 @@ static void Unload_Fsm()
                 Navigation.Finish_Flag = false;
                 FINETUNING_DATA.dx = 0;
                 FINETUNING_DATA.dy = 0;
-                MyFSM.Static_Angle = Gyro_YawAngle_Get();
                 MyFSM.Unload_State = Confirm;//确认是否移动到位
             }
         break;
@@ -406,7 +415,6 @@ static void Unload_Fsm()
                 Navigation.Finish_Flag = false;
                 FINETUNING_DATA.dx = 0;
                 FINETUNING_DATA.dy = 0;
-                MyFSM.Static_Angle = Gyro_YawAngle_Get();
                 MyFSM.Unload_State = Confirm_Y;//确认是否移动到位
             }
         break;
@@ -434,15 +442,16 @@ static void Unload_Fsm()
             #ifdef debug_switch
                 printf("Classify\r\n");    
             #endif 
-            if(CLASSIFY_DATA.type != None)//识别到了分类
+            if(BIG_PLACE_DATA.Big_Place != None)//识别到了分类
             {
                 Dodge_Board();
-                MyFSM.Big_Board = CLASSIFY_DATA.type;//记录分类
-                CLASSIFY_DATA.type = None;
-                MyFSM.Static_Angle = Gyro_YawAngle_Get();
+                MyFSM.Big_Board = BIG_PLACE_DATA.Big_Place;//记录分类
+                BIG_PLACE_DATA.Big_Place = None;
                 Set_Beepfreq(MyFSM.Big_Board+1);
                 Car.Depot_Pos = MyFSM.Big_Board;
                 MyFSM.Big_Board = None;
+                MyFSM.Unload_State = Unload_Last;
+                MyFSM.Big_Count +=1;
             }
             else
             {
@@ -453,7 +462,76 @@ static void Unload_Fsm()
             }
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
-            Car.Speed_Z = 0; 
+            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
+        break;
+        case Unload_Last:
+            #ifdef debug_switch
+                printf("Unload_Last\r\n");    
+            #endif
+            if(MyFSM.Big_Count < 3)
+            {
+                if(Car.Big_Pos_1!=Car.Big_Pos_2 || Car.Big_Pos_2!=Car.Big_Pos_3)
+                {
+                    if(Turn.Finish == false)
+                    {
+                        Turn_Angle(180);
+                    }
+                    else
+                    {
+                        Turn.Finish = false;
+                        MyFSM.Unload_State = Wait_Big_Data;
+                        MyFSM.Static_Angle = Gyro_YawAngle_Get();
+                    }
+                }
+                else
+                {
+                    if(Navigation.Finish_Flag == false)
+                    {
+                        Navigation_Process(60);
+                    }
+                    else
+                    {
+                        MyFSM.Unload_State = Wait_Data;
+                        Navigation.Finish_Flag = false;
+                    }
+                }
+            } 
+            else
+            {
+                if(Turn.Finish == false)
+                {
+                    Turn_Angle(-100);
+                }
+                else
+                {
+                    Turn.Finish = false;
+                    Image_Flag.Zerba = false;
+                    MyFSM.Unload_State = Return_Line;
+                    Car.Image_Flag = true;
+                }
+            }
+        break;
+        case Return_Line:
+            #ifdef debug_switch
+                printf("Return_Line\r\n");    
+            #endif
+            static bool Stop_Flag = false;
+            Dodge_Carmar();
+            if(Bufcnt(Image_Flag.Zerba,1000))
+            {
+                Stop_Flag = true;
+            }
+
+            if(Stop_Flag)
+            {
+                Car.Speed_X = 0;
+                Car.Speed_Y = 0;
+                Car.Speed_Z = 0;
+            }
+            else
+            {
+                Car_run(Forward_Speed);
+            }
         break;
     }
 }

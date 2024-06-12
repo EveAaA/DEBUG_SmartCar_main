@@ -37,6 +37,7 @@ typedef enum
 void Manipulator_Init();
 void Pick_Card();
 void Dodge_Board();
+void Dodge_Carmar();
 void Rotary_Switch(Rotaryservo_Handle RotaryServo,uint8 Rotary_Speed);
 void Put_Depot(int8 Card_Class);
 void Take_Card_Out();

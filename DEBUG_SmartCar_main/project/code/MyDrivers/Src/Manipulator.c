@@ -233,6 +233,12 @@ void Dodge_Board()
     Set_Servo_Angle(Raise_Servo,Raise_Servo.Init_Angle - 30);
 }
 
+void Dodge_Carmar()
+{
+    Set_Servo_Angle(Stretch_Servo,Stretch_Servo.Init_Angle);//抬起机械臂以免卡到卡片
+    Set_Servo_Angle(Raise_Servo,Raise_Servo.Init_Angle);
+}
+
 /**@brief   设置转盘舵机转到哪个地方
 -- @param   Rotaryservo_Handle RotaryServo 选择颜色
 -- @param   uint8 Rotary_Speed 速度

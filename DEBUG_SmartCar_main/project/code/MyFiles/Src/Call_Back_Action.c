@@ -242,6 +242,14 @@ void Uart_Fine_Tuning_Receive(void)
   {
     if (_UART_FINE_TUNING.index == 3)
     {
+      // printf("+++++++++++++++++\n");
+      // printf("index: %d\n", _UART_FINE_TUNING.index);
+      // for (uint32_t i = 0; i < _UART_FINE_TUNING.index; i++)
+      // {
+      //   printf("%x ", _UART_FINE_TUNING.fifo_get_data[i]);
+      // }
+      // printf("\n");
+      // printf("+++++++++++++++++\n");
       uint8_t offset = 1; // 偏移量 表头是未有量
       BIG_PLACE_DATA.IS_PLACE = true;
       BIG_PLACE_DATA.Big_Place = MAIN_TABLE[_UART_FINE_TUNING.fifo_get_data[0] + offset];
