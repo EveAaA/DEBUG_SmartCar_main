@@ -244,7 +244,7 @@ void Uart_Fine_Tuning_Receive(void)
     {
       uint8_t offset = 1; // 偏移量 表头是未有量
       BIG_PLACE_DATA.IS_PLACE = true;
-      BIG_PLACE_DATA.place = +PLACE_TABLE[_UART_FINE_TUNING.fifo_get_data[0] + offset];
+      BIG_PLACE_DATA.Big_Place = MAIN_TABLE[_UART_FINE_TUNING.fifo_get_data[0] + offset];
       memset(_UART_FINE_TUNING.fifo_get_data, 0, sizeof(_UART_FINE_TUNING.fifo_get_data));
       _UART_FINE_TUNING.index = 0;
     }

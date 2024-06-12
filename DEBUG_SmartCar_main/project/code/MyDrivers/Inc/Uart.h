@@ -90,6 +90,7 @@ typedef struct PLACE
 {
     bool IS_PLACE;
     Place_t place;
+    MainType_t Big_Place;
 }PLACEtypeDef;
 
 typedef struct CLASSIFY
