@@ -39,7 +39,7 @@ Servo_Handle Rotary_Servo = //旋转舵机
 {
     .Pin = PWM1_MODULE3_CHB_B11,
     .Init_Angle = 85,//角度大顺时针转,85白色在前,175黑色在前,265红色在前,355黄色在前，前三个分别代表大类123
-                     //185白色门 275黑色门 5红色门 95黄色门
+                     //185白色门 275黑色门 5红色门 95黄色门 
     .Servo_Time = 0,
 };
 Servo_Handle Door_Servo = //门电机
@@ -245,7 +245,23 @@ void Rotary_Switch(Rotaryservo_Handle RotaryServo,uint8 Rotary_Speed)
     static uint16 Tar_Depot = 0;
     static uint16 Set_Angle = 85;
     static uint8 Percent = 1;
-    Tar_Depot = RotaryServo*90 + 85;                  
+    if(RotaryServo <= Yellow)
+    {
+        Tar_Depot = RotaryServo*90 + 85;
+    }
+    else if(RotaryServo == White_Door)
+    {
+        Tar_Depot = 185;
+    }
+    else if(RotaryServo == Black_Door)
+    {
+        Tar_Depot = 275;
+    }
+    else if(RotaryServo == Red_Door)
+    {
+        Tar_Depot = 359;
+    }
+                      
 
     if(Tar_Depot!=Cur_Depot)
     {
@@ -258,55 +274,20 @@ void Rotary_Switch(Rotaryservo_Handle RotaryServo,uint8 Rotary_Speed)
         Percent +=1;
     }
 
-    if(Percent >= Rotary_Speed)
+    if((Percent >= Rotary_Speed) && (RotaryServo <= Yellow))
     {
         Cur_Depot = Tar_Depot;
         Percent = 1;
+        Servo_Flag.Depot_End = true;
+    }
+    else if((Percent >= Rotary_Speed) && (RotaryServo >= White_Door))
+    {
+        Cur_Depot = Tar_Depot;
+        Percent = 1;
+        Servo_Flag.Depot_End = true;
+        Set_Servo_Angle(Door_Servo,130);          
     }
     Set_Servo_Angle(Rotary_Servo,Set_Angle); 
-    // switch (RotaryServo)
-    // {
-    //     case White:
-    //         if(Door == false)//正前方
-    //         {
-    //             Set_Servo_Angle(Rotary_Servo,85);       
-    //         }
-    //         else
-    //         {
-    //             Set_Servo_Angle(Rotary_Servo,185);
-    //         }
-    //     break;
-    //     case Black:
-    //         if(Door == false)//正前方
-    //         {
-    //             Set_Servo_Angle(Rotary_Servo,175);
-    //         }
-    //         else
-    //         {
-    //             Set_Servo_Angle(Rotary_Servo,275);
-    //         }
-    //     break;
-    //     case Red:
-    //         if(Door == false)//正前方
-    //         {
-    //             Set_Servo_Angle(Rotary_Servo,265);
-    //         }
-    //         else
-    //         {
-    //             Set_Servo_Angle(Rotary_Servo,5);
-    //         }
-    //     break;
-    //     case Yellow:
-    //         if(Door == false)//正前方
-    //         {
-    //             Set_Servo_Angle(Rotary_Servo,355);
-    //         }
-    //         else
-    //         {
-    //             Set_Servo_Angle(Rotary_Servo,95);
-    //         }
-    //     break;
-    // }
 }
 
 /**@brief   把卡片放入指定仓库

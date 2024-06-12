@@ -34,11 +34,11 @@
 **/
 void TIM_Init()
 {
-  pit_ms_init(Sensor_CH, 5); // 初始化 PIT_CH0 为周期中断 5ms 周期
-  interrupt_set_priority(Sensor_PRIORITY, 0);
-  pit_ms_init(PIT_CH1, 10); // 初始化 PIT_CH1 为周期中断 10ms 周期
-  pit_ms_init(PIT_CH2, 15); // 初始化 PIT_CH2 为周期中断 15ms 周期
-  pit_ms_init(PIT_CH3, 1);  // 初始化 PIT_CH3 为周期中断 1ms 周期
+    pit_ms_init(Sensor_CH, 5); // 初始化 PIT_CH0 为周期中断 5ms 周期
+    interrupt_set_priority(Sensor_PRIORITY, 0);
+    pit_ms_init(PIT_CH1, 10); // 初始化 PIT_CH1 为周期中断 10ms 周期
+    pit_ms_init(PIT_CH2, 15); // 初始化 PIT_CH2 为周期中断 15ms 周期
+    pit_ms_init(PIT_CH3, 1);  // 初始化 PIT_CH3 为周期中断 1ms 周期
 }
 
 /**@brief   传感器中断函数
@@ -48,8 +48,8 @@ void TIM_Init()
 **/
 void Sensor_Handler()
 {
-  Gyro_Get_All_Angles();
-  Encoder_Process();
+    Gyro_Get_All_Angles();
+    Encoder_Process();
 }
 
 /**@brief   找目标板openart串口

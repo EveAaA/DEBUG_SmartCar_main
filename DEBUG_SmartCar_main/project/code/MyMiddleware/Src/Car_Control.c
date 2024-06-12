@@ -40,6 +40,9 @@ Car_Handle Car =
     .Speed_Z = 0,
     .Depot_Pos = White,
     .Image_Flag = false,
+    .Big_Pos_1 = RIGHT,
+    .Big_Pos_2 = RIGHT,
+    .Big_Pos_3 = RIGHT,
 };
 Turn_Handle Turn = 
 {

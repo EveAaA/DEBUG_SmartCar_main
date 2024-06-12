@@ -14,11 +14,14 @@ void Car_run_X(float Speed);
 
 typedef struct 
 {
-    float Speed_X;
-    float Speed_Y;
-    float Speed_Z;
-    Rotaryservo_Handle Depot_Pos;
-    bool Image_Flag;
+    float Speed_X;//小车X轴速度
+    float Speed_Y;//小车Y轴速度
+    float Speed_Z;//小车Z轴速度
+    Rotaryservo_Handle Depot_Pos;//仓库的位置
+    bool Image_Flag;//是否进行图像处理
+    bool Big_Pos_1;//第一个大类放置位置
+    bool Big_Pos_2;//第二个大类放置位置
+    bool Big_Pos_3;//第三个大类放置位置
 }Car_Handle;
 
 typedef struct 

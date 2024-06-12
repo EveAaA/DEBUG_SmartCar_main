@@ -68,5 +68,5 @@ typedef struct {
 }Pram_Typedef;
 extern Ring_Handle RightRing;
 extern Ring_Handle LeftRing;
-
+extern Flag_Handle Image_Flag;
 #endif /* MYDRIVERS_INC_IMAGE_H_ */

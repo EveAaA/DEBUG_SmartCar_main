@@ -20,6 +20,7 @@ typedef struct
     volatile bool Put_Depot;
     volatile bool Put_Out;
     volatile bool Pick_End;
+    volatile bool Depot_End;
 }Servo_Flag_Handle;
 
 typedef enum
@@ -28,6 +29,9 @@ typedef enum
     Black = 1,
     Red = 2,
     Yellow = 3,
+    White_Door,
+    Black_Door,
+    Red_Door,
 }Rotaryservo_Handle;
 
 void Manipulator_Init();

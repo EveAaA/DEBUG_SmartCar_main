@@ -17,6 +17,7 @@
 FSM_Handle MyFSM = {
     .CurState = Depart,
     .Line_Board_State = Find,
+    .Unload_State = Find_Zebra,
     .Static_Angle = 0,
     .Board_Dir = -1,
 };
@@ -71,20 +72,26 @@ static void Line_PatrolFsm()
     #ifdef debug_switch
         printf("Line_Patrol\r\n");    
     #endif 
-    // if(FINDBORDER_DATA.FINDBORDER_FLAG == true)
-    // {
-    //     Forward_Speed = 3;
-    // }
-    // else
-    // {
+    if(FINDBORDER_DATA.FINDBORDER_FLAG == true)
+    {
+        Forward_Speed = 3;
+    }
+    else
+    {
         Forward_Speed = 5;
-    // }
+    }
     Car_run(Forward_Speed);
-    // if((FINDBORDER_DATA.dir == LEFT) || (FINDBORDER_DATA.dir == RIGHT))
-    // {
-    //     MyFSM.Board_Dir = FINDBORDER_DATA.dir;
-    //     MyFSM.CurState = Line_Board;//散落卡片
-    // }
+    if((FINDBORDER_DATA.dir == LEFT) || (FINDBORDER_DATA.dir == RIGHT))
+    {
+        MyFSM.Board_Dir = FINDBORDER_DATA.dir;
+        Car.Image_Flag = false;
+        MyFSM.CurState = Line_Board;//散落卡片
+    }
+    else if(Image_Flag.Zerba == true)
+    {
+        Car.Image_Flag = false;
+        MyFSM.CurState = Unload;//卸货
+    }
 }
 
 /**@brief   散落在赛道旁的卡片状态机
@@ -280,10 +287,173 @@ static void Line_BoardFsm()
             }
             else
             {
+                Car.Image_Flag = true;
                 Turn.Finish = false;
                 MyFSM.Line_Board_State = Find;
                 MyFSM.CurState = Line_Patrol;
             }
+        break;
+    }
+}
+
+/**@brief   终点前卸货状态机
+-- @param   无
+-- @author  庄文标
+-- @date    2024/6/9
+**/
+static void Unload_Fsm()
+{
+    switch(MyFSM.Unload_State)
+    {
+        case Find_Zebra:
+            #ifdef debug_switch
+                printf("Find_Zebra\r\n");    
+            #endif 
+            if(Turn.Finish == false)
+            {
+                if(Car.Big_Pos_1 == RIGHT)
+                {
+                    Turn_Angle(90);
+                }
+                else if(Car.Big_Pos_1 == LEFT)
+                {
+                    Turn_Angle(-90);
+                }
+            }
+            else 
+            {
+                Turn.Finish = false;
+                MyFSM.Static_Angle = Gyro_YawAngle_Get();
+                MyFSM.Unload_State = Wait_Big_Data;
+            }
+        break;
+        case Wait_Big_Data:
+            #ifdef debug_switch
+                printf("Wait_Big_Data\r\n");    
+            #endif 
+            UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBIGPLACE);//获取大类放置区域
+            if(FINDBORDER_DATA.FINDBIGPLACE_FLAG == true)
+            {
+                MyFSM.Unload_State = Wait_Data;
+            }
+            Car.Speed_X = 2;
+            Car.Speed_Y = 0;
+            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
+        break;
+        case Wait_Data:
+            #ifdef debug_switch
+                printf("Wait_Data\r\n");    
+            #endif 
+            UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE);//发送对数字板微调信息
+            if((FINETUNING_DATA.dx!=0) || (FINETUNING_DATA.dy!=0))
+            {
+                if(Bufcnt(true,500))
+                {
+                    MyFSM.Unload_State = Move;//开始移动到卡片前面
+                }
+            }
+            Car.Speed_X = 0;
+            Car.Speed_Y = 0;
+            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
+        break;
+        case Move://移动到卡片前面
+            #ifdef debug_switch
+                // printf("Move\r\n");    
+                printf("%f,%d\r\n",FINETUNING_DATA.dx/10.f,FINETUNING_DATA.FINETUNING_FINISH_FLAG);
+            #endif 
+            if(Navigation.Finish_Flag == false)
+            {
+                Navigation_Process(FINETUNING_DATA.dx/10.f);//移动
+            }
+            else
+            {
+                Navigation.Finish_Flag = false;
+                FINETUNING_DATA.dx = 0;
+                FINETUNING_DATA.dy = 0;
+                MyFSM.Static_Angle = Gyro_YawAngle_Get();
+                MyFSM.Unload_State = Confirm;//确认是否移动到位
+            }
+        break;
+        case Confirm://确认是否移动到位
+            #ifdef debug_switch
+                printf("Confirm\r\n");    
+            #endif
+            UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE);//发送数据
+            if(FINETUNING_DATA.FINETUNING_FINISH_FLAG != 2)
+            {
+                MyFSM.Unload_State = Move;//移动
+            }
+            else
+            {
+                Set_Beeptime(200);
+                MyFSM.Unload_State = Move_Y;//Y轴移动
+            }
+            Car.Speed_X = 0;
+            Car.Speed_Y = 0;
+            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle); 
+        break;
+        case Move_Y:
+            #ifdef debug_switch
+                // printf("Move\r\n");    
+                printf("%f\r\n",FINETUNING_DATA.dy/10.f);
+            #endif 
+            if(Navigation.Finish_Flag == false)
+            {
+                Navigation_Process_Y(FINETUNING_DATA.dy/10.f);//移动
+            }
+            else
+            {
+                Navigation.Finish_Flag = false;
+                FINETUNING_DATA.dx = 0;
+                FINETUNING_DATA.dy = 0;
+                MyFSM.Static_Angle = Gyro_YawAngle_Get();
+                MyFSM.Unload_State = Confirm_Y;//确认是否移动到位
+            }
+        break;
+        case Confirm_Y:
+            #ifdef debug_switch
+                printf("Confirm_Y\r\n");    
+            #endif
+            UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE);//数字板微调
+            if(FINETUNING_DATA.FINETUNING_FINISH_FLAG != 1)
+            {
+                MyFSM.Unload_State = Move_Y;//移动
+            }
+            else
+            {
+                Set_Beeptime(200);
+                UART_SendByte(&_UART_FINE_TUNING, UART_CLASSIFY_BIGPLACE);//发送数据，接收大类分类数据
+                MyFSM.Unload_State = Classify;//识别分类
+                Servo_Flag.Depot_End = false;//先清零
+            }
+            Car.Speed_X = 0;
+            Car.Speed_Y = 0;
+            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle); 
+        break;
+        case Classify:
+            #ifdef debug_switch
+                printf("Classify\r\n");    
+            #endif 
+            if(CLASSIFY_DATA.type != None)//识别到了分类
+            {
+                Dodge_Board();
+                MyFSM.Big_Board = CLASSIFY_DATA.type;//记录分类
+                CLASSIFY_DATA.type = None;
+                MyFSM.Static_Angle = Gyro_YawAngle_Get();
+                Set_Beepfreq(MyFSM.Big_Board+1);
+                Car.Depot_Pos = MyFSM.Big_Board;
+                MyFSM.Big_Board = None;
+            }
+            else
+            {
+                if(Bufcnt(true,3000))//3s发送一次
+                {
+                    UART_SendByte(&_UART_FINE_TUNING, UART_CLASSIFY_BIGPLACE);//发送数据，接收大类分类数据
+                }
+            }
+            Car.Speed_X = 0;
+            Car.Speed_Y = 0;
+            Car.Speed_Z = 0; 
         break;
     }
 }
@@ -312,6 +482,9 @@ void FSM_main()
         break;
         case Line_Board://赛道散落卡片
             Line_BoardFsm();
+        break;
+        case Unload://终点前卸货
+            Unload_Fsm();
         break;
     }
 }

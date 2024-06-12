@@ -22,7 +22,7 @@
 
 Ring_Handle LeftRing = { false, false, 0 };
 Ring_Handle RightRing = { false, false, 0 };
-Flag_Handle Image_Flag = {false,false,false};//元素标志位
+Flag_Handle Image_Flag = {false,false,false,false};//元素标志位
 /* Define\Declare ------------------------------------------------------------*/
 #define use_num     1   //1就是不压缩，2就是压缩一倍
 uint8 Original_Image[Image_H][Image_W];//原始图像数组
@@ -1843,7 +1843,7 @@ void Zebra_Seek(uint8(*Bin_Image)[Image_W])
     uint8 total = 0;
     for(uint8 i = 50;i <= 120;i++)
     {
-        if(Bin_Image[10][i] == Black_Pixel && Bin_Image[10][i+1] == White_Pixel)
+        if(Bin_Image[30][i] == Black_Pixel && Bin_Image[30][i+1] == White_Pixel)
         {
             total ++;
         }
@@ -1853,7 +1853,7 @@ void Zebra_Seek(uint8(*Bin_Image)[Image_W])
     {
         total = 0;
         Image_Flag.Zerba = true;
-        // Set_Beeptime(200);
+        Set_Beepfreq(2);
     }
     else
     {
@@ -1907,14 +1907,14 @@ void Image_Process(void)
             Zebra_Seek(Bin_Image);
         }
         // 同上
-        if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Right_Ring) && (!Image_Flag.Zerba))
-        {
-            Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
-        }
-        if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Left_Ring) && (!Image_Flag.Zerba))
-        {
-            Right_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
-        }
+        // if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Right_Ring) && (!Image_Flag.Zerba))
+        // {
+        //     Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
+        // }
+        // if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Left_Ring) && (!Image_Flag.Zerba))
+        // {
+        //     Right_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
+        // }
     }
     
     for (int i = Hightest; i < Image_H-1; i++)

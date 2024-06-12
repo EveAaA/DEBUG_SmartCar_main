@@ -65,29 +65,28 @@ void PIT_IRQHandler(void)
     
     if(pit_flag_get(PIT_CH1))
     {
-        if ((mt9v03x_finish_flag) && (Car.Image_Flag))
-        {
-            Image_Process();
-            mt9v03x_finish_flag = 0;
-        }
+        // if ((mt9v03x_finish_flag) && (Car.Image_Flag))
+        // {
+        //     Image_Process();
+        //     mt9v03x_finish_flag = 0;
+        // }
         pit_flag_clear(PIT_CH1);
     }
     
     if(pit_flag_get(PIT_CH2))
     {
-        // if(Start == 1)
-        // {
-        //     Car.Speed_Y = 3;
-        //     // Start = 0;
-        //     // Car.Depot_Pos = Red;
-        // }
+        if(Start == 1)
+        {
+            // Car.Speed_Y = 3;
+            // Start = 0;
+        }
         // else if(Start == 0)
         // {
         //     Car.Speed_X = 0;
         //     Car.Speed_Y = 0;
         //     Car.Speed_Z = 0;
         // }
-        FSM_main();
+        // FSM_main();
         pit_flag_clear(PIT_CH2);
     }
     
