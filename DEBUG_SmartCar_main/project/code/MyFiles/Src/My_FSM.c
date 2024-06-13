@@ -22,6 +22,10 @@ FSM_Handle MyFSM = {
     .Board_Dir = -1,
     .Big_Count = 0,
     .Stop_Flag = false,
+    .Big_Count_1 = 0,
+    .Big_Count_2 = 0,
+    .Big_Count_3 = 0,
+    .Unload_Count = 0,
 };
 
 uint16 wait_time = 0;
@@ -239,6 +243,18 @@ static void Line_BoardFsm()
                 Dodge_Board();
                 MyFSM.Line_Board_State = Pick;//捡起卡片
                 MyFSM.Big_Board = CLASSIFY_DATA.type;//记录分类
+                if(MyFSM.Big_Board == 0)
+                {
+                    MyFSM.Big_Count_1+=1;
+                }
+                else if(MyFSM.Big_Board == 1)
+                {
+                    MyFSM.Big_Count_2+=1;
+                }
+                else if(MyFSM.Big_Board == 2)
+                {
+                    MyFSM.Big_Count_3+=1;
+                }
                 CLASSIFY_DATA.type = None;
                 MyFSM.Static_Angle = Gyro_YawAngle_Get();
                 Set_Beepfreq(MyFSM.Big_Board+1);
@@ -453,9 +469,21 @@ static void Unload_Fsm()
                 BIG_PLACE_DATA.Big_Place = None;
                 Set_Beepfreq(MyFSM.Big_Board+1);
                 Car.Depot_Pos = MyFSM.Big_Board;
-                MyFSM.Big_Board = None;
-                MyFSM.Unload_State = Unload_Next;
+                MyFSM.Unload_State = Unload_Board;
                 MyFSM.Big_Count +=1;
+                if(MyFSM.Big_Board == 0)
+                {
+                    MyFSM.Unload_Count = MyFSM.Big_Count_1;
+                }
+                else if(MyFSM.Big_Board == 1)
+                {
+                    MyFSM.Unload_Count = MyFSM.Big_Count_2;
+                }
+                else if(MyFSM.Big_Board == 2)
+                {
+                    MyFSM.Unload_Count = MyFSM.Big_Count_3;
+                }
+                MyFSM.Big_Board = None;
             }
             else
             {
@@ -467,6 +495,28 @@ static void Unload_Fsm()
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
             Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
+        break;
+        case Unload_Board:
+            #ifdef debug_switch
+                printf("Unload_Board\r\n");    
+            #endif
+            if(MyFSM.Unload_Count == 0)
+            {
+                MyFSM.Unload_State = Unload_Next;
+                Servo_Flag.Depot_End = false;
+            }
+            if(Servo_Flag.Depot_End)
+            {
+                if(!Servo_Flag.Put_Out)
+                {
+                    Take_Card_Out();
+                }
+                else
+                {
+                    MyFSM.Unload_Count -=1;   
+                    Servo_Flag.Put_Out = false;
+                }
+            }
         break;
         case Unload_Next:
             #ifdef debug_switch
@@ -520,7 +570,7 @@ static void Unload_Fsm()
                 printf("Return_Line = %d %d\r\n",Image_Flag.Zerba,MyFSM.Stop_Flag);    
             #endif
             Dodge_Carmar();
-            if(Bufcnt(Image_Flag.Zerba,2000))
+            if(Bufcnt(Image_Flag.Zerba,1500))
             {
                 MyFSM.Stop_Flag = true;
             }

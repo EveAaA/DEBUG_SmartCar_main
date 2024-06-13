@@ -268,10 +268,10 @@ void Flash_Init()
     if(!flash_check(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX))//判断是否有数据，如果没有数据
     {
         flash_union_buffer[0].float_type = 0.15f;//微调X轴P
-        flash_union_buffer[1].float_type = 0.3f;//微调Y轴P
-        flash_union_buffer[2].float_type = 0.21f;//微调X轴D
-        flash_union_buffer[3].float_type = 0.5f;//微调Y轴D
-        flash_union_buffer[4].float_type = 0.44f;//角度环P
+        flash_union_buffer[1].float_type = 0.03f;//微调Y轴P
+        flash_union_buffer[2].float_type = 0.20f;//微调X轴D
+        flash_union_buffer[3].float_type = 0.08f;//微调Y轴D
+        flash_union_buffer[4].float_type = 0.13f;//角度环P
         flash_union_buffer[5].float_type = 0.5f;//角度环D
         flash_write_page_from_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
         flash_buffer_clear();

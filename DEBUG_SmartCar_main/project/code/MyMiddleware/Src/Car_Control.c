@@ -80,7 +80,7 @@ void All_PID_Init()
     PIDInit(&Turn_PID,2.55f,0,0.6f,5,-5);   
     PIDInit(&Gyroz_PID,1.75f,0,0.25f,5,-5);
     PIDInit(&Gyroz_Pid,0.65f,0,0.25f,5,-5);
-    PIDInit(&AngleControl_PID,0.44f,0,0.5,3.0f,-3.0f);
+    PIDInit(&AngleControl_PID,0.18f,0,0.5,3.0f,-3.0f);
 }
 
 

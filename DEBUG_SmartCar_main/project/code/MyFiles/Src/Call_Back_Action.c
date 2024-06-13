@@ -159,14 +159,14 @@ void Uart_Fine_Tuning_Receive(void)
 
     if (_UART_FINE_TUNING.index == 7)
     {
-      printf("+++++++++++++++++\n");
-      printf("index: %d\n", _UART_FINE_TUNING.index);
-      for (uint32_t i = 0; i < _UART_FINE_TUNING.index; i++)
-      {
-        printf("%x ", _UART_FINE_TUNING.fifo_get_data[i]);
-      }
-      printf("\n");
-      printf("%x  \n", _UART_FINE_TUNING.get_data);
+      // printf("+++++++++++++++++\n");
+      // printf("index: %d\n", _UART_FINE_TUNING.index);
+      // for (uint32_t i = 0; i < _UART_FINE_TUNING.index; i++)
+      // {
+      //   printf("%x ", _UART_FINE_TUNING.fifo_get_data[i]);
+      // }
+      // printf("\n");
+      // printf("%x  \n", _UART_FINE_TUNING.get_data);
       // 两字节转浮点数
       UnpackFlag.FINETUNING_DATA_FLAG = true;
       FINETUNING_DATA.dx = (float)((_UART_FINE_TUNING.fifo_get_data[1] >> 7) == 0) ? ((_UART_FINE_TUNING.fifo_get_data[0] + (_UART_FINE_TUNING.fifo_get_data[1] << 8))) : (-(65536 - (_UART_FINE_TUNING.fifo_get_data[0] + (_UART_FINE_TUNING.fifo_get_data[1] << 8))));

@@ -342,44 +342,60 @@ void Take_Card_Out()
     switch (Out_State)
     {
         case 0:
+            Set_Servo_Angle(Stretch_Servo,120);
             Electromagnet_On;
-            Set_Servo_Angle(Raise_Servo,140);
             Out_State = 1;
         break;
-        case 1://吸卡片
-            Set_Servo_Angle(Stretch_Servo,15);
-            Out_State = 2;
-        break;
-        case 2://把卡片拿出来
+        case 1:
             if(Bufcnt(true,500))
             {
-                Set_Servo_Angle(Stretch_Servo,120);
-                Out_State = 3;
+                Set_Servo_Angle(Raise_Servo,160);
+                Out_State = 2;
             }
         break;
-        case 3://把卡片翻下来
+        case 2://吸卡片
+            Set_Servo_Angle(Stretch_Servo,40);
+            Out_State = 3;
+        break;
+        case 3:
             if(Bufcnt(true,500))
             {
-                Set_Servo_Angle(Raise_Servo,0);
+                Set_Servo_Angle(Raise_Servo,132);
                 Out_State = 4;
             }
         break;
-        case 4://把卡片放下
+        case 4:
+            Set_Servo_Angle(Stretch_Servo,15);
+            Out_State = 5;           
+        break;
+        case 5://把卡片拿出来
+            if(Bufcnt(true,500))
+            {
+                Set_Servo_Angle(Stretch_Servo,120);
+                Out_State = 6;
+            }
+        break;
+        case 6://把卡片翻下来
+            if(Bufcnt(true,500))
+            {
+                Set_Servo_Angle(Raise_Servo,0);
+                Out_State = 7;
+            }
+        break;
+        case 7://把卡片放下
             if(Bufcnt(true,375))
             {
                 Set_Servo_Angle(Stretch_Servo,150);
-                Out_State = 5;
+                Out_State = 8;
             }
         break;
-        case 5://电磁铁消磁
+        case 8://电磁铁消磁
             if(Bufcnt(true,375))
             {
                 Electromagnet_Off;
                 Out_State = 0;
-                Stretch_Servo.Servo_Time = 0;
                 Servo_Flag.Put_Out = true;
-                Set_Servo_Angle(Raise_Servo,Raise_Servo.Init_Angle);
-                Set_Servo_Angle(Stretch_Servo,Stretch_Servo.Init_Angle);
+                Dodge_Board();
             }
         break;
     }

@@ -38,7 +38,11 @@ typedef struct
     int8 Board_Dir;//散落在赛道的哪一边
     int8 Big_Board;//卡片大类
     uint8 Big_Count;//大类次数
-    bool Stop_Flag;
+    uint8 Big_Count_1;//类别1数量
+    uint8 Big_Count_2;//类别2数量
+    uint8 Big_Count_3;//类别3数量
+    uint8 Unload_Count;//卸货次数
+    bool Stop_Flag;//停车
 }FSM_Handle;
 void FSM_main();
 

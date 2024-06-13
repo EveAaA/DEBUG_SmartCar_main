@@ -21,16 +21,16 @@ Pid_TypeDef DistanceX_PID =
 {
     .Kp = 0.15f,
     .Ki = 0.005f,
-    .Kd = 0.21f,
+    .Kd = 0.20f,
     .OutputMax = 5,
     .OutputMin = -5,
 };
 
 Pid_TypeDef DistanceY_PID = 
 {
-    .Kp = 0.3f,
+    .Kp = 0.03f,
     .Ki = 0.005f,
-    .Kd = 0.5f,
+    .Kd = 0.08f,
     .OutputMax = 4,
     .OutputMin = -4,
 };
