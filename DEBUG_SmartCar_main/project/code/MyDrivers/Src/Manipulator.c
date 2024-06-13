@@ -278,6 +278,7 @@ void Rotary_Switch(Rotaryservo_Handle RotaryServo,uint8 Rotary_Speed)
         
         Set_Angle = Cur_Depot + (Tar_Depot - Cur_Depot)*(Percent/(float)Rotary_Speed);
         Percent +=1;
+        Servo_Flag.Depot_End = false;
     }
 
     if((Percent >= Rotary_Speed) && (RotaryServo <= Yellow))

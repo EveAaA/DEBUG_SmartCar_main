@@ -470,6 +470,7 @@ static void Unload_Fsm()
                 Set_Beepfreq(MyFSM.Big_Board+1);
                 Car.Depot_Pos = MyFSM.Big_Board;
                 MyFSM.Unload_State = Unload_Board;
+                Servo_Flag.Depot_End = true;
                 MyFSM.Big_Count +=1;
                 if(MyFSM.Big_Board == 0)
                 {
@@ -517,6 +518,9 @@ static void Unload_Fsm()
                     Servo_Flag.Put_Out = false;
                 }
             }
+            Car.Speed_X = 0;
+            Car.Speed_Y = 0;
+            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle); 
         break;
         case Unload_Next:
             #ifdef debug_switch
