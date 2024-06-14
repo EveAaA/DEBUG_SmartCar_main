@@ -235,6 +235,7 @@ void Navigation_Process_Image(float x,float y)
             }
         break;
         case Move_State:
+            //获取图像识别的坐标
             Navigation.Cur_Position_X = FINETUNING_DATA.dx/10.0f;
             Navigation.Cur_Position_Y = FINETUNING_DATA.dy/10.f;
             if(fabs(x - Navigation.Cur_Position_X) <= 0.4f && fabs(y - Navigation.Cur_Position_Y) <= 0.4f && fabs(Get_X_Speed()) <= 0.1 && fabs(Get_Y_Speed()) <= 0.1)
@@ -282,3 +283,4 @@ void Navigation_Process_Image(float x,float y)
         break;
     }
 }
+
