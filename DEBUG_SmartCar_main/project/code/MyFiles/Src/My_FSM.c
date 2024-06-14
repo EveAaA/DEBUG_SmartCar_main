@@ -20,12 +20,16 @@ FSM_Handle MyFSM = {
     .Unload_State = Find_Zebra,
     .Static_Angle = 0,
     .Board_Dir = -1,
-    .Big_Count = 0,
     .Stop_Flag = false,
-    .Big_Count_1 = 0,
-    .Big_Count_2 = 0,
-    .Big_Count_3 = 0,
+    .Big_Pos_Count = 0,
+    .Big_Count[0] = 0,
+    .Big_Count[1] = 0,
+    .Big_Count[2] = 0,
     .Unload_Count = 0,
+    .Depot_Pos = White,
+    .Big_Pos[0] = RIGHT,
+    .Big_Pos[1] = RIGHT,
+    .Big_Pos[2] = RIGHT,
 };
 
 uint16 wait_time = 0;
@@ -168,7 +172,7 @@ static void Line_BoardFsm()
             #endif 
             if(Navigation.Finish_Flag == false)
             {
-                Navigation_Process(FINETUNING_DATA.dx/10.f);//移动
+                Navigation_Process(FINETUNING_DATA.dx/10.f,0);//移动
             }
             else
             {
@@ -204,7 +208,7 @@ static void Line_BoardFsm()
             #endif 
             if(Navigation.Finish_Flag == false)
             {
-                Navigation_Process_Y(FINETUNING_DATA.dy/10.f);//移动
+                Navigation_Process(0,FINETUNING_DATA.dy/10.f);//移动
             }
             else
             {
@@ -243,22 +247,11 @@ static void Line_BoardFsm()
                 Dodge_Board();
                 MyFSM.Line_Board_State = Pick;//捡起卡片
                 MyFSM.Big_Board = CLASSIFY_DATA.type;//记录分类
-                if(MyFSM.Big_Board == 0)
-                {
-                    MyFSM.Big_Count_1+=1;
-                }
-                else if(MyFSM.Big_Board == 1)
-                {
-                    MyFSM.Big_Count_2+=1;
-                }
-                else if(MyFSM.Big_Board == 2)
-                {
-                    MyFSM.Big_Count_3+=1;
-                }
+                MyFSM.Big_Count[MyFSM.Big_Board]+=1;
                 CLASSIFY_DATA.type = None;
                 MyFSM.Static_Angle = Gyro_YawAngle_Get();
                 Set_Beepfreq(MyFSM.Big_Board+1);
-                Car.Depot_Pos = MyFSM.Big_Board;
+                MyFSM.Depot_Pos = MyFSM.Big_Board;
                 MyFSM.Big_Board = None;
             }
             else
@@ -332,11 +325,11 @@ static void Unload_Fsm()
             #endif 
             if(Turn.Finish == false)
             {
-                if(Car.Big_Pos_1 == RIGHT)
+                if(MyFSM.Big_Pos[0] == RIGHT)
                 {
                     Turn_Angle(90);
                 }
-                else if(Car.Big_Pos_1 == LEFT)
+                else if(MyFSM.Big_Pos[0] == LEFT)
                 {
                     Turn_Angle(-90);
                 }
@@ -376,7 +369,7 @@ static void Unload_Fsm()
                 }
             }
             Car.Speed_X = 0;
-            if(MyFSM.Big_Count == 0)
+            if(MyFSM.Big_Pos_Count == 0)
             {
                 Car.Speed_Y = 2;
             }
@@ -393,7 +386,7 @@ static void Unload_Fsm()
             #endif 
             if(Navigation.Finish_Flag == false)
             {
-                Navigation_Process(FINETUNING_DATA.dx/10.f);//移动
+                Navigation_Process(FINETUNING_DATA.dx/10.f,0);//移动
             }
             else
             {
@@ -428,7 +421,7 @@ static void Unload_Fsm()
             #endif 
             if(Navigation.Finish_Flag == false)
             {
-                Navigation_Process_Y(FINETUNING_DATA.dy/10.f);//移动
+                Navigation_Process(0,FINETUNING_DATA.dy/10.f);//移动
             }
             else
             {
@@ -465,26 +458,15 @@ static void Unload_Fsm()
             if(BIG_PLACE_DATA.Big_Place != None)//识别到了分类
             {
                 Dodge_Board();
+                Servo_Flag.Depot_End = true;
                 MyFSM.Big_Board = BIG_PLACE_DATA.Big_Place;//记录分类
                 BIG_PLACE_DATA.Big_Place = None;
                 Set_Beepfreq(MyFSM.Big_Board+1);
-                Car.Depot_Pos = MyFSM.Big_Board;
-                MyFSM.Unload_State = Unload_Board;
-                Servo_Flag.Depot_End = true;
-                MyFSM.Big_Count +=1;
-                if(MyFSM.Big_Board == 0)
-                {
-                    MyFSM.Unload_Count = MyFSM.Big_Count_1;
-                }
-                else if(MyFSM.Big_Board == 1)
-                {
-                    MyFSM.Unload_Count = MyFSM.Big_Count_2;
-                }
-                else if(MyFSM.Big_Board == 2)
-                {
-                    MyFSM.Unload_Count = MyFSM.Big_Count_3;
-                }
+                MyFSM.Depot_Pos = MyFSM.Big_Board;
+                MyFSM.Big_Pos_Count +=1;
+                MyFSM.Unload_Count = MyFSM.Big_Count[MyFSM.Big_Board];
                 MyFSM.Big_Board = None;
+                MyFSM.Unload_State = Unload_Board;
             }
             else
             {
@@ -526,9 +508,9 @@ static void Unload_Fsm()
             #ifdef debug_switch
                 printf("Unload_Next\r\n");    
             #endif
-            if(MyFSM.Big_Count < 3)
+            if(MyFSM.Big_Pos_Count < 3)
             {
-                if(Car.Big_Pos_1!=Car.Big_Pos_2 || Car.Big_Pos_2!=Car.Big_Pos_3)
+                if(MyFSM.Big_Pos[0]!=MyFSM.Big_Pos[1] || MyFSM.Big_Pos[1]!=MyFSM.Big_Pos[2])
                 {
                     if(Turn.Finish == false)
                     {
@@ -545,7 +527,7 @@ static void Unload_Fsm()
                 {
                     if(Navigation.Finish_Flag == false)
                     {
-                        Navigation_Process(60);
+                        Navigation_Process(60,0);
                     }
                     else
                     {

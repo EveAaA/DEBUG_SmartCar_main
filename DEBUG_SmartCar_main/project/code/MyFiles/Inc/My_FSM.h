@@ -37,13 +37,14 @@ typedef struct
     float Static_Angle;//静止的角度
     int8 Board_Dir;//散落在赛道的哪一边
     int8 Big_Board;//卡片大类
-    uint8 Big_Count;//大类次数
-    uint8 Big_Count_1;//类别1数量
-    uint8 Big_Count_2;//类别2数量
-    uint8 Big_Count_3;//类别3数量
+    uint8 Big_Pos_Count;//大类次数,也就是去了几个大类的位置
+    uint8 Big_Count[3];//大类每类数量
     uint8 Unload_Count;//卸货次数
     bool Stop_Flag;//停车
+    Rotaryservo_Handle Depot_Pos;//仓库的位置
+    uint8 Big_Pos[3];
 }FSM_Handle;
+extern FSM_Handle MyFSM;
 void FSM_main();
 
 #endif

@@ -18,14 +18,14 @@ typedef struct
     float Y_Speed;//Y轴速度
     bool Start_Flag;//启动惯性导航
     bool Finish_Flag;//惯性导航结束
+    bool X_Finish;
+    bool Y_Finish;
 }Navigation_Handle;
 
 typedef enum
 {
     Start_State = 0,//开始状态，记录初始值
-    X_State,//X轴移动状态
-    Stop,//X轴移动结束,判断是否移动到位
-    Y_State,//Y轴移动状态
+    Move_State,//移动状态
     Move_Finish,//移动结束
 }State;
 
@@ -33,7 +33,7 @@ extern Navigation_Handle Navigation;
 extern Pid_TypeDef DistanceX_PID;
 extern Pid_TypeDef DistanceY_PID;
 void Reset_Navigation();
-void Navigation_Process(float x);
+void Navigation_Process(float x,float y);
 void Navigation_Process_Y(float y);
 void Navigation_Process_Image(float x,float y);
 #endif
