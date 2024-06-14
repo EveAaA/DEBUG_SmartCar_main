@@ -470,7 +470,7 @@ static void Unload_Fsm()
             }
             else
             {
-                if(Bufcnt(true,3000))//3s发送一次
+                if(Bufcnt(true,300))//3s发送一次
                 {
                     UART_SendByte(&_UART_FINE_TUNING, UART_CLASSIFY_BIGPLACE);//发送数据，接收大类分类数据
                 }
@@ -527,7 +527,8 @@ static void Unload_Fsm()
                 {
                     if(Navigation.Finish_Flag == false)
                     {
-                        Navigation_Process(60,0);
+                        // printf("Move\r\n"); 
+                        Navigation_Process(55,0);
                     }
                     else
                     {
@@ -556,7 +557,7 @@ static void Unload_Fsm()
                 printf("Return_Line = %d %d\r\n",Image_Flag.Zerba,MyFSM.Stop_Flag);    
             #endif
             Dodge_Carmar();
-            if(Bufcnt(Image_Flag.Zerba,1500))
+            if(Bufcnt(Image_Flag.Zerba,1700))
             {
                 MyFSM.Stop_Flag = true;
             }
