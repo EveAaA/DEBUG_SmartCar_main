@@ -26,6 +26,7 @@ typedef enum
 {
     Start_State = 0,//开始状态，记录初始值
     Move_State,//移动状态
+    Move_State_Y,
     Move_Finish,//移动结束
 }State;
 
