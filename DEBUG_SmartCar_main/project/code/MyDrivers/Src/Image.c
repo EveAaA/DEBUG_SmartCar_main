@@ -583,13 +583,9 @@ void Search_L_R(uint16 Break_Flag, uint8(*image)[Image_W], uint16* L_Stastic, ui
                         Center_Point_R[1] = Temp_R[j][1];//y
                     }
                 }
-
             }
         }
-
-
     }
-
     //取出循环次数
     *L_Stastic = L_Data_Statics;
     *R_Stastic = R_Data_Statics;
@@ -845,6 +841,42 @@ void my_sobel(unsigned char imageIn[Image_H][Image_W], unsigned char imageOut[Im
 }
 
 /**----------------------------------------------------元素部分------------------------------------------------------------------------**/
+
+/**@brief   是否左右两边都丢线
+-- @param   无、
+-- @return  是否丢线：true-丢线，false-不丢线
+-- @author  庄文标
+-- @date    2024/6/15
+**/
+bool Lose_Line(void)
+{
+    uint8 Lose_Line_Point_L = 0; 
+    uint8 Lose_Line_Point_R = 0; 
+
+    for (int i = Image_H - 2; i > Hightest; i -= 1) 
+    {
+        if (L_Border[i] <= 2)
+        {
+            Lose_Line_Point_L += 1;
+        }
+
+        if (R_Border[i] >= 144)
+        {
+            Lose_Line_Point_R += 1;
+        }
+    }
+    // printf("Line: %d \n", StraightPoint);
+    if ((Lose_Line_Point_L >= 10) && (Lose_Line_Point_R >= 10))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+
 /**
 * @brief 十字补线函数
 * @param uint8(*Bin_Image)[Image_W]		输入二值图像
@@ -860,133 +892,311 @@ void my_sobel(unsigned char imageIn[Image_H][Image_W], unsigned char imageOut[Im
  */
 void Cross_Fill(uint8(*Bin_Image)[Image_W],  uint8* L_Border, uint8* R_Border, uint16 Total_Num_L, uint16 Total_Num_R, uint16* Dir_L, uint16* Dir_R, uint16(*Points_L)[2], uint16(*Points_R)[2])
 {
-    uint8 i;
-    uint8 Break_Num_L_UP = 0;//拐点
-    uint8 Break_Num_R_UP = 0;
-    uint8 Break_Num_L_DOWN = 0;
-    uint8 Break_Num_R_DOWN = 0;
-    uint8 start, end;
+    uint16 i;
+    uint16 Break_Num_L_UP = 0;//拐点
+    uint16 Break_Num_R_UP = 0;
+    uint16 Break_Num_L_DOWN = 0;
+    uint16 Break_Num_R_DOWN = 0;
+    uint16 start, end;
     float slope_l_rate = 0, intercept_l = 0;
 
-    for (i = 1; i < Total_Num_L; i++)
+    if (Lose_Line())
     {
-        if ((Dir_L[i - 1] == 2) && (Dir_L[i] == 2) && (Dir_L[i + 3] == 4) && (Dir_L[i + 5] == 4) && (Dir_L[i + 7] == 4))//2-4跳变，左下拐点
+        for (i = 3; i < Image_H / 2 + 35; i++)//寻找左上拐点
         {
-            Break_Num_L_DOWN = Points_L[i][1];//传递y坐标
-            // printf("find l_down\r\n");
-            // printf("%d %d\r\n",i,Break_Num_L_DOWN);
-            // if(Menu.Image_Show)
-            // {
-            //     tft180_Draw_ColorCircle(L_Border[Break_Num_L_DOWN],Break_Num_L_DOWN,5,RGB565_BLUE);//画出拐点
-            // }
-            break;
+            if (abs(L_Border[i] - L_Border[i - 1] <= 5)
+                && (abs(L_Border[i - 1] - L_Border[i - 2]) <= 5)
+                && (abs(L_Border[i - 2] - L_Border[i - 3]) <= 5)
+                && (L_Border[i] - L_Border[i + 2] >= 7))
+            {
+                Break_Num_L_UP = i;//传递y坐标
+                break;
+            }
         }
-    }
-    for (i = 1; i < Total_Num_R; i++)
-    {
-        // printf("DIR_R[%d] = %d\r\n",i,Dir_R[i]);
-        if ((Dir_R[i - 1] == 2) && (Dir_R[i] == 2) && (Dir_R[i + 3] == 4) && (Dir_R[i + 5] == 4) && (Dir_R[i + 7] == 4))//2-4跳变，右下拐点
+
+        for (i = Image_H - 5; i > Image_H / 2 - 5; i--)//寻找左下拐点
         {
-            Break_Num_R_DOWN = Points_R[i][1];//传递y坐标
-            // printf("find r_down\r\n");
-            // printf("%d %d\r\n",R_Border[Break_Num_R_DOWN],Break_Num_R_DOWN);
-            // if(Menu.Image_Show)
-            // {
-            //     tft180_Draw_ColorCircle(R_Border[Break_Num_R_DOWN],Break_Num_R_DOWN,5,RGB565_RED);
-            // }
-            break;
+            //printf("L_Board[%d] = %d\r\n", i, L_Border[i]);
+            if (abs(L_Border[i] - L_Border[i + 1] <= 5)
+                && (abs(L_Border[i + 1] - L_Border[i + 2]) <= 5)
+                && (abs(L_Border[i + 2] - L_Border[i + 3]) <= 5)
+                && (L_Border[i] - L_Border[i - 2] >= 7))
+            {
+                Break_Num_L_DOWN = i;//传递y坐标
+                break;
+            }
         }
-    }
-    for (i = 1; i < Total_Num_L; i++)
-    {
-        if ((Dir_L[i - 1] == 4) && (Dir_L[i] == 4) && (Dir_L[i + 3] == 6) && (Dir_L[i + 5] == 6) && (Dir_L[i + 7] == 6))//4-6跳变，左上拐点
+
+        for (i = 3; i < Image_H / 2 + 35; i++)//寻找右上拐点
         {
-            Break_Num_L_UP = Points_L[i][1];//传递y坐标
-            // printf("find l_up\r\n");
-            // printf("%d %d\r\n",L_Border[Break_Num_L_UP - 10],Break_Num_L_UP);
-            // if(Menu.Image_Show)
-            // {
-            //     tft180_Draw_ColorCircle(L_Border[Break_Num_L_UP - 10],Break_Num_L_UP,5,RGB565_BLUE);
-            // }
-            break;
+            if (abs(R_Border[i] - R_Border[i - 1] <= 5)
+                && (abs(R_Border[i - 1] - R_Border[i - 2]) <= 5)
+                && (abs(R_Border[i - 2] - R_Border[i - 3]) <= 5)
+                && (R_Border[i + 2] - R_Border[i] >= 7))
+            {
+                Break_Num_R_UP = i;//传递y坐标
+                break;
+            }
         }
-    }
-    for (i = 1; i < Total_Num_R; i++)
-    {
-        // printf("DIR_R[%d] = %d\r\n",i,Dir_R[i]);
-        if ((Dir_R[i - 1] == 4) && (Dir_R[i] == 4 )&& (Dir_R[i + 3] == 6) && (Dir_R[i + 5] == 6) && (Dir_R[i + 7] == 6))//4-6跳变，右上拐点
+
+        for (i = Image_H - 5; i > Image_H / 2 - 5; i--)//寻找右下拐点
         {
-            Break_Num_R_UP = Points_R[i][1];//传递y坐标
-            // printf("find R_up\r\n");
-            // printf("%d %d\r\n",R_Border[Break_Num_R_UP - 10],Break_Num_R_UP);
-            // if(Menu.Image_Show)
-            // {
-            //     tft180_Draw_ColorCircle(R_Border[Break_Num_R_UP - 10],Break_Num_R_UP,5,RGB565_RED);
-            // }
-            break;
+            //printf("R_Border[%d] = %d\r\n", i, R_Border[i]);
+            if (abs(R_Border[i] - R_Border[i + 1] <= 5)
+                && (abs(R_Border[i + 1] - R_Border[i + 2]) <= 5)
+                && (abs(R_Border[i + 2] - R_Border[i + 3]) <= 5)
+                && (R_Border[i - 2] - R_Border[i] >= 7))
+            {
+                Break_Num_R_DOWN = i;//传递y坐标
+                break;
+            }
         }
     }
 
-    if ((Break_Num_L_DOWN) && (Break_Num_R_DOWN) && (Bin_Image[Image_H - 10][4] == 0) && (Bin_Image[Image_H - 10][Image_W - 4] == 0))//十字前
+    if ((Break_Num_R_DOWN - Break_Num_R_UP < 0) && (Break_Num_R_DOWN) && (Break_Num_R_UP))
     {
-        Image_Flag.Cross_Fill = 1;
+        Break_Num_R_DOWN = 0;
+    }
+    if ((Break_Num_L_DOWN - Break_Num_L_UP < 0) && (Break_Num_L_DOWN) && (Break_Num_L_UP))
+    {
+        Break_Num_L_DOWN = 0;
+    }
+    if ((Break_Num_R_UP - Break_Num_R_DOWN > 0) && (Break_Num_R_DOWN) && (Break_Num_R_UP))
+    {
+        Break_Num_R_UP = 0;
+    }
+    if ((Break_Num_L_UP - Break_Num_L_DOWN > 0) && (Break_Num_L_DOWN) && (Break_Num_L_UP))
+    {
+        Break_Num_L_UP = 0;
+    }
+
+    if ((Break_Num_L_DOWN) && (Break_Num_L_UP) && (Break_Num_R_DOWN) && (Break_Num_R_UP))//同时找到四个拐点 1111
+    {
+        Image_Flag.Cross_Fill = true;
         //计算斜率,左边斜率
-        start = Break_Num_L_DOWN + 2;
-        end = Break_Num_L_DOWN + 7;
-        end = Limit_a_b(end, 0, Image_H);//限幅
-
-        Get_K_b(start, L_Border[start], end, L_Border[end],&slope_l_rate,&intercept_l);
-        // printf("slope_l_rate:%f\nintercept_l:%f\n", slope_l_rate, intercept_l);
-        for (i = Break_Num_L_DOWN; i < Image_H - 1; i--)
+        Get_K_b(L_Border[Break_Num_L_DOWN], Break_Num_L_DOWN, L_Border[Break_Num_L_UP],Break_Num_L_UP,&slope_l_rate,&intercept_l);
+        for (i = Break_Num_L_DOWN; i > Break_Num_L_UP; i--)
         {
-            L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+            L_Border[i] = (i - intercept_l)/ slope_l_rate;//y = kx+b
             L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
         }
 
         //计算斜率,右边斜率
-        start = Break_Num_R_DOWN + 2;
-        end = Break_Num_R_DOWN + 7;
-        end = Limit_a_b(end, 0, Image_H);//限幅
-        Get_K_b(start, R_Border[start], end, R_Border[end], &slope_l_rate, &intercept_l);
-        //printf("slope_l_rate:%d\nintercept_l:%d\n", slope_l_rate, intercept_l);
-        for (i = Break_Num_R_DOWN + 2; i < Image_H - 1; i--)
+        Get_K_b(R_Border[Break_Num_R_DOWN], Break_Num_R_DOWN, R_Border[Break_Num_R_UP], Break_Num_R_UP, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_R_DOWN; i > Break_Num_R_UP; i--)
         {
-            R_Border[i] = slope_l_rate * (i)+intercept_l;
+            R_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
+        }
+    }
+    else if ((Break_Num_L_DOWN) && (Break_Num_L_UP) && (Break_Num_R_DOWN) && (!Break_Num_R_UP))//左下、右下、左上 1110
+    {
+        Image_Flag.Cross_Fill = true;
+        //计算斜率
+        Get_K_b(L_Border[Break_Num_L_UP], Break_Num_L_UP, L_Border[Break_Num_L_DOWN], Break_Num_L_DOWN, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_L_DOWN; i > Break_Num_L_UP; i--)
+        {
+            L_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
+        }
+
+        //计算斜率
+        start = Break_Num_R_DOWN;//起点
+        end = Break_Num_R_DOWN + 7;//终点
+        end = Limit_a_b(end, 5, Image_H - 5);//限幅
+
+        Get_K_b(R_Border[start], start, R_Border[end], end, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_R_DOWN; i > 2; i--)
+        {
+            R_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
             R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);
         }
-        // tft180_show_string(Row_10,Line_7,"fuck");
     }
-    else if ((Break_Num_L_UP) && (Break_Num_R_UP) && (Bin_Image[Image_H - 10][4]) && (Bin_Image[Image_H - 10][Image_W - 4]))//十字中
+    else if ((Break_Num_L_DOWN) && (Break_Num_L_UP) && (!Break_Num_R_DOWN) && (Break_Num_R_UP))//右斜入十字 1101
     {
-        Image_Flag.Cross_Fill = 2;
+        Image_Flag.Cross_Fill = true;
         //计算斜率
-        start = Break_Num_L_UP - 15;
-        start = Limit_a_b(start, 0, Image_H);
-        end = Break_Num_L_UP - 5;
-        Get_K_b(start, L_Border[start], end, L_Border[end], &slope_l_rate, &intercept_l);
-        // printf("slope_l_rate:%f\nintercept_l:%f\n", slope_l_rate, intercept_l);
-        for (i = Break_Num_L_UP - 5; i < Image_H - 1; i++)
+        Get_K_b(L_Border[Break_Num_L_UP], Break_Num_L_UP, L_Border[Break_Num_L_DOWN], Break_Num_L_DOWN, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_L_DOWN; i > Break_Num_L_UP; i--)
         {
-            L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+            L_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
             L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
         }
 
         //计算斜率
         start = Break_Num_R_UP - 15;//起点
-        start = Limit_a_b(start, 0, Image_H);//限幅
-        end = Break_Num_R_UP - 5;//终点
-        Get_K_b(start, R_Border[start], end, R_Border[end], &slope_l_rate, &intercept_l);
-        //printf("slope_l_rate:%d\nintercept_l:%d\n", slope_l_rate, intercept_l);
-        for (i = Break_Num_R_UP - 5; i < Image_H - 1; i++)
+        start = Limit_a_b(start, 5, Image_H-5);//限幅
+        end = Break_Num_R_UP;//终点
+        Get_K_b(R_Border[start], start, R_Border[end], end, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_R_UP; i < Image_H - 2; i++)
         {
-            R_Border[i] = slope_l_rate * (i)+intercept_l;
+            R_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
             R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);
         }
-        // tft180_show_string(Row_10,Line_7,"aaaa");
+    }
+    else if ((Break_Num_L_DOWN) && (!Break_Num_L_UP) && (Break_Num_R_DOWN) && (Break_Num_R_UP))//左下、右下、右上 1011
+    {
+        Image_Flag.Cross_Fill = true;
+        //计算斜率
+        start = Break_Num_L_DOWN;
+        end = Break_Num_L_DOWN + 7;
+        end = Limit_a_b(end, 5, Image_H - 5);//限幅
+        Get_K_b(L_Border[start], start, L_Border[end], end, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_L_DOWN; i > 2; i--)
+        {
+            L_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
+        }
+
+        //计算斜率
+        Get_K_b(R_Border[Break_Num_R_UP], Break_Num_R_UP, R_Border[Break_Num_R_DOWN], Break_Num_R_DOWN, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_R_DOWN; i > Break_Num_R_UP; i--)
+        {
+            R_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
+        }
+    }
+    else if ((!Break_Num_L_DOWN) && (Break_Num_L_UP) && (Break_Num_R_UP) && (Break_Num_R_DOWN))//左斜入十字 0111
+    {
+        Image_Flag.Cross_Fill = true;
+        //计算斜率
+        start = Break_Num_L_UP - 15;
+        start = Limit_a_b(start, 5, Image_H - 5);
+        end = Break_Num_L_UP;
+        Get_K_b(L_Border[start], start, L_Border[end], end, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_L_UP; i < Image_H - 2; i++)
+        {
+            L_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
+        }
+
+        //计算斜率
+        Get_K_b(R_Border[Break_Num_R_UP], Break_Num_R_UP, R_Border[Break_Num_R_DOWN], Break_Num_R_DOWN, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_R_DOWN; i > Break_Num_R_UP; i--)
+        {
+            R_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
+        }
+    }
+    else if ((Break_Num_L_DOWN) && (Break_Num_L_UP) && (!Break_Num_R_DOWN) && (!Break_Num_R_UP))//只有左边拐点 1100
+    {
+        Image_Flag.Cross_Fill = true;
+        //计算斜率
+        Get_K_b(L_Border[Break_Num_L_UP], Break_Num_L_UP, L_Border[Break_Num_L_DOWN], Break_Num_L_DOWN, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_L_DOWN; i > Break_Num_L_UP; i--)
+        {
+            L_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
+        }
+    }
+    else if ((!Break_Num_L_DOWN) && (!Break_Num_L_UP) && (Break_Num_R_DOWN) && (Break_Num_R_UP))//只有右边拐点0011
+    {
+        Image_Flag.Cross_Fill = true;
+        //计算斜率
+        Get_K_b(R_Border[Break_Num_R_DOWN], Break_Num_R_DOWN, R_Border[Break_Num_R_UP], Break_Num_R_UP, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_R_DOWN; i > Break_Num_R_UP; i--)
+        {
+            R_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
+        }
+    }
+    else if ((Break_Num_L_DOWN) && (!Break_Num_L_UP) && (Break_Num_R_DOWN) && (!Break_Num_R_UP))//只有下面两个拐点 1001
+    {
+        Image_Flag.Cross_Fill = true;
+        //计算斜率
+        start = Break_Num_L_DOWN;
+        end = Break_Num_L_DOWN + 7;
+        end = Limit_a_b(end, 5, Image_H - 5);//限幅
+        Get_K_b(L_Border[start], start, L_Border[end], end, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_L_DOWN; i > 2; i--)
+        {
+            L_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
+        }
+
+        //计算斜率
+        start = Break_Num_R_DOWN;//起点
+        end = Break_Num_R_DOWN + 7;//终点
+        end = Limit_a_b(end, 5, Image_H - 5);//限幅
+
+        Get_K_b(R_Border[start], start, R_Border[end], end, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_R_DOWN; i > 2; i--)
+        {
+            R_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);
+        }
+    }
+    else if ((!Break_Num_L_DOWN) && (Break_Num_L_UP) && (Break_Num_R_DOWN) && (!Break_Num_R_UP))//交错两个拐点，左上稳定0110
+    {
+        //计算斜率
+        start = Break_Num_L_UP - 15;
+        start = Limit_a_b(start, 5, Image_H - 5);
+        end = Break_Num_L_UP;
+        Get_K_b(L_Border[start], start, L_Border[end], end, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_L_UP; i < Image_H - 2; i++)
+        {
+            L_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
+        }
+        //计算斜率
+        Get_K_b(R_Border[Break_Num_R_DOWN], Break_Num_R_DOWN, Image_W/2+5,2, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_R_DOWN; i > 2; i--)
+        {
+            R_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);
+        }
+    }
+    else if ((Break_Num_L_DOWN) && (!Break_Num_L_UP) && (!Break_Num_R_DOWN) && (Break_Num_R_UP))//交错两个拐点，右上稳定1001
+    {
+        //计算斜率
+        Get_K_b(L_Border[Break_Num_L_DOWN], Break_Num_L_DOWN, Image_W/2-5, 2, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_L_DOWN; i > 2; i--)
+        {
+            L_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);
+        }
+        //计算斜率
+        start = Break_Num_R_UP - 15;//起点
+        start = Limit_a_b(start, 5, Image_H - 5);//限幅
+        end = Break_Num_R_UP;//终点
+        end = Limit_a_b(end, 5, Image_H - 5);
+        Get_K_b(R_Border[start], start, R_Border[end], end, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_R_UP; i < Image_H - 2; i++)
+        {
+            R_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);
+        }
+    }
+    else if ((Break_Num_L_UP) && (Break_Num_R_UP) && (!Break_Num_L_DOWN) && (!Break_Num_R_DOWN))//只有上面两个点 0101
+    {
+        Image_Flag.Cross_Fill = true;
+        //计算斜率
+        start = Break_Num_L_UP - 15;
+        start = Limit_a_b(start, 5, Image_H - 5);
+        end = Break_Num_L_UP;
+        end = Limit_a_b(end, 5, Image_H - 5);
+        Get_K_b(L_Border[start], start, L_Border[end], end, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_L_UP; i < Image_H - 2; i++)
+        {
+            L_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
+        }
+
+        //计算斜率
+        start = Break_Num_R_UP - 15;//起点
+        start = Limit_a_b(start, 5, Image_H - 5);//限幅
+        end = Break_Num_R_UP;//终点
+        end = Limit_a_b(end, 5, Image_H - 5);
+        Get_K_b(R_Border[start], start, R_Border[end], end, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_R_UP; i < Image_H - 2; i++)
+        {
+            R_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);
+        }
     }
     else
     {
-        Image_Flag.Cross_Fill = 0;
+        Image_Flag.Cross_Fill = false;
     }
  }
 
@@ -1098,22 +1308,12 @@ uint16 findCircleOutPoint(uint8* L_Border)
     {
         uint8 before = Limit_a_b(i - 5, 0, Image_H - 2);
         uint8 next = Limit_a_b(i + 5, 0, Image_H - 2);
-        //circle(frame, Point(L_Border[i], i), 0, Scalar(255, 255, 0), 1);
-        //circle(frame, Point(L_Border[before], before), 0, Scalar(0, 255, 0), 1);
-        //circle(frame, Point(L_Border[next], next), 0, Scalar(0, 0, 255), 1);
-        // printf("now - before: %d now - next: %d \n", L_Border[i] - L_Border[before], L_Border[i] - L_Border[next]);
         if ((L_Border[i] - L_Border[before] > 0) && (L_Border[i] - L_Border[next] > 0)
             && (L_Border[i] - L_Border[before] < 10) && (L_Border[i] - L_Border[next] < 10)
             && (L_Border[i] > Border_Min + 5) && (L_Border[before] > Border_Min + 5) && (L_Border[next] > Border_Min + 5) && (i < Image_H - 20))
         {
-  /*          circlePoint[0] = i;
-            circlePoint[1] = L_Border[i];*/
-            //circleFlag = true;
-            //circle(frame, Point(L_Border[i], i), 5, Scalar(255, 0, 0), 1);
             return i;
         }
-        //imshow("原图像", frame);
-        //waitKey(5);
     }
     return NULL;
 }
@@ -1338,12 +1538,6 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
     #ifdef Left_Ring_debug
             printf("左环内\r\n");
     #endif
-            Curanglg = Gyro_YawAngle_Get();
-            if(Lastanglg == 0)
-            {
-                Lastanglg = Curanglg;
-            }
-            Angle_Offest += Curanglg - Lastanglg;
             // printf("%f,%f,%f\r\n",Curanglg,Lastanglg,Angle_Offest);
             for (i = 1; i < Total_Num_R; i++)
             {
@@ -1362,6 +1556,12 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
             }
             if (Break_Num_R_UP) // && (Bin_Image[50][4]) && (Bin_Image[50][8])
             {
+                Curanglg = Gyro_YawAngle_Get();
+                if(Lastanglg == 0)
+                {
+                    Lastanglg = Curanglg;
+                }
+                Angle_Offest += Curanglg - Lastanglg;
                 Get_K_b(Points_R[Break_Num_R_UP][0], Points_R[Break_Num_R_UP][1], 2, 2, &slope_l_rate, &intercept_l);
                 for (i = Image_H - 1; i > 1; i--)
                 {
@@ -1372,7 +1572,7 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
             }
             Lastanglg = Curanglg;
             // 左右两侧都为白色, 准备要出环
-            if (Bin_Image[Image_H - 4][4] == White_Pixel && Bin_Image[Image_H - 4][Image_W - 4] == White_Pixel && fabs(Angle_Offest) >= 50)
+            if (Bin_Image[Image_H - 4][4] == White_Pixel && Bin_Image[Image_H - 4][Image_W - 4] == White_Pixel && fabs(Angle_Offest) >= 25)
             {
                 LeftRing.Ring_State = Ready_Out_Ring;
                 Angle_Offest = 0;
@@ -1709,13 +1909,6 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
     #ifdef Right_Ring_debug
             printf("右环内\r\n");
     #endif
-            Curanglg = Gyro_YawAngle_Get();
-            if (Lastanglg == 0)
-            {
-               Lastanglg = Curanglg;
-            }
-            Angle_Offest += Curanglg - Lastanglg;
-            // printf("%f,%f,%f\r\n",Curanglg,Lastanglg,Angle_Offest);
             for (i = 1; i < Total_Num_L; i++)
             {
                 uint16 before = Limit_a_b(i - 8, 0, Total_Num_L);
@@ -1724,24 +1917,22 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
                 {
                     break;
                 }
-                //circle(resizeFrame, Point(Points_L[i][0], Points_L[i][1]), 0, Scalar(255, 255, 0), 1);
-                //circle(resizeFrame, Point(Points_L[before][0], Points_L[before][1]), 0, Scalar(0, 255, 0), 1);
-                //circle(resizeFrame, Point(Points_L[next][0], Points_L[next][1]), 0, Scalar(0, 0, 255), 1);
-                //printf("前点: %d 当前: %d, 后点: %d \n", Points_L[before][1], Points_L[i][1], Points_L[next][1]);
                 if (Points_L[i][1] < Points_L[before][1] && Points_L[i][1] > Points_L[next][1]
                     && Points_L[i][0] > Points_L[before][0] && Points_L[i][0] > Points_L[next][0] && Points_L[i][0] > Border_Min + 5)
                 {
-                    //circle(resizeFrame, Point(Points_L[i][0], Points_L[i][1]), 3, Scalar(0, 255, 255));
-
                     Break_Num_L_UP = i;//传递y坐标
                     break;
                 }
-                //imshow("原图像", resizeFrame);
-                //waitKey(10);
             }
             // 狠补线
             if (Break_Num_L_UP) // && (Bin_Image[50][4]) && (Bin_Image[50][8])
             {
+                Curanglg = Gyro_YawAngle_Get();
+                if (Lastanglg == 0)
+                {
+                    Lastanglg = Curanglg;
+                }
+                Angle_Offest += Curanglg - Lastanglg;
                 Get_K_b(Points_L[Break_Num_L_UP][0], Points_L[Break_Num_L_UP][1], Image_W - 2, 2, &slope_l_rate, &intercept_l);
                 for (i = Image_H - 1; i > 1; i--)
                 {
@@ -1751,7 +1942,7 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
             }
             Lastanglg = Curanglg;
             // 左右两侧都为白色, 准备要出环
-            if (Bin_Image[Image_H - 4][4] == White_Pixel && Bin_Image[Image_H - 4][Image_W - 4] == White_Pixel && (fabs(Angle_Offest) >= 50))
+            if (Bin_Image[Image_H - 4][4] == White_Pixel && Bin_Image[Image_H - 4][Image_W - 4] == White_Pixel && (fabs(Angle_Offest) >= 25))
             {
                 RightRing.Ring_State = Ready_Out_Ring;
                 Angle_Offest = 0;
@@ -1893,24 +2084,26 @@ void Image_Process(void)
         // 从爬取的边界线内提取边线 ， 这个才是最终有用的边线
         Get_Left(Data_Stastics_L);
         Get_Right(Data_Stastics_R);
-        // 优先判断是否是十字如果是十字则不对圆环判断
-        if((!Image_Flag.Right_Ring) && (!Image_Flag.Left_Ring))
-        {
-            Cross_Fill(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);//十字补线
-        }
+
         if((!Image_Flag.Right_Ring) && (!Image_Flag.Left_Ring) && (!Image_Flag.Cross_Fill))
         {
             Zebra_Seek(Bin_Image);
         }
+        // 优先判断是否是十字如果是十字则不对圆环判断
+        if((!Image_Flag.Right_Ring) && (!Image_Flag.Left_Ring) && (!Image_Flag.Zerba))
+        {
+            Cross_Fill(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);//十字补线
+        }
+
         // 同上
-        // if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Right_Ring) && (!Image_Flag.Zerba))
-        // {
-        //     Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
-        // }
-        // if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Left_Ring) && (!Image_Flag.Zerba))
-        // {
-        //     Right_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
-        // }
+        if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Right_Ring) && (!Image_Flag.Zerba))
+        {
+            Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
+        }
+        if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Left_Ring) && (!Image_Flag.Zerba))
+        {
+            Right_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
+        }
     }
     
     for (int i = Hightest; i < Image_H-1; i++)

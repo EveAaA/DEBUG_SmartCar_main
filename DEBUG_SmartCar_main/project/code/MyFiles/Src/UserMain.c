@@ -18,6 +18,7 @@
 /* Define\Declare ------------------------------------------------------------*/
 uint16 Start = 2;
 uint16 Time_Cnt = 0;
+uint8 image_copy[MT9V03X_H][MT9V03X_W];
 
 /**
  ******************************************************************************
@@ -116,6 +117,8 @@ void User_Init()
     All_PID_Init();
     Flash_Init();
     UART_Init();
+    // seekfree_assistant_interface_init(SEEKFREE_ASSISTANT_WIRELESS_UART);
+    // seekfree_assistant_camera_information_config(SEEKFREE_ASSISTANT_MT9V03X, image_copy[0], MT9V03X_W, MT9V03X_H);
     tft180_show_string(Row_0, Line_5, "Soft Init ...");
     tft180_clear();
     system_delay_ms(1000);
@@ -124,7 +127,6 @@ void User_Init()
     // Beep(Off);
 	interrupt_global_enable(0);
 }
-
 /**@brief   所有主循环内容
 -- @param   无
 -- @author  庄文标
@@ -134,5 +136,10 @@ void User_Loop()
 {
     // printf("fuck\r\n");
     // printf("speed = %f\r\n",Encoer_Speed[0]);
+    // if(mt9v03x_finish_flag)
+    // {
+    //     memcpy(image_copy[0], Bin_Image[0], MT9V03X_IMAGE_SIZE);
+    //     seekfree_assistant_camera_send();
+    // }
     Menu_Display();
 }

@@ -510,7 +510,7 @@ static void Unload_Fsm()
             #endif
             if(MyFSM.Big_Pos_Count < 3)
             {
-                if(MyFSM.Big_Pos[0]!=MyFSM.Big_Pos[1] || MyFSM.Big_Pos[1]!=MyFSM.Big_Pos[2])
+                if((MyFSM.Big_Pos[0]!=MyFSM.Big_Pos[1]) || (MyFSM.Big_Pos[1]!=MyFSM.Big_Pos[2]))
                 {
                     if(Turn.Finish == false)
                     {
@@ -527,8 +527,7 @@ static void Unload_Fsm()
                 {
                     if(Navigation.Finish_Flag == false)
                     {
-                        // printf("Move\r\n"); 
-                        Navigation_Process(55,0);
+                        Navigation_Process(60,0);
                     }
                     else
                     {
