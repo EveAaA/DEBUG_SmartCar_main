@@ -38,7 +38,7 @@ Car_Handle Car =
     .Speed_X = 0,
     .Speed_Y = 0,
     .Speed_Z = 0,
-    .Image_Flag = false,
+    .Image_Flag = true,
 };
 Turn_Handle Turn = 
 {
@@ -70,7 +70,7 @@ void All_PID_Init()
     PIDInit(&Angle_PID,0.44f,0,2,1.5f,-1.5f);
     PIDInit(&Image_PID,3.8f,0,0.5f,2.5f,-2.5f);
     PIDInit(&ImageX_PID,0.44f,0,2.0f,3.0f,-3.0f);
-    PIDInit(&ImageF_PID,3.6f,0,0.2f,5.0f,-5.0f);
+    PIDInit(&ImageF_PID,4.6f,0,0.2f,5.0f,-5.0f);
     PIDInit(&BorderPlace_PID,2.1f,0,0,1.5f,-1.5f);
     PIDInit(&Foward_PID,2.1f,0,0,1.5f,-1.5f);
     PIDInit(&Turn_PID,2.55f,0,0.6f,5,-5);   
@@ -199,7 +199,7 @@ void Car_run(float Speed)
 **/
 void Car_run_X(float Speed)
 {
-    float Image_ErroF_ = GetPIDValue(&ImageF_PID,100*((50 - Hightest)/(50 + Hightest)));
+    float Image_ErroF_ = GetPIDValue(&ImageF_PID,100*((35 - Hightest)/(35 + Hightest)));
     Car.Speed_X = Speed;
     Car.Speed_Y = Image_ErroF_;
     Car.Speed_Z = Get_Image_Errox();

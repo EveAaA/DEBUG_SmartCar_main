@@ -26,6 +26,7 @@ FSM_Handle MyFSM = {
     .Big_Count[1] = 0,
     .Big_Count[2] = 0,
     .Small_Count = 0,
+    .Cross_Flag_ = false,
     .Unload_Count = 0,
     .Big_Pos_Count = 0,
     .Depot_Pos = White,
@@ -56,7 +57,7 @@ static void Depart_Fsm()
     {
         if(Navigation.Finish_Flag == false)
         {
-            Navigation_Process_Y(30);
+            Navigation_Process_Y(0,30);
         }
         else
         {
@@ -104,6 +105,7 @@ static void Line_PatrolFsm()
     {
         MyFSM.CurState = Cross_Board;//十字回环状态机
         MyFSM.Cross_Dir = Image_Flag.Cross_Type;
+        MyFSM.Cross_Flag_ = true;
         Set_Beepfreq(1);
     }
     else if(Bufcnt(Image_Flag.Zerba,500))
@@ -215,7 +217,7 @@ static void Line_BoardFsm()
             #endif 
             if(Navigation.Finish_Flag == false)
             {
-                Navigation_Process(0,FINETUNING_DATA.dy/10.f);//移动
+                Navigation_Process_Y(0,FINETUNING_DATA.dy/10.f);//移动
             }
             else
             {
@@ -328,39 +330,39 @@ static void Cross_BoardFsm()
             #ifdef debug_switch
                 printf("Find_Cross\r\n");    
             #endif 
-            if(Image_Flag.Cross_Fill)
+            Car_run(5);
+            if(Bufcnt(true,1500))
             {
-                Car_run(3);
-            }
-            else if(!Image_Flag.Cross_Fill)
-            {
+                MyFSM.Cross_Board_State = Find;
                 Car.Image_Flag = false;
-                if(MyFSM.Cross_Dir == RIGHT)
+            }
+        break;
+        case Find:
+            if(MyFSM.Cross_Dir == RIGHT)
+            {
+                if(Turn.Finish == false)
                 {
-                    if(Turn.Finish == false)
-                    {
-                        Turn_Angle(90);
-                    }
-                    else
-                    {
-                        Turn.Finish = false;
-                        MyFSM.Static_Angle = Gyro_YawAngle_Get();
-                        MyFSM.Cross_Board_State = Wait_Data;
-                    }
+                    Turn_Angle(90);
                 }
-                else if(MyFSM.Cross_Dir == LEFT)
+                else
                 {
-                    if(Turn.Finish == false)
-                    {
-                        Turn_Angle(-90);
-                    }
-                    else
-                    {
-                        Turn.Finish = false;
-                        MyFSM.Static_Angle = Gyro_YawAngle_Get();
-                        MyFSM.Cross_Board_State = Wait_Data;
-                    }                    
+                    Turn.Finish = false;
+                    MyFSM.Static_Angle = Gyro_YawAngle_Get();
+                    MyFSM.Cross_Board_State = Wait_Data;
                 }
+            }
+            else if(MyFSM.Cross_Dir == LEFT)
+            {
+                if(Turn.Finish == false)
+                {
+                    Turn_Angle(-90);
+                }
+                else
+                {
+                    Turn.Finish = false;
+                    MyFSM.Static_Angle = Gyro_YawAngle_Get();
+                    MyFSM.Cross_Board_State = Wait_Data;
+                }                    
             }
         break;
         case Wait_Data://等待串口数据回传
@@ -432,7 +434,7 @@ static void Cross_BoardFsm()
             #endif 
             if(Navigation.Finish_Flag == false)
             {
-                Navigation_Process(0,FINETUNING_DATA.dy/10.f);//移动
+                Navigation_Process_Y(0,FINETUNING_DATA.dy/10.f);//移动
             }
             else
             {
@@ -465,7 +467,7 @@ static void Cross_BoardFsm()
             #ifdef debug_switch
                 printf("Cross_Classify\r\n");    
             #endif 
-            if(CLASSIFY_DATA.type != None)//识别到了分类
+            if(CLASSIFY_DATA.place != nil)//识别到了分类
             {
                 Dodge_Board();
                 MyFSM.Cross_Board_State = Pick;//捡起卡片
@@ -493,20 +495,49 @@ static void Cross_BoardFsm()
             if(Servo_Flag.Pick_End == false)
             {
                 Pick_Card();
+                Car.Speed_X = 0;
+                Car.Speed_Y = 0;
+                Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
             }
             else
             {
-                Servo_Flag.Put_Up = false;
-                Servo_Flag.Put_Down = false;
-                Servo_Flag.Pick_End = false;
-                if(MyFSM.Small_Count<=5)
+                if(MyFSM.Small_Count<=3)
                 {
                     MyFSM.Cross_Board_State = Classify;//继续识别
+                    Servo_Flag.Put_Up = false;
+                    Servo_Flag.Put_Down = false;
+                    Servo_Flag.Pick_End = false;
+                    Car.Speed_X = 0;
+                    Car.Speed_Y = 0;
+                    Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
+                }
+                else
+                {
+                    if(Turn.Finish==false)
+                    {
+                        Turn_Angle(180);
+                    }
+                    else
+                    {
+                        Turn.Finish = false;
+                        Servo_Flag.Put_Up = false;
+                        Servo_Flag.Put_Down = false;
+                        Servo_Flag.Pick_End = false;
+                        MyFSM.Cross_Board_State = Find_Place;//继续识别
+                        Car.Image_Flag = true;
+                    }
                 }
             } 
-            Car.Speed_X = 0;
-            Car.Speed_Y = 0;
-            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
+        break;
+        case Find_Place:
+            if(MyFSM.Cross_Dir == RIGHT)
+            {
+                Car_run_X(2);
+            }
+            else
+            {
+                Car_run_X(-2);
+            }
         break;
     }
 }

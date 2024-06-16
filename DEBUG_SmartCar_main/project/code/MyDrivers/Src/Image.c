@@ -335,11 +335,11 @@ void Turn_To_Bin(void)
             {
                 Bin_Image[i][j] = Black_Pixel;
             }
-            if ((i >= 50) && (j <= Image_W / 2 - 1) && (j >= Image_W / 2 - 60) && (Bin_Image[i][j] == White_Pixel))
+            if ((i >= 35) && (j <= Image_W / 2 - 1) && (j >= Image_W / 2 - 60) && (Bin_Image[i][j] == White_Pixel))
             {
                 Left_White += 1;
             }
-            if ((i >= 50) && (j >= Image_W / 2 + 1) && (j <= Image_W / 2 + 60) && (Bin_Image[i][j] == White_Pixel))
+            if ((i >= 35) && (j >= Image_W / 2 + 1) && (j <= Image_W / 2 + 60) && (Bin_Image[i][j] == White_Pixel))
             {
                 Right_White += 1;
             }
@@ -2119,6 +2119,5 @@ void Image_Process(void)
         Center_Line[i] = (L_Border[i] + R_Border[i]) >> 1;//«Û÷–œﬂ
     }
     Image_Erro = (Center_Line[69])*0.375f + (Center_Line[70])*0.5f + (Center_Line[71])*0.1f;
-    Image_Erro_Y_ = 10*((float)(Right_White - Left_White)/(float)(Right_White + Left_White));
-    Image_Erro_Y = Image_Erro_Y_*0.25f + Image_Erro_Y*0.75f;
+    Image_Erro_Y = 10*((float)(Right_White - Left_White)/(float)(Right_White + Left_White));
 }

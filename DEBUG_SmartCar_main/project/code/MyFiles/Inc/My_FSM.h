@@ -24,6 +24,7 @@ typedef enum
     Classify,//识别分类
     Return_Line,//返回赛道
     Find_Cross,//找到十字
+    Find_Place,
     Find_Zebra,//找到斑马线
     Wait_Big_Data,//等待大类放置区域数据
     Unload_Next,//前往下一个卸货点
@@ -41,6 +42,7 @@ typedef struct
     float Static_Angle;//静止的角度
     bool Stop_Flag;//停车
 
+    bool Cross_Flag_;
     uint8 Cross_Dir;//十字方向
     int8 Small_Board[6];//卡片小类
     uint8 Small_Count;//小类卡片张数

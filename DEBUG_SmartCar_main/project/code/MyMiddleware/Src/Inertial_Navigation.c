@@ -165,7 +165,7 @@ void Navigation_Process(float x,float y)
 -- @author  ×¯ÎÄ±ê
 -- @date    2024/6/2
 **/
-void Navigation_Process_Y(float y)
+void Navigation_Process_Y(float x,float y)
 {
     switch(Navigation_State)
     {
@@ -175,16 +175,15 @@ void Navigation_Process_Y(float y)
             Car.Speed_Z = 0;
             if(Bufcnt((fabs(Get_X_Speed()) <= 0.1 && fabs(Get_Y_Speed()) <= 0.1),500))
             {
-                Navigation_State = Move_State;
+                Navigation_State = Move_State_Y;
                 Enable_Navigation();
             }
         break;
-        case Move_State:
+        case Move_State_Y:
             Navigation.Cur_Position_Y = Get_Y_Distance();
-            Car.Speed_X = 0;
             if(fabs(y - Navigation.Cur_Position_Y) <= 1.0f)
             {
-                Navigation_State = Move_Finish;
+                Navigation_State = Move_State;
                 Navigation.End_Angle = Gyro_YawAngle_Get();
             }
             else
@@ -198,6 +197,27 @@ void Navigation_Process_Y(float y)
                     Car.Speed_Y = -Large_Speed + GetPIDValue(&DistanceY_PID,(y - Navigation.Cur_Position_Y));
                 }
             }
+            Car.Speed_X = 0;
+            Car.Speed_Z = Angle_Control(Navigation.Start_Angle);
+        break;
+        case Move_State:
+            Navigation.Cur_Position_X = Get_X_Distance();
+            if(fabs(x - Navigation.Cur_Position_X) <= 1.0f)
+            {
+                Navigation_State = Move_Finish;
+            }
+            else
+            {
+                if(x - Navigation.Cur_Position_X >= 0)
+                {
+                    Car.Speed_X = Large_Speed + GetPIDValue(&DistanceX_PID,(x - Navigation.Cur_Position_X));
+                }
+                else
+                {
+                    Car.Speed_X = -Large_Speed + GetPIDValue(&DistanceX_PID,(x - Navigation.Cur_Position_X));
+                }
+            }
+
             Car.Speed_Z = Angle_Control(Navigation.Start_Angle);
         break;
         case Move_Finish:
