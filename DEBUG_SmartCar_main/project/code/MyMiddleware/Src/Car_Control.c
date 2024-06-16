@@ -12,6 +12,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "Car_Control.h"
+#include "Uart.h"
 #include "math.h"
 /* Define\Declare ------------------------------------------------------------*/
 Incremental_PID_TypeDef LMotor_F_Speed;
@@ -69,8 +70,8 @@ void All_PID_Init()
     Incremental_PID_Init(&RMotor_B_Speed,0.5f,0.35f,0.5f,40,-40);
     PIDInit(&Angle_PID,0.44f,0,2,1.5f,-1.5f);
     PIDInit(&Image_PID,3.8f,0,0.5f,2.5f,-2.5f);
-    PIDInit(&ImageX_PID,0.44f,0,2.0f,3.0f,-3.0f);
-    PIDInit(&ImageF_PID,4.6f,0,0.2f,5.0f,-5.0f);
+    PIDInit(&ImageX_PID,0.060f,0, 0.0f,3.0f,-3.0f);
+    PIDInit(&ImageF_PID,0.090f,0,0.2f,5.0f,-5.0f);
     PIDInit(&BorderPlace_PID,2.1f,0,0,1.5f,-1.5f);
     PIDInit(&Foward_PID,2.1f,0,0,1.5f,-1.5f);
     PIDInit(&Turn_PID,2.55f,0,0.6f,5,-5);   
@@ -78,6 +79,7 @@ void All_PID_Init()
     PIDInit(&Gyroz_Pid,0.65f,0,0.25f,5,-5);
     PIDInit(&AngleControl_PID,0.18f,0,0.5,3.0f,-3.0f);
 }
+
 
 
 /**@brief   设置车三个方向的速度
@@ -175,8 +177,8 @@ float Angle_Control(float Start_Angle)
 **/
 float Get_Image_Errox()
 {
-    float Image_ErroX_ = GetPIDValue(&ImageX_PID,(0 - Image_Erro_Y));
-    return GetPIDValue(&Gyroz_Pid,Image_ErroX_ - IMU_Data.gyro_z);
+    float Image_ErroX_ = GetPIDValue(&ImageX_PID,(0 - VOLUMEUP_DATA.AngleErr));
+    return  Image_ErroX_;//GetPIDValue(&Gyroz_Pid,Image_ErroX_ - IMU_Data.gyro_z);
 }
 
 /**@brief   巡线
@@ -199,7 +201,7 @@ void Car_run(float Speed)
 **/
 void Car_run_X(float Speed)
 {
-    float Image_ErroF_ = GetPIDValue(&ImageF_PID,100*((35 - Hightest)/(35 + Hightest)));
+    float Image_ErroF_ = GetPIDValue(&ImageF_PID, -20 - (VOLUMEUP_DATA.HeightErr));
     Car.Speed_X = Speed;
     Car.Speed_Y = Image_ErroF_;
     Car.Speed_Z = Get_Image_Errox();

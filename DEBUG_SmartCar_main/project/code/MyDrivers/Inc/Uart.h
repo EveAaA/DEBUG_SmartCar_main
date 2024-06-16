@@ -16,6 +16,7 @@
 #define UART_FINDBORDER_GETBIGPLACE (0x20) // 开始获取大类放置区域
 #define UART_FINDBORDER_GETBORDER (0x21)   // 开始获取道路边缘的目标板
 #define UART_STARTFINETUNING_PLACE (0x10)  // 开始对数字版微调整
+#define UART_MOVEVOLUMEUP_FLAG (0x11)
 
 typedef struct Uart
 {
@@ -115,6 +116,12 @@ typedef struct wareHouse
     PLACEtypeDef  BIG_PLACE;
 }wareHouse_t;
 
+typedef struct VOLUMEUP
+{
+    float AngleErr;
+    float HeightErr;
+}VOLUMEUPTypeDef;
+
 
 /*
     外部调用串口结构体
@@ -125,6 +132,7 @@ extern FINDBORDERtypeDef FINDBORDER_DATA;
 extern CLASSIFYtypeDef   CLASSIFY_DATA;
 extern PLACEtypeDef      SMALL_PLACE_DATA;
 extern PLACEtypeDef      BIG_PLACE_DATA;
+extern VOLUMEUPTypeDef   VOLUMEUP_DATA;
 extern UART _UART_FINDBORDER;
 extern UART _UART_FINE_TUNING;
 extern UART _UART_RECOGNIZE_PLACE;
@@ -132,6 +140,7 @@ extern const Place_t PLACE_TABLE[16];
 extern const MainType_t  MAIN_TABLE[5];
 extern const char* HUGE_PLACE_STR[3];
 extern const char* PLACE_TABLE_STR[16];
+
 
 void UART_Init(void);
 void UART_init(UART *uart, IRQn_Type UART_PRIORITY, uart_index_enum UART_INDEX);

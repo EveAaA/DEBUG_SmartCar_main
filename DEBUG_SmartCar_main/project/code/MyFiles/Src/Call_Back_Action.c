@@ -280,6 +280,22 @@ void Uart_Fine_Tuning_Receive(void)
       _UART_FINE_TUNING.index = 0;
     }
   }
+  if (_UART_FINE_TUNING.get_data == 0xfa && lastData == 0xfb)
+  {
+    if (_UART_FINE_TUNING.index == 4)
+    {
+      VOLUMEUP_DATA.AngleErr  = (float)(_UART_FINE_TUNING.fifo_get_data[0] >> 7 == 0) ? (_UART_FINE_TUNING.fifo_get_data[0]) : (-(256 -_UART_FINE_TUNING.fifo_get_data[0]));
+      VOLUMEUP_DATA.HeightErr = (float)(_UART_FINE_TUNING.fifo_get_data[1] >> 7 == 0) ? (_UART_FINE_TUNING.fifo_get_data[1]) : (-(256 -_UART_FINE_TUNING.fifo_get_data[1]));
+      // printf("AngleErr: %f HeightErr: %f\n", VOLUMEUP_DATA.AngleErr, VOLUMEUP_DATA.HeightErr);
+      memset(_UART_FINE_TUNING.fifo_get_data, 0, sizeof(_UART_FINE_TUNING.fifo_get_data));
+      _UART_FINE_TUNING.index = 0;
+    }
+    else
+    {
+      memset(_UART_FINE_TUNING.fifo_get_data, 0, sizeof(_UART_FINE_TUNING.fifo_get_data));
+      _UART_FINE_TUNING.index = 0;
+    }
+  }
   // else if (_UART_FINE_TUNING.index > 7)
   // {
   //   memset(_UART_FINE_TUNING.fifo_get_data, 0, sizeof(_UART_FINE_TUNING.fifo_get_data));

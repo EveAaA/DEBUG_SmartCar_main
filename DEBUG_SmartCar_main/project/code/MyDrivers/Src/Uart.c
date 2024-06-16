@@ -29,6 +29,7 @@ PLACEtypeDef      BIG_PLACE_DATA   = {false, nil, None};
 FINETUNINGtypeDef FINETUNING_DATA  = {0, false, 0.0f, 0.0f, 0.0f};
 FINDBORDERtypeDef FINDBORDER_DATA  = {false, 0.0f, STRAIGHT};  
 UnpackDataTypeDef UnpackFlag       = {false, false, false}; // 判断帧头帧尾是否到达
+VOLUMEUPTypeDef   VOLUMEUP_DATA    = {0.0f, 0.0f};
 
 /**@brief    初始化串口(外部调用)
 -- @param    None
