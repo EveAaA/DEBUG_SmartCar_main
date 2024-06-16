@@ -972,7 +972,7 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W],  uint8* L_Border, uint8* R_Border, u
 
     if ((Break_Num_L_DOWN) && (Break_Num_L_UP) && (Break_Num_R_DOWN) && (Break_Num_R_UP))//同时找到四个拐点 1111
     {
-        Image_Flag.Cross_Fill = true;
+        Image_Flag.Cross_Fill = 1;
         //计算斜率,左边斜率
         Get_K_b(L_Border[Break_Num_L_DOWN], Break_Num_L_DOWN, L_Border[Break_Num_L_UP],Break_Num_L_UP,&slope_l_rate,&intercept_l);
         for (i = Break_Num_L_DOWN; i > Break_Num_L_UP; i--)
@@ -989,9 +989,88 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W],  uint8* L_Border, uint8* R_Border, u
             R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
         }
     }
+    else if ((Break_Num_L_DOWN) && (Break_Num_L_UP) && (!Break_Num_R_DOWN) && (Break_Num_R_UP))//右斜入十字 1101
+    {
+        Image_Flag.Cross_Fill = 1;
+        //计算斜率
+        Get_K_b(L_Border[Break_Num_L_UP], Break_Num_L_UP, L_Border[Break_Num_L_DOWN], Break_Num_L_DOWN, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_L_DOWN; i > Break_Num_L_UP; i--)
+        {
+            L_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
+        }
+
+        //计算斜率
+        start = Break_Num_R_UP - 15;//起点
+        start = Limit_a_b(start, 5, Image_H-5);//限幅
+        end = Break_Num_R_UP;//终点
+        Get_K_b(R_Border[start], start, R_Border[end], end, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_R_UP; i < Image_H - 2; i++)
+        {
+            R_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);
+        }
+    }
+    else if ((!Break_Num_L_DOWN) && (Break_Num_L_UP) && (Break_Num_R_UP) && (Break_Num_R_DOWN))//左斜入十字 0111
+    {
+        Image_Flag.Cross_Fill = 1;
+        //计算斜率
+        start = Break_Num_L_UP - 15;
+        start = Limit_a_b(start, 5, Image_H - 5);
+        end = Break_Num_L_UP;
+        Get_K_b(L_Border[start], start, L_Border[end], end, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_L_UP; i < Image_H - 2; i++)
+        {
+            L_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
+        }
+
+        //计算斜率
+        Get_K_b(R_Border[Break_Num_R_UP], Break_Num_R_UP, R_Border[Break_Num_R_DOWN], Break_Num_R_DOWN, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_R_DOWN; i > Break_Num_R_UP; i--)
+        {
+            R_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
+        }
+    }
+    else if ((Break_Num_L_UP) && (Break_Num_R_UP) && (!Break_Num_L_DOWN) && (!Break_Num_R_DOWN))//只有上面两个点 0101
+    {
+        if (Points_R[Total_Num_R][0] >= Image_W / 2)
+        {
+            Image_Flag.Cross_Type = RIGHT;
+        }
+        else
+        {
+            Image_Flag.Cross_Type = LEFT;
+        }
+        Image_Flag.Cross_Fill = 2;
+        //计算斜率
+        start = Break_Num_L_UP - 15;
+        start = Limit_a_b(start, 5, Image_H - 5);
+        end = Break_Num_L_UP;
+        end = Limit_a_b(end, 5, Image_H - 5);
+        Get_K_b(L_Border[start], start, L_Border[end], end, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_L_UP; i < Image_H - 2; i++)
+        {
+            L_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
+        }
+
+        //计算斜率
+        start = Break_Num_R_UP - 15;//起点
+        start = Limit_a_b(start, 5, Image_H - 5);//限幅
+        end = Break_Num_R_UP;//终点
+        end = Limit_a_b(end, 5, Image_H - 5);
+        Get_K_b(R_Border[start], start, R_Border[end], end, &slope_l_rate, &intercept_l);
+        for (i = Break_Num_R_UP; i < Image_H - 2; i++)
+        {
+            R_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
+            R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);
+        }
+    }
     else if ((Break_Num_L_DOWN) && (Break_Num_L_UP) && (Break_Num_R_DOWN) && (!Break_Num_R_UP))//左下、右下、左上 1110
     {
-        Image_Flag.Cross_Fill = true;
+        Image_Flag.Cross_Fill = 1;
         //计算斜率
         Get_K_b(L_Border[Break_Num_L_UP], Break_Num_L_UP, L_Border[Break_Num_L_DOWN], Break_Num_L_DOWN, &slope_l_rate, &intercept_l);
         for (i = Break_Num_L_DOWN; i > Break_Num_L_UP; i--)
@@ -1012,31 +1091,9 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W],  uint8* L_Border, uint8* R_Border, u
             R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);
         }
     }
-    else if ((Break_Num_L_DOWN) && (Break_Num_L_UP) && (!Break_Num_R_DOWN) && (Break_Num_R_UP))//右斜入十字 1101
-    {
-        Image_Flag.Cross_Fill = true;
-        //计算斜率
-        Get_K_b(L_Border[Break_Num_L_UP], Break_Num_L_UP, L_Border[Break_Num_L_DOWN], Break_Num_L_DOWN, &slope_l_rate, &intercept_l);
-        for (i = Break_Num_L_DOWN; i > Break_Num_L_UP; i--)
-        {
-            L_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
-            L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
-        }
-
-        //计算斜率
-        start = Break_Num_R_UP - 15;//起点
-        start = Limit_a_b(start, 5, Image_H-5);//限幅
-        end = Break_Num_R_UP;//终点
-        Get_K_b(R_Border[start], start, R_Border[end], end, &slope_l_rate, &intercept_l);
-        for (i = Break_Num_R_UP; i < Image_H - 2; i++)
-        {
-            R_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
-            R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);
-        }
-    }
     else if ((Break_Num_L_DOWN) && (!Break_Num_L_UP) && (Break_Num_R_DOWN) && (Break_Num_R_UP))//左下、右下、右上 1011
     {
-        Image_Flag.Cross_Fill = true;
+        Image_Flag.Cross_Fill = 1;
         //计算斜率
         start = Break_Num_L_DOWN;
         end = Break_Num_L_DOWN + 7;
@@ -1056,31 +1113,9 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W],  uint8* L_Border, uint8* R_Border, u
             R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
         }
     }
-    else if ((!Break_Num_L_DOWN) && (Break_Num_L_UP) && (Break_Num_R_UP) && (Break_Num_R_DOWN))//左斜入十字 0111
-    {
-        Image_Flag.Cross_Fill = true;
-        //计算斜率
-        start = Break_Num_L_UP - 15;
-        start = Limit_a_b(start, 5, Image_H - 5);
-        end = Break_Num_L_UP;
-        Get_K_b(L_Border[start], start, L_Border[end], end, &slope_l_rate, &intercept_l);
-        for (i = Break_Num_L_UP; i < Image_H - 2; i++)
-        {
-            L_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
-            L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
-        }
-
-        //计算斜率
-        Get_K_b(R_Border[Break_Num_R_UP], Break_Num_R_UP, R_Border[Break_Num_R_DOWN], Break_Num_R_DOWN, &slope_l_rate, &intercept_l);
-        for (i = Break_Num_R_DOWN; i > Break_Num_R_UP; i--)
-        {
-            R_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
-            R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
-        }
-    }
     else if ((Break_Num_L_DOWN) && (Break_Num_L_UP) && (!Break_Num_R_DOWN) && (!Break_Num_R_UP))//只有左边拐点 1100
     {
-        Image_Flag.Cross_Fill = true;
+        Image_Flag.Cross_Fill = 1;
         //计算斜率
         Get_K_b(L_Border[Break_Num_L_UP], Break_Num_L_UP, L_Border[Break_Num_L_DOWN], Break_Num_L_DOWN, &slope_l_rate, &intercept_l);
         for (i = Break_Num_L_DOWN; i > Break_Num_L_UP; i--)
@@ -1091,7 +1126,7 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W],  uint8* L_Border, uint8* R_Border, u
     }
     else if ((!Break_Num_L_DOWN) && (!Break_Num_L_UP) && (Break_Num_R_DOWN) && (Break_Num_R_UP))//只有右边拐点0011
     {
-        Image_Flag.Cross_Fill = true;
+        Image_Flag.Cross_Fill = 1;
         //计算斜率
         Get_K_b(R_Border[Break_Num_R_DOWN], Break_Num_R_DOWN, R_Border[Break_Num_R_UP], Break_Num_R_UP, &slope_l_rate, &intercept_l);
         for (i = Break_Num_R_DOWN; i > Break_Num_R_UP; i--)
@@ -1102,7 +1137,7 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W],  uint8* L_Border, uint8* R_Border, u
     }
     else if ((Break_Num_L_DOWN) && (!Break_Num_L_UP) && (Break_Num_R_DOWN) && (!Break_Num_R_UP))//只有下面两个拐点 1001
     {
-        Image_Flag.Cross_Fill = true;
+        Image_Flag.Cross_Fill = 1;
         //计算斜率
         start = Break_Num_L_DOWN;
         end = Break_Num_L_DOWN + 7;
@@ -1155,33 +1190,6 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W],  uint8* L_Border, uint8* R_Border, u
             L_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
             L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);
         }
-        //计算斜率
-        start = Break_Num_R_UP - 15;//起点
-        start = Limit_a_b(start, 5, Image_H - 5);//限幅
-        end = Break_Num_R_UP;//终点
-        end = Limit_a_b(end, 5, Image_H - 5);
-        Get_K_b(R_Border[start], start, R_Border[end], end, &slope_l_rate, &intercept_l);
-        for (i = Break_Num_R_UP; i < Image_H - 2; i++)
-        {
-            R_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
-            R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);
-        }
-    }
-    else if ((Break_Num_L_UP) && (Break_Num_R_UP) && (!Break_Num_L_DOWN) && (!Break_Num_R_DOWN))//只有上面两个点 0101
-    {
-        Image_Flag.Cross_Fill = true;
-        //计算斜率
-        start = Break_Num_L_UP - 15;
-        start = Limit_a_b(start, 5, Image_H - 5);
-        end = Break_Num_L_UP;
-        end = Limit_a_b(end, 5, Image_H - 5);
-        Get_K_b(L_Border[start], start, L_Border[end], end, &slope_l_rate, &intercept_l);
-        for (i = Break_Num_L_UP; i < Image_H - 2; i++)
-        {
-            L_Border[i] = (i - intercept_l) / slope_l_rate;//y = kx+b
-            L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
-        }
-
         //计算斜率
         start = Break_Num_R_UP - 15;//起点
         start = Limit_a_b(start, 5, Image_H - 5);//限幅
@@ -2096,14 +2104,14 @@ void Image_Process(void)
         }
 
         // 同上
-        if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Right_Ring) && (!Image_Flag.Zerba))
-        {
-            Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
-        }
-        if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Left_Ring) && (!Image_Flag.Zerba))
-        {
-            Right_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
-        }
+        // if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Right_Ring) && (!Image_Flag.Zerba))
+        // {
+        //     Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
+        // }
+        // if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Left_Ring) && (!Image_Flag.Zerba))
+        // {
+        //     Right_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
+        // }
     }
     
     for (int i = Hightest; i < Image_H-1; i++)

@@ -8,6 +8,7 @@ typedef enum
     Depart = 0,//发车
     Line_Patrol,//巡线
     Line_Board,//散落卡片
+    Cross_Board,//十字回环卡片
     Unload,//大类卸货
 }Current_State;
 
@@ -22,6 +23,7 @@ typedef enum
     Pick,//捡起卡片
     Classify,//识别分类
     Return_Line,//返回赛道
+    Find_Cross,//找到十字
     Find_Zebra,//找到斑马线
     Wait_Big_Data,//等待大类放置区域数据
     Unload_Next,//前往下一个卸货点
@@ -33,16 +35,23 @@ typedef struct
 {
     Current_State CurState;//当前处于哪个状态机
     uint8 Line_Board_State;//散落在赛道旁的卡片
-    uint8 Unload_State;
+    uint8 Unload_State;//终点前卸货状态机
+    uint8 Cross_Board_State;//十字回环卡片
+
     float Static_Angle;//静止的角度
+    bool Stop_Flag;//停车
+
+    uint8 Cross_Dir;//十字方向
+    int8 Small_Board[6];//卡片小类
+    uint8 Small_Count;//小类卡片张数
+
     int8 Board_Dir;//散落在赛道的哪一边
     int8 Big_Board;//卡片大类
     uint8 Big_Pos_Count;//大类次数,也就是去了几个大类的位置
     uint8 Big_Count[3];//大类每类数量
     uint8 Unload_Count;//卸货次数
-    bool Stop_Flag;//停车
     Rotaryservo_Handle Depot_Pos;//仓库的位置
-    uint8 Big_Pos[3];
+    uint8 Big_Pos[3];//大类的位置
 }FSM_Handle;
 extern FSM_Handle MyFSM;
 void FSM_main();
