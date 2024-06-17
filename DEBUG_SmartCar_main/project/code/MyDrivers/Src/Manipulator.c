@@ -347,12 +347,12 @@ void Take_Card_Out()
     switch (Out_State)
     {
         case 0:
-            Set_Servo_Angle(Stretch_Servo,120);
+            Set_Servo_Angle(Stretch_Servo,140);
             Electromagnet_On;
             Out_State = 1;
         break;
         case 1:
-            if(Bufcnt(true,500))
+            if(Bufcnt(true,1500))
             {
                 Set_Servo_Angle(Raise_Servo,160);
                 Out_State = 2;

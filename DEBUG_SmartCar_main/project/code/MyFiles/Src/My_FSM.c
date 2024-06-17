@@ -324,6 +324,9 @@ static void Line_BoardFsm()
 **/
 static void Cross_BoardFsm()
 {
+    static float Curanglg = 0;
+    static float Lastanglg = 0;
+    static float Angle_Offest = 0;
     switch (MyFSM.Cross_Board_State)
     {
         case Find_Cross://找到十字
@@ -372,7 +375,7 @@ static void Cross_BoardFsm()
             UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
             if(UnpackFlag.FINETUNING_DATA_FLAG)
             {
-                if(Bufcnt(true,500))
+                if(Bufcnt(true,800))
                 {
                     MyFSM.Cross_Board_State = Move;//开始移动到卡片前面
                     UnpackFlag.FINETUNING_DATA_FLAG = false;
@@ -521,7 +524,7 @@ static void Cross_BoardFsm()
                 {
                     if(Turn.Finish==false)
                     {
-                        Turn_Angle(180);
+                        Turn_Angle(160);
                     }
                     else
                     {
@@ -536,30 +539,16 @@ static void Cross_BoardFsm()
         break;
         case Find_Place://寻找放置位置
             #ifdef debug_switch
-                printf("Find_Place\r\n");    
+                printf("Find_Place:%d,%f\r\n",MyFSM.Unload_Count,Angle_Offest);    
             #endif 
             UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBIGPLACE);//获取大类放置区域
-            if(MyFSM.Unload_Count==0)
+            Dodge_Carmar();
+            Curanglg = Gyro_YawAngle_Get();
+            if (Lastanglg == 0)
             {
-                if(FINDBORDER_DATA.FINDBIGPLACE_FLAG == true)
-                {
-                    FINDBORDER_DATA.FINDBIGPLACE_FLAG = false;
-                    MyFSM.Cross_Board_State = Wait_PlaceData;
-                    MyFSM.Static_Angle = Gyro_YawAngle_Get();
-                }
+                Lastanglg = Curanglg;
             }
-            else
-            {
-                if(Bufcnt(true,3000))
-                {
-                    if(FINDBORDER_DATA.FINDBIGPLACE_FLAG)
-                    {
-                        FINDBORDER_DATA.FINDBIGPLACE_FLAG = false;
-                        MyFSM.Cross_Board_State = Wait_PlaceData;
-                        MyFSM.Static_Angle = Gyro_YawAngle_Get();
-                    }                       
-                }
-            }
+            Angle_Offest += Curanglg - Lastanglg;
             if(MyFSM.Cross_Dir == RIGHT)
             {
                 Car_run_X(2);
@@ -567,6 +556,23 @@ static void Cross_BoardFsm()
             else
             {
                 Car_run_X(-2);
+            }
+            Lastanglg = Curanglg;
+            if(MyFSM.Unload_Count==0&&FINDBORDER_DATA.FINDBIGPLACE_FLAG == true)
+            {
+                FINDBORDER_DATA.FINDBIGPLACE_FLAG = false;
+                MyFSM.Cross_Board_State = Wait_PlaceData;
+                MyFSM.Static_Angle = Gyro_YawAngle_Get();
+                Angle_Offest = 0;
+                Lastanglg = 0;
+            }
+            else if(FINDBORDER_DATA.FINDBIGPLACE_FLAG == true && (fabs(Angle_Offest) >= 35))
+            {
+                FINDBORDER_DATA.FINDBIGPLACE_FLAG = false;
+                MyFSM.Cross_Board_State = Wait_PlaceData;
+                MyFSM.Static_Angle = Gyro_YawAngle_Get();
+                Angle_Offest = 0;
+                Lastanglg = 0;
             }
         break;
         case Wait_PlaceData://等待串口传回放置区域的信息
@@ -584,7 +590,7 @@ static void Cross_BoardFsm()
                 }
             }
             Car.Speed_X = 0;
-            Car.Speed_Y = 2;
+            Car.Speed_Y = 3;
             Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
         break;
         case Move_Place://移动到卡片前面
@@ -722,7 +728,7 @@ static void Cross_BoardFsm()
             {
                 if(Navigation.Finish_Flag == false)
                 {
-                    Navigation_Process_Y(0,-30);
+                    Navigation_Process_Y(0,-50);
                 }
                 else
                 {
@@ -733,7 +739,7 @@ static void Cross_BoardFsm()
             {
                 if(Navigation.Finish_Flag == false)
                 {
-                    Navigation_Process_Y(0,-30);
+                    Navigation_Process_Y(0,-50);
                 }
                 else
                 {
