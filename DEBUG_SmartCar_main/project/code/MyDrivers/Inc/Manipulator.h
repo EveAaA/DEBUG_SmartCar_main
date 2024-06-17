@@ -20,7 +20,7 @@ typedef struct
     volatile bool Put_Depot;
     volatile bool Put_Out;
     volatile bool Pick_End;
-    volatile bool Depot_End;
+    volatile bool Depot_End;//转盘转动结束
 }Servo_Flag_Handle;
 
 typedef enum

@@ -24,7 +24,14 @@ typedef enum
     Classify,//识别分类
     Return_Line,//返回赛道
     Find_Cross,//找到十字
-    Find_Place,
+    Find_Place,//寻找放置位置
+    Wait_PlaceData,//等待放置区域微调数据
+    Move_Place,//移动到放置区域
+    Confirm_Place,//确认放置区域X轴是否移动到位
+    Move_PlaceY,//移动到放置区域卡片前面
+    Confirm_PlaceY,//确认放置区域Y轴是否移动到位
+    Classify_Place,//识别小类放置区域
+    Ready_Find_Next,//准备寻找下一个小类放置区域
     Find_Zebra,//找到斑马线
     Wait_Big_Data,//等待大类放置区域数据
     Unload_Next,//前往下一个卸货点
@@ -41,13 +48,14 @@ typedef struct
 
     float Static_Angle;//静止的角度
     bool Stop_Flag;//停车
+    int8 Board_Dir;//散落在赛道的哪一边
 
     bool Cross_Flag_;
     uint8 Cross_Dir;//十字方向
     int8 Small_Board[6];//卡片小类
     uint8 Small_Count;//小类卡片张数
+    int8 Small_Type;//具体是哪小类
 
-    int8 Board_Dir;//散落在赛道的哪一边
     int8 Big_Board;//卡片大类
     uint8 Big_Pos_Count;//大类次数,也就是去了几个大类的位置
     uint8 Big_Count[3];//大类每类数量

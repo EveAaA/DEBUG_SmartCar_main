@@ -39,7 +39,7 @@ Car_Handle Car =
     .Speed_X = 0,
     .Speed_Y = 0,
     .Speed_Z = 0,
-    .Image_Flag = true,
+    .Image_Flag = false,
 };
 Turn_Handle Turn = 
 {
@@ -201,6 +201,7 @@ void Car_run(float Speed)
 **/
 void Car_run_X(float Speed)
 {
+    UART_SendByte(&_UART_FINE_TUNING, UART_MOVEVOLUMEUP_FLAG);
     float Image_ErroF_ = GetPIDValue(&ImageF_PID, -20 - (VOLUMEUP_DATA.HeightErr));
     Car.Speed_X = Speed;
     Car.Speed_Y = Image_ErroF_;

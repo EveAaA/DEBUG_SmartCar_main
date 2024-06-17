@@ -271,9 +271,13 @@ void Rotary_Switch(Rotaryservo_Handle RotaryServo,uint8 Rotary_Speed)
 
     if(Tar_Depot!=Cur_Depot)
     {
-        if(abs(Tar_Depot - Cur_Depot) > 90)
+        if(abs(Tar_Depot - Cur_Depot) > 90 && abs(Tar_Depot - Cur_Depot) < 180)
         {
             Rotary_Speed *=2;
+        }
+        else if(abs(Tar_Depot - Cur_Depot) > 180)
+        {
+            Rotary_Speed *=3;
         }
         
         Set_Angle = Cur_Depot + (Tar_Depot - Cur_Depot)*(Percent/(float)Rotary_Speed);
