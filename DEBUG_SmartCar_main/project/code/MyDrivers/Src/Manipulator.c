@@ -241,16 +241,16 @@ void Dodge_Carmar()
 
 /**@brief   设置转盘舵机转到哪个地方
 -- @param   Rotaryservo_Handle RotaryServo 选择颜色
--- @param   uint8 Rotary_Speed 速度
+-- @param   uint16 Rotary_Speed 速度
 -- @author  庄文标
 -- @date    2024/5/6
 **/
-void Rotary_Switch(Rotaryservo_Handle RotaryServo,uint8 Rotary_Speed)
+void Rotary_Switch(Rotaryservo_Handle RotaryServo,uint16 Rotary_Speed)
 {
     static uint16 Cur_Depot = 85;
     static uint16 Tar_Depot = 0;
     static uint16 Set_Angle = 85;
-    static uint8 Percent = 1;
+    static uint16 Percent = 1;
     if(RotaryServo <= Yellow)
     {
         Tar_Depot = RotaryServo*90 + 85;
@@ -275,11 +275,14 @@ void Rotary_Switch(Rotaryservo_Handle RotaryServo,uint8 Rotary_Speed)
         {
             Rotary_Speed *=2;
         }
-        else if(abs(Tar_Depot - Cur_Depot) > 180)
+        else if(abs(Tar_Depot - Cur_Depot) >= 180 && abs(Tar_Depot - Cur_Depot) < 270)
+        {
+            Rotary_Speed *=3;
+        }
+        else if(abs(Tar_Depot - Cur_Depot) >= 270)
         {
             Rotary_Speed *=4;
         }
-        
         Set_Angle = Cur_Depot + (Tar_Depot - Cur_Depot)*(Percent/(float)Rotary_Speed);
         Percent +=1;
         Servo_Flag.Depot_End = false;

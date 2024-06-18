@@ -257,6 +257,7 @@ static void Line_BoardFsm()
                 MyFSM.Big_Board = CLASSIFY_DATA.type;//记录分类
                 MyFSM.Big_Count[MyFSM.Big_Board]+=1;
                 CLASSIFY_DATA.type = None;
+                CLASSIFY_DATA.place = nil;
                 Set_Beepfreq(MyFSM.Big_Board+1);
                 MyFSM.Depot_Pos = MyFSM.Big_Board;
                 MyFSM.Big_Board = None;
@@ -270,7 +271,7 @@ static void Line_BoardFsm()
             }
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
-            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
+            Car.Speed_Z = 0;
         break;
         case Pick://捡起卡片
             #ifdef debug_switch
@@ -289,7 +290,7 @@ static void Line_BoardFsm()
             } 
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
-            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
+            Car.Speed_Z = 0;
         break;
         case Return_Line://返回赛道
             #ifdef debug_switch
@@ -467,15 +468,16 @@ static void Cross_BoardFsm()
         break;
         case Classify:
             #ifdef debug_switch
-                printf("Cross_Classify\r\n");    
+                // printf("Cross_Classify\r\n");    
             #endif 
             if(CLASSIFY_DATA.place != nil)//识别到了分类
             {
                 Dodge_Board();
                 MyFSM.Cross_Board_State = Pick;//捡起卡片
                 MyFSM.Small_Board[MyFSM.Small_Count] = CLASSIFY_DATA.place;//记录分类
-                printf("%c\r\n",PLACE_TABLE_STR[CLASSIFY_DATA.place]);
+                printf("%s\r\n",PLACE_TABLE_STR[CLASSIFY_DATA.place]);
                 CLASSIFY_DATA.place = nil;
+                CLASSIFY_DATA.type = None;
                 Set_Beepfreq(1);
                 if(MyFSM.Small_Count == 4)
                 {
@@ -500,7 +502,7 @@ static void Cross_BoardFsm()
         break;
         case Pick://捡起卡片
             #ifdef debug_switch
-                printf("Cross_Pick\r\n");    
+                // printf("Cross_Pick\r\n");    
             #endif
             if(Servo_Flag.Pick_End == false)
             {
@@ -542,7 +544,7 @@ static void Cross_BoardFsm()
             #ifdef debug_switch
                 printf("Find_Place:%d,%f\r\n",MyFSM.Unload_Count,Angle_Offest);    
             #endif 
-            UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBIGPLACE);//获取大类放置区域
+            UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETSMALLPLACE);//获取小类放置区域
             Dodge_Carmar();
             Curanglg = Gyro_YawAngle_Get();
             if (Lastanglg == 0)
@@ -567,7 +569,7 @@ static void Cross_BoardFsm()
                 Angle_Offest = 0;
                 Lastanglg = 0;
             }
-            else if(FINDBORDER_DATA.FINDBIGPLACE_FLAG == true && (fabs(Angle_Offest) >= 35))
+            else if(FINDBORDER_DATA.FINDBIGPLACE_FLAG == true && (fabs(Angle_Offest) >= 55))
             {
                 FINDBORDER_DATA.FINDBIGPLACE_FLAG = false;
                 MyFSM.Cross_Board_State = Wait_PlaceData;
@@ -667,11 +669,11 @@ static void Cross_BoardFsm()
         break;
         case Classify_Place:
             #ifdef debug_switch
-                printf("Classify_Place\r\n");    
+                // printf("Classify_Place\r\n");    
             #endif 
             if(SMALL_PLACE_DATA.place != nil)//识别到了分类
             {
-                printf("%c\r\n",PLACE_TABLE_STR[SMALL_PLACE_DATA.place]);
+                printf("%s\r\n",PLACE_TABLE_STR[SMALL_PLACE_DATA.place]);
                 Dodge_Board();
                 Servo_Flag.Depot_End = true;
                 for(uint8 i = 0;i <= MyFSM.Small_Count - 1;i++)
@@ -700,7 +702,7 @@ static void Cross_BoardFsm()
         break;
         case Unload_Board:
             #ifdef debug_switch
-                printf("Cross_Unload_Board\r\n");    
+                // printf("Cross_Unload_Board\r\n");    
             #endif
             if(Servo_Flag.Depot_End)
             {
@@ -750,34 +752,45 @@ static void Cross_BoardFsm()
             }
         break;
         case Return_Line:
+            Dodge_Carmar();
             if(MyFSM.Cross_Dir==RIGHT)
             {
                 if(Turn.Finish == false)
                 {
-                    Turn_Angle(90);
+                    Turn_Angle(120);
+                    Car.Image_Flag = true;
                 }
                 else
                 {
-                    Turn.Finish = false;
-                    MyFSM.Cross_Board_State = Find_Cross;
-                    MyFSM.CurState = Line_Patrol;
-                    Car.Image_Flag = true;
-                    UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBIGPLACE);//继续获取道路旁卡片
+                    Car_run(5);
+                    UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBORDER);//继续获取道路旁卡片
+                    if(Bufcnt(true,3000))
+                    {
+                        FINDBORDER_DATA.FINDBORDER_FLAG = false;
+                        Turn.Finish = false;
+                        MyFSM.Cross_Board_State = Find_Cross;
+                        MyFSM.CurState = Line_Patrol;
+                    }
                 }
             }
             else
             {
                 if(Turn.Finish == false)
                 {
-                    Turn_Angle(-90);
+                    Turn_Angle(-120);
+                    Car.Image_Flag = true;
                 }
                 else
                 {
-                    Turn.Finish = false;
-                    MyFSM.Cross_Board_State = Find_Cross;
-                    MyFSM.CurState = Line_Patrol;
-                    Car.Image_Flag = true;
-                    UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBIGPLACE);//继续获取道路旁卡片
+                    Car_run(5);
+                    UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBORDER);//继续获取道路旁卡片
+                    if(Bufcnt(true,3000))
+                    {
+                        FINDBORDER_DATA.FINDBORDER_FLAG = false;
+                        Turn.Finish = false;
+                        MyFSM.Cross_Board_State = Find_Cross;
+                        MyFSM.CurState = Line_Patrol;
+                    }
                 }                
             }
         break;   
@@ -836,7 +849,7 @@ static void Unload_Fsm()
             UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE);//发送对数字板微调信息
             if(UnpackFlag.FINETUNING_DATA_FLAG)
             {
-                if(Bufcnt(true,500))
+                if(Bufcnt(true,1000))
                 {
                     MyFSM.Unload_State = Move;//开始移动到卡片前面
                     UnpackFlag.FINETUNING_DATA_FLAG = false;
@@ -845,7 +858,7 @@ static void Unload_Fsm()
             Car.Speed_X = 0;
             if(MyFSM.Big_Pos_Count == 0)
             {
-                Car.Speed_Y = 2;
+                Car.Speed_Y = 3;
             }
             else
             {
@@ -931,6 +944,7 @@ static void Unload_Fsm()
             #endif 
             if(BIG_PLACE_DATA.Big_Place != None)//识别到了分类
             {
+                Servo_Flag.Depot_End = true;
                 Dodge_Board();
                 MyFSM.Big_Board = BIG_PLACE_DATA.Big_Place;//记录分类
                 BIG_PLACE_DATA.Big_Place = None;
@@ -943,14 +957,14 @@ static void Unload_Fsm()
             }
             else
             {
-                if(Bufcnt(true,300))//3s发送一次
+                if(Bufcnt(true,3000))//3s发送一次
                 {
                     UART_SendByte(&_UART_FINE_TUNING, UART_CLASSIFY_BIGPLACE);//发送数据，接收大类分类数据
                 }
             }
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
-            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
+            Car.Speed_Z = 0;
         break;
         case Unload_Board:
             #ifdef debug_switch
@@ -975,7 +989,7 @@ static void Unload_Fsm()
             }
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
-            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle); 
+            Car.Speed_Z = 0; 
         break;
         case Unload_Next:
             #ifdef debug_switch
