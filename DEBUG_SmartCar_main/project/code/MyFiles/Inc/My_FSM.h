@@ -9,6 +9,7 @@ typedef enum
     Line_Patrol,//巡线
     Line_Board,//散落卡片
     Cross_Board,//十字回环卡片
+    Ring_Board,//圆环卡片
     Unload,//大类卸货
 }Current_State;
 

@@ -277,7 +277,7 @@ void Rotary_Switch(Rotaryservo_Handle RotaryServo,uint8 Rotary_Speed)
         }
         else if(abs(Tar_Depot - Cur_Depot) > 180)
         {
-            Rotary_Speed *=3;
+            Rotary_Speed *=4;
         }
         
         Set_Angle = Cur_Depot + (Tar_Depot - Cur_Depot)*(Percent/(float)Rotary_Speed);
@@ -352,7 +352,7 @@ void Take_Card_Out()
             Out_State = 1;
         break;
         case 1:
-            if(Bufcnt(true,1500))
+            if(Bufcnt(true,3000))
             {
                 Set_Servo_Angle(Raise_Servo,160);
                 Out_State = 2;

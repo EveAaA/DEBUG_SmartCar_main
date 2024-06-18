@@ -474,6 +474,7 @@ static void Cross_BoardFsm()
                 Dodge_Board();
                 MyFSM.Cross_Board_State = Pick;//捡起卡片
                 MyFSM.Small_Board[MyFSM.Small_Count] = CLASSIFY_DATA.place;//记录分类
+                printf("%c\r\n",PLACE_TABLE_STR[CLASSIFY_DATA.place]);
                 CLASSIFY_DATA.place = nil;
                 Set_Beepfreq(1);
                 if(MyFSM.Small_Count == 4)
@@ -670,6 +671,7 @@ static void Cross_BoardFsm()
             #endif 
             if(SMALL_PLACE_DATA.place != nil)//识别到了分类
             {
+                printf("%c\r\n",PLACE_TABLE_STR[SMALL_PLACE_DATA.place]);
                 Dodge_Board();
                 Servo_Flag.Depot_End = true;
                 for(uint8 i = 0;i <= MyFSM.Small_Count - 1;i++)
@@ -677,11 +679,11 @@ static void Cross_BoardFsm()
                     if(MyFSM.Small_Board[i] == SMALL_PLACE_DATA.place)
                     {
                         MyFSM.Depot_Pos = i;
-                        MyFSM.Unload_Count+=1;
                         Set_Beepfreq(1);
                         break;
                     }
                 }
+                MyFSM.Unload_Count+=1;
                 SMALL_PLACE_DATA.place = nil;
                 MyFSM.Cross_Board_State = Unload_Board;
             }
