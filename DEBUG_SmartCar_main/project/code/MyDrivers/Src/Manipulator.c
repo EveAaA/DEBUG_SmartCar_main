@@ -26,7 +26,7 @@
 Servo_Handle Stretch_Servo = //抬臂舵机
 {
     .Pin = PWM1_MODULE3_CHA_D0,
-    .Init_Angle = 40,//角度大往下
+    .Init_Angle = 140,//角度小往下
     .Servo_Time = 0,
 };
 Servo_Handle Raise_Servo = //抬手舵机
@@ -38,7 +38,7 @@ Servo_Handle Raise_Servo = //抬手舵机
 Servo_Handle Rotary_Servo = //旋转舵机
 {
     .Pin = PWM1_MODULE3_CHB_B11,
-    .Init_Angle = 85,//角度大顺时针转,85白色在前,175黑色在前,265红色在前,355黄色在前，前三个分别代表大类123
+    .Init_Angle = 55,//角度大顺时针转,85白色在前,175黑色在前,265红色在前,355黄色在前，前三个分别代表大类123
                      //185白色门 275黑色门 5红色门 95黄色门 
     .Servo_Time = 0,
 };
@@ -95,7 +95,7 @@ static void Manipulator_PutDown()
     {
         case 0://先放下抬手舵机
             Electromagnet_On;//打开电磁铁
-            Set_Servo_Angle(Raise_Servo,0);
+            Set_Servo_Angle(Raise_Servo,1);
 #ifdef Servo_Slow
             PuDowm_State = 1;
             // Stretch_Servo.Servo_Time = 1;
@@ -104,14 +104,14 @@ static void Manipulator_PutDown()
 #endif
         break;
         case 1://缓冲阶段
-            Set_Servo_Angle(Stretch_Servo,120);
+            Set_Servo_Angle(Stretch_Servo,60);//120
             if(Bufcnt(true,500))
             {
                 PuDowm_State = 2;
             }     
         break;
         case 2:
-            Set_Servo_Angle(Stretch_Servo,150);
+            Set_Servo_Angle(Stretch_Servo,30);//150
             PuDowm_State = 0;
             Servo_Flag.Put_Down = true;
         break;
@@ -129,20 +129,20 @@ static void Manipulator_PutUp()
     switch (PutUp_State)
     {
         case 0:
-            Set_Servo_Angle(Stretch_Servo,120);//先抬大臂
+            Set_Servo_Angle(Stretch_Servo,60);//先抬大臂 120
             PutUp_State = 1;
         break;
         case 1:
             if(Bufcnt(true,400))//这是为了留给机械臂运转的时间
             {
-                Set_Servo_Angle(Raise_Servo,148);//把卡片翻起来
+                Set_Servo_Angle(Raise_Servo,135);//把卡片翻起来
                 PutUp_State = 2;
             }
         break;
         case 2:
             if(Bufcnt(true,400))
             {
-                Set_Servo_Angle(Stretch_Servo,30);//大臂直接放入
+                Set_Servo_Angle(Stretch_Servo,138);//大臂直接放入 30
                 PutUp_State = 3;
             }
         break;
@@ -229,10 +229,15 @@ void Pick_Card()
 **/
 void Dodge_Board()
 {
-    Set_Servo_Angle(Stretch_Servo,Stretch_Servo.Init_Angle + 30);//抬起机械臂以免卡到卡片
+    Set_Servo_Angle(Stretch_Servo,Stretch_Servo.Init_Angle - 30);//抬起机械臂以免卡到卡片
     Set_Servo_Angle(Raise_Servo,Raise_Servo.Init_Angle - 30);
 }
 
+/**@brief   躲避卡片
+-- @param   无
+-- @author  庄文标
+-- @date    2024/6/2
+**/
 void Dodge_Carmar()
 {
     Set_Servo_Angle(Stretch_Servo,Stretch_Servo.Init_Angle);//抬起机械臂以免卡到卡片
@@ -247,39 +252,39 @@ void Dodge_Carmar()
 **/
 void Rotary_Switch(Rotaryservo_Handle RotaryServo,uint16 Rotary_Speed)
 {
-    static uint16 Cur_Depot = 85;
+    static uint16 Cur_Depot = 55;
     static uint16 Tar_Depot = 0;
-    static uint16 Set_Angle = 85;
+    static uint16 Set_Angle = 55;
     static uint16 Percent = 1;
-    if(RotaryServo <= Yellow)
+    if(RotaryServo <= 4)
     {
-        Tar_Depot = RotaryServo*90 + 85;
+        Tar_Depot = RotaryServo*72 + 55;
     }
-    else if(RotaryServo == White_Door)
-    {
-        Tar_Depot = 185;
-    }
-    else if(RotaryServo == Black_Door)
-    {
-        Tar_Depot = 275;
-    }
-    else if(RotaryServo == Red_Door)
-    {
-        Tar_Depot = 359;
-    }
+    // else if(RotaryServo == White_Door)
+    // {
+    //     Tar_Depot = 185;
+    // }
+    // else if(RotaryServo == Black_Door)
+    // {
+    //     Tar_Depot = 275;
+    // }
+    // else if(RotaryServo == Red_Door)
+    // {
+    //     Tar_Depot = 359;
+    // }
                       
 
     if(Tar_Depot!=Cur_Depot)
     {
-        if(abs(Tar_Depot - Cur_Depot) > 90 && abs(Tar_Depot - Cur_Depot) < 180)
+        if(abs(Tar_Depot - Cur_Depot) > 72 && abs(Tar_Depot - Cur_Depot) <= 144)
         {
             Rotary_Speed *=2;
         }
-        else if(abs(Tar_Depot - Cur_Depot) >= 180 && abs(Tar_Depot - Cur_Depot) < 270)
+        else if(abs(Tar_Depot - Cur_Depot) > 144 && abs(Tar_Depot - Cur_Depot) <= 216)
         {
             Rotary_Speed *=3;
         }
-        else if(abs(Tar_Depot - Cur_Depot) >= 270)
+        else if(abs(Tar_Depot - Cur_Depot) > 216)
         {
             Rotary_Speed *=4;
         }
@@ -323,7 +328,7 @@ void Put_Depot(int8 Card_Class)
             }
         break;
         case 1:
-            Set_Servo_Angle(Stretch_Servo,30);//大臂直接放入
+            Set_Servo_Angle(Stretch_Servo,150);//大臂直接放入 30
             Depot_State = 2;
         break;
         case 2:
@@ -350,54 +355,50 @@ void Take_Card_Out()
     switch (Out_State)
     {
         case 0:
-            Set_Servo_Angle(Stretch_Servo,140);
+            Set_Servo_Angle(Stretch_Servo,40);//140
             Electromagnet_On;
             Out_State = 1;
         break;
         case 1:
-            if(Bufcnt(true,3000))
+            if(Bufcnt(true,1000))
             {
-                Set_Servo_Angle(Raise_Servo,160);
-                Out_State = 2;
-            }
-        break;
-        case 2://吸卡片
-            Set_Servo_Angle(Stretch_Servo,40);
-            Out_State = 3;
-        break;
-        case 3:
-            if(Bufcnt(true,500))
-            {
-                Set_Servo_Angle(Raise_Servo,132);
+                Set_Servo_Angle(Raise_Servo,145);
                 Out_State = 4;
             }
         break;
-        case 4:
-            Set_Servo_Angle(Stretch_Servo,15);
+        case 4://吸卡片
+            Set_Servo_Angle(Stretch_Servo,150);//15
             Out_State = 5;           
         break;
         case 5://把卡片拿出来
             if(Bufcnt(true,500))
             {
-                Set_Servo_Angle(Stretch_Servo,120);
+                Set_Servo_Angle(Raise_Servo,135);
                 Out_State = 6;
-            }
+            }            
         break;
-        case 6://把卡片翻下来
+        case 6://把卡片拿出来
             if(Bufcnt(true,500))
             {
-                Set_Servo_Angle(Raise_Servo,0);
+                Set_Servo_Angle(Stretch_Servo,60);//120
                 Out_State = 7;
             }
         break;
-        case 7://把卡片放下
-            if(Bufcnt(true,375))
+        case 7://把卡片翻下来
+            if(Bufcnt(true,500))
             {
-                Set_Servo_Angle(Stretch_Servo,150);
+                Set_Servo_Angle(Raise_Servo,0);
                 Out_State = 8;
             }
         break;
-        case 8://电磁铁消磁
+        case 8://把卡片放下
+            if(Bufcnt(true,375))
+            {
+                Set_Servo_Angle(Stretch_Servo,30);//150
+                Out_State = 9;
+            }
+        break;
+        case 9://电磁铁消磁
             if(Bufcnt(true,375))
             {
                 Electromagnet_Off;

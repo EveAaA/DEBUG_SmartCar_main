@@ -107,7 +107,7 @@ void User_Init()
     All_Encoder_Init();
     tft180_show_string(Row_0, Line_2, "Encoder Init ...");
     Rotary_Init();
-    wireless_uart_init();
+    bluetooth_ch9141_init();
     tft180_show_string(Row_0, Line_3, "Rotary Init ...");
     Manipulator_Init();
     Motor_Init();

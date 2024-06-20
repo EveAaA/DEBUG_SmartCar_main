@@ -53,7 +53,7 @@ void Bluetooth_Init(void)
 **/
 int32_t fputc (int32_t ch, FILE* f)
 {
-    wireless_uart_send_byte((ch & 0xFF));
+    bluetooth_ch9141_send_byte((ch & 0xFF));
     return ch;
 }
 

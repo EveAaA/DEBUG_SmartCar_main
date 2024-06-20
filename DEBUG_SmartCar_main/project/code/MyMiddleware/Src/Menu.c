@@ -159,6 +159,7 @@ static void Page0_Mode()
     {
         Rotary.Press = 0;
         Menu.Set_Line = 6;
+        Car.Image_Flag = true;
         Menu.Image_Show = true;
         tft180_clear();
     }
