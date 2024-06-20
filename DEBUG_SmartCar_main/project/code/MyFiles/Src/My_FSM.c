@@ -37,7 +37,7 @@ FSM_Handle MyFSM = {
 
 uint16 wait_time = 0;
 #define Static_Time 100 //等待静止的时间，大约0.5秒
-#define debug_switch  //是否调试
+// #define debug_switch  //是否调试
 
 /**
  ******************************************************************************
@@ -108,7 +108,7 @@ static void Line_PatrolFsm()
         MyFSM.Cross_Flag_ = true;
         Set_Beepfreq(1);
     }
-    else if(Bufcnt(Image_Flag.Zerba,500))
+    else if(Bufcnt(Image_Flag.Zerba,200))
     {
         Car.Image_Flag = false;
         Image_Flag.Zerba = false;
@@ -154,7 +154,7 @@ static void Line_BoardFsm()
             UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
             if(UnpackFlag.FINETUNING_DATA_FLAG)
             {
-                if(Bufcnt(true,500))
+                if(Bufcnt(true,100))
                 {
                     MyFSM.Line_Board_State = Move;//开始移动到卡片前面
                     UnpackFlag.FINETUNING_DATA_FLAG = false;
@@ -197,18 +197,35 @@ static void Line_BoardFsm()
                 printf("Confirm\r\n");    
             #endif
             UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
-            if(FINETUNING_DATA.FINETUNING_FINISH_FLAG != 2)
+            if(FINETUNING_DATA.FINETUNING_FINISH_FLAG == 0)
             {
                 MyFSM.Line_Board_State = Move;//移动
             }
             else
             {
                 Set_Beeptime(200);
-                MyFSM.Line_Board_State = Move_Y;//Y轴移动
+                MyFSM.Line_Board_State = Wait_Data_Y;//Y轴移动
             }
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
             Car.Speed_Z = Angle_Control(MyFSM.Static_Angle); 
+        break;
+        case Wait_Data_Y:
+            #ifdef debug_switch
+                printf("Wait_Data_Y\r\n");    
+            #endif 
+            UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
+            if(UnpackFlag.FINETUNING_DATA_FLAG)
+            {
+                if(Bufcnt(true,100))
+                {
+                    MyFSM.Line_Board_State = Move_Y;//开始移动到卡片前面
+                    UnpackFlag.FINETUNING_DATA_FLAG = false;
+                }
+            }
+            Car.Speed_X = 0;
+            Car.Speed_Y = 0;
+            Car.Speed_Z = 0;     
         break;
         case Move_Y:
             #ifdef debug_switch
@@ -425,11 +442,28 @@ static void Cross_BoardFsm()
             else
             {
                 Set_Beeptime(200);
-                MyFSM.Cross_Board_State = Move_Y;//Y轴移动
+                MyFSM.Cross_Board_State = Wait_Data_Y;//Y轴移动
             }
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
             Car.Speed_Z = Angle_Control(MyFSM.Static_Angle); 
+        break;
+        case Wait_Data_Y:
+            #ifdef debug_switch
+                printf("Wait_Data_Y\r\n");    
+            #endif 
+            UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
+            if(UnpackFlag.FINETUNING_DATA_FLAG)
+            {
+                if(Bufcnt(true,100))
+                {
+                    MyFSM.Cross_Board_State = Move_Y;//开始移动到卡片前面
+                    UnpackFlag.FINETUNING_DATA_FLAG = false;
+                }
+            }
+            Car.Speed_X = 0;
+            Car.Speed_Y = 0;
+            Car.Speed_Z = 0;     
         break;
         case Move_Y:
             #ifdef debug_switch
@@ -479,14 +513,7 @@ static void Cross_BoardFsm()
                 CLASSIFY_DATA.place = nil;
                 CLASSIFY_DATA.type = None;
                 Set_Beepfreq(1);
-                if(MyFSM.Small_Count == 4)
-                {
-                    MyFSM.Depot_Pos = MyFSM.Small_Count - 1;//设置仓库位置
-                }
-                else
-                {
-                    MyFSM.Depot_Pos = MyFSM.Small_Count;
-                }
+                MyFSM.Depot_Pos = MyFSM.Small_Count;
                 MyFSM.Small_Count+=1;
             }
             else
@@ -513,7 +540,7 @@ static void Cross_BoardFsm()
             }
             else
             {
-                if(MyFSM.Small_Count<=3)
+                if(MyFSM.Small_Count<=4)
                 {
                     MyFSM.Cross_Board_State = Classify;//继续识别
                     Servo_Flag.Put_Up = false;
@@ -625,11 +652,28 @@ static void Cross_BoardFsm()
             else
             {
                 Set_Beeptime(200);
-                MyFSM.Cross_Board_State = Move_PlaceY;//Y轴移动
+                MyFSM.Cross_Board_State = Wait_Data_Y_Place;//Y轴移动
             }
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
             Car.Speed_Z = 0; 
+        break;
+        case Wait_Data_Y_Place:
+            #ifdef debug_switch
+                printf("Wait_Data_Y_Place\r\n");    
+            #endif 
+            UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE);//发送数据
+            if(UnpackFlag.FINETUNING_DATA_FLAG)
+            {
+                if(Bufcnt(true,500))
+                {
+                    MyFSM.Cross_Board_State = Move_PlaceY;//开始移动到卡片前面
+                    UnpackFlag.FINETUNING_DATA_FLAG = false;
+                }
+            }
+            Car.Speed_X = 0;
+            Car.Speed_Y = 0;
+            Car.Speed_Z = 0;     
         break;
         case Move_PlaceY:
             #ifdef debug_switch
@@ -849,7 +893,7 @@ static void Unload_Fsm()
             UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE);//发送对数字板微调信息
             if(UnpackFlag.FINETUNING_DATA_FLAG)
             {
-                if(Bufcnt(true,1000))
+                if(Bufcnt(true,300))
                 {
                     MyFSM.Unload_State = Move;//开始移动到卡片前面
                     UnpackFlag.FINETUNING_DATA_FLAG = false;

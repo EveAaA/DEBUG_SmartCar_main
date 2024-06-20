@@ -17,6 +17,8 @@ typedef enum
 {
     Find = 0,//找到卡片
     Wait_Data,//等待微调数据
+    Wait_Data_Y_Place,
+    Wait_Data_Y,
     Move,//移动到卡片前面
     Confirm,//确认X轴是否移动到位
     Move_Y,//移动到卡片前面
