@@ -50,6 +50,8 @@ typedef struct
     float Static_Angle;//静止的角度
     bool Stop_Flag;//停车
     int8 Board_Dir;//散落在赛道的哪一边
+    float Target_Pos_X;
+    float Target_Pos_Y;
 
     bool Cross_Flag_;
     uint8 Cross_Dir;//十字方向

@@ -77,10 +77,17 @@ void PIT_IRQHandler(void)
     {
         // if(Start == 1)
         // {
-        //     if(Servo_Flag.Put_Out == false)
-        //     {
-        //         Take_Card_Out();
-        //     }
+        //     FSM_main();
+        //     // if(Servo_Flag.Put_Out == false)
+        //     // {
+        //     //     Take_Card_Out();
+        //     // }
+        // }
+        // else if(Start == 0)
+        // {
+        //     Car.Speed_X = 0;
+        //     Car.Speed_Y = 0;
+        //     Car.Speed_Z = 0;
         // }
         // else if(Start == 0)
         // {

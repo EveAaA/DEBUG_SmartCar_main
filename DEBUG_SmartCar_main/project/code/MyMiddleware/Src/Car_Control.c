@@ -164,10 +164,11 @@ float Angle_Control(float Start_Angle)
 {
     float Yaw_Err = 0.0f;
     static float Yaw_Filter = 0;
-    Yaw_Filter = 0.2f*Gyro_YawAngle_Get() + 0.8f*Yaw_Filter;
-    Yaw_Err = GetPIDValue(&AngleControl_PID,Start_Angle - Yaw_Filter);
+    Yaw_Filter = Gyro_YawAngle_Get();
+    Yaw_Err = GetPIDValue(&AngleControl_PID,Start_Angle - Gyro_YawAngle_Get());
     
-    return GetPIDValue(&Gyroz_Pid,Yaw_Err - IMU_Data.gyro_z);
+    // return GetPIDValue(&Gyroz_Pid,Yaw_Err - IMU_Data.gyro_z);
+    return Yaw_Err;
 }
 
 /**@brief   根据赛道边线的角度控制
