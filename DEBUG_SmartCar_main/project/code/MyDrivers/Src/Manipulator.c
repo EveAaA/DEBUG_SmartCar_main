@@ -367,7 +367,7 @@ void Take_Card_Out()
             }
         break;
         case 4://Îü¿¨Æ¬
-            Set_Servo_Angle(Stretch_Servo,150);//15
+            Set_Servo_Angle(Stretch_Servo,155);//15
             Out_State = 5;           
         break;
         case 5://°Ñ¿¨Æ¬ÄÃ³öÀ´
