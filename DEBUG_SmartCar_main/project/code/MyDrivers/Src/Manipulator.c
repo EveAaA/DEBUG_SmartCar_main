@@ -111,7 +111,7 @@ static void Manipulator_PutDown()
             }     
         break;
         case 2:
-            Set_Servo_Angle(Stretch_Servo,30);//150
+            Set_Servo_Angle(Stretch_Servo,27);//150
             PuDowm_State = 0;
             Servo_Flag.Put_Down = true;
         break;
