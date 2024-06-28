@@ -45,7 +45,7 @@ Servo_Handle Rotary_Servo = //旋转舵机
 Servo_Handle Door_Servo = //门电机
 {
     .Pin = PWM2_MODULE3_CHB_D3,
-    .Init_Angle = 45,//角度大开门 开门角度130  关门角度50
+    .Init_Angle = 140,//角度小往下
 }; 
 Servo_Flag_Handle Servo_Flag = {false,false,false,false,false};
 
@@ -293,19 +293,19 @@ void Rotary_Switch(Rotaryservo_Handle RotaryServo,uint16 Rotary_Speed)
         Servo_Flag.Depot_End = false;
     }
 
-    if((Percent >= Rotary_Speed) && (RotaryServo <= Yellow))
+    if((Percent >= Rotary_Speed) && (RotaryServo <= 4))
     {
         Cur_Depot = Tar_Depot;
         Percent = 1;
         Servo_Flag.Depot_End = true;
     }
-    else if((Percent >= Rotary_Speed) && (RotaryServo >= White_Door))
-    {
-        Cur_Depot = Tar_Depot;
-        Percent = 1;
-        Servo_Flag.Depot_End = true;
-        Set_Servo_Angle(Door_Servo,130);          
-    }
+    // else if((Percent >= Rotary_Speed) && (RotaryServo >= White_Door))
+    // {
+    //     Cur_Depot = Tar_Depot;
+    //     Percent = 1;
+    //     Servo_Flag.Depot_End = true;
+    //     Set_Servo_Angle(Door_Servo,130);          
+    // }
     Set_Servo_Angle(Rotary_Servo,Set_Angle); 
 }
 
