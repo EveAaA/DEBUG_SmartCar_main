@@ -360,14 +360,14 @@ void Take_Card_Out()
             Out_State = 1;
         break;
         case 1:
-            if(Bufcnt(true,1000))
+            if(Bufcnt(true,300))
             {
                 Set_Servo_Angle(Raise_Servo,145);
                 Out_State = 4;
             }
         break;
         case 4://Îü¿¨Æ¬
-            Set_Servo_Angle(Stretch_Servo,155);//15
+            Set_Servo_Angle(Stretch_Servo,165);//15
             Out_State = 5;           
         break;
         case 5://°Ñ¿¨Æ¬ÄÃ³öÀ´

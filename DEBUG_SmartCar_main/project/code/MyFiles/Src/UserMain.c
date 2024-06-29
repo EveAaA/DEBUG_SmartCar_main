@@ -70,6 +70,11 @@ void Mt9v03x_Init()
 **/
 bool Bufcnt(bool Cond,uint16 Cnt)
 {
+    static uint16 Cnt_Last = 0;
+    if(Cnt!=Cnt_Last)
+    {
+        Time_Cnt = 0;
+    }
     if(Cond)//Âú×ãÌõ¼þ
     {
         if(Time_Cnt == 0)
@@ -81,7 +86,7 @@ bool Bufcnt(bool Cond,uint16 Cnt)
     {
         Time_Cnt = 0;
     }
-
+    Cnt_Last = Cnt;
     if(Time_Cnt >= Cnt)
     {
         Time_Cnt = 0;
@@ -141,6 +146,6 @@ void User_Loop()
     //     memcpy(image_copy[0], Bin_Image[0], MT9V03X_IMAGE_SIZE);
     //     seekfree_assistant_camera_send();
     // }
-    // Start = Receivedata.Start_Flag;
+    Start = Receivedata.Start_Flag;
     Menu_Display();
 }

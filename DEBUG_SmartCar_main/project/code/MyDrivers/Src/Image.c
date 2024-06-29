@@ -17,8 +17,8 @@
 #include "Beep.h"
 #include "UserMain.h"
 /* Define\Declare ------------------------------------------------------------*/
-#define Left_Ring_debug //是否开启左圆环调试
-#define Right_Ring_debug //是否开启右圆环调试
+// #define Left_Ring_debug //是否开启左圆环调试
+// #define Right_Ring_debug //是否开启右圆环调试
 
 Ring_Handle LeftRing = { false, false, 0 };
 Ring_Handle RightRing = { false, false, 0 };
@@ -1760,16 +1760,16 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
                 //waitKey(50);
             }
 
-            if (Break_Num_R_UP) // && (Bin_Image[50][4]) && (Bin_Image[50][8])
-            {
-                Get_K_b(L_Border[Image_H - 5], Image_H - 5, Points_R[Break_Num_R_UP][0], Points_R[Break_Num_R_UP][1], &slope_l_rate, &intercept_l);
-                for (i = Image_H - 1; i > 1; i--)
-                {
-                    L_Border[i] = ((i - intercept_l) / slope_l_rate)+10;
-                    L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅 
-                }
-                RightRing.Leave_Ring_First_Flag = true;
-            }
+            // if (Break_Num_R_UP) // && (Bin_Image[50][4]) && (Bin_Image[50][8])
+            // {
+            //     Get_K_b(L_Border[Image_H - 5], Image_H - 5, Points_R[Break_Num_R_UP][0], Points_R[Break_Num_R_UP][1], &slope_l_rate, &intercept_l);
+            //     for (i = Image_H - 1; i > 1; i--)
+            //     {
+            //         L_Border[i] = ((i - intercept_l) / slope_l_rate)+10;
+            //         L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅 
+            //     }
+            //     RightRing.Leave_Ring_First_Flag = true;
+            // }
             Lastanglg = Curanglg;
             if ((Bin_Image[Image_H - 10][Image_W - 8]) && (Bin_Image[Image_H - 10][Image_W - 5]) && (!Break_Num_R_UP) && (fabs(Angle_Offest) >= 50))
             {

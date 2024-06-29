@@ -75,27 +75,27 @@ void PIT_IRQHandler(void)
     
     if(pit_flag_get(PIT_CH2))
     {
-        // if(Start == 1)
-        // {
-        //     FSM_main();
-        //     // if(Servo_Flag.Put_Out == false)
-        //     // {
-        //     //     Take_Card_Out();
-        //     // }
-        // }
+        if(Start == 1)
+        {
+            FSM_main();
+            // if(Servo_Flag.Put_Out == false)
+            // {
+            //     Take_Card_Out();
+            // }
+        }
+        else if(Start == 0)
+        {
+            Car.Speed_X = 0;
+            Car.Speed_Y = 0;
+            Car.Speed_Z = 0;
+        }
         // else if(Start == 0)
         // {
         //     Car.Speed_X = 0;
         //     Car.Speed_Y = 0;
         //     Car.Speed_Z = 0;
         // }
-        // else if(Start == 0)
-        // {
-        //     Car.Speed_X = 0;
-        //     Car.Speed_Y = 0;
-        //     Car.Speed_Z = 0;
-        // }
-        FSM_main();
+        // FSM_main();
         pit_flag_clear(PIT_CH2);
     }
     
