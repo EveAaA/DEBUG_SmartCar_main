@@ -1033,7 +1033,7 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W],  uint8* L_Border, uint8* R_Border, u
             R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
         }
     }
-    else if ((Break_Num_L_UP) && (Break_Num_R_UP) && (!Break_Num_L_DOWN) && (!Break_Num_R_DOWN))//只有上面两个点 0101
+    else if ((Break_Num_L_UP) && (Break_Num_R_UP) && (!Break_Num_L_DOWN) && (!Break_Num_R_DOWN) && (Bin_Image[10][Image_H - 10]) && (Bin_Image[130][Image_H - 10]))//只有上面两个点 0101
     {
         if (Points_R[Total_Num_R][0] >= Image_W / 2)
         {
@@ -1974,10 +1974,10 @@ void Image_Process(void)
         // {
         //     Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
         // }
-        // if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Left_Ring) && (!Image_Flag.Zerba))
-        // {
-        //     Right_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
-        // }
+        if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Left_Ring) && (!Image_Flag.Zerba))
+        {
+            Right_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
+        }
     }
     
     for (int i = Hightest; i < Image_H-1; i++)
