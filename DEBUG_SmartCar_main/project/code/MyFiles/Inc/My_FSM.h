@@ -57,6 +57,7 @@ typedef struct
     int8 Small_Board[6];//卡片小类
     uint8 Small_Count;//小类卡片张数
     int8 Small_Type;//具体是哪小类
+    uint8 Same_Type;//相同种类
 
     uint8 Ring_Dir;//圆环方向
 
