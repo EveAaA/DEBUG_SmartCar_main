@@ -25,11 +25,9 @@ typedef enum
     Find_Place,//寻找放置位置
     Wait_PlaceData,//等待放置区域微调数据
     Move_Place,//移动到放置区域
-    Confirm_Place,//确认放置区域X轴是否移动到位
-    Move_PlaceY,//移动到放置区域卡片前面
-    Confirm_PlaceY,//确认放置区域Y轴是否移动到位
     Classify_Place,//识别小类放置区域
     Ready_Find_Next,//准备寻找下一个小类放置区域
+    No_Board_Return,//没有卡片返回赛道
     Find_Ring,//找到圆环
     Find_Zebra,//找到斑马线
     Wait_Big_Data,//等待大类放置区域数据

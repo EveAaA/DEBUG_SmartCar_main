@@ -359,7 +359,7 @@ static void Cross_BoardFsm()
                 }
                 else
                 {
-                    MyFSM.Cross_Board_State = Return_Line;
+                    MyFSM.Cross_Board_State = No_Board_Return;
                 }
             }
             Car.Speed_X = 0;
@@ -695,6 +695,49 @@ static void Cross_BoardFsm()
                 }                
             }
         break;   
+        case No_Board_Return:
+            Dodge_Carmar();
+            if(MyFSM.Cross_Dir==RIGHT)
+            {
+                if(Turn.Finish == false)
+                {
+                    Turn_Angle(-120);
+                    Car.Image_Flag = true;
+                }
+                else
+                {
+                    Car_run(5);
+                    UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBORDER);//继续获取道路旁卡片
+                    if(Bufcnt(true,3000))
+                    {
+                        FINDBORDER_DATA.FINDBORDER_FLAG = false;
+                        Turn.Finish = false;
+                        MyFSM.Cross_Board_State = Find_Cross;
+                        MyFSM.CurState = Line_Patrol;
+                    }
+                }
+            }
+            else
+            {
+                if(Turn.Finish == false)
+                {
+                    Turn_Angle(120);
+                    Car.Image_Flag = true;
+                }
+                else
+                {
+                    Car_run(5);
+                    UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBORDER);//继续获取道路旁卡片
+                    if(Bufcnt(true,3000))
+                    {
+                        FINDBORDER_DATA.FINDBORDER_FLAG = false;
+                        Turn.Finish = false;
+                        MyFSM.Cross_Board_State = Find_Cross;
+                        MyFSM.CurState = Line_Patrol;
+                    }
+                }                
+            }
+        break;  
     }
 }
 
