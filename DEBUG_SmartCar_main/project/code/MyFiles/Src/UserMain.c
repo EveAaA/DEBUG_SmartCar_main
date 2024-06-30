@@ -146,6 +146,9 @@ void User_Loop()
     //     memcpy(image_copy[0], Bin_Image[0], MT9V03X_IMAGE_SIZE);
     //     seekfree_assistant_camera_send();
     // }
-    Start = Receivedata.Start_Flag;
+    if(Receivedata.Start_Flag==0)
+    {
+        Start = Receivedata.Start_Flag;
+    }
     Menu_Display();
 }

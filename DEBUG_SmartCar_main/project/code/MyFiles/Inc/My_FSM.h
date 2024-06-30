@@ -22,6 +22,7 @@ typedef enum
     Classify,//识别分类
     Return_Line,//返回赛道
     Find_Cross,//找到十字
+    Ready_Find_Place,//准备找第一个位置
     Find_Place,//寻找放置位置
     Wait_PlaceData,//等待放置区域微调数据
     Move_Place,//移动到放置区域
@@ -53,9 +54,12 @@ typedef struct
     bool Cross_Flag_;
     uint8 Cross_Dir;//十字方向
     int8 Small_Board[6];//卡片小类
+    int8 Small_Board_Depot[6];//卡片小类仓库位置
+    int8 Small_Depot_Count;//小类卡片仓库的索引
     uint8 Small_Count;//小类卡片张数
     int8 Small_Type;//具体是哪小类
     uint8 Same_Type;//相同种类
+    bool Same_Board_Flag;//出现了相同类别
 
     uint8 Ring_Dir;//圆环方向
 

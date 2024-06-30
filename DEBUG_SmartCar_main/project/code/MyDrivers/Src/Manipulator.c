@@ -129,7 +129,7 @@ static void Manipulator_PutUp()
     switch (PutUp_State)
     {
         case 0:
-            Set_Servo_Angle(Stretch_Servo,60);//先抬大臂 120
+            Set_Servo_Angle(Stretch_Servo,80);//先抬大臂 120
             PutUp_State = 1;
         break;
         case 1:

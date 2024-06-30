@@ -169,10 +169,18 @@ void Uart_Fine_Tuning_Receive(void)
       // printf("%x  \n", _UART_FINE_TUNING.get_data);
       // 两字节转浮点数
       UnpackFlag.FINETUNING_DATA_FLAG = true;
+      
       FINETUNING_DATA.dx = (float)((_UART_FINE_TUNING.fifo_get_data[1] >> 7) == 0) ? ((_UART_FINE_TUNING.fifo_get_data[0] + (_UART_FINE_TUNING.fifo_get_data[1] << 8))) : (-(65536 - (_UART_FINE_TUNING.fifo_get_data[0] + (_UART_FINE_TUNING.fifo_get_data[1] << 8))));
       FINETUNING_DATA.dy = (float)((_UART_FINE_TUNING.fifo_get_data[3] >> 7) == 0) ? ((_UART_FINE_TUNING.fifo_get_data[2] + (_UART_FINE_TUNING.fifo_get_data[3] << 8))) : (-(65536 - (_UART_FINE_TUNING.fifo_get_data[2] + (_UART_FINE_TUNING.fifo_get_data[3] << 8))));
       FINETUNING_DATA.FINETUNING_FINISH_FLAG = _UART_FINE_TUNING.fifo_get_data[4];
-
+      if (FINETUNING_DATA.dx != -999 && FINETUNING_DATA.dy != -999)
+      {
+        FINETUNING_DATA.IS_BORDER_ALIVE = true;
+      }
+      else
+      {
+        FINETUNING_DATA.IS_BORDER_ALIVE = false;
+      }
       memset(_UART_FINE_TUNING.fifo_get_data, 0, sizeof(_UART_FINE_TUNING.fifo_get_data));
       _UART_FINE_TUNING.index = 0;
     }
@@ -195,6 +203,7 @@ void Uart_Fine_Tuning_Receive(void)
       // }
       // printf("\n");
       // printf("+++++++++++++++++\n");
+      UnpackFlag.FINETUNING_DATA_FLAG = true;
       uint8_t offset = 1; // 偏移量 表头是未有量
       // 接收到这个就代表没有卡片了
       if (_UART_FINE_TUNING.fifo_get_data[0] == 0xbc)

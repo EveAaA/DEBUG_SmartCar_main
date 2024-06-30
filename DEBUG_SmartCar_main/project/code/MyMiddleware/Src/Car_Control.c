@@ -189,7 +189,7 @@ float Get_Image_Errox()
 **/
 void Car_run(float Speed)
 {
-    float Image_Erro_ = GetPIDValue(&Image_PID,(74 - Image_Erro)*0.03f);
+    float Image_Erro_ = GetPIDValue(&Image_PID,(70 - Image_Erro)*0.03f);
     Car.Speed_X = 0;
     Car.Speed_Y = Speed;
     Car.Speed_Z = -Image_Erro_;
