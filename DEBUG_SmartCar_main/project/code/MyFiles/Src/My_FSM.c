@@ -39,6 +39,14 @@ FSM_Handle MyFSM = {
     .Big_Pos[2] = RIGHT,
 };
 
+WareState_t smallPlaceWare = 
+{
+    .isSame = false,
+    .currWareNum = 0,
+    .notEmptyNum = 0,
+    .isWareUsed = {false, false, false, false, false},
+};
+
 uint16 wait_time = 0;
 #define Static_Time 100 //等待静止的时间，大约0.5秒
 #define debug_switch  //是否调试
@@ -49,6 +57,97 @@ uint16 wait_time = 0;
  *  @brief
  *
 **/
+/**
+ * @brief: 重置仓库
+ * @param：WareState_t结构体指针
+ * @return:None
+ */
+void resetWare(WareState_t *Ware)
+{
+	uint8 i;
+	Ware->notEmptyNum = 0;
+	for (i = 0; i < 5; i++)
+	{
+		Ware->isWareUsed[i] = false;
+		Ware->list[i].CardName = nil;
+		Ware->list[i].cardNum = 0;
+		Ware->list[i].WareIndex = 0;
+	}
+}
+
+/**
+ * @brief : 将卡片放置到对应的仓库
+ * 
+ * @param Ware 
+ * @param place 
+ * @param Depot 
+ * @return None
+ */
+void putCardIntoWare(WareState_t *Ware, Place_t place, Rotaryservo_Handle *Depot)
+{
+    // 在已有的仓库里查找是否有相同类别的卡片存在仓库内 
+    for (uint8 i = 0; i < Ware->currWareNum; i++)
+    {
+        // 如果有卡片存在
+        if (place == Ware->list[i].CardName)
+        {
+            Ware->list[i].cardNum++;   // 当前卡片仓库卡片数量加一
+            *Depot = Ware->list[i].WareIndex; // 将对应位置下标赋值给Depot
+            // printf("当前卡片种类: %s, 当前仓库对应种类: %s, 当前仓库下标: %d 当前仓库对应卡片数量: %d \r\n", PLACE_TABLE_STR[UARTInput.place], PLACE_TABLE_STR[list[i].CardName], list[i].WareIndex, list[i].cardNum);
+            Ware->isSame = true;
+            break;
+        }
+    }
+    // 如果没有与识别的类别相同的仓库， 则开辟一个新的仓库
+    if (Ware->isSame == false)
+    {
+        uint8 j;
+        Ware->notEmptyNum++; // 已用仓库加一 对应仓库闲置表
+        // 如果创建的仓库大于5个直接退出循环 
+        if (Ware->notEmptyNum == 6)
+        {
+            printf("类别超过5个\r\n");
+            return;
+        }
+        Ware->list[Ware->currWareNum].CardName = place; // 记录当前仓库对应的卡片种类
+        Ware->list[Ware->currWareNum].cardNum = 1;      // 假定卡片已经捡起
+        // 在剩余的仓库里寻找一个闲置的仓库
+        for (j = 0; j < 5; j++)
+        {
+            // 找到了闲置的仓库
+            if (Ware->isWareUsed[j] == false)
+            {
+                Ware->list[Ware->currWareNum].WareIndex = j; // 将这个闲置仓库的下标赋值给list结构体，便于后续如果有相同卡片直接获取仓库下标位置
+                Ware->isWareUsed[j] = true;   // 将该仓库置为有类别状态
+                *Depot = j; // 将最新的下标赋值给Depot
+                // printf("index: %d  :%d %d %d %d %d \r\n",j, isWareUsed[0], isWareUsed[1],isWareUsed[2],isWareUsed[3],isWareUsed[4]);
+                break;
+            }
+        }
+        Ware->currWareNum++;  // 当前已用仓库数量加一 对应仓库存储单元
+        // printf("新建仓库\r\n");
+        // printf("当前卡片种类: %s, 当前仓库对应种类: %s, 当前仓库下标: %d 当前仓库对应卡片数量: %d \r\n", PLACE_TABLE_STR[UARTInput.place], PLACE_TABLE_STR[list[i].CardName], list[i].WareIndex, list[i].cardNum);
+    }
+}
+
+/**
+ * @brief 转动转盘到待拿出的仓库
+ * 
+ * @param ware 
+ * @param place 
+ * @return Rotaryservo_Handle 
+ */
+Rotaryservo_Handle takeOutFromWare(WareState_t* ware , Place_t place)
+{
+    for (uint8 i = 0; i < 5; i++)
+    {
+        if (place == ware->list[i].CardName)
+        {
+            return ware->list[i].WareIndex;
+        }
+    }
+    return 0;
+}
 
 /**@brief   发车状态机
 -- @param   无
@@ -383,6 +482,7 @@ static void Cross_BoardFsm()
                 Navigation.Finish_Flag = false;
                 FINETUNING_DATA.dx = 0;
                 FINETUNING_DATA.dy = 0;
+                resetWare(&smallPlaceWare); // 重置仓库
                 MyFSM.Cross_Board_State = Classify;//识别
                 CLASSIFY_DATA.IS_CLASSIFY = true;
             }
@@ -399,42 +499,44 @@ static void Cross_BoardFsm()
                     printf("Cross_Classify\r\n");    
                     Dodge_Board();
                     MyFSM.Cross_Board_State = Pick;//捡起卡片
+                    putCardIntoWare(&smallPlaceWare, CLASSIFY_DATA.place, &MyFSM.Depot_Pos); // 将卡片放入对应仓库
                     MyFSM.Small_Board[MyFSM.Small_Count] = CLASSIFY_DATA.place;//记录分类
                     printf("now=%s\r\n",PLACE_TABLE_STR[CLASSIFY_DATA.place]);
                     CLASSIFY_DATA.place = nil;
                     CLASSIFY_DATA.type = None;
                     Set_Beepfreq(1);
-                    if(MyFSM.Small_Count == 0)
-                    {
-                        MyFSM.Small_Board_Depot[MyFSM.Small_Depot_Count] = MyFSM.Small_Board[MyFSM.Small_Count];//创建一个新的仓库类别
-                        MyFSM.Depot_Pos = MyFSM.Small_Depot_Count;
-                        MyFSM.Small_Depot_Count+=1;
-                    }
-                    else
-                    {
-                        for(uint8 i = 0;i<MyFSM.Small_Count;i++)
-                        {
-                            if(MyFSM.Small_Board[MyFSM.Small_Count] == MyFSM.Small_Board[i])
-                            {
-                                MyFSM.Same_Board_Flag = true;
-                                printf("i=%s\r\n",PLACE_TABLE_STR[MyFSM.Small_Board[i]]);
-                                for(uint8 j = 0;j<MyFSM.Small_Depot_Count;j++)//寻找对应的仓库位置
-                                {
-                                    if(MyFSM.Small_Board_Depot[j] == MyFSM.Small_Board[i])
-                                    {
-                                        MyFSM.Depot_Pos = j;
-                                    }
-                                }
-                            }
-                            else if(!MyFSM.Same_Board_Flag)//卡片没有识别出相同的
-                            {
-                                MyFSM.Small_Board_Depot[MyFSM.Small_Depot_Count] = MyFSM.Small_Board[MyFSM.Small_Count];//创建一个新的仓库类别
-                                printf("%d\r\n",MyFSM.Small_Depot_Count);
-                                MyFSM.Depot_Pos = MyFSM.Small_Depot_Count;
-                                MyFSM.Small_Depot_Count+=1;
-                            }
-                        }
-                    }                    
+                    
+                    // if(MyFSM.Small_Count == 0)
+                    // {
+                    //     MyFSM.Small_Board_Depot[MyFSM.Small_Depot_Count] = MyFSM.Small_Board[MyFSM.Small_Count];//创建一个新的仓库类别
+                    //     MyFSM.Depot_Pos = MyFSM.Small_Depot_Count;
+                    //     MyFSM.Small_Depot_Count+=1;
+                    // }
+                    // else
+                    // {
+                    //     for(uint8 i = 0;i<MyFSM.Small_Count;i++)
+                    //     {
+                    //         if(MyFSM.Small_Board[MyFSM.Small_Count] == MyFSM.Small_Board[i])
+                    //         {
+                    //             MyFSM.Same_Board_Flag = true;
+                    //             printf("i=%s\r\n",PLACE_TABLE_STR[MyFSM.Small_Board[i]]);
+                    //             for(uint8 j = 0;j<MyFSM.Small_Depot_Count;j++)//寻找对应的仓库位置
+                    //             {
+                    //                 if(MyFSM.Small_Board_Depot[j] == MyFSM.Small_Board[i])
+                    //                 {
+                    //                     MyFSM.Depot_Pos = j;
+                    //                 }
+                    //             }
+                    //         }
+                    //         else if(!MyFSM.Same_Board_Flag)//卡片没有识别出相同的
+                    //         {
+                    //             MyFSM.Small_Board_Depot[MyFSM.Small_Depot_Count] = MyFSM.Small_Board[MyFSM.Small_Count];//创建一个新的仓库类别
+                    //             printf("%d\r\n",MyFSM.Small_Depot_Count);
+                    //             MyFSM.Depot_Pos = MyFSM.Small_Depot_Count;
+                    //             MyFSM.Small_Depot_Count+=1;
+                    //         }
+                    //     }
+                    // }                    
                     MyFSM.Small_Count+=1;
                     MyFSM.Same_Board_Flag = false;
                     Car.Speed_X = 0;

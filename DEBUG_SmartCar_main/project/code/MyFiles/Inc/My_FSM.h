@@ -36,6 +36,12 @@ typedef enum
     Unload_Board,//卸货
 }Fsm_State_Handle;
 
+typedef struct GetCard
+{
+	Place_t  CardName;
+	uint8   WareIndex;
+	uint8   cardNum;
+}GetCard_t;
 
 typedef struct 
 {
@@ -61,6 +67,8 @@ typedef struct
     uint8 Same_Type;//相同种类
     bool Same_Board_Flag;//出现了相同类别
 
+
+
     uint8 Ring_Dir;//圆环方向
 
     int8 Big_Board;//卡片大类
@@ -70,6 +78,16 @@ typedef struct
     Rotaryservo_Handle Depot_Pos;//仓库的位置
     uint8 Big_Pos[3];//大类的位置
 }FSM_Handle;
+
+typedef struct WareState
+{
+    bool isSame; // 用于判断是否相同标志位
+    uint8 currWareNum; // 当前使用的仓库数量
+    uint8 notEmptyNum; // 用于记录多少个仓库已用
+    GetCard_t list[5];     // 同时储存仓库的下标信息， 对应卡片类别信息， 当前仓库卡片数量
+    bool isWareUsed[5];    // 判别有哪一个仓库未被使用
+}WareState_t;
+
 extern FSM_Handle MyFSM;
 void FSM_main();
 
