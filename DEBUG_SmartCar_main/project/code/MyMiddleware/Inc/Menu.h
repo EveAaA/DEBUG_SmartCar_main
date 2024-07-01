@@ -14,7 +14,9 @@ void Flash_Init();
 #define Line_5 (16*5)//第五行
 #define Line_6 (16*6)//第六行
 #define Line_7 (16*7)//第七行
-
+#define Line_8 (16*8)//第八行
+#define Line_9 (16*9)//第九行
+#define Line_10 (16*10)//第十行
 //列的宏定义
 #define Row_0 (8*0)//第零列
 #define Row_1 (8*1)//第一列
@@ -33,10 +35,6 @@ void Flash_Init();
 #define Row_14 (8*14)//第十四列
 #define Row_15 (8*15)//第十五列
 #define Row_16 (8*16)//第十六列
-#define Row_17 (8*17)//第十七列
-#define Row_18 (8*18)//第十八列
-#define Row_19 (8*19)//第十九列
-#define Row_20 (8*20)//第二十列
 
 typedef enum
 {
@@ -48,7 +46,9 @@ typedef enum
 	Page5 = 5,
 	Page6 = 6,
 	Page7 = 7,
-	Page_Select = 8,//页面选择
+	Page8 = 8,
+	Page9 = 9,
+	Page_Select = 10,//页面选择
 }Menu_Handle;
 
 typedef enum
@@ -63,6 +63,7 @@ typedef struct
 	uint8 Flash_Set;
 	Mode_Handle Set_Mode;
 	bool  Image_Show;//是否为图像显示
+	uint16 Ex_Time;//曝光时间
 }Menu_;
 
 extern int Show_Mode;

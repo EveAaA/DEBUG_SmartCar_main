@@ -1,7 +1,7 @@
 #ifndef MYDRIVERS_INC_IMAGE_H_
 #define MYDRIVERS_INC_IMAGE_H_
 #include "zf_common_headfile.h"
-
+void Get_Bin_Image();
 void Image_Process();
 
 #define Image_H 80//Í¼Ïñ¸ß¶È

@@ -1922,12 +1922,21 @@ void Zebra_Seek(uint8(*Bin_Image)[Image_W])
     }
 }
 
-void Test()
+/**
+ ******************************************************************************
+ *  @defgroup 外部调用
+ *  @brief
+ *
+**/
+
+void Get_Bin_Image()
 {
-    Get_Image(mt9v03x_image);//获取一副图像
+    memcpy(Original_Image, mt9v03x_image, sizeof(Original_Image));
     // timer_start(GPT_TIM_1);
     // my_sobel(Original_Image,Bin_Image);
     Turn_To_Bin();//二值化
+    Image_Filter(Bin_Image);//滤波
+    Image_Draw_Rectan(Bin_Image);//预处理
 }
 
 /**@brief   最终调用的图像处理的函数

@@ -137,12 +137,14 @@ void putCardIntoWare(WareState_t *Ware, Place_t place, Rotaryservo_Handle *Depot
  * @param place 
  * @return Rotaryservo_Handle 
  */
-Rotaryservo_Handle takeOutFromWare(WareState_t* ware , Place_t place)
+Rotaryservo_Handle takeOutFromWare(WareState_t* ware , Place_t place,uint8* num)
 {
+    *num = 0;
     for (uint8 i = 0; i < 5; i++)
     {
         if (place == ware->list[i].CardName)
         {
+            *num = ware->list[i].cardNum;
             return ware->list[i].WareIndex;
         }
     }
@@ -500,45 +502,10 @@ static void Cross_BoardFsm()
                     Dodge_Board();
                     MyFSM.Cross_Board_State = Pick;//捡起卡片
                     putCardIntoWare(&smallPlaceWare, CLASSIFY_DATA.place, &MyFSM.Depot_Pos); // 将卡片放入对应仓库
-                    MyFSM.Small_Board[MyFSM.Small_Count] = CLASSIFY_DATA.place;//记录分类
                     printf("now=%s\r\n",PLACE_TABLE_STR[CLASSIFY_DATA.place]);
                     CLASSIFY_DATA.place = nil;
                     CLASSIFY_DATA.type = None;
-                    Set_Beepfreq(1);
-                    
-                    // if(MyFSM.Small_Count == 0)
-                    // {
-                    //     MyFSM.Small_Board_Depot[MyFSM.Small_Depot_Count] = MyFSM.Small_Board[MyFSM.Small_Count];//创建一个新的仓库类别
-                    //     MyFSM.Depot_Pos = MyFSM.Small_Depot_Count;
-                    //     MyFSM.Small_Depot_Count+=1;
-                    // }
-                    // else
-                    // {
-                    //     for(uint8 i = 0;i<MyFSM.Small_Count;i++)
-                    //     {
-                    //         if(MyFSM.Small_Board[MyFSM.Small_Count] == MyFSM.Small_Board[i])
-                    //         {
-                    //             MyFSM.Same_Board_Flag = true;
-                    //             printf("i=%s\r\n",PLACE_TABLE_STR[MyFSM.Small_Board[i]]);
-                    //             for(uint8 j = 0;j<MyFSM.Small_Depot_Count;j++)//寻找对应的仓库位置
-                    //             {
-                    //                 if(MyFSM.Small_Board_Depot[j] == MyFSM.Small_Board[i])
-                    //                 {
-                    //                     MyFSM.Depot_Pos = j;
-                    //                 }
-                    //             }
-                    //         }
-                    //         else if(!MyFSM.Same_Board_Flag)//卡片没有识别出相同的
-                    //         {
-                    //             MyFSM.Small_Board_Depot[MyFSM.Small_Depot_Count] = MyFSM.Small_Board[MyFSM.Small_Count];//创建一个新的仓库类别
-                    //             printf("%d\r\n",MyFSM.Small_Depot_Count);
-                    //             MyFSM.Depot_Pos = MyFSM.Small_Depot_Count;
-                    //             MyFSM.Small_Depot_Count+=1;
-                    //         }
-                    //     }
-                    // }                    
-                    MyFSM.Small_Count+=1;
-                    MyFSM.Same_Board_Flag = false;
+                    Set_Beepfreq(1);                  
                     Car.Speed_X = 0;
                     Car.Speed_Y = 0;
                     Car.Speed_Z = 0;
@@ -674,7 +641,7 @@ static void Cross_BoardFsm()
                 Navigation.Finish_Flag = false;
                 FINETUNING_DATA.dx = 0;
                 FINETUNING_DATA.dy = 0;
-                MyFSM.Cross_Board_State = Classify_Place;//确认是否移动到位
+                MyFSM.Cross_Board_State = Classify_Place;//识别放置区域
             }
         break;
         case Classify_Place:
@@ -686,17 +653,10 @@ static void Cross_BoardFsm()
                 printf("%s\r\n",PLACE_TABLE_STR[SMALL_PLACE_DATA.place]);
                 Dodge_Board();
                 Servo_Flag.Depot_End = true;
-                for(uint8 i = 0;i <= MyFSM.Small_Count - 1;i++)
-                {
-                    if(MyFSM.Small_Board[i] == SMALL_PLACE_DATA.place)
-                    {
-                        MyFSM.Depot_Pos = i;
-                        MyFSM.Same_Type +=1;
-                        Set_Beepfreq(1);
-                    }
-                }
+                MyFSM.Depot_Pos = takeOutFromWare(&smallPlaceWare,SMALL_PLACE_DATA.place,&MyFSM.Small_Count);
+                Set_Beepfreq(1);
                 SMALL_PLACE_DATA.place = nil;
-                if(MyFSM.Same_Type!=0)
+                if(MyFSM.Small_Count!=0)
                 {
                     MyFSM.Cross_Board_State = Unload_Board;
                 }
@@ -704,6 +664,7 @@ static void Cross_BoardFsm()
                 {
                     MyFSM.Cross_Board_State = Ready_Find_Next;
                 }
+                MyFSM.Unload_Count+=1;
             }
             else
             {
@@ -729,18 +690,17 @@ static void Cross_BoardFsm()
                 }
                 else
                 {
-                    MyFSM.Unload_Count+=1;
                     Servo_Flag.Put_Out = false;
-                    MyFSM.Same_Type-=1;
-                    if(MyFSM.Unload_Count==MyFSM.Small_Count)
+                    MyFSM.Small_Count-=1;
+                    if(MyFSM.Unload_Count>5)
                     {
                         MyFSM.Cross_Board_State  = Return_Line;
                     }
-                    else if(MyFSM.Same_Type == 0)
+                    else if(MyFSM.Small_Count == 0)
                     {
                         MyFSM.Cross_Board_State = Ready_Find_Next;
                     }
-                    else if(MyFSM.Same_Type == 1)
+                    else if(MyFSM.Small_Count != 0)
                     {
                         MyFSM.Cross_Board_State = Unload_Board;
                     }
@@ -778,6 +738,7 @@ static void Cross_BoardFsm()
         break;
         case Return_Line:
             Dodge_Carmar();
+            resetWare(&smallPlaceWare);
             if(MyFSM.Cross_Dir==RIGHT)
             {
                 if(Turn.Finish == false)

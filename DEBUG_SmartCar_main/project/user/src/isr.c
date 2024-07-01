@@ -239,13 +239,13 @@ void GPIO1_Combined_16_31_IRQHandler(void)
             CW_2 = !blv;
             if (CW_1 && CW_2) 
             {
-                Rotary.Anticlockwise = 1;
-                Rotary.Clockwise = 0;
+                Rotary.Anticlockwise = 0;
+                Rotary.Clockwise = 1;
             }
             if (CW_1 == 0 && CW_2 == 0) 
             {
-                Rotary.Clockwise = 1;
-                Rotary.Anticlockwise = 0;
+                Rotary.Clockwise = 0;
+                Rotary.Anticlockwise = 1;
             }
             flag = 0;
         }

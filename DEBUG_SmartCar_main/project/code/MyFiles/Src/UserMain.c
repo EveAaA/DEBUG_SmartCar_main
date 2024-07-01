@@ -121,6 +121,7 @@ void User_Init()
     // dl1a_init();
     All_PID_Init();
     Flash_Init();
+    mt9v03x_set_exposure_time(Menu.Ex_Time);
     UART_Init();
     // seekfree_assistant_interface_init(SEEKFREE_ASSISTANT_WIRELESS_UART);
     // seekfree_assistant_camera_information_config(SEEKFREE_ASSISTANT_MT9V03X, image_copy[0], MT9V03X_W, MT9V03X_H);
@@ -146,7 +147,7 @@ void User_Loop()
     //     memcpy(image_copy[0], Bin_Image[0], MT9V03X_IMAGE_SIZE);
     //     seekfree_assistant_camera_send();
     // }
-    if(Receivedata.Start_Flag==0)
+    if(Receivedata.Start_Flag!=2)
     {
         Start = Receivedata.Start_Flag;
     }
