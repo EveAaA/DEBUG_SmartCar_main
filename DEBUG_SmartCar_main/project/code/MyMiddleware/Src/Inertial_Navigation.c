@@ -35,6 +35,14 @@ Pid_TypeDef DistanceY_PID =
     .OutputMin = -4,
 };
 
+Pid_TypeDef Distance_PID = 
+{
+    .Kp = 0.03f,
+    .Ki = 0.003f,
+    .Kd = 0.08f,
+    .OutputMax = 4,
+    .OutputMin = -4,
+};
 
 State Navigation_State = 0;
 float Basic_Speed = 0.0f;
@@ -117,11 +125,11 @@ void Navigation_Process(float x,float y)
             {
                 if(x - Navigation.Cur_Position_X >= 0)
                 {
-                    Car.Speed_X = Large_Speed + GetPIDValue(&DistanceX_PID,(x - Navigation.Cur_Position_X));
+                    Car.Speed_X = Large_Speed + GetPIDValue(&Distance_PID,(x - Navigation.Cur_Position_X));
                 }
                 else
                 {
-                    Car.Speed_X = -Large_Speed + GetPIDValue(&DistanceX_PID,(x - Navigation.Cur_Position_X));
+                    Car.Speed_X = -Large_Speed + GetPIDValue(&Distance_PID,(x - Navigation.Cur_Position_X));
                 }
             }
 
@@ -138,11 +146,11 @@ void Navigation_Process(float x,float y)
             {
                 if(y - Navigation.Cur_Position_Y >= 0)
                 {
-                    Car.Speed_Y = Large_Speed + GetPIDValue(&DistanceY_PID,(y - Navigation.Cur_Position_Y));
+                    Car.Speed_Y = Large_Speed + GetPIDValue(&Distance_PID,(y - Navigation.Cur_Position_Y));
                 }
                 else
                 {
-                    Car.Speed_Y = -Large_Speed + GetPIDValue(&DistanceY_PID,(y - Navigation.Cur_Position_Y));
+                    Car.Speed_Y = -Large_Speed + GetPIDValue(&Distance_PID,(y - Navigation.Cur_Position_Y));
                 }
             }
             Car.Speed_X = 0;
@@ -190,11 +198,11 @@ void Navigation_Process_Y(float x,float y)
             {
                 if(y - Navigation.Cur_Position_Y >= 0)
                 {
-                    Car.Speed_Y = Large_Speed + GetPIDValue(&DistanceY_PID,(y - Navigation.Cur_Position_Y));
+                    Car.Speed_Y = Large_Speed + GetPIDValue(&Distance_PID,(y - Navigation.Cur_Position_Y));
                 }
                 else
                 {
-                    Car.Speed_Y = -Large_Speed + GetPIDValue(&DistanceY_PID,(y - Navigation.Cur_Position_Y));
+                    Car.Speed_Y = -Large_Speed + GetPIDValue(&Distance_PID,(y - Navigation.Cur_Position_Y));
                 }
             }
             Car.Speed_X = 0;
@@ -210,11 +218,11 @@ void Navigation_Process_Y(float x,float y)
             {
                 if(x - Navigation.Cur_Position_X >= 0)
                 {
-                    Car.Speed_X = Large_Speed + GetPIDValue(&DistanceX_PID,(x - Navigation.Cur_Position_X));
+                    Car.Speed_X = Large_Speed + GetPIDValue(&Distance_PID,(x - Navigation.Cur_Position_X));
                 }
                 else
                 {
-                    Car.Speed_X = -Large_Speed + GetPIDValue(&DistanceX_PID,(x - Navigation.Cur_Position_X));
+                    Car.Speed_X = -Large_Speed + GetPIDValue(&Distance_PID,(x - Navigation.Cur_Position_X));
                 }
             }
 
