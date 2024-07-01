@@ -120,6 +120,7 @@ void Navigation_Process(float x,float y)
             if(fabs(x - Navigation.Cur_Position_X) <= 1.0f)
             {
                 Navigation_State = Move_State_Y;
+                 Distance_PID.I_Out = 0;
             }
             else
             {
@@ -158,8 +159,7 @@ void Navigation_Process(float x,float y)
         break;
         case Move_Finish:
             Navigation.Finish_Flag = true;//一次惯性导航完成
-            DistanceX_PID.I_Out = 0;
-            DistanceY_PID.I_Out = 0;
+            Distance_PID.I_Out = 0;
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
             Car.Speed_Z = 0;
@@ -193,6 +193,7 @@ void Navigation_Process_Y(float x,float y)
             {
                 Navigation_State = Move_State;
                 Navigation.End_Angle = Gyro_YawAngle_Get();
+                Distance_PID.I_Out = 0;
             }
             else
             {
@@ -230,7 +231,7 @@ void Navigation_Process_Y(float x,float y)
         break;
         case Move_Finish:
             Navigation.Finish_Flag = true;//一次惯性导航完成
-            DistanceY_PID.I_Out = 0;
+            Distance_PID.I_Out = 0;
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
             Car.Speed_Z = 0;

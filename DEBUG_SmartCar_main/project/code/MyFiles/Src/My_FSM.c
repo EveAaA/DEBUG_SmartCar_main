@@ -28,6 +28,7 @@ FSM_Handle MyFSM = {
     .Big_Count[2] = 0,
     .Small_Count = 0,
     .Same_Type = 0,
+    .Pick_Count = 0,
     .Small_Depot_Count = 0,
     .Same_Board_Flag = false,
     .Cross_Flag_ = false,
@@ -85,15 +86,17 @@ void resetWare(WareState_t *Ware)
  */
 void putCardIntoWare(WareState_t *Ware, Place_t place, Rotaryservo_Handle *Depot)
 {
+    uint8 i;
+    Ware->isSame = false;
     // 在已有的仓库里查找是否有相同类别的卡片存在仓库内 
-    for (uint8 i = 0; i < Ware->currWareNum; i++)
+    for (i = 0; i < Ware->currWareNum; i++)
     {
         // 如果有卡片存在
         if (place == Ware->list[i].CardName)
         {
             Ware->list[i].cardNum++;   // 当前卡片仓库卡片数量加一
             *Depot = Ware->list[i].WareIndex; // 将对应位置下标赋值给Depot
-            // printf("当前卡片种类: %s, 当前仓库对应种类: %s, 当前仓库下标: %d 当前仓库对应卡片数量: %d \r\n", PLACE_TABLE_STR[UARTInput.place], PLACE_TABLE_STR[list[i].CardName], list[i].WareIndex, list[i].cardNum);
+            printf("当前卡片种类: %s, 当前仓库对应种类: %s, 当前仓库下标: %d 当前仓库对应卡片数量: %d \r\n", PLACE_TABLE_STR[place], PLACE_TABLE_STR[Ware->list[i].CardName], Ware->list[i].WareIndex, Ware->list[i].cardNum);
             Ware->isSame = true;
             break;
         }
@@ -120,13 +123,13 @@ void putCardIntoWare(WareState_t *Ware, Place_t place, Rotaryservo_Handle *Depot
                 Ware->list[Ware->currWareNum].WareIndex = j; // 将这个闲置仓库的下标赋值给list结构体，便于后续如果有相同卡片直接获取仓库下标位置
                 Ware->isWareUsed[j] = true;   // 将该仓库置为有类别状态
                 *Depot = j; // 将最新的下标赋值给Depot
-                // printf("index: %d  :%d %d %d %d %d \r\n",j, isWareUsed[0], isWareUsed[1],isWareUsed[2],isWareUsed[3],isWareUsed[4]);
+                printf("index: %d  :%d %d %d %d %d \r\n",j, Ware->isWareUsed[0], Ware->isWareUsed[1], Ware->isWareUsed[2], Ware->isWareUsed[3], Ware->isWareUsed[4]);
                 break;
             }
         }
         Ware->currWareNum++;  // 当前已用仓库数量加一 对应仓库存储单元
-        // printf("新建仓库\r\n");
-        // printf("当前卡片种类: %s, 当前仓库对应种类: %s, 当前仓库下标: %d 当前仓库对应卡片数量: %d \r\n", PLACE_TABLE_STR[UARTInput.place], PLACE_TABLE_STR[list[i].CardName], list[i].WareIndex, list[i].cardNum);
+        printf("新建仓库\r\n");
+        printf("当前卡片种类: %s, 当前仓库对应种类: %s, 当前仓库下标: %d 当前仓库对应卡片数量: %d \r\n", PLACE_TABLE_STR[place], PLACE_TABLE_STR[Ware->list[i].CardName], Ware->list[i].WareIndex, Ware->list[i].cardNum);
     }
 }
 
@@ -270,15 +273,24 @@ static void Line_BoardFsm()
             #ifdef debug_switch
                 printf("Wait_Data\r\n");    
             #endif 
-            UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
+            UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING_BESIDE);//发送数据
             if(UnpackFlag.FINETUNING_DATA_FLAG)
             {
                 if(Bufcnt(true,500))
                 {
-                    MyFSM.Line_Board_State = Move;//开始移动到卡片前面
+                    if(FINETUNING_DATA.dy== -999 || FINETUNING_DATA.dx == -999)
+                    {
+                        MyFSM.Line_Board_State = Return_Line;//不是目标板返回赛道
+                        FINETUNING_DATA.dx = 0;
+                        FINETUNING_DATA.dy = 0;
+                    }
+                    else
+                    {
+                        MyFSM.Line_Board_State = Move;//开始移动到卡片前面
+                        MyFSM.Target_Pos_X = FINETUNING_DATA.dx/10.0f;
+                        MyFSM.Target_Pos_Y = FINETUNING_DATA.dy/10.0f;
+                    }
                     UnpackFlag.FINETUNING_DATA_FLAG = false;
-                    MyFSM.Target_Pos_X = FINETUNING_DATA.dx/10.0f;
-                    MyFSM.Target_Pos_Y = FINETUNING_DATA.dy/10.0f;
                 }
             }
             // else
@@ -298,7 +310,7 @@ static void Line_BoardFsm()
         break;
         case Move://移动到卡片前面
             #ifdef debug_switch
-                // printf("%f,%d\r\n",FINETUNING_DATA.dx/10.f,FINETUNING_DATA.FINETUNING_FINISH_FLAG);
+                printf("%f,%f\r\n",FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f);
             #endif 
             UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
             if(Navigation.Finish_Flag == false)
@@ -326,6 +338,7 @@ static void Line_BoardFsm()
             {
                 Dodge_Board();
                 MyFSM.Line_Board_State = Pick;//捡起卡片
+                MyFSM.Pick_Count = 5;
                 MyFSM.Big_Board = CLASSIFY_DATA.type;//记录分类
                 MyFSM.Big_Count[MyFSM.Big_Board]+=1;
                 CLASSIFY_DATA.type = None;
@@ -370,6 +383,8 @@ static void Line_BoardFsm()
             #ifdef debug_switch
                 printf("Return\r\n");    
             #endif
+            FINETUNING_DATA.dx = 0;
+            FINETUNING_DATA.dy = 0;
             if(Turn.Finish == false)
             {
                 if(MyFSM.Board_Dir == LEFT)
@@ -384,9 +399,13 @@ static void Line_BoardFsm()
             else
             {
                 Car.Image_Flag = true;
-                Turn.Finish = false;
-                MyFSM.Line_Board_State = Find;
-                MyFSM.CurState = Line_Patrol;
+                if(Bufcnt(true,300))
+                {
+                    Turn.Finish = false;
+                    MyFSM.Line_Board_State = Find;
+                    MyFSM.CurState = Line_Patrol;
+                }
+                Car_run(4);
             }
         break;
     }
@@ -427,6 +446,7 @@ static void Cross_BoardFsm()
                     Turn.Finish = false;
                     MyFSM.Static_Angle = Gyro_YawAngle_Get();
                     MyFSM.Cross_Board_State = Wait_Data;
+                    UnpackFlag.FINETUNING_DATA_FLAG = false;
                 }
             }
             else if(MyFSM.Cross_Dir == LEFT)
@@ -440,12 +460,13 @@ static void Cross_BoardFsm()
                     Turn.Finish = false;
                     MyFSM.Static_Angle = Gyro_YawAngle_Get();
                     MyFSM.Cross_Board_State = Wait_Data;
+                    UnpackFlag.FINETUNING_DATA_FLAG = false;
                 }                    
             }
         break;
         case Wait_Data://等待串口数据回传
             #ifdef debug_switch
-                printf("Cross_Wait_Data\r\n");    
+                printf("cross:%f,%f\r\n",FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f);            
             #endif 
             UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
             if(UnpackFlag.FINETUNING_DATA_FLAG)
@@ -487,6 +508,7 @@ static void Cross_BoardFsm()
                 resetWare(&smallPlaceWare); // 重置仓库
                 MyFSM.Cross_Board_State = Classify;//识别
                 CLASSIFY_DATA.IS_CLASSIFY = true;
+                MyFSM.Pick_Count = 0;
             }
         break;
         case Classify:
@@ -512,7 +534,8 @@ static void Cross_BoardFsm()
                 }
                 else if(!CLASSIFY_DATA.IS_CLASSIFY)//没有卡片
                 {
-                    // MyFSM.Cross_Board_State = Ready_Find_Place;
+                    MyFSM.Cross_Board_State = Ready_Find_Place;
+                    MyFSM.Pick_Count = 0;
                 }
             }
             else//没有接受到数据
@@ -538,6 +561,7 @@ static void Cross_BoardFsm()
             }
             else
             {
+                MyFSM.Pick_Count+=1;
                 MyFSM.Cross_Board_State = Classify;//继续识别
                 Servo_Flag.Put_Up = false;
                 Servo_Flag.Put_Down = false;
@@ -628,7 +652,7 @@ static void Cross_BoardFsm()
         case Move_Place://移动到卡片前面
             #ifdef debug_switch
                 // printf("Move\r\n");    
-                printf("Cross_Place:%f,%f\r\n",FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f);
+                // printf("Cross_Place:%f,%f\r\n",FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f);
             #endif
             UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE);//发送获取放置区域信息 
             if(Navigation.Finish_Flag == false)
@@ -651,6 +675,7 @@ static void Cross_BoardFsm()
             if(SMALL_PLACE_DATA.place != nil)//识别到了分类
             {
                 printf("%s\r\n",PLACE_TABLE_STR[SMALL_PLACE_DATA.place]);
+                MyFSM.Unload_Count+=1;
                 Dodge_Board();
                 Servo_Flag.Depot_End = true;
                 MyFSM.Depot_Pos = takeOutFromWare(&smallPlaceWare,SMALL_PLACE_DATA.place,&MyFSM.Small_Count);
@@ -660,11 +685,14 @@ static void Cross_BoardFsm()
                 {
                     MyFSM.Cross_Board_State = Unload_Board;
                 }
-                else
+                else if(MyFSM.Small_Count==0&&MyFSM.Unload_Count<5)
                 {
                     MyFSM.Cross_Board_State = Ready_Find_Next;
                 }
-                MyFSM.Unload_Count+=1;
+                else if(MyFSM.Unload_Count>=5&&MyFSM.Small_Count==0)
+                {
+                    MyFSM.Cross_Board_State  = Return_Line;
+                }
             }
             else
             {
@@ -679,7 +707,7 @@ static void Cross_BoardFsm()
         break;
         case Unload_Board:
             #ifdef debug_switch
-                // printf("Cross_Unload_Board\r\n");    
+                printf("Cross_Unload_Board:%d\r\n",MyFSM.Unload_Count);    
             #endif
             SMALL_PLACE_DATA.place = nil;
             if(Servo_Flag.Depot_End)
@@ -692,11 +720,7 @@ static void Cross_BoardFsm()
                 {
                     Servo_Flag.Put_Out = false;
                     MyFSM.Small_Count-=1;
-                    if(MyFSM.Unload_Count>5)
-                    {
-                        MyFSM.Cross_Board_State  = Return_Line;
-                    }
-                    else if(MyFSM.Small_Count == 0)
+                    if(MyFSM.Small_Count == 0)
                     {
                         MyFSM.Cross_Board_State = Ready_Find_Next;
                     }
@@ -715,7 +739,7 @@ static void Cross_BoardFsm()
             {
                 if(Navigation.Finish_Flag == false)
                 {
-                    Navigation_Process_Y(0,-50);
+                    Navigation_Process_Y(0,-40);
                 }
                 else
                 {
@@ -727,7 +751,7 @@ static void Cross_BoardFsm()
             {
                 if(Navigation.Finish_Flag == false)
                 {
-                    Navigation_Process_Y(0,-50);
+                    Navigation_Process_Y(0,-40);
                 }
                 else
                 {

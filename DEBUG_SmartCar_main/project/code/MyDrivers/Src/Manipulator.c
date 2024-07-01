@@ -13,7 +13,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "Manipulator.h"
 #include "UserMain.h"
-
+#include "My_FSM.h"
 /* Define\Declare ------------------------------------------------------------*/
 #define Servo_FREQ 330
 
@@ -21,12 +21,12 @@
 #define Set_360Servo_Angle(angle) ((float)PWM_DUTY_MAX / (1000.0 / (float)Servo_FREQ) * (0.5 + (float)(angle) / 180.0))//设置360度舵机角度转为具体占空比
 #define Electromagnet_On gpio_set_level(D27,1)
 #define Electromagnet_Off gpio_set_level(D27,0)
-
+uint8 Down_Angle[10]={40,37,36,34,32,30,30,30,30,30};
 
 Servo_Handle Stretch_Servo = //抬臂舵机
 {
     .Pin = PWM1_MODULE3_CHA_D0,
-    .Init_Angle = 140,//角度小往下
+    .Init_Angle = 120,//角度小往下
     .Servo_Time = 0,
 };
 Servo_Handle Raise_Servo = //抬手舵机
@@ -111,7 +111,7 @@ static void Manipulator_PutDown()
             }     
         break;
         case 2:
-            Set_Servo_Angle(Stretch_Servo,30);//150
+            Set_Servo_Angle(Stretch_Servo,Down_Angle[MyFSM.Pick_Count]);//150
             PuDowm_State = 0;
             Servo_Flag.Put_Down = true;
         break;

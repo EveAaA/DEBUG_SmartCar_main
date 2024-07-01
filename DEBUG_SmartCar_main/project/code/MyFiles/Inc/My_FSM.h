@@ -68,6 +68,7 @@ typedef struct
     bool Same_Board_Flag;//出现了相同类别
 
     uint8 Ring_Dir;//圆环方向
+    uint8 Pick_Count;//
 
     int8 Big_Board;//卡片大类
     uint8 Big_Pos_Count;//大类次数,也就是去了几个大类的位置
