@@ -31,7 +31,9 @@ typedef enum
     Classify_Place,//识别小类放置区域
     Ready_Find_Next,//准备寻找下一个小类放置区域
     No_Board_Return,//没有卡片返回赛道
+    No_Board_Ring,
     Find_Ring,//找到圆环
+    Ready_Ring,//准备
     Find_Zebra,//找到斑马线
     Wait_Big_Data,//等待大类放置区域数据
     Unload_Next,//前往下一个卸货点

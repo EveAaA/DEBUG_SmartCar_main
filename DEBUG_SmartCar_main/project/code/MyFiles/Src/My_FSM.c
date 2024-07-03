@@ -735,26 +735,30 @@ static void Cross_BoardFsm()
         case Ready_Find_Next:
             if(Navigation.Finish_Flag == false)
             {
-                Navigation_Process_Y(0,-30);
+                Navigation_Process_Y(0,-20);
             }
             else
             {
                 Navigation.Finish_Flag =false;
                 MyFSM.Cross_Board_State = Find_Place;
+                Car.Speed_X = 0;
+                Car.Speed_Y = 0;
+                Car.Speed_Z = 0;
             }
         break;
         case Return_Line:
-            Dodge_Carmar();
-            resetWare(&smallPlaceWare);
+#ifdef debug_switch
+        printf("Return_Line");
+#endif
             if(Turn.Finish == false)
             {
                 if(MyFSM.Cross_Dir==RIGHT)
                 {
-                    Turn_Angle(120);
+                    Turn_Angle(100);
                 }
                 else
                 {
-                    Turn_Angle(-120);
+                    Turn_Angle(-100);
                 }
                 Car.Image_Flag = true;
             }
@@ -769,7 +773,9 @@ static void Cross_BoardFsm()
                     MyFSM.Cross_Board_State = Find_Cross;
                     MyFSM.CurState = Line_Patrol;
                 }
-            }
+            }                
+            Dodge_Carmar();
+            resetWare(&smallPlaceWare);
         break;   
         case No_Board_Return://元素中没有卡片直接走
             Dodge_Carmar();
@@ -777,11 +783,11 @@ static void Cross_BoardFsm()
             {
                 if(MyFSM.Cross_Dir==RIGHT)
                 {
-                    Turn_Angle(-120);
+                    Turn_Angle(-90);
                 }
                 else
                 {
-                    Turn_Angle(120);
+                    Turn_Angle(90);
                 }
                 Car.Image_Flag = true;
             }
@@ -822,16 +828,24 @@ static void Ring_BoardFsm()
             #ifdef debug_switch
                 printf("Find_Ring\r\n");    
             #endif
+            Car_run(4);
             if(RightRing.Ring_State==Leave_Ring_First)
             {
-                MyFSM.Ring_Board_State = Find;
+                MyFSM.Ring_Board_State = Ready_Ring;
                 Car.Image_Flag = false;
             }
             else if(LeftRing.Ring_State==Leave_Ring_First)
             {
-                MyFSM.Ring_Board_State = Find;
+                MyFSM.Ring_Board_State = Ready_Ring;
                 Car.Image_Flag = false;
             } 
+        break;
+        case Ready_Ring:
+            Car_run(4);
+            if(Bufcnt(true,300))
+            {
+                MyFSM.Ring_Board_State = Find;
+            }
         break;
         case Find://找卡片
             #ifdef debug_switch
@@ -841,11 +855,11 @@ static void Ring_BoardFsm()
             {
                 if(MyFSM.Ring_Dir == RIGHT)
                 {
-                    Turn_Angle(90);
+                    Turn_Angle(85);
                 }
                 else
                 {
-                    Turn_Angle(-90);
+                    Turn_Angle(-85);
                 }
             }
             else
@@ -878,32 +892,7 @@ static void Ring_BoardFsm()
                 }
                 else
                 {
-                    if(Turn.Finish == false)
-                    {
-                        if(MyFSM.Ring_Dir == RIGHT)
-                        {
-                            Turn_Angle(-90);
-                        }
-                        else
-                        {
-                            Turn_Angle(90);
-                        } 
-                    }
-                    else
-                    {
-                        if(MyFSM.Ring_Dir == RIGHT)
-                        {
-                            RightRing.Ring_State = Leave_Ring;
-                            Car.Image_Flag = true;
-                        }
-                        else
-                        {
-                            LeftRing.Ring_State = Leave_Ring;
-                            Car.Image_Flag = true;
-                        }
-                        MyFSM.Ring_Board_State = No_Board_Return; 
-                        Turn.Finish = false;
-                    }
+                    MyFSM.Ring_Board_State = No_Board_Return; 
                 }
             }
         break;
@@ -1008,14 +997,17 @@ static void Ring_BoardFsm()
             }
         break;
         case Ring_First_Place://直接往前走
+            #ifdef debug_switch
+                printf("Ring_First_Place\r\n");    
+            #endif 
             Dodge_Carmar();
             UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE);//发送获取放置区域信息
             if(UnpackFlag.FINETUNING_DATA_FLAG)
             {
-                if(Bufcnt(true,500))
+                UnpackFlag.FINETUNING_DATA_FLAG = false;
+                if(Bufcnt(true,1000))
                 {
                     MyFSM.Ring_Board_State = Move_Place;//开始移动到放置区域前面
-                    UnpackFlag.FINETUNING_DATA_FLAG = false;
                     MyFSM.Target_Pos_X = FINETUNING_DATA.dx/10.0f;
                     MyFSM.Target_Pos_Y = FINETUNING_DATA.dy/10.0f;                
                 }
@@ -1026,7 +1018,7 @@ static void Ring_BoardFsm()
         break;
         case Find_Place://寻找放置位置
             #ifdef debug_switch
-                // printf("Find_Place\r\n");    
+                printf("Find_Place\r\n");    
             #endif 
             UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETSMALLPLACE);//获取小类放置区域
             Dodge_Carmar();
@@ -1045,7 +1037,7 @@ static void Ring_BoardFsm()
                 Car_run_X(2);
             }
             Lastanglg = Curanglg;
-            if(MyFSM.Unload_Count==0&&FINDBORDER_DATA.FINDBIGPLACE_FLAG == true)
+            if(MyFSM.Unload_Count==1&&FINDBORDER_DATA.FINDBIGPLACE_FLAG == true)
             {
                 Set_Beepfreq(1);
                 FINDBORDER_DATA.FINDBIGPLACE_FLAG = false;
@@ -1068,7 +1060,7 @@ static void Ring_BoardFsm()
         break;
         case Wait_PlaceData://等待串口传回放置区域的信息，环内
             #ifdef debug_switch
-                // printf("Cross_Wait_PlaceData\r\n");    
+                printf("Cross_Wait_PlaceData\r\n");    
             #endif 
             FINDBORDER_DATA.FINDBIGPLACE_FLAG = false;
             Dodge_Carmar();
@@ -1077,7 +1069,7 @@ static void Ring_BoardFsm()
             {
                 if(Bufcnt(true,300))
                 {
-                    MyFSM.Cross_Board_State = Move_Place;//开始移动到放置区域前面
+                    MyFSM.Ring_Board_State = Move_Place;//开始移动到放置区域前面
                     UnpackFlag.FINETUNING_DATA_FLAG = false;
                     MyFSM.Target_Pos_X = FINETUNING_DATA.dx/10.0f;
                     MyFSM.Target_Pos_Y = FINETUNING_DATA.dy/10.0f;                
@@ -1119,7 +1111,11 @@ static void Ring_BoardFsm()
                 {
                     MyFSM.Ring_Board_State = Unload_Board;
                 }
-                else if((MyFSM.Small_Count==0)&&(MyFSM.Unload_Count<5))//没有卡片且不是第五个卸货点
+                else if((MyFSM.Unload_Count==1) && (MyFSM.Small_Count == 0))//没有卡片且是第一个卸货点
+                {
+                    MyFSM.Ring_Board_State = Ready_Find_Next_First;
+                }
+                else if((MyFSM.Small_Count==0)&&(MyFSM.Unload_Count<5)&&(MyFSM.Unload_Count>1))//没有卡片且不是第一、五个卸货点
                 {
                     MyFSM.Ring_Board_State = Ready_Find_Next;
                 }
@@ -1136,7 +1132,7 @@ static void Ring_BoardFsm()
             Car.Speed_Y = 0;
             Car.Speed_Z = 0;
         break;
-        case Unload_Board:
+        case Unload_Board://卸货
             #ifdef debug_switch
                 printf("Ring_Unload_Board\r\n");    
             #endif
@@ -1151,7 +1147,7 @@ static void Ring_BoardFsm()
                 {
                     Servo_Flag.Put_Out = false;
                     MyFSM.Small_Count-=1;
-                    if((MyFSM.Small_Count == 0) && (MyFSM.Unload_Count<5))//卡片卸完且不到五个卸货点
+                    if((MyFSM.Small_Count == 0) && (MyFSM.Unload_Count<5) && (MyFSM.Unload_Count>1))//卡片卸完且不是一、五个卸货点
                     {
                         MyFSM.Ring_Board_State = Ready_Find_Next;
                     }
@@ -1179,7 +1175,7 @@ static void Ring_BoardFsm()
             #endif       
             if(Navigation.Finish_Flag == false)
             {
-                Navigation_Process_Y(-40,0);
+                Navigation_Process_Y(0,-34);
             }
             else
             {
@@ -1198,14 +1194,18 @@ static void Ring_BoardFsm()
                 {
                     Turn.Finish = false;
                     Navigation.Finish_Flag =false;
-                    MyFSM.Ring_Board_State = Find_Place;
+                    MyFSM.Ring_Board_State = Ring_First_Place;
+                    MyFSM.Static_Angle = Gyro_YawAngle_Get();
                 }
             }     
         break;
         case Ready_Find_Next://环内的准备找下一个放置点
+            #ifdef debug_switch
+                printf("Ready_Find_Next\r\n");    
+            #endif
             if(Navigation.Finish_Flag == false)
             {
-                Navigation_Process_Y(0,-30);
+                Navigation_Process_Y(0,-20);
             }
             else
             {
@@ -1214,6 +1214,9 @@ static void Ring_BoardFsm()
             }
         break;
         case Return_Line:
+            #ifdef debug_switch
+                printf("Return_Line\r\n");    
+            #endif
             Dodge_Carmar();
             resetWare(&smallPlaceWare);
             if(Navigation.Finish_Flag == false)
@@ -1242,6 +1245,35 @@ static void Ring_BoardFsm()
             }
         break;
         case No_Board_Return://元素里没有卡片直接走
+            if(Turn.Finish == false)
+            {
+                if(MyFSM.Ring_Dir == RIGHT)
+                {
+                    Turn_Angle(-90);
+                }
+                else
+                {
+                    Turn_Angle(90);
+                } 
+            }
+            else
+            {
+                if(MyFSM.Ring_Dir == RIGHT)
+                {
+                    RightRing.Ring_State = Leave_Ring;
+                    Car.Image_Flag = true;
+                    MyFSM.Ring_Board_State = No_Board_Ring;
+                }
+                else if(MyFSM.Ring_Dir == LEFT)
+                {
+                    LeftRing.Ring_State = Leave_Ring;
+                    Car.Image_Flag = true;
+                    MyFSM.Ring_Board_State = No_Board_Ring;
+                }
+                Turn.Finish = false;
+            }
+        break;
+        case No_Board_Ring:
             Car_run(5);
             UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBORDER);//继续获取道路旁卡片
             if(MyFSM.Ring_Dir == RIGHT)
@@ -1250,6 +1282,7 @@ static void Ring_BoardFsm()
                 {
                     MyFSM.Ring_Board_State = Find_Ring;
                     MyFSM.CurState = Line_Patrol;
+                    Turn.Finish = false;
                 }
             }
             else
@@ -1258,6 +1291,7 @@ static void Ring_BoardFsm()
                 {
                     MyFSM.Ring_Board_State = Find_Ring;  
                     MyFSM.CurState = Line_Patrol;
+                    Turn.Finish = false;
                 }
             }
         break;

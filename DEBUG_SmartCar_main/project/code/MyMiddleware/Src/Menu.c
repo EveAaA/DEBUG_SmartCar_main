@@ -15,7 +15,7 @@
 #include "Menu.h"
 
 /* Define\Declare ------------------------------------------------------------*/
-Menu_Handle Menu_Mode = Page_Select;
+Menu_Handle Menu_Mode = Page9;
 Menu_ Menu = {0,0,0};
 int Show_Mode;
 #define Exit_Dis tft180_show_string(Row_1,Line_9,"Exit")
@@ -226,17 +226,25 @@ static void Page1_Mode()
 **/
 static void Image_Page()
 {
-    if(mt9v03x_finish_flag)
+    // if(mt9v03x_finish_flag)
+    // {
+    //     mt9v03x_finish_flag = 0;
+    //     Get_Bin_Image();
+    //     tft180_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,128,60,0);
+    // }
+    // tft180_set_dir(TFT180_CROSSWISE);
+    tft180_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,148,80,0);
+    for (int i = Hightest; i < Image_H-1; i++)
     {
-        mt9v03x_finish_flag = 0;
-        Get_Bin_Image();
-        tft180_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,128,60,0);
+        tft180_draw_point(Center_Line[i], i, RGB565_BLACK);
+        tft180_draw_point(L_Border[i], i, RGB565_BLUE);
+        tft180_draw_point(R_Border[i], i, RGB565_RED);
     }
-    tft180_show_string(Row_1,Line_4,"I_Erro:");
-    tft180_show_float(Row_8,Line_4,Image_Erro,3,2);
-    tft180_show_string(Row_1,Line_5,"Ex_Time:");
-    tft180_show_uint(Row_9,Line_5,flash_union_buffer[50].uint16_type,5);//曝光时间
-    Exit_Dis;
+    // tft180_show_string(Row_1,Line_4,"I_Erro:");
+    // tft180_show_float(Row_8,Line_4,Image_Erro,3,2);
+    // tft180_show_string(Row_1,Line_5,"Ex_Time:");
+    // tft180_show_uint(Row_9,Line_5,flash_union_buffer[50].uint16_type,5);//曝光时间
+    // Exit_Dis;
     if((Menu.Set_Line == 9) && (Rotary.Press))//退出
     {
         Rotary.Press = 0;
@@ -295,7 +303,7 @@ static void Image_Page()
         Menu.Ex_Time = flash_union_buffer[50].uint16_type;
         flash_write_page_from_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
     }
-    Arrow_Display(Menu.Set_Line);//箭头显示
+    // Arrow_Display(Menu.Set_Line);//箭头显示
 }
 
 /**
