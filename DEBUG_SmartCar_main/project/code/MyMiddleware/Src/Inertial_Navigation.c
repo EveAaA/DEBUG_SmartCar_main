@@ -266,7 +266,7 @@ void Navigation_Process_Image(float Target_Pos_X,float Target_Pos_Y)
             //»ñÈ¡Í¼ÏñÊ¶±ðµÄ×ø±ê
             if(fabs(FINETUNING_DATA.dx/10.0f) <= 5)
             {
-                Navigation.Cur_Position_X = (FINETUNING_DATA.dx/10.0f)*0.85f+(Target_Pos_X - Get_X_Distance())*0.15f;//»¥²¹ÂË²¨
+                Navigation.Cur_Position_X = (FINETUNING_DATA.dx/10.0f)*0.7f+(Target_Pos_X - Get_X_Distance())*0.3f;//»¥²¹ÂË²¨
             }
             else
             {
@@ -275,7 +275,7 @@ void Navigation_Process_Image(float Target_Pos_X,float Target_Pos_Y)
             
             if(fabs(FINETUNING_DATA.dy/10.0f) <= 5)
             {
-                Navigation.Cur_Position_Y = (FINETUNING_DATA.dy/10.0f)*0.85f+(Target_Pos_Y - Get_Y_Distance())*0.15f;//»¥²¹ÂË²¨
+                Navigation.Cur_Position_Y = (FINETUNING_DATA.dy/10.0f)*0.7f+(Target_Pos_Y - Get_Y_Distance())*0.3f;//»¥²¹ÂË²¨
             }
             else
             {

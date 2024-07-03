@@ -1359,6 +1359,8 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
             {
                 LeftRing.Enter_Ring_First_Flag = false;
                 LeftRing.Ring_State = Leave_Ring_First;//第一次离开环
+                Lastanglg = 0;
+                Angle_Offest = 0;
             }
         break;
         case Leave_Ring_First:
@@ -1388,16 +1390,16 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                 }
             }
 
-            if (Break_Num_L_UP) // && (Bin_Image[50][4]) && (Bin_Image[50][8])
-            {
-                Get_K_b(R_Border[Image_H - 5], Image_H - 5, Points_L[Break_Num_L_UP][0], Points_L[Break_Num_L_UP][1], &slope_l_rate, &intercept_l);
-                for (i = Image_H - 1; i > 1; i--)
-                {
-                    R_Border[i] = (i - intercept_l)/ slope_l_rate;
-                    R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
-                }
-                LeftRing.Leave_Ring_First_Flag = true;
-            }
+            // if (Break_Num_L_UP) // && (Bin_Image[50][4]) && (Bin_Image[50][8])
+            // {
+            //     Get_K_b(R_Border[Image_H - 5], Image_H - 5, Points_L[Break_Num_L_UP][0], Points_L[Break_Num_L_UP][1], &slope_l_rate, &intercept_l);
+            //     for (i = Image_H - 1; i > 1; i--)
+            //     {
+            //         R_Border[i] = (i - intercept_l)/ slope_l_rate;
+            //         R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
+            //     }
+            //     LeftRing.Leave_Ring_First_Flag = true;
+            // }
             Lastanglg = Curanglg;
             // 左下一片空白, 找不到左上角点
             if (Bin_Image[Image_H - 10][20] && Bin_Image[Image_H - 10][25] && !Break_Num_L_UP && fabs(Angle_Offest) >= 50)
@@ -1981,10 +1983,10 @@ void Image_Process(void)
         }
 
         // 同上
-        // if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Right_Ring) && (!Image_Flag.Zerba))
-        // {
-        //     Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
-        // }
+        if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Right_Ring) && (!Image_Flag.Zerba))
+        {
+            Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
+        }
         if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Left_Ring) && (!Image_Flag.Zerba))
         {
             Right_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);

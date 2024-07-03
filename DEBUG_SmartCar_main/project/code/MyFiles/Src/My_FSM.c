@@ -271,11 +271,13 @@ static void Line_BoardFsm()
         break;
         case Wait_Data://等待串口数据回传
             #ifdef debug_switch
-                printf("Wait_Data\r\n");    
+                // printf("Wait_Data\r\n");
+                // printf("%f,%f\r\n",FINETUNING_DATA.dx,FINETUNING_DATA.dy);    
             #endif 
             UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING_BESIDE);//发送数据
             if(UnpackFlag.FINETUNING_DATA_FLAG)
             {
+                UnpackFlag.FINETUNING_DATA_FLAG = false;
                 if(Bufcnt(true,500))
                 {
                     if(FINETUNING_DATA.dy== -999 || FINETUNING_DATA.dx == -999)
@@ -284,13 +286,18 @@ static void Line_BoardFsm()
                         FINETUNING_DATA.dx = 0;
                         FINETUNING_DATA.dy = 0;
                     }
+                    else if(FINETUNING_DATA.IS_BORDER_ALIVE == false)
+                    {
+                        MyFSM.Line_Board_State = Return_Line;//不是目标板返回赛道
+                        FINETUNING_DATA.dx = 0;
+                        FINETUNING_DATA.dy = 0;                        
+                    }
                     else
                     {
                         MyFSM.Line_Board_State = Move;//开始移动到卡片前面
                         MyFSM.Target_Pos_X = FINETUNING_DATA.dx/10.0f;
                         MyFSM.Target_Pos_Y = FINETUNING_DATA.dy/10.0f;
                     }
-                    UnpackFlag.FINETUNING_DATA_FLAG = false;
                 }
             }
             // else
@@ -312,7 +319,7 @@ static void Line_BoardFsm()
             #ifdef debug_switch
                 printf("%f,%f\r\n",FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f);
             #endif 
-            UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
+            UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING_BESIDE);//发送数据
             if(Navigation.Finish_Flag == false)
             {
                 Navigation_Process_Image(MyFSM.Target_Pos_X,MyFSM.Target_Pos_Y);//移动
@@ -320,7 +327,6 @@ static void Line_BoardFsm()
             else
             {
                 Set_Beeptime(200);
-                UART_SendByte(&_UART_FINE_TUNING, UART_CLASSIFY_PIC);//发送数据，接收分类数据
                 Navigation.Finish_Flag = false;
                 FINETUNING_DATA.dx = 0;
                 FINETUNING_DATA.dy = 0;
@@ -349,10 +355,7 @@ static void Line_BoardFsm()
             }
             else
             {
-                if(Bufcnt(true,1000))//3s发送一次
-                {
-                    UART_SendByte(&_UART_FINE_TUNING, UART_CLASSIFY_PIC);//发送数据，接收分类数据
-                }
+                UART_SendByte(&_UART_FINE_TUNING, UART_CLASSIFY_PIC);//发送数据，接收分类数据
             }
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
@@ -399,7 +402,7 @@ static void Line_BoardFsm()
             else
             {
                 Car.Image_Flag = true;
-                if(Bufcnt(true,300))
+                if(Bufcnt(true,600))
                 {
                     Turn.Finish = false;
                     MyFSM.Line_Board_State = Find;
@@ -461,6 +464,7 @@ static void Cross_BoardFsm()
             UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
             if(UnpackFlag.FINETUNING_DATA_FLAG)
             {
+                UnpackFlag.FINETUNING_DATA_FLAG = false;
                 if(FINETUNING_DATA.IS_BORDER_ALIVE)
                 {
                     if(Bufcnt(true,500))
@@ -468,7 +472,6 @@ static void Cross_BoardFsm()
                         MyFSM.Target_Pos_X = FINETUNING_DATA.dx/10.0f;
                         MyFSM.Target_Pos_Y = FINETUNING_DATA.dy/10.0f;
                         MyFSM.Cross_Board_State = Move;//开始移动到卡片前面
-                        UnpackFlag.FINETUNING_DATA_FLAG = false;
                     }
                 }
                 else
@@ -855,6 +858,7 @@ static void Ring_BoardFsm()
             #ifdef debug_switch
                 printf("Ring_Wait_Data\r\n");    
             #endif
+            UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
             if(UnpackFlag.FINETUNING_DATA_FLAG)
             {
                 if(FINETUNING_DATA.IS_BORDER_ALIVE)
