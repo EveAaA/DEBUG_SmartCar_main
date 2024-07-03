@@ -212,6 +212,7 @@ static void Line_PatrolFsm()
     }
     else if(Image_Flag.Cross_Fill == 2)//十字回环
     {
+        Image_Flag.Cross_Fill = 0;
         MyFSM.CurState = Cross_Board;//十字回环状态机
         MyFSM.Cross_Dir = Image_Flag.Cross_Type;
         Set_Beepfreq(1);
@@ -459,7 +460,7 @@ static void Cross_BoardFsm()
         break;
         case Wait_Data://等待串口数据回传
             #ifdef debug_switch
-                printf("cross:%f,%f\r\n",FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f);            
+                printf("cross\r\n");            
             #endif 
             UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
             if(UnpackFlag.FINETUNING_DATA_FLAG)
@@ -795,6 +796,7 @@ static void Cross_BoardFsm()
                 if(Bufcnt(MyFSM.Cross_Flag_,1000))
                 {
                     FINDBORDER_DATA.FINDBORDER_FLAG = false;
+                    MyFSM.Cross_Flag_ = false;
                     Turn.Finish = false;
                     MyFSM.Cross_Board_State = Find_Cross;
                     MyFSM.CurState = Line_Patrol;
@@ -859,36 +861,51 @@ static void Ring_BoardFsm()
                 printf("Ring_Wait_Data\r\n");    
             #endif
             UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
-            if(UnpackFlag.FINETUNING_DATA_FLAG)
+            if(UnpackFlag.FINETUNING_DATA_FLAG)//接收到串口数据
             {
-                if(FINETUNING_DATA.IS_BORDER_ALIVE)
+                UnpackFlag.FINETUNING_DATA_FLAG = false;
+                if(FINETUNING_DATA.IS_BORDER_ALIVE)//如果有卡片
                 {
                     if(Bufcnt(true,500))
                     {
                         MyFSM.Target_Pos_X = FINETUNING_DATA.dx/10.0f;
                         MyFSM.Target_Pos_Y = FINETUNING_DATA.dy/10.0f;
                         MyFSM.Ring_Board_State = Move;//开始移动到卡片前面
-                        UnpackFlag.FINETUNING_DATA_FLAG = false;
                     }
+                    Car.Speed_X = 0;
+                    Car.Speed_Y = 0;
+                    Car.Speed_Z = 0; 
                 }
                 else
                 {
-                    MyFSM.Ring_Board_State = No_Board_Return;
-                    if(MyFSM.Ring_Dir == RIGHT)
+                    if(Turn.Finish == false)
                     {
-                        MyFSM.Ring_Board_State = Leave_Ring;
-                        Car.Image_Flag = true;
+                        if(MyFSM.Ring_Dir == RIGHT)
+                        {
+                            Turn_Angle(-90);
+                        }
+                        else
+                        {
+                            Turn_Angle(90);
+                        } 
                     }
                     else
                     {
-                        MyFSM.Ring_Board_State = Leave_Ring;
-                        Car.Image_Flag = true;
-                    } 
+                        if(MyFSM.Ring_Dir == RIGHT)
+                        {
+                            RightRing.Ring_State = Leave_Ring;
+                            Car.Image_Flag = true;
+                        }
+                        else
+                        {
+                            LeftRing.Ring_State = Leave_Ring;
+                            Car.Image_Flag = true;
+                        }
+                        MyFSM.Ring_Board_State = No_Board_Return; 
+                        Turn.Finish = false;
+                    }
                 }
             }
-            Car.Speed_X = 0;
-            Car.Speed_Y = 0;
-            Car.Speed_Z = 0; 
         break;
         case Move://移动到卡片前面
             #ifdef debug_switch
@@ -1239,7 +1256,7 @@ static void Ring_BoardFsm()
             {
                 if(Image_Flag.Left_Ring==false)
                 {
-                    MyFSM.Ring_Board_State = Find_Ring;
+                    MyFSM.Ring_Board_State = Find_Ring;  
                     MyFSM.CurState = Line_Patrol;
                 }
             }
@@ -1300,10 +1317,10 @@ static void Unload_Fsm()
             UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE);//发送对数字板微调信息
             if(UnpackFlag.FINETUNING_DATA_FLAG)
             {
+                UnpackFlag.FINETUNING_DATA_FLAG = false;
                 if(Bufcnt(true,300))
                 {
                     MyFSM.Unload_State = Move;//开始移动到卡片前面
-                    UnpackFlag.FINETUNING_DATA_FLAG = false;
                     MyFSM.Target_Pos_X = FINETUNING_DATA.dx/10.0f;
                     MyFSM.Target_Pos_Y = FINETUNING_DATA.dy/10.0f;
                 }
