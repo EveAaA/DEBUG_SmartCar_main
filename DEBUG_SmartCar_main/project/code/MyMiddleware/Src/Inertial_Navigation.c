@@ -37,14 +37,14 @@ Pid_TypeDef DistanceY_PID =
 
 Pid_TypeDef Distance_PID = 
 {
-    .Kp = 0.03f,
+    .Kp = 0.01f,
     .Ki = 0.003f,
-    .Kd = 0.08f,
+    .Kd = 0.02f,
     .OutputMax = 4,
     .OutputMin = -4,
 };
 
-State Navigation_State = 0;
+uint8 Navigation_State = 0;
 float Basic_Speed = 0.0f;
 float Large_Speed = 0.0f;
 /**
@@ -120,7 +120,7 @@ void Navigation_Process(float x,float y)
             if(fabs(x - Navigation.Cur_Position_X) <= 1.0f)
             {
                 Navigation_State = Move_State_Y;
-                 Distance_PID.I_Out = 0;
+                Distance_PID.I_Out = 0;
             }
             else
             {
@@ -189,6 +189,7 @@ void Navigation_Process_Y(float x,float y)
         break;
         case Move_State_Y:
             Navigation.Cur_Position_Y = Get_Y_Distance();
+            printf("y:%f\r\n",Navigation.Cur_Position_Y);
             if(fabs(y - Navigation.Cur_Position_Y) <= 1.0f)
             {
                 Navigation_State = Move_State;
@@ -265,7 +266,7 @@ void Navigation_Process_Image(float Target_Pos_X,float Target_Pos_Y)
             //»ñÈ¡Í¼ÏñÊ¶±ðµÄ×ø±ê
             if(fabs(FINETUNING_DATA.dx/10.0f) <= 5)
             {
-                Navigation.Cur_Position_X = (FINETUNING_DATA.dx/10.0f)*0.7f+(Target_Pos_X - Get_X_Distance())*0.3f;//»¥²¹ÂË²¨
+                Navigation.Cur_Position_X = (FINETUNING_DATA.dx/10.0f)*0.85f+(Target_Pos_X - Get_X_Distance())*0.15f;//»¥²¹ÂË²¨
             }
             else
             {
@@ -274,7 +275,7 @@ void Navigation_Process_Image(float Target_Pos_X,float Target_Pos_Y)
             
             if(fabs(FINETUNING_DATA.dy/10.0f) <= 5)
             {
-                Navigation.Cur_Position_Y = (FINETUNING_DATA.dy/10.0f)*0.7f+(Target_Pos_Y - Get_Y_Distance())*0.3f;//»¥²¹ÂË²¨
+                Navigation.Cur_Position_Y = (FINETUNING_DATA.dy/10.0f)*0.85f+(Target_Pos_Y - Get_Y_Distance())*0.15f;//»¥²¹ÂË²¨
             }
             else
             {

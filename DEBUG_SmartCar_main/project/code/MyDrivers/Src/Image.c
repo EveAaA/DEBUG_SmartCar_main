@@ -1729,6 +1729,8 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
             {
                 RightRing.Enter_Ring_First_Flag = false;
                 RightRing.Ring_State = Leave_Ring_First;
+                Lastanglg = 0;
+                Angle_Offest = 0;
             }
         break;
         case Leave_Ring_First:

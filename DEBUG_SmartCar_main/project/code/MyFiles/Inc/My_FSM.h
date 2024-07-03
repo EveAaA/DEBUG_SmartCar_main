@@ -24,6 +24,8 @@ typedef enum
     Find_Cross,//找到十字
     Ready_Find_Place,//准备找第一个位置
     Find_Place,//寻找放置位置
+    Ring_First_Place,//圆环第一个放置区域
+    Ready_Find_Next_First,//圆环第一个放置点放好后前往下一个放置点
     Wait_PlaceData,//等待放置区域微调数据
     Move_Place,//移动到放置区域
     Classify_Place,//识别小类放置区域
