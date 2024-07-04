@@ -1944,7 +1944,7 @@ void Zebra_Seek(uint8(*Bin_Image)[Image_W])
 -- @author  庄文标
 -- @date    2024/7/4
 **/
-void Roadblock(uint16(*Bin_Image)[Image_W], uint16* L_Border, uint16* R_Border, uint16 Total_Num_L, uint16 Total_Num_R)
+void Roadblock_Seek(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uint16 Total_Num_L, uint16 Total_Num_R)
 {
     uint8 Right_Straight = 0;
     uint8 Left_Straight = 0;
@@ -2128,18 +2128,22 @@ void Image_Process(void)
         {
             Zebra_Seek(Bin_Image);
         }
+        if(MyFSM.CurState == Line_Patrol)
+        {
+            Roadblock_Seek(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R);
+        }
         // 优先判断是否是十字如果是十字则不对圆环判断
-        if((!Image_Flag.Right_Ring) && (!Image_Flag.Left_Ring) && (!Image_Flag.Zerba) && ((MyFSM.CurState == Line_Patrol) || (MyFSM.CurState == Cross_Board)))
+        if((!Image_Flag.Right_Ring) && (!Image_Flag.Left_Ring) && (!Image_Flag.Zerba) && (!Image_Flag.Roadblock) && ((MyFSM.CurState == Line_Patrol) || (MyFSM.CurState == Cross_Board)))
         {
             Cross_Fill(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);//十字补线
         }
 
         // 同上
-        if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Right_Ring) && (!Image_Flag.Zerba) && ((MyFSM.CurState == Line_Patrol) || (MyFSM.CurState == Ring_Board)))
+        if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Right_Ring) && (!Image_Flag.Zerba) && (!Image_Flag.Roadblock) && ((MyFSM.CurState == Line_Patrol) || (MyFSM.CurState == Ring_Board)))
         {
             Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
         }
-        if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Left_Ring) && (!Image_Flag.Zerba) && ((MyFSM.CurState == Line_Patrol) || (MyFSM.CurState == Ring_Board)))
+        if ((!Image_Flag.Cross_Fill) && (!Image_Flag.Left_Ring) && (!Image_Flag.Zerba) && (!Image_Flag.Roadblock) && ((MyFSM.CurState == Line_Patrol) || (MyFSM.CurState == Ring_Board)))
         {
             Right_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
         }
