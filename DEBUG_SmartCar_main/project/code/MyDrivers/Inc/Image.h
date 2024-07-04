@@ -38,6 +38,7 @@ typedef struct
 	bool Left_Ring;
 	bool Right_Ring;
 	bool Zerba;
+	bool Roadblock;
 	uint8 Cross_Type;
 }Flag_Handle;
 

@@ -118,7 +118,7 @@ void User_Init()
     Motor_Init();
     tft180_show_string(Row_0, Line_4, "Motor Init ...");
     Beep_Init();
-    // dl1a_init();
+    dl1a_init();
     All_PID_Init();
     Flash_Init();
     mt9v03x_set_exposure_time(Menu.Ex_Time);
@@ -152,4 +152,5 @@ void User_Loop()
         Start = Receivedata.Start_Flag;
     }
     Menu_Display();
+    printf("dis:%d\r\n",dl1a_distance_mm);
 }

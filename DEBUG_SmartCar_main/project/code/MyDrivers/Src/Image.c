@@ -1926,6 +1926,149 @@ void Zebra_Seek(uint8(*Bin_Image)[Image_W])
     }
 }
 
+/**@brief   路障识别
+-- @param   uint8(*Bin_Image)[Image_W] 二值化图像
+-- @param   uint16* L_Border 左线数组
+-- @param   uint16* L_Border 右线数组
+-- @param   uint16 Total_Num_L 左线点的数量
+-- @param   uint16 Total_Num_R 右线点的数量
+-- @author  庄文标
+-- @date    2024/7/4
+**/
+void Roadblock(uint16(*Bin_Image)[Image_W], uint16* L_Border, uint16* R_Border, uint16 Total_Num_L, uint16 Total_Num_R)
+{
+    uint8 Right_Straight = 0;
+    uint8 Left_Straight = 0;
+    uint16 i;
+    uint16 Break_Num_L_UP = 0;//拐点
+    uint16 Break_Num_R_UP = 0;
+    uint16 Break_Num_L_DOWN = 0;
+    uint16 Break_Num_R_DOWN = 0;
+    uint16 start, end;
+    float slope_l_rate = 0, intercept_l = 0;
+
+    Right_Straight = Straight_Line_Judge(R_Border, Total_Num_R - 10, RightLine);//判断右边是否为长直线
+    Left_Straight = Straight_Line_Judge(L_Border, Total_Num_L - 10, LeftLine);//判断左边是否为长直线
+    if (Right_Straight)//先找一条直线
+    {
+        for (i = 3; i < Image_H / 2; i++)//寻找左上拐点
+        {
+            if (abs(L_Border[i - 1] - L_Border[i - 2] <= 5)
+                && (abs(L_Border[i - 2] - L_Border[i - 3]) <= 5)
+                && (abs(L_Border[i - 3] - L_Border[i - 4]) <= 5)
+                && (L_Border[i] - L_Border[i - 2] >= 7))
+            {
+                Break_Num_L_UP = i;//传递y坐标
+                break;
+            }
+        }
+
+        for (i = Image_H - 5; i > Image_H / 2 - 5; i--)//寻找左下拐点
+        {
+            if (abs(L_Border[i + 1] - L_Border[i + 2] <= 5)
+                && (abs(L_Border[i + 2] - L_Border[i + 3]) <= 5)
+                && (abs(L_Border[i + 3] - L_Border[i + 4]) <= 5)
+                && (L_Border[i] - L_Border[i + 2] >= 7))
+            {
+                Break_Num_L_DOWN = i;//传递y坐标
+                break;
+            }
+        }
+
+        if ((Break_Num_L_UP)
+            && (Break_Num_L_DOWN)
+            && (!Bin_Image[Break_Num_L_UP + 10][L_Border[Break_Num_L_UP] - 5])
+            && (!Bin_Image[Break_Num_L_DOWN - 10][L_Border[Break_Num_L_DOWN]]))
+        {
+            Image_Flag.Roadblock = true;
+            Get_K_b(Break_Num_L_DOWN, L_Border[Break_Num_L_DOWN], 2, Image_W / 2 + 20, &slope_l_rate, &intercept_l);
+            for (i = Break_Num_L_DOWN; i >= 2; --i)
+            {
+                L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+                L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
+            }
+        }
+        else if ((Break_Num_L_UP)//下点消失
+            && (!Break_Num_L_DOWN)
+            && (!Bin_Image[Break_Num_L_UP + 10][L_Border[Break_Num_L_UP] - 5]))
+        {
+            Image_Flag.Roadblock = true;
+            Get_K_b(Break_Num_L_UP, L_Border[Break_Num_L_UP], 2, Image_W / 2 + 20, &slope_l_rate, &intercept_l);
+            for (i = Break_Num_L_UP; i >= 2; --i)
+            {
+                L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+                L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
+            }
+        }
+        else if ((!Break_Num_L_UP)
+            && !(Break_Num_L_DOWN))
+        {
+            Image_Flag.Roadblock = false;
+        }
+    }
+    else if (Left_Straight)
+    {
+        for (i = 3; i < Image_H/2; i++)//寻找右上拐点
+        {
+            if (abs(R_Border[i - 1] - R_Border[i - 2] <= 5)
+                && (abs(R_Border[i - 2] - R_Border[i - 3]) <= 5)
+                && (abs(R_Border[i - 3] - R_Border[i - 4]) <= 5)//连续
+                && (R_Border[i - 2] - R_Border[i] >= 7))//断裂
+            {
+                Break_Num_R_UP = i;//传递y坐标
+                break;
+            }
+        }
+
+        for (i = Image_H - 5; i > Image_H / 2 - 5; i--)//寻找右下拐点
+        {
+            //printf("R_Border[%d] = %d\r\n", i, R_Border[i]);
+            if (abs(R_Border[i + 1] - R_Border[i + 2] <= 5)
+                && (abs(R_Border[i + 2] - R_Border[i + 3]) <= 5)
+                && (abs(R_Border[i + 3] - R_Border[i + 4]) <= 5)
+                && (R_Border[i + 2] - R_Border[i] >= 7))
+            {
+                Break_Num_R_DOWN = i;//传递y坐标
+                break;
+            }
+        }
+        if ((Break_Num_R_UP) 
+            && (Break_Num_R_DOWN) 
+            && (!Bin_Image[Break_Num_R_UP + 10][R_Border[Break_Num_R_UP] + 5]) 
+            && (!Bin_Image[Break_Num_R_DOWN - 10][R_Border[Break_Num_R_DOWN]]))
+        {
+            Image_Flag.Roadblock = true;
+            Get_K_b(Break_Num_R_DOWN,R_Border[Break_Num_R_DOWN],2,Image_W/2-20,&slope_l_rate, &intercept_l);
+            for (i = Break_Num_R_DOWN; i >= 2; --i)
+            {
+                R_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+                R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
+            }
+        }
+        else if ((Break_Num_R_UP)//下点消失
+            && (!Break_Num_R_DOWN)
+            && (!Bin_Image[Break_Num_R_UP + 10][R_Border[Break_Num_R_UP] + 5]))
+        {
+            Image_Flag.Roadblock = true;
+            Get_K_b(Break_Num_R_UP, R_Border[Break_Num_R_UP], 2, Image_W / 2 - 20, &slope_l_rate, &intercept_l);
+            for (i = Break_Num_R_UP; i >= 2; --i)
+            {
+                R_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+                R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
+            }
+        }
+        else if ((!Break_Num_R_UP)
+            && (!Break_Num_R_DOWN))
+        {
+            Image_Flag.Roadblock = false;
+        }
+    }
+    else
+    {
+        Image_Flag.Roadblock = false;
+    }
+}
+
 /**
  ******************************************************************************
  *  @defgroup 外部调用
