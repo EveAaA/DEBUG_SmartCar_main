@@ -189,7 +189,7 @@ void Navigation_Process_Y(float x,float y)
         break;
         case Move_State_Y:
             Navigation.Cur_Position_Y = Get_Y_Distance();
-            printf("y:%f\r\n",Navigation.Cur_Position_Y);
+            // printf("y:%f\r\n",Navigation.Cur_Position_Y);
             if(fabs(y - Navigation.Cur_Position_Y) <= 1.0f)
             {
                 Navigation_State = Move_State;
@@ -240,6 +240,74 @@ void Navigation_Process_Y(float x,float y)
         break;
     }
 } 
+
+void Navigation_Process_Y_Image(float x,float y)
+{
+    switch(Navigation_State)
+    {
+        case Start_State:
+            Car.Speed_X = 0;//先停一会
+            Car.Speed_Y = 0;
+            Car.Speed_Z = 0;
+            if(Bufcnt((fabs(Get_X_Speed()) <= 0.1 && fabs(Get_Y_Speed()) <= 0.1),500))
+            {
+                Navigation_State = Move_State_Y;
+                Enable_Navigation();
+            }
+        break;
+        case Move_State_Y:
+            Navigation.Cur_Position_Y = Get_Y_Distance();
+            // printf("y:%f\r\n",Navigation.Cur_Position_Y);
+            if(fabs(y - Navigation.Cur_Position_Y) <= 1.0f || fabs(-20 - (VOLUMEUP_DATA.HeightErr)) <= 1)
+            {
+                Navigation_State = Move_State;
+                Navigation.End_Angle = Gyro_YawAngle_Get();
+                Distance_PID.I_Out = 0;
+            }
+            else
+            {
+                if(y - Navigation.Cur_Position_Y >= 0)
+                {
+                    Car.Speed_Y = Large_Speed + GetPIDValue(&Distance_PID,(y - Navigation.Cur_Position_Y));
+                }
+                else
+                {
+                    Car.Speed_Y = -Large_Speed + GetPIDValue(&Distance_PID,(y - Navigation.Cur_Position_Y));
+                }
+            }
+            Car.Speed_X = 0;
+            Car.Speed_Z = Angle_Control(Navigation.Start_Angle);
+        break;
+        case Move_State:
+            Navigation.Cur_Position_X = Get_X_Distance();
+            if(fabs(x - Navigation.Cur_Position_X) <= 1.0f)
+            {
+                Navigation_State = Move_Finish;
+            }
+            else
+            {
+                if(x - Navigation.Cur_Position_X >= 0)
+                {
+                    Car.Speed_X = Large_Speed + GetPIDValue(&Distance_PID,(x - Navigation.Cur_Position_X));
+                }
+                else
+                {
+                    Car.Speed_X = -Large_Speed + GetPIDValue(&Distance_PID,(x - Navigation.Cur_Position_X));
+                }
+            }
+
+            Car.Speed_Z = Angle_Control(Navigation.Start_Angle);
+        break;
+        case Move_Finish:
+            Navigation.Finish_Flag = true;//一次惯性导航完成
+            Distance_PID.I_Out = 0;
+            Car.Speed_X = 0;
+            Car.Speed_Y = 0;
+            Car.Speed_Z = 0;
+            Reset_Navigation();
+        break;
+    }
+}
 
 /**@brief   惯性导航进程
 -- @param   float x 目标X坐标

@@ -356,15 +356,15 @@ void Menu_Display()
 {
     switch(Menu_Mode)
     {
-        case Page_Select:
-            Page_Select_Mode();
-        break;
-        case Page0:
-            Page0_Mode();
-        break;
-        case Page1:
-            Page1_Mode();
-        break;
+        // case Page_Select:
+        //     Page_Select_Mode();
+        // break;
+        // case Page0:
+        //     Page0_Mode();
+        // break;
+        // case Page1:
+        //     Page1_Mode();
+        // break;
         case Page9:
             Image_Page();
         break;

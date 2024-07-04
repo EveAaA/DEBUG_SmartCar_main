@@ -50,7 +50,7 @@ WareState_t smallPlaceWare =
 
 uint16 wait_time = 0;
 #define Static_Time 100 //等待静止的时间，大约0.5秒
-#define debug_switch  //是否调试
+// #define debug_switch  //是否调试
 
 /**
  ******************************************************************************
@@ -67,6 +67,7 @@ void resetWare(WareState_t *Ware)
 {
 	uint8 i;
 	Ware->notEmptyNum = 0;
+    Ware->currWareNum = 0;
 	for (i = 0; i < 5; i++)
 	{
 		Ware->isWareUsed[i] = false;
@@ -343,9 +344,9 @@ static void Line_BoardFsm()
             #endif 
             if(CLASSIFY_DATA.type != None)//识别到了分类
             {
-                Dodge_Board();
+                // Dodge_Board();
                 MyFSM.Line_Board_State = Pick;//捡起卡片
-                MyFSM.Pick_Count = 5;
+                MyFSM.Pick_Count = 9;
                 MyFSM.Big_Board = CLASSIFY_DATA.type;//记录分类
                 MyFSM.Big_Count[MyFSM.Big_Board]+=1;
                 CLASSIFY_DATA.type = None;
@@ -389,6 +390,7 @@ static void Line_BoardFsm()
             #endif
             FINETUNING_DATA.dx = 0;
             FINETUNING_DATA.dy = 0;
+            MyFSM.Pick_Count = 0;
             if(Turn.Finish == false)
             {
                 if(MyFSM.Board_Dir == LEFT)
@@ -733,6 +735,7 @@ static void Cross_BoardFsm()
             Car.Speed_Z = 0; 
         break;
         case Ready_Find_Next:
+            SMALL_PLACE_DATA.place = nil;
             if(Navigation.Finish_Flag == false)
             {
                 Navigation_Process_Y(0,-20);
@@ -747,9 +750,12 @@ static void Cross_BoardFsm()
             }
         break;
         case Return_Line:
-#ifdef debug_switch
-        printf("Return_Line");
-#endif
+            #ifdef debug_switch
+                printf("Return_Line");
+            #endif
+            resetWare(&smallPlaceWare);
+            MyFSM.Unload_Count = 0;
+            SMALL_PLACE_DATA.place = nil;
             if(Turn.Finish == false)
             {
                 if(MyFSM.Cross_Dir==RIGHT)
@@ -1005,7 +1011,7 @@ static void Ring_BoardFsm()
             if(UnpackFlag.FINETUNING_DATA_FLAG)
             {
                 UnpackFlag.FINETUNING_DATA_FLAG = false;
-                if(Bufcnt(true,1000))
+                if(Bufcnt(true,500))
                 {
                     MyFSM.Ring_Board_State = Move_Place;//开始移动到放置区域前面
                     MyFSM.Target_Pos_X = FINETUNING_DATA.dx/10.0f;
@@ -1173,6 +1179,7 @@ static void Ring_BoardFsm()
             #ifdef debug_switch
                 printf("Ready_Find_Next_First\r\n");    
             #endif       
+            SMALL_PLACE_DATA.place = nil;
             if(Navigation.Finish_Flag == false)
             {
                 Navigation_Process_Y(0,-34);
@@ -1203,31 +1210,56 @@ static void Ring_BoardFsm()
             #ifdef debug_switch
                 printf("Ready_Find_Next\r\n");    
             #endif
-            if(Navigation.Finish_Flag == false)
+            SMALL_PLACE_DATA.place = nil;
+            if(MyFSM.Unload_Count == 2)
             {
-                Navigation_Process_Y(0,-20);
+                if(Navigation.Finish_Flag == false)
+                {
+                    if(MyFSM.Ring_Dir == RIGHT)
+                    {
+                        Navigation_Process_Y_Image(-15,-20);
+                    }
+                    else if(MyFSM.Ring_Dir == LEFT)
+                    {
+                        Navigation_Process_Y_Image(15,-20);
+                    }
+                }
+                else
+                {
+                    Navigation.Finish_Flag =false;
+                    MyFSM.Ring_Board_State = Find_Place;
+                }                
             }
             else
             {
-                Navigation.Finish_Flag =false;
-                MyFSM.Ring_Board_State = Find_Place;
+                if(Navigation.Finish_Flag == false)
+                {
+                    Navigation_Process_Y_Image(0,-20);
+                }
+                else
+                {
+                    Navigation.Finish_Flag =false;
+                    MyFSM.Ring_Board_State = Find_Place;
+                }
             }
         break;
         case Return_Line:
             #ifdef debug_switch
                 printf("Return_Line\r\n");    
             #endif
+            MyFSM.Unload_Count = 0;
+            SMALL_PLACE_DATA.place = nil;
             Dodge_Carmar();
             resetWare(&smallPlaceWare);
             if(Navigation.Finish_Flag == false)
             {
                 if(MyFSM.Ring_Dir == RIGHT)
                 {
-                    Navigation_Process(-20,0);
+                    Navigation_Process(-30,30);
                 }
                 else
                 {
-                     Navigation_Process(20,0);
+                    Navigation_Process(30,30);
                 }
             }
             else

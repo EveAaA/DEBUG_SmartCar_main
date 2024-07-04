@@ -1997,18 +1997,6 @@ void Roadblock_Seek(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border
                 L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
             }
         }
-        else if ((Break_Num_L_UP)//下点消失
-            && (!Break_Num_L_DOWN)
-            && (!Bin_Image[Break_Num_L_UP + 10][L_Border[Break_Num_L_UP] - 5]))
-        {
-            Image_Flag.Roadblock = true;
-            Get_K_b(Break_Num_L_UP, L_Border[Break_Num_L_UP], 2, Image_W / 2 + 20, &slope_l_rate, &intercept_l);
-            for (i = Break_Num_L_UP; i >= 2; --i)
-            {
-                L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
-                L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
-            }
-        }
         else if ((!Break_Num_L_UP)
             && !(Break_Num_L_DOWN))
         {
@@ -2049,18 +2037,6 @@ void Roadblock_Seek(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border
             Image_Flag.Roadblock = true;
             Get_K_b(Break_Num_R_DOWN,R_Border[Break_Num_R_DOWN],2,Image_W/2-20,&slope_l_rate, &intercept_l);
             for (i = Break_Num_R_DOWN; i >= 2; --i)
-            {
-                R_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
-                R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
-            }
-        }
-        else if ((Break_Num_R_UP)//下点消失
-            && (!Break_Num_R_DOWN)
-            && (!Bin_Image[Break_Num_R_UP + 10][R_Border[Break_Num_R_UP] + 5]))
-        {
-            Image_Flag.Roadblock = true;
-            Get_K_b(Break_Num_R_UP, R_Border[Break_Num_R_UP], 2, Image_W / 2 - 20, &slope_l_rate, &intercept_l);
-            for (i = Break_Num_R_UP; i >= 2; --i)
             {
                 R_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
                 R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅

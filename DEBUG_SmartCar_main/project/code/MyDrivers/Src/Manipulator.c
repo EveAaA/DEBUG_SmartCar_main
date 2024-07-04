@@ -21,7 +21,7 @@
 #define Set_360Servo_Angle(angle) ((float)PWM_DUTY_MAX / (1000.0 / (float)Servo_FREQ) * (0.5 + (float)(angle) / 180.0))//设置360度舵机角度转为具体占空比
 #define Electromagnet_On gpio_set_level(D27,1)
 #define Electromagnet_Off gpio_set_level(D27,0)
-uint8 Down_Angle[10]={40,37,36,34,32,30,30,30,30,30};
+uint8 Down_Angle[10]={40,37,36,35,34,33,30,30,30,30};
 
 Servo_Handle Stretch_Servo = //抬臂舵机
 {
@@ -129,13 +129,13 @@ static void Manipulator_PutUp()
     switch (PutUp_State)
     {
         case 0:
-            Set_Servo_Angle(Stretch_Servo,80);//先抬大臂 120
+            Set_Servo_Angle(Stretch_Servo,60);//先抬大臂 120
             PutUp_State = 1;
         break;
         case 1:
             if(Bufcnt(true,400))//这是为了留给机械臂运转的时间
             {
-                Set_Servo_Angle(Raise_Servo,135);//把卡片翻起来
+                Set_Servo_Angle(Raise_Servo,128);//把卡片翻起来
                 PutUp_State = 2;
             }
         break;

@@ -37,4 +37,6 @@ void Reset_Navigation();
 void Navigation_Process(float x,float y);
 void Navigation_Process_Y(float x,float y);
 void Navigation_Process_Image(float Target_Pos_X,float Target_Pos_Y);
+void Navigation_Process_Y_Image(float x,float y);
+
 #endif
