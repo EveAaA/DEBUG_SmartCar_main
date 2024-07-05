@@ -228,5 +228,5 @@ float Get_X_Speed()
 **/
 float Get_Y_Speed()
 {
-    return (Encoer_Speed[0] - Encoer_Speed[3] + Encoer_Speed[2] - Encoer_Speed[1])/4.0f;
+    return (Encoer_Speed[0] + Encoer_Speed[3] + Encoer_Speed[2] + Encoer_Speed[1])/4.0f;
 }

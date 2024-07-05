@@ -141,7 +141,6 @@ void User_Init()
 void User_Loop()
 {
     // printf("fuck\r\n");
-    // printf("speed = %f\r\n",Encoer_Speed[0]);
     // if(mt9v03x_finish_flag)
     // {
     //     memcpy(image_copy[0], Bin_Image[0], MT9V03X_IMAGE_SIZE);

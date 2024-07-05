@@ -151,22 +151,16 @@ void Get_Message()
             if(Receivedata.RxBuffer[Receivedata.Equal_pos - 1] == 'P')
             {
                 Receivedata.P_Data = Receivedata.Real_Data;
-                Receivedata.I_Data = 0;
-                Receivedata.D_Data = 0;
             }
             else if(Receivedata.RxBuffer[Receivedata.Equal_pos - 1] == 'I')
             {
-                Receivedata.P_Data = 0;
                 Receivedata.I_Data = Receivedata.Real_Data;
-                Receivedata.D_Data = 0;
             }
             else
             {
-                Receivedata.P_Data = 0;
-                Receivedata.I_Data = 0;
                 Receivedata.D_Data = Receivedata.Real_Data;
             }
-            // printf("%f,%f,%f\r\n",Receivedata.P_Data,Receivedata.I_Data,Receivedata.D_Data);
+            printf("%f,%f,%f\r\n",Receivedata.P_Data,Receivedata.I_Data,Receivedata.D_Data);
         }
         else//没有找到等号，说明为发车指令
         {

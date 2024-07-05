@@ -559,7 +559,14 @@ static void Cross_BoardFsm()
             else
             {
                 MyFSM.Pick_Count+=1;
-                MyFSM.Cross_Board_State = Classify;//继续识别
+                if(MyFSM.Pick_Count > 6)//出现大于6次捡起卡片说明卡片飞了或者是见不到，回去重新调整一下
+                {
+                    MyFSM.Cross_Board_State = Wait_Data;
+                }
+                else
+                {
+                    MyFSM.Cross_Board_State = Classify;//继续识别
+                }
                 Servo_Flag.Put_Up = false;
                 Servo_Flag.Put_Down = false;
                 Servo_Flag.Pick_End = false;
@@ -738,7 +745,7 @@ static void Cross_BoardFsm()
             SMALL_PLACE_DATA.place = nil;
             if(Navigation.Finish_Flag == false)
             {
-                Navigation_Process_Y(0,-20);
+                Navigation_Process_Y_Image(0,-20);
             }
             else
             {
@@ -970,8 +977,14 @@ static void Ring_BoardFsm()
             }
             else
             {
-                MyFSM.Pick_Count+=1;
-                MyFSM.Ring_Board_State = Classify;//继续识别
+                if(MyFSM.Pick_Count > 6)//出现大于6次捡起卡片说明卡片飞了或者是见不到，回去重新调整一下
+                {
+                    MyFSM.Ring_Board_State = Wait_Data;
+                }
+                else
+                {
+                    MyFSM.Ring_Board_State = Classify;//继续识别
+                }            
                 Servo_Flag.Put_Up = false;
                 Servo_Flag.Put_Down = false;
                 Servo_Flag.Pick_End = false;

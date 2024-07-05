@@ -256,6 +256,7 @@ void Navigation_Process_Y_Image(float x,float y)
             }
         break;
         case Move_State_Y:
+            UART_SendByte(&_UART_FINE_TUNING, UART_MOVEVOLUMEUP_FLAG);
             Navigation.Cur_Position_Y = Get_Y_Distance();
             // printf("y:%f\r\n",Navigation.Cur_Position_Y);
             if(fabs(y - Navigation.Cur_Position_Y) <= 1.0f || fabs(-20 - (VOLUMEUP_DATA.HeightErr)) <= 1)

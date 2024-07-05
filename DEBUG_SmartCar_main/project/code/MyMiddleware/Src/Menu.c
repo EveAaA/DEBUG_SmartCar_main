@@ -234,6 +234,7 @@ static void Image_Page()
     // }
     // tft180_set_dir(TFT180_CROSSWISE);
     tft180_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,148,80,0);
+    // tft180_show_gray_image(0,0,(uint8*)mt9v03x_image,MT9V03X_W,MT9V03X_H,148,80,0);
     for (int i = Hightest; i < Image_H-1; i++)
     {
         tft180_draw_point(Center_Line[i], i, RGB565_BLACK);

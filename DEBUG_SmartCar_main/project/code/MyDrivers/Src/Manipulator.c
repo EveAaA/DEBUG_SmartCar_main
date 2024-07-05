@@ -111,6 +111,10 @@ static void Manipulator_PutDown()
             }     
         break;
         case 2:
+            if(MyFSM.Pick_Count>9)
+            {
+                MyFSM.Pick_Count = 9;
+            }
             Set_Servo_Angle(Stretch_Servo,Down_Angle[MyFSM.Pick_Count]);//150
             PuDowm_State = 0;
             Servo_Flag.Put_Down = true;

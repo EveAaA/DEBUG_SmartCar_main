@@ -64,10 +64,10 @@ Turn_Handle Turn =
 void All_PID_Init()
 {
     //速度环
-    Incremental_PID_Init(&LMotor_F_Speed,0.6f,0.2f,0.4f,40,-40);
-    Incremental_PID_Init(&RMotor_F_Speed,0.5f,0.25f,0.35f,40,-40);
-    Incremental_PID_Init(&LMotor_B_Speed,0.7f,0.3f,0.5f,40,-40);
-    Incremental_PID_Init(&RMotor_B_Speed,0.5f,0.35f,0.5f,40,-40);
+    Incremental_PID_Init(&LMotor_F_Speed,0.6f,0.2f,0.4f,40,-40);//0.6f,0.2f,0.4f,40,-40
+    Incremental_PID_Init(&RMotor_F_Speed,0.75f,0.15f,0.29f,40,-40);//0.3f,0.25f,0.35f,40,-40
+    Incremental_PID_Init(&LMotor_B_Speed,0.7f,0.23f,0.5f,40,-40);//0.7f,0.23f,0.5f,40,-40
+    Incremental_PID_Init(&RMotor_B_Speed,0.76f,0.10f,0.36f,40,-40);//0.5f,0.22f,0.5f,40,-40
     PIDInit(&Angle_PID,0.44f,0,2,1.5f,-1.5f);
     PIDInit(&Image_PID,3.8f,0,0.5f,2.5f,-2.5f);
     PIDInit(&ImageX_PID,0.060f,0, 0.0f,3.0f,-3.0f);
@@ -99,6 +99,18 @@ void Set_Car_Speed(float Speed_X,float Speed_Y,float Speed_Z)
     RF_Spped = Speed_Y - Speed_X - Speed_Z;
     RB_Speed = Speed_Y + Speed_X - Speed_Z;
 
+    if(Receivedata.I_Data!=0)
+    {
+        RMotor_B_Speed.Ki = Receivedata.I_Data;
+    }
+    if(Receivedata.P_Data!=0)
+    {
+        RMotor_B_Speed.Kp = Receivedata.P_Data;
+    }
+    if(Receivedata.D_Data!=0)
+    {
+        RMotor_B_Speed.Kd = Receivedata.D_Data;
+    }
 //速度环
     Set_Motor_Speed(LMotor_F,Get_Incremental_PID_Value(&LMotor_F_Speed,LF_Speed-Encoer_Speed[0]));
     Set_Motor_Speed(LMotor_B,Get_Incremental_PID_Value(&LMotor_B_Speed,LB_Speed-Encoer_Speed[2]));

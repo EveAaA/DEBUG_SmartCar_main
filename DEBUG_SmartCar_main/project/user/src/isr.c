@@ -48,7 +48,7 @@ void CSI_IRQHandler(void)
     __DSB();                    // 数据同步隔离
 }
 
-uint8 speed_time = 0;
+uint8 testmode = 0;
 void PIT_IRQHandler(void)
 {
     if(pit_flag_get(PIT_CH0))
@@ -77,6 +77,45 @@ void PIT_IRQHandler(void)
     {
         if(Start == 1)
         {
+            // switch(testmode)
+            // {
+            //     case 0:
+            //         if(Bufcnt(true,1000))
+            //         {
+            //             testmode = 1;
+            //         }
+            //         Car.Speed_X = 5;
+            //         Car.Speed_Y = 0;
+            //         Car.Speed_Z = Angle_Control(0);
+            //     break;
+            //     case 1:
+            //         if(Bufcnt(true,1000))
+            //         {
+            //             testmode = 2;
+            //         }
+            //         Car.Speed_X = -5;
+            //         Car.Speed_Y = 0;
+            //         Car.Speed_Z = Angle_Control(0);                    
+            //     break;
+            //     case 2:
+            //         if(Bufcnt(true,1000))
+            //         {
+            //             testmode = 3;
+            //         }
+            //         Car.Speed_X = 0;
+            //         Car.Speed_Y = 5;
+            //         Car.Speed_Z = Angle_Control(0);                   
+            //     break;
+            //     case 3:
+            //         if(Bufcnt(true,1000))
+            //         {
+            //             testmode = 0;
+            //         }
+            //         Car.Speed_X = 0;
+            //         Car.Speed_Y = -5;
+            //         Car.Speed_Z = Angle_Control(0);                    
+            //     break;
+            // }
             FSM_main();
             // if(Servo_Flag.Put_Out == false)
             // {
