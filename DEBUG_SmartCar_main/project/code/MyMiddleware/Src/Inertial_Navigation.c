@@ -256,25 +256,45 @@ void Navigation_Process_Y_Image(float x,float y)
             }
         break;
         case Move_State_Y:
-            UART_SendByte(&_UART_FINE_TUNING, UART_MOVEVOLUMEUP_FLAG);
-            Navigation.Cur_Position_Y = Get_Y_Distance();
-            // printf("y:%f\r\n",Navigation.Cur_Position_Y);
-            if(fabs(y - Navigation.Cur_Position_Y) <= 1.0f || fabs(-20 - (VOLUMEUP_DATA.HeightErr)) <= 1)
+            // UART_SendByte(&_UART_FINE_TUNING, UART_MOVEVOLUMEUP_FLAG);
+            // Navigation.Cur_Position_Y = Get_Y_Distance();
+            // printf("h:%f\r\n",VOLUMEUP_DATA.HeightErr);
+            // if(fabs(y - Navigation.Cur_Position_Y) <= 1.0f)
+            // {
+            //     Navigation_State = Move_State;
+            //     Navigation.End_Angle = Gyro_YawAngle_Get();
+            //     Distance_PID.I_Out = 0;
+            // }
+            // else if(fabs(y - Navigation.Cur_Position_Y) <= 10.0f && fabs(-20 - (VOLUMEUP_DATA.HeightErr)) <= 5)
+            // {
+            //     Navigation_State = Move_State;
+            //     Navigation.End_Angle = Gyro_YawAngle_Get();
+            //     Distance_PID.I_Out = 0;
+            // }
+            // else
+            // {
+            //     if(y - Navigation.Cur_Position_Y >= 0)
+            //     {
+            //         Car.Speed_Y = Large_Speed + GetPIDValue(&Distance_PID,(y - Navigation.Cur_Position_Y));
+            //     }
+            //     else
+            //     {
+            //         Car.Speed_Y = -Large_Speed + GetPIDValue(&Distance_PID,(y - Navigation.Cur_Position_Y));
+            //     }
+            // }
+            if(Bufcnt(true,700))
             {
                 Navigation_State = Move_State;
                 Navigation.End_Angle = Gyro_YawAngle_Get();
-                Distance_PID.I_Out = 0;
+                Car.Speed_Y = 0;
+            }
+            if(y<0)
+            {
+                Car.Speed_Y = -3;
             }
             else
             {
-                if(y - Navigation.Cur_Position_Y >= 0)
-                {
-                    Car.Speed_Y = Large_Speed + GetPIDValue(&Distance_PID,(y - Navigation.Cur_Position_Y));
-                }
-                else
-                {
-                    Car.Speed_Y = -Large_Speed + GetPIDValue(&Distance_PID,(y - Navigation.Cur_Position_Y));
-                }
+                Car.Speed_Y = 3;
             }
             Car.Speed_X = 0;
             Car.Speed_Z = Angle_Control(Navigation.Start_Angle);
@@ -350,10 +370,28 @@ void Navigation_Process_Image(float Target_Pos_X,float Target_Pos_Y)
             {
                 Navigation.Cur_Position_Y = (FINETUNING_DATA.dy/10.0f)*0.3f+(Target_Pos_Y - Get_Y_Distance())*0.7f;//»¥²¹ÂË²¨
             }
-            
+            if(fabs(Navigation.Cur_Position_X) <= 3)
+            {
+                DistanceX_PID.Ki = 0.001f;
+            }
+            else
+            {
+                DistanceX_PID.Ki = 0;
+                DistanceX_PID.I_Out = 0;
+            }
+
+            if(fabs(Navigation.Cur_Position_Y)<=2.5f)
+            {
+                DistanceY_PID.Ki = 0.001f;
+            }
+            else
+            {
+                DistanceY_PID.Ki = 0;
+                DistanceY_PID.I_Out = 0;
+            }
             // printf("%f,%f,%d\r\n",Navigation.Cur_Position_X,Navigation.Cur_Position_Y,0);
             // Navigation.Cur_Position_Y = FINETUNING_DATA.dy/10.f;
-            if((fabs(Navigation.Cur_Position_X) <= 1.0f) && (fabs(Navigation.Cur_Position_Y) <= 1.0f) &&(fabs(Get_X_Speed()) <= 0.1) && (fabs(Get_Y_Speed()) <= 0.1))
+            if((fabs(Navigation.Cur_Position_X) <= 2.0f) && (fabs(Navigation.Cur_Position_Y) <= 2.0f) &&(fabs(Get_X_Speed()) <= 0.1) && (fabs(Get_Y_Speed()) <= 0.1))
             {
                 Wait_Time += 1;
                 if(Wait_Time>=18)
@@ -361,6 +399,8 @@ void Navigation_Process_Image(float Target_Pos_X,float Target_Pos_Y)
                     Wait_Time = 0;
                     Navigation_State = Move_Finish;
                     Navigation.End_Angle = Gyro_YawAngle_Get();
+                    DistanceX_PID.I_Out = 0;
+                    DistanceY_PID.I_Out = 0;
                 }
             }
 

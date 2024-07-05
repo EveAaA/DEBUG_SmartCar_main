@@ -15,7 +15,7 @@
 #include "Menu.h"
 
 /* Define\Declare ------------------------------------------------------------*/
-Menu_Handle Menu_Mode = Page9;
+uint8 Menu_Mode = Page_Select;
 Menu_ Menu = {0,0,0};
 int Show_Mode;
 #define Exit_Dis tft180_show_string(Row_1,Line_9,"Exit")
@@ -101,6 +101,7 @@ static void Page_Select_Mode()
         Rotary.Press = 0;
         Menu_Mode = Menu.Set_Line;
         Menu.Set_Line = 0;
+        flash_read_page_to_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
         if(Menu_Mode==9)
         {
             Menu.Set_Line = 9;
@@ -155,7 +156,7 @@ static void Page0_Mode()
 **/
 static void Page1_Mode()
 {
-    flash_read_page_to_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
+    // flash_read_page_to_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
     tft180_show_string(Row_1,Line_0,"XKP:");
     tft180_show_float(Row_5,Line_0,flash_union_buffer[0].float_type,2,2);
     tft180_show_string(Row_1,Line_1,"YKP:");
@@ -171,14 +172,14 @@ static void Page1_Mode()
     Exit_Dis;
     if(Menu.Set_Mode == Normal_Mode)
     {
-        if((Menu.Set_Line == 7) && (Rotary.Press))//退出
+        if((Menu.Set_Line == 9) && (Rotary.Press))//退出
         {
             Rotary.Press = 0;
             Menu_Mode = Page_Select;//退出到第一页
             Menu.Set_Line = 0;
             tft180_clear();
         }
-        else if((Menu.Set_Line != 7) && (Rotary.Press))
+        else if((Menu.Set_Line != 9) && (Rotary.Press))
         {
             Rotary.Press = 0;
             Menu.Set_Mode = Flash_Mode;
@@ -357,15 +358,15 @@ void Menu_Display()
 {
     switch(Menu_Mode)
     {
-        // case Page_Select:
-        //     Page_Select_Mode();
-        // break;
-        // case Page0:
-        //     Page0_Mode();
-        // break;
-        // case Page1:
-        //     Page1_Mode();
-        // break;
+        case Page_Select:
+            Page_Select_Mode();
+        break;
+        case Page0:
+            Page0_Mode();
+        break;
+        case Page1:
+            Page1_Mode();
+        break;
         case Page9:
             Image_Page();
         break;

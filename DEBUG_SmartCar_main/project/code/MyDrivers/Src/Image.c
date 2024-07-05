@@ -18,7 +18,7 @@
 #include "UserMain.h"
 #include "My_FSM.h"
 /* Define\Declare ------------------------------------------------------------*/
-// #define Left_Ring_debug //是否开启左圆环调试
+#define Left_Ring_debug //是否开启左圆环调试
 // #define Right_Ring_debug //是否开启右圆环调试
 
 Ring_Handle LeftRing = { false, false, 0 };
@@ -31,8 +31,6 @@ uint8 Image_Thereshold;//图像分割阈值
 uint8 Bin_Image[Image_H][Image_W];//二值化图像数组
 uint8 Start_Point_L[2] = { 0 };//左边起点的x，y值
 uint8 Start_Point_R[2] = { 0 };//右边起点的x，y值
-
-#define USE_num Image_H*3   //定义找点的数组成员个数按理说300个点能放下，但是有些特殊情况确实难顶，多定义了一点
 //存放点的x，y坐标
 uint16 Points_L[(uint16)USE_num][2] = { {  0 } };//左线
 uint16 Points_R[(uint16)USE_num][2] = { {  0 } };//右线
@@ -1036,14 +1034,6 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W],  uint8* L_Border, uint8* R_Border, u
     }
     else if ((Break_Num_L_UP) && (Break_Num_R_UP) && (!Break_Num_L_DOWN) && (!Break_Num_R_DOWN) && (Bin_Image[10][Image_H - 10]) && (Bin_Image[130][Image_H - 10]))//只有上面两个点 0101
     {
-        if (Points_R[Total_Num_R][0] >= Image_W / 2)
-        {
-            Image_Flag.Cross_Type = RIGHT;
-        }
-        else
-        {
-            Image_Flag.Cross_Type = LEFT;
-        }
         Image_Flag.Cross_Fill = 2;
         //计算斜率
         start = Break_Num_L_UP - 15;
@@ -1281,6 +1271,7 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                     L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
                 }
                 LeftRing.Ring_Front_Flag = 1;
+                Image_Flag.Left_Ring = true;
                 // Set_Beeptime(200);
             }
             else if ((Break_Num_L_DOWN) && (LeftRing.Stright_Line))// 没有圆环突出点, 右直线， 有左下角点
@@ -1291,6 +1282,7 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                     L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
                 }
                 LeftRing.Ring_Front_Flag = 2;
+                Image_Flag.Left_Ring = true;
             }
 
             if((LeftRing.Ring_Front_Flag == 2) && (Salient_Point))
@@ -1315,8 +1307,8 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                 (Salient_Point) && 
                 (LeftRing.Stright_Line))// (Bin_Image[Image_H - 5][4]) && (Bin_Image[Image_H - 10][8]) &&
             {
-                LeftRing.Ring_Front_Flag = false;
                 Image_Flag.Left_Ring = true;
+                LeftRing.Ring_Front_Flag = false;
                 LeftRing.Ring_State = Enter_Ring_First;//入环中 Enter_Ring_First
                 LeftRing.Clear_Time = 0;
             }
@@ -1390,7 +1382,15 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                     break;
                 }
             }
-
+            if (Break_Num_L_UP)
+            {
+                Get_K_b(Points_L[Break_Num_L_UP][1], Points_L[Break_Num_L_UP][0], Image_H - 2, 2, &slope_l_rate, &intercept_l);
+                for (i = Points_L[Break_Num_L_UP][1]; i <= Image_H - 2; ++i)
+                {
+                    L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
+                    L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
+                }
+            }
             // if (Break_Num_L_UP) // && (Bin_Image[50][4]) && (Bin_Image[50][8])
             // {
             //     Get_K_b(R_Border[Image_H - 5], Image_H - 5, Points_L[Break_Num_L_UP][0], Points_L[Break_Num_L_UP][1], &slope_l_rate, &intercept_l);
