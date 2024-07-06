@@ -1850,7 +1850,7 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
                 {
                     R_Border[i] = Border_Max;
                     L_Border[i] = ((i)-intercept_l) / slope_l_rate;//y = kx+b
-                    L_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
+                    L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
                 }
                 Lastanglg = Curanglg;
                 // 右侧生长线长于左侧生长线则差不多直线, 准备出环
