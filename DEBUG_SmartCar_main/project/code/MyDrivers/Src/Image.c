@@ -18,7 +18,7 @@
 #include "UserMain.h"
 #include "My_FSM.h"
 /* Define\Declare ------------------------------------------------------------*/
-#define Left_Ring_debug //是否开启左圆环调试
+// #define Left_Ring_debug //是否开启左圆环调试
 // #define Right_Ring_debug //是否开启右圆环调试
 
 Ring_Handle LeftRing = { false, false, 0 };
@@ -1271,7 +1271,6 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                     L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
                 }
                 LeftRing.Ring_Front_Flag = 1;
-                Image_Flag.Left_Ring = true;
                 // Set_Beeptime(200);
             }
             else if ((Break_Num_L_DOWN) && (LeftRing.Stright_Line))// 没有圆环突出点, 右直线， 有左下角点
@@ -1282,7 +1281,6 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                     L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
                 }
                 LeftRing.Ring_Front_Flag = 2;
-                Image_Flag.Left_Ring = true;
             }
 
             if((LeftRing.Ring_Front_Flag == 2) && (Salient_Point))
@@ -1351,7 +1349,7 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
             if ((LeftRing.Enter_Ring_First_Flag) && (Salient_Point == NULL) && (Break_Num_L_UP))    //&& (Bin_Image[20][4]) && (Bin_Image[20][8]) && (Bin_Image[Image_H - 2][4]) && (Bin_Image[Image_H - 2][8])
             {
                 LeftRing.Enter_Ring_First_Flag = false;
-                LeftRing.Ring_State = Leave_Ring_First;//第一次离开环
+                LeftRing.Ring_State = Leave_Ring;//离开环
                 Lastanglg = 0;
                 Angle_Offest = 0;
             }
@@ -1403,7 +1401,7 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
             // }
             Lastanglg = Curanglg;
             // 左下一片空白, 找不到左上角点
-            if (Bin_Image[Image_H - 10][20] && Bin_Image[Image_H - 10][25] && !Break_Num_L_UP && fabs(Angle_Offest) >= 50)
+            if (Bin_Image[Image_H - 10][20] && Bin_Image[Image_H - 10][25] && !Break_Num_L_UP)
             {
                 LeftRing.Leave_Ring_First_Flag = true;
                 LeftRing.Ring_State = In_Ring;
@@ -1512,8 +1510,8 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                 {
                     break;
                 }
-                if (Points_L[i][1] > Points_L[before][1] && Points_L[i][1] > Points_L[next][1]
-                    && Points_L[i][0] > Points_L[before][0] && Points_L[i][0] < Points_L[next][0] && Points_L[i][0] > Border_Min + 5)
+                if ((Points_L[i][1] > Points_L[before][1]) && (Points_L[i][1] > Points_L[next][1])
+                    && (Points_L[i][0] > Points_L[before][0]) && (Points_L[i][0] < Points_L[next][0]) && (Points_L[i][0] > Border_Min + 5))
                 {
                     Break_Num_L_UP = i;//传递y坐标
                     break;
@@ -1529,8 +1527,8 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                 }
             }
             // 检测到已经看见过环的标志位, 右下角为黑色, 并且看不到上角点, 代表已经出环
-            else if (Bin_Image[Image_H - 4][4] == Black_Pixel && Bin_Image[Image_H - 2][Image_W - 4] == Black_Pixel 
-                    && !Break_Num_L_UP)
+            else if ((Bin_Image[Image_H - 4][4] == Black_Pixel) && (Bin_Image[Image_H - 2][Image_W - 4] == Black_Pixel )
+                    && (!Break_Num_L_UP))
             {
                 LeftRing.Ring_Front_Flag = false; // 出环
                 LeftRing.Enter_Ring_First_Flag = false;
@@ -1731,7 +1729,7 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
             if (RightRing.Enter_Ring_First_Flag && Salient_Point == NULL && Break_Num_R_UP)
             {
                 RightRing.Enter_Ring_First_Flag = false;
-                RightRing.Ring_State = Leave_Ring_First;
+                RightRing.Ring_State = Leave_Ring;
                 Lastanglg = 0;
                 Angle_Offest = 0;
             }
@@ -1873,12 +1871,12 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
                 {
                     uint16 before = Limit_a_b(i - 7, 0, Total_Num_R);
                     uint16 next = Limit_a_b(i + 7, 0, Total_Num_R);
-                    if (before == 1 || next == 1)
+                    if ((before == 1) || (next == 1))
                     {
                         break;
                     }
-                    if (Points_R[i][1] > Points_R[before][1] && Points_R[i][1] > Points_R[next][1]
-                        && Points_R[i][0] < Points_R[before][0] && Points_R[i][0] > Points_R[next][0] && Points_R[i][0] < Border_Max - 5)
+                    if ((Points_R[i][1] > Points_R[before][1]) && (Points_R[i][1] > Points_R[next][1])
+                        && (Points_R[i][0] < Points_R[before][0]) && (Points_R[i][0] > Points_R[next][0]) && (Points_R[i][0] < Border_Max - 5))
                     {
                         Break_Num_R_UP = i;//传递y坐标
                         break;
@@ -1895,8 +1893,8 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
                     }
                 }
                 // 检测到已经看见过环的标志位, 右下角为黑色, 并且看不到上角点, 代表已经出环
-                else if (Bin_Image[Image_H - 4][4] == Black_Pixel && Bin_Image[Image_H - 2][Image_W - 4] == Black_Pixel
-                    && !Break_Num_R_UP)
+                else if ((Bin_Image[Image_H - 4][4] == Black_Pixel) && (Bin_Image[Image_H - 2][Image_W - 4] == Black_Pixel)
+                    && (!Break_Num_R_UP))
                 {
                     RightRing.Ring_Front_Flag = false; // 出环
                     RightRing.Enter_Ring_First_Flag = false;
