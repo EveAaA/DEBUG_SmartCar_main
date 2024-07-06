@@ -430,6 +430,7 @@ static void Cross_BoardFsm()
                 MyFSM.Cross_Dir = RIGHT;
                 Car.Image_Flag = false;
 <<<<<<< HEAD
+<<<<<<< HEAD
                 MyFSM.Cross_Board_State = Find;
             }
             else if(FINDBORDER_DATA.dir == LEFT)
@@ -442,6 +443,8 @@ static void Cross_BoardFsm()
             if(Bufcnt(true,4000))//超过四秒还是在这个状态说明没有卡片
             {
                 MyFSM.Cross_Board_State = No_Board_Return;
+=======
+>>>>>>> parent of 0135691 (璋冭瘯鍚庝笂浼狅紝鏈塨ug)
 =======
 >>>>>>> parent of 0135691 (璋冭瘯鍚庝笂浼狅紝鏈塨ug)
             }
@@ -486,10 +489,14 @@ static void Cross_BoardFsm()
                 else
                 {
 <<<<<<< HEAD
+<<<<<<< HEAD
                     if(MyFSM.Pick_Count > 6)
                     {
                         MyFSM.Cross_Board_State = Ready_Find_Place; 
                     }               
+=======
+                    MyFSM.Cross_Board_State = No_Board_Return;
+>>>>>>> parent of 0135691 (璋冭瘯鍚庝笂浼狅紝鏈塨ug)
 =======
                     MyFSM.Cross_Board_State = No_Board_Return;
 >>>>>>> parent of 0135691 (璋冭瘯鍚庝笂浼狅紝鏈塨ug)
@@ -871,6 +878,9 @@ static void Ring_BoardFsm()
             if(Bufcnt(true,300))
             {
                 MyFSM.Ring_Board_State = Find;
+<<<<<<< HEAD
+>>>>>>> parent of 0135691 (璋冭瘯鍚庝笂浼狅紝鏈塨ug)
+=======
 >>>>>>> parent of 0135691 (璋冭瘯鍚庝笂浼狅紝鏈塨ug)
             }
         break;
@@ -920,10 +930,14 @@ static void Ring_BoardFsm()
                 else
                 {
 <<<<<<< HEAD
+<<<<<<< HEAD
                     if(MyFSM.Pick_Count > 6)
                     {
                         MyFSM.Ring_Board_State = Ready_Find_Place; 
                     }
+=======
+                    MyFSM.Ring_Board_State = No_Board_Return; 
+>>>>>>> parent of 0135691 (璋冭瘯鍚庝笂浼狅紝鏈塨ug)
 =======
                     MyFSM.Ring_Board_State = No_Board_Return; 
 >>>>>>> parent of 0135691 (璋冭瘯鍚庝笂浼狅紝鏈塨ug)
