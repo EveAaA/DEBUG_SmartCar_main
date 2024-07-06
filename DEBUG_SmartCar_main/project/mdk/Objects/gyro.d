@@ -1,29 +1,29 @@
 ./objects/gyro.o: ..\code\MyDrivers\Src\Gyro.c \
   ..\code\MyDrivers\Inc\Gyro.h \
   ..\..\libraries\zf_common\zf_common_headfile.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdio.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdint.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\string.h \
+  D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdio.h \
+  D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdint.h \
+  D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\string.h \
   ..\..\libraries\sdk\drives\fsl_common.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\assert.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdbool.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stddef.h \
+  D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\assert.h \
+  D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdbool.h \
+  D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h \
+  D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stddef.h \
   ..\..\libraries\sdk\deceive\fsl_device_registers.h \
   ..\..\libraries\sdk\deceive\MIMXRT1064.h \
   ..\..\libraries\sdk\CMSIS\Include\core_cm7.h \
   ..\..\libraries\sdk\CMSIS\Include\cmsis_version.h \
   ..\..\libraries\sdk\CMSIS\Include\cmsis_compiler.h \
   ..\..\libraries\sdk\CMSIS\Include\cmsis_armclang.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\arm_compat.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\arm_acle.h \
+  D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\arm_compat.h \
+  D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\arm_acle.h \
   ..\..\libraries\sdk\CMSIS\Include\mpu_armv7.h \
   ..\..\libraries\sdk\deceive\system_MIMXRT1064.h \
   ..\..\libraries\sdk\deceive\MIMXRT1064_features.h \
   ..\..\libraries\sdk\drives\fsl_common_arm.h \
   ..\..\libraries\sdk\drives\fsl_clock.h \
   ..\..\libraries\sdk\utilities\debug_console\fsl_debug_console.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdarg.h \
+  D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdarg.h \
   ..\..\libraries\sdk\drives\fsl_iomuxc.h \
   ..\..\libraries\sdk\drives\fsl_cache.h \
   ..\..\libraries\sdk\drives\fsl_csi.h \
@@ -87,7 +87,8 @@
   ..\..\libraries\zf_device\zf_device_dl1a.h \
   ..\..\libraries\zf_device\zf_device_dl1b.h \
   ..\..\libraries\zf_device\zf_device_wifi_spi.h \
-  ..\..\libraries\zf_device\zf_device_detector.h \
+  ..\..\libraries\zf_device\seekfree_assistant.h \
+  ..\..\libraries\zf_device\seekfree_assistant_interface.h \
   ..\..\libraries\components\fatfs\source\ff.h \
   ..\..\libraries\components\fatfs\source\ffconf.h \
   ..\..\libraries\components\fatfs\source\diskio.h \
@@ -104,4 +105,4 @@
   ..\..\libraries\components\sdmmc\common\fsl_sdmmc_spec.h \
   ..\..\libraries\components\sdmmc\sdmmc_config.h \
   ..\..\libraries\sdk\board\clock_config.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\math.h
+  D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\math.h

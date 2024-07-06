@@ -10,13 +10,14 @@
       <TargetName>DEBUG_SmartCar_main</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pArmCC>6180000::V6.18::ARMCLANG</pArmCC>
       <pCCUsed>6180000::V6.18::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>MIMXRT1064DVL6A</Device>
           <Vendor>NXP</Vendor>
-          <PackID>NXP.MIMXRT1064_DFP.15.0.0</PackID>
+          <PackID>NXP.MIMXRT1064_DFP.18.0.0</PackID>
           <PackURL>https://mcuxpresso.nxp.com/cmsis_pack/repo/</PackURL>
           <Cpu>IRAM(0x20000000,0x020000) IRAM2(0x00000000,0x020000) IROM(0x70000000,0x400000) XRAM(0x20200000,0x0c0000) CPUTYPE("Cortex-M7") FPU3(DFPU) CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -2069,6 +2070,11 @@
               <FileType>1</FileType>
               <FilePath>..\code\MyDrivers\Src\Rotary.c</FilePath>
             </File>
+            <File>
+              <FileName>FSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\MyDrivers\Src\FSM.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2103,6 +2109,16 @@
               <FileName>Call_Back_Action.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\code\MyFiles\Src\Call_Back_Action.c</FilePath>
+            </File>
+            <File>
+              <FileName>My_FSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\MyFiles\Src\My_FSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>User_FSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\MyFiles\Src\User_FSM.c</FilePath>
             </File>
           </Files>
         </Group>

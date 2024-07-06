@@ -120,12 +120,12 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>CMSIS_AGDI</Key>
-          <Name>-X"SEEKFREE CMSIS-DAP V2" -USF-3182740813204 -O2766 -S8 -C0 -P00000000 -N00("") -D00(00000000) -L00(0) -TO65554 -TC10000000 -TT10000000 -TP20 -TDS8009 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO15 -FD20000000 -FC8000 -FN1 -FF0MIMXRT1064_QSPI_4KB_SEC.FLM -FS070000000 -FL0400000 -FP0($$Device:MIMXRT1064DVL6A$arm\MIMXRT1064_QSPI_4KB_SEC.FLM)</Name>
+          <Name>-X"SEEKFREE CMSIS-DAP V2" -USF-3182740813204 -O718 -S8 -C0 -P00000000 -N00("ARM CoreSight SW-DP") -D00(0BD11477) -L00(0) -TO65554 -TC10000000 -TT10000000 -TP20 -TDS8009 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO15 -FD20000000 -FC8000 -FN1 -FF0MIMXRT1064_QSPI_4KB_SEC.FLM -FS070000000 -FL0400000 -FP0($$Device:MIMXRT1064DVL6A$devices\MIMXRT1064\arm\MIMXRT1064_QSPI_4KB_SEC.FLM)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
           <Key>UL2CM3</Key>
-          <Name>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC8000 -FN1 -FF0MIMXRT1064_QSPI_4KB_SEC -FS070000000 -FL0400000 -FP0($$Device:MIMXRT1064DVL6A$arm\MIMXRT1064_QSPI_4KB_SEC.FLM))</Name>
+          <Name>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC8000 -FN1 -FF0MIMXRT1064_QSPI_4KB_SEC -FS070000000 -FL0400000 -FP0($$Device:MIMXRT1064DVL6A$devices\MIMXRT1064\arm\MIMXRT1064_QSPI_4KB_SEC.FLM))</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
       <Breakpoint/>
@@ -4187,6 +4187,18 @@
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
+    <File>
+      <GroupNumber>12</GroupNumber>
+      <FileNumber>327</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\code\MyDrivers\Src\FSM.c</PathWithFileName>
+      <FilenameWithoutPath>FSM.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
   </Group>
 
   <Group>
@@ -4197,7 +4209,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>13</GroupNumber>
-      <FileNumber>327</FileNumber>
+      <FileNumber>328</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -4209,7 +4221,7 @@
     </File>
     <File>
       <GroupNumber>13</GroupNumber>
-      <FileNumber>328</FileNumber>
+      <FileNumber>329</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -4221,7 +4233,7 @@
     </File>
     <File>
       <GroupNumber>13</GroupNumber>
-      <FileNumber>329</FileNumber>
+      <FileNumber>330</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -4241,7 +4253,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>14</GroupNumber>
-      <FileNumber>330</FileNumber>
+      <FileNumber>331</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -4253,13 +4265,37 @@
     </File>
     <File>
       <GroupNumber>14</GroupNumber>
-      <FileNumber>331</FileNumber>
+      <FileNumber>332</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\code\MyFiles\Src\Call_Back_Action.c</PathWithFileName>
       <FilenameWithoutPath>Call_Back_Action.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>14</GroupNumber>
+      <FileNumber>333</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\code\MyFiles\Src\My_FSM.c</PathWithFileName>
+      <FilenameWithoutPath>My_FSM.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>14</GroupNumber>
+      <FileNumber>334</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\code\MyFiles\Src\User_FSM.c</PathWithFileName>
+      <FilenameWithoutPath>User_FSM.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

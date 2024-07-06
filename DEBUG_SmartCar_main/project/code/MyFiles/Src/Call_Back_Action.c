@@ -174,7 +174,7 @@ void Uart_Fine_Tuning_Receive(void)
       FINETUNING_DATA.dy = (float)((_UART_FINE_TUNING.fifo_get_data[3] >> 7) == 0) ? ((_UART_FINE_TUNING.fifo_get_data[2] + (_UART_FINE_TUNING.fifo_get_data[3] << 8))) : (-(65536 - (_UART_FINE_TUNING.fifo_get_data[2] + (_UART_FINE_TUNING.fifo_get_data[3] << 8))));
       FINETUNING_DATA.FINETUNING_FINISH_FLAG = _UART_FINE_TUNING.fifo_get_data[4];
       //printf("dx: %f dy: %f \r\n", FINETUNING_DATA.dx, FINETUNING_DATA.dy);
-      if (FINETUNING_DATA.dx != -999 || FINETUNING_DATA.dy != -999)
+      if (FINETUNING_DATA.dx != -999 && FINETUNING_DATA.dy != -999)
       {
         FINETUNING_DATA.IS_BORDER_ALIVE = true;
       }

@@ -50,7 +50,7 @@ WareState_t smallPlaceWare =
 
 uint16 wait_time = 0;
 #define Static_Time 100 //等待静止的时间，大约0.5秒
-#define debug_switch  //是否调试
+// #define debug_switch  //是否调试
 
 /**
  ******************************************************************************
@@ -205,8 +205,13 @@ static void Line_PatrolFsm()
     Car_run(Forward_Speed);
     Dodge_Carmar();
 
-
-    if(Image_Flag.Cross_Fill == 2)//十字回环
+    if((FINDBORDER_DATA.dir == LEFT) || (FINDBORDER_DATA.dir == RIGHT))//散落卡片
+    {
+        MyFSM.Board_Dir = FINDBORDER_DATA.dir;
+        Car.Image_Flag = false;
+        MyFSM.CurState = Line_Board;//散落卡片
+    }
+    else if(Image_Flag.Cross_Fill == 2)//十字回环
     {
         Image_Flag.Cross_Fill = 0;
         MyFSM.CurState = Cross_Board;//十字回环状态机
@@ -222,12 +227,6 @@ static void Line_PatrolFsm()
         Car.Image_Flag = false;
         Image_Flag.Zerba = false;
         MyFSM.CurState = Unload;//卸货
-    }
-    else if((FINDBORDER_DATA.dir == LEFT) || (FINDBORDER_DATA.dir == RIGHT))//散落卡片
-    {
-        MyFSM.Board_Dir = FINDBORDER_DATA.dir;
-        Car.Image_Flag = false;
-        MyFSM.CurState = Line_Board;//散落卡片
     }
 }
 
@@ -339,7 +338,6 @@ static void Line_BoardFsm()
                 // Dodge_Board();
                 MyFSM.Line_Board_State = Pick;//捡起卡片
                 MyFSM.Pick_Count = 9;
-                Servo_Flag.Depot_End =true;
                 MyFSM.Big_Board = CLASSIFY_DATA.type;//记录分类
                 MyFSM.Big_Count[MyFSM.Big_Board]+=1;
                 CLASSIFY_DATA.type = None;
@@ -431,6 +429,7 @@ static void Cross_BoardFsm()
             {
                 MyFSM.Cross_Dir = RIGHT;
                 Car.Image_Flag = false;
+<<<<<<< HEAD
                 MyFSM.Cross_Board_State = Find;
             }
             else if(FINDBORDER_DATA.dir == LEFT)
@@ -443,6 +442,8 @@ static void Cross_BoardFsm()
             if(Bufcnt(true,4000))//超过四秒还是在这个状态说明没有卡片
             {
                 MyFSM.Cross_Board_State = No_Board_Return;
+=======
+>>>>>>> parent of 0135691 (璋冭瘯鍚庝笂浼狅紝鏈塨ug)
             }
         break;
         case Find://找到十字后准备转向
@@ -467,7 +468,7 @@ static void Cross_BoardFsm()
         break;
         case Wait_Data://等待串口数据回传
             #ifdef debug_switch
-                printf("cross1:%d,%d\r\n",UnpackFlag.FINETUNING_DATA_FLAG,FINETUNING_DATA.IS_BORDER_ALIVE);            
+                printf("cross\r\n");            
             #endif 
             UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING);//发送数据
             if(UnpackFlag.FINETUNING_DATA_FLAG)
@@ -484,10 +485,14 @@ static void Cross_BoardFsm()
                 }
                 else
                 {
+<<<<<<< HEAD
                     if(MyFSM.Pick_Count > 6)
                     {
                         MyFSM.Cross_Board_State = Ready_Find_Place; 
                     }               
+=======
+                    MyFSM.Cross_Board_State = No_Board_Return;
+>>>>>>> parent of 0135691 (璋冭瘯鍚庝笂浼狅紝鏈塨ug)
                 }
             }
             Car.Speed_X = 0;
@@ -532,7 +537,6 @@ static void Cross_BoardFsm()
                     printf("now=%s\r\n",PLACE_TABLE_STR[CLASSIFY_DATA.place]);
                     CLASSIFY_DATA.place = nil;
                     CLASSIFY_DATA.type = None;
-                    Servo_Flag.Depot_End = true;
                     Set_Beepfreq(1);                  
                     Car.Speed_X = 0;
                     Car.Speed_Y = 0;
@@ -587,7 +591,7 @@ static void Cross_BoardFsm()
         case Ready_Find_Place://准备找第一个放卡片的位置
             if(Turn.Finish==false)
             {
-                Turn_Angle(180);
+                Turn_Angle(160);
             }
             else
             {
@@ -595,37 +599,10 @@ static void Cross_BoardFsm()
                 Servo_Flag.Put_Up = false;
                 Servo_Flag.Put_Down = false;
                 Servo_Flag.Pick_End = false;
-                MyFSM.Cross_Board_State = Ring_First_Place;//寻找放置位置
-                MyFSM.Static_Angle = Gyro_YawAngle_Get();
+                MyFSM.Cross_Board_State = Find_Place;//寻找放置位置
                 Car.Speed_X = 0;
                 Car.Speed_Y = 0;
                 Car.Speed_Z = 0;
-            }
-        break;
-        case Ring_First_Place://直接往前走
-            #ifdef debug_switch
-                printf("Ring_First_Place\r\n");    
-            #endif 
-            Dodge_Carmar();
-            UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE);//发送获取放置区域信息
-            if(UnpackFlag.FINETUNING_DATA_FLAG)
-            {
-                UnpackFlag.FINETUNING_DATA_FLAG = false;
-                if(Bufcnt(true,500))
-                {
-                    MyFSM.Cross_Board_State = Move_Place;//开始移动到放置区域前面
-                    MyFSM.Target_Pos_X = FINETUNING_DATA.dx/10.0f;
-                    MyFSM.Target_Pos_Y = FINETUNING_DATA.dy/10.0f;                
-                }
-                Car.Speed_X = 0;
-                Car.Speed_Y = 0;
-                Car.Speed_Z = 0;
-            }
-            else
-            {
-                Car.Speed_X = 0;
-                Car.Speed_Y = 3;
-                Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
             }
         break;
         case Find_Place://寻找放置位置
@@ -679,23 +656,17 @@ static void Cross_BoardFsm()
             UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE);//发送获取放置区域信息
             if(UnpackFlag.FINETUNING_DATA_FLAG)
             {
-                if(Bufcnt(true,500))
+                if(Bufcnt(true,800))
                 {
                     MyFSM.Cross_Board_State = Move_Place;//开始移动到放置区域前面
                     UnpackFlag.FINETUNING_DATA_FLAG = false;
                     MyFSM.Target_Pos_X = FINETUNING_DATA.dx/10.0f;
                     MyFSM.Target_Pos_Y = FINETUNING_DATA.dy/10.0f;                
                 }
-                Car.Speed_X = 0;
-                Car.Speed_Y = 0;
-                Car.Speed_Z = 0;
             }
-            else
-            {
-                Car.Speed_X = 0;
-                Car.Speed_Y = 3;
-                Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
-            }
+            Car.Speed_X = 0;
+            Car.Speed_Y = 3;
+            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
         break;
         case Move_Place://移动到卡片前面
             #ifdef debug_switch
@@ -870,6 +841,7 @@ static void Ring_BoardFsm()
             Car_run(4);
             if(FINDBORDER_DATA.dir == RIGHT)//散落卡片
             {
+<<<<<<< HEAD
                 MyFSM.Ring_Dir = RIGHT;
                 Car.Image_Flag = false;
                 MyFSM.Ring_Board_State = Find;            
@@ -884,6 +856,22 @@ static void Ring_BoardFsm()
             if(Bufcnt(true,2000))
             {
                 MyFSM.Ring_Board_State = No_Board_Return; 
+=======
+                MyFSM.Ring_Board_State = Ready_Ring;
+                Car.Image_Flag = false;
+            }
+            else if(LeftRing.Ring_State==Leave_Ring_First)
+            {
+                MyFSM.Ring_Board_State = Ready_Ring;
+                Car.Image_Flag = false;
+            } 
+        break;
+        case Ready_Ring:
+            Car_run(4);
+            if(Bufcnt(true,300))
+            {
+                MyFSM.Ring_Board_State = Find;
+>>>>>>> parent of 0135691 (璋冭瘯鍚庝笂浼狅紝鏈塨ug)
             }
         break;
         case Find://找卡片
@@ -931,10 +919,14 @@ static void Ring_BoardFsm()
                 }
                 else
                 {
+<<<<<<< HEAD
                     if(MyFSM.Pick_Count > 6)
                     {
                         MyFSM.Ring_Board_State = Ready_Find_Place; 
                     }
+=======
+                    MyFSM.Ring_Board_State = No_Board_Return; 
+>>>>>>> parent of 0135691 (璋冭瘯鍚庝笂浼狅紝鏈塨ug)
                 }
             }
         break;
@@ -973,7 +965,6 @@ static void Ring_BoardFsm()
                     MyFSM.Ring_Board_State = Pick;//捡起卡片
                     putCardIntoWare(&smallPlaceWare, CLASSIFY_DATA.place, &MyFSM.Depot_Pos); // 将卡片放入对应仓库
                     printf("now=%s\r\n",PLACE_TABLE_STR[CLASSIFY_DATA.place]);
-                    Servo_Flag.Depot_End = true;
                     CLASSIFY_DATA.place = nil;
                     CLASSIFY_DATA.type = None;
                     Set_Beepfreq(1);                  
@@ -1007,7 +998,6 @@ static void Ring_BoardFsm()
             }
             else
             {
-                MyFSM.Pick_Count+=1;
                 if(MyFSM.Pick_Count > 6)//出现大于6次捡起卡片说明卡片飞了或者是见不到，回去重新调整一下
                 {
                     MyFSM.Ring_Board_State = Wait_Data;
@@ -1061,16 +1051,10 @@ static void Ring_BoardFsm()
                     MyFSM.Target_Pos_X = FINETUNING_DATA.dx/10.0f;
                     MyFSM.Target_Pos_Y = FINETUNING_DATA.dy/10.0f;                
                 }
-                Car.Speed_X = 0;
-                Car.Speed_Y = 0;
-                Car.Speed_Z = 0;
             }
-            else
-            {
-                Car.Speed_X = 0;
-                Car.Speed_Y = 3;
-                Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
-            }
+            Car.Speed_X = 0;
+            Car.Speed_Y = 3;
+            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
         break;
         case Find_Place://寻找放置位置
             #ifdef debug_switch
@@ -1130,16 +1114,10 @@ static void Ring_BoardFsm()
                     MyFSM.Target_Pos_X = FINETUNING_DATA.dx/10.0f;
                     MyFSM.Target_Pos_Y = FINETUNING_DATA.dy/10.0f;                
                 }
-                Car.Speed_X = 0;
-                Car.Speed_Y = 0;
-                Car.Speed_Z = 0;
             }
-            else
-            {
-                Car.Speed_X = 0;
-                Car.Speed_Y = 3;
-                Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
-            }
+            Car.Speed_X = 0;
+            Car.Speed_Y = 3;
+            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
         break;
         case Move_Place://移动到放置区域前面
             UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE);//发送获取放置区域信息 
@@ -1238,7 +1216,7 @@ static void Ring_BoardFsm()
             SMALL_PLACE_DATA.place = nil;
             if(Navigation.Finish_Flag == false)
             {
-                Navigation_Process_Y(0,-45);
+                Navigation_Process_Y(0,-34);
             }
             else
             {
@@ -1273,11 +1251,11 @@ static void Ring_BoardFsm()
                 {
                     if(MyFSM.Ring_Dir == RIGHT)
                     {
-                        Navigation_Process_Y_Image(-15,-15);
+                        Navigation_Process_Y_Image(-15,-20);
                     }
                     else if(MyFSM.Ring_Dir == LEFT)
                     {
-                        Navigation_Process_Y_Image(15,-15);
+                        Navigation_Process_Y_Image(15,-20);
                     }
                 }
                 else
@@ -1307,32 +1285,29 @@ static void Ring_BoardFsm()
             SMALL_PLACE_DATA.place = nil;
             Dodge_Carmar();
             resetWare(&smallPlaceWare);
-            if(Turn.Finish == false)
+            if(Navigation.Finish_Flag == false)
             {
                 if(MyFSM.Ring_Dir == RIGHT)
                 {
-                    Turn_Angle(-50);
+                    Navigation_Process(-30,30);
                 }
                 else
                 {
-                    Turn_Angle(50);
+                    Navigation_Process(30,30);
                 }
-                Car.Image_Flag = true;
             }
             else
             {
-                Image_Flag.Right_Ring = false;
-                Image_Flag.Left_Ring = false;
+                Car.Image_Flag = true;
                 UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBORDER);//继续获取道路旁卡片
                 FINDBORDER_DATA.FINDBORDER_FLAG = false;
-                if(Bufcnt(true,500))
-                {
-                    Turn.Finish = false;
-                    RightRing.Ring_State = Ring_Front;
-                    LeftRing.Ring_State = Ring_Front;
-                    MyFSM.Ring_Board_State = Find_Ring;
-                    MyFSM.CurState = Line_Patrol;
-                }
+                Navigation.Finish_Flag = false;
+                RightRing.Ring_State = Ring_Front;
+                LeftRing.Ring_State = Ring_Front;
+                Image_Flag.Right_Ring = false;
+                Image_Flag.Left_Ring = false;
+                MyFSM.Ring_Board_State = Find_Ring;
+                MyFSM.CurState = Line_Patrol;
             }
         break;
         case No_Board_Return://元素里没有卡片直接走

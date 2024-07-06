@@ -23,7 +23,9 @@
         "ios": "c",
         "inertial_navigation.h": "c",
         "manipulator.h": "c",
-        "uart.h": "c"
+        "uart.h": "c",
+        "my_fsm.h": "c",
+        "rotary.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled",
     "MicroPython.executeButton": [
