@@ -1610,12 +1610,13 @@ static void Unload_Fsm()
                 if(Servo_Flag.Door_End)
                 {
                     Servo_Flag.Open_Door = false;
-                    if(Bufcnt(true,500))
+                    if(Car_Put_Board())
                     {
                         Servo_Flag.Door_End = false;
                         MyFSM.Unload_State = Unload_Next;
                         Turn.Finish = false;
                         MyFSM.Static_Angle = Gyro_YawAngle_Get();
+                        Close_Door();
                     }
                 }
                 Car.Speed_X = 0;

@@ -11,6 +11,7 @@ float Angle_Control(float Start_Angle);
 float Get_Image_Errox();
 void Car_run(float Speed);
 void Car_run_X(float Speed);
+bool Car_Put_Board();
 
 typedef struct 
 {

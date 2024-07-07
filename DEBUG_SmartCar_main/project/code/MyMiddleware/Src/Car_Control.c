@@ -221,3 +221,36 @@ void Car_run_X(float Speed)
     Car.Speed_Z = Get_Image_Errox();
 }
 
+bool Car_Put_Board()
+{
+    static uint8 testmode = 0;
+    switch(testmode)
+    {
+        case 0:
+            if(Bufcnt(true,300))
+            {
+                testmode = 1;
+            }
+            Car.Speed_X = -3;
+            Car.Speed_Y = 0;
+            Car.Speed_Z = Angle_Control(0);
+        break;
+        case 1:
+            if(Bufcnt(true,300))
+            {
+                testmode = 2;
+            }
+            Car.Speed_X = 3;
+            Car.Speed_Y = 0;
+            Car.Speed_Z = Angle_Control(0);                    
+        break;
+        case 2:
+            Car.Speed_X = 0;
+            Car.Speed_Y = 0;
+            Car.Speed_Z = 0;
+            testmode = 0;
+            return 1;       
+        break;
+    }
+    return 0;
+}

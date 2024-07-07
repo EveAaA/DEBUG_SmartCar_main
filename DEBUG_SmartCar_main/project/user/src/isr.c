@@ -76,66 +76,14 @@ void PIT_IRQHandler(void)
     {
         if(Start == 1)
         {
-            // switch(testmode)
-            // {
-            //     case 0:
-            //         if(Bufcnt(true,1000))
-            //         {
-            //             testmode = 1;
-            //         }
-            //         Car.Speed_X = 0;
-            //         Car.Speed_Y = -3;
-            //         Car.Speed_Z = Angle_Control(0);
-            //     break;
-            //     case 1:
-            //         if(Bufcnt(true,1000))
-            //         {
-            //             testmode = 0;
-            //         }
-            //         Car.Speed_X = 0;
-            //         Car.Speed_Y = 3;
-            //         Car.Speed_Z = Angle_Control(0);                    
-            //     break;
-            // }
-            //     case 2:
-            //         if(Bufcnt(true,1000))
-            //         {
-            //             testmode = 3;
-            //         }
-            //         Car.Speed_X = 0;
-            //         Car.Speed_Y = 5;
-            //         Car.Speed_Z = Angle_Control(0);                   
-            //     break;
-            //     case 3:
-            //         if(Bufcnt(true,1000))
-            //         {
-            //             testmode = 0;
-            //         }
-            //         Car.Speed_X = 0;
-            //         Car.Speed_Y = -5;
-            //         Car.Speed_Z = Angle_Control(0);                    
-            //     break;
-            // }
             FSM_main();
-            // if(Servo_Flag.Put_Out == false)
-            // {
-            //     Take_Card_Out();
-            // }
         }
         else if(Start == 0)
         {
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
             Car.Speed_Z = 0;
-            Servo_Flag.Open_Door = 0;
         }
-        // else if(Start == 0)
-        // {
-        //     Car.Speed_X = 0;
-        //     Car.Speed_Y = 0;
-        //     Car.Speed_Z = 0;
-        // }
-        // FSM_main();
         pit_flag_clear(PIT_CH2);
     }
     

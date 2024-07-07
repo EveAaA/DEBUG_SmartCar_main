@@ -38,14 +38,14 @@ Servo_Handle Raise_Servo = //抬手舵机
 Servo_Handle Rotary_Servo = //旋转舵机
 {
     .Pin = PWM1_MODULE3_CHB_B11,
-    .Init_Angle = 32,//角度大顺时针转,85白色在前,175黑色在前,265红色在前,355黄色在前，前三个分别代表大类123
-                     //320 1门  32 2门 104 3门
+    .Init_Angle = 55,//角度大顺时针转,85白色在前,175黑色在前,265红色在前,355黄色在前，前三个分别代表大类123
+                     //328 1门  40 2门 112 3门
     .Servo_Time = 0,
 };
 Servo_Handle Door_Servo = //门电机
 {
     .Pin = PWM2_MODULE3_CHB_D3,
-    .Init_Angle = 80,//角度小往下   140
+    .Init_Angle = 70,//角度小往下   140
 }; 
 Servo_Flag_Handle Servo_Flag = {false,false,false,false,false,false,false,false};
 
@@ -271,9 +271,9 @@ void Open_Door(bool Open_Or)
             switch (Open_Door_State)
             {
                 case 0:
-                    Set_Angle = 80 + (115 - 80)*(Percent/(float)150);
+                    Set_Angle = 80 + (175 - 80)*(Percent/(float)200);
                     Percent +=1;
-                    if(Percent>=150)
+                    if(Percent>=200)
                     {
                         Open_Door_State = 1;
                         Percent = 1;
@@ -281,9 +281,9 @@ void Open_Door(bool Open_Or)
                     Set_Servo_Angle(Door_Servo,Set_Angle);
                 break;
                 case 1:
-                    if(Bufcnt(true,1000))
+                    if(Bufcnt(true,500))
                     {
-                        Set_Servo_Angle(Door_Servo,90);
+                        // Set_Servo_Angle(Door_Servo,80);
                         Servo_Flag.Door_End = true;
                         Open_Door_State = 0;
                     }
@@ -291,6 +291,11 @@ void Open_Door(bool Open_Or)
             }
         }    
     }
+}
+
+void Close_Door()
+{
+    Set_Servo_Angle(Door_Servo,Door_Servo.Init_Angle);
 }
 
 /**@brief   设置转盘舵机转到哪个地方
@@ -311,15 +316,15 @@ void Rotary_Switch(Rotaryservo_Handle RotaryServo,uint16 Rotary_Speed)
     }
     else if(RotaryServo == 5)
     {
-        Tar_Depot = 320;
+        Tar_Depot = 328;
     }
     else if(RotaryServo == 6)
     {
-        Tar_Depot = 32;
+        Tar_Depot = 40;
     }
     else if(RotaryServo == 7)
     {
-        Tar_Depot = 104;
+        Tar_Depot = 112;
     }
                       
 
@@ -400,7 +405,7 @@ void Put_Depot(int8 Card_Class)
 **/
 void Take_Card_Out()
 {
-    static uint8 Out_State = 0;
+    static uint8 Out_State = 4;
     switch (Out_State)
     {
         case 0:
@@ -416,6 +421,7 @@ void Take_Card_Out()
             }
         break;
         case 4://吸卡片
+            Electromagnet_On;
             Set_Servo_Angle(Stretch_Servo,165);//15
             Out_State = 5;           
         break;

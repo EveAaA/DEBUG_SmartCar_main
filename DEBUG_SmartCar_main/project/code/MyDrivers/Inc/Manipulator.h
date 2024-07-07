@@ -45,6 +45,7 @@ void Rotary_Switch(Rotaryservo_Handle RotaryServo,uint16 Rotary_Speed);
 void Put_Depot(int8 Card_Class);
 void Take_Card_Out();
 void Open_Door(bool Open_Or);
+void Close_Door();
 
 extern Servo_Handle Raise_Servo;
 extern Servo_Handle Stretch_Servo;
