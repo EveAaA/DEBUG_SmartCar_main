@@ -18,6 +18,7 @@
 #define UART_FINDBORDER_GETSMALLPLACE (0x20) // 开始获取小类放置区域
 #define UART_FINDBORDER_GETBORDER (0x21)   // 开始获取道路边缘的目标板
 #define UART_STARTFINETUNING_PLACE (0x10)  // 开始对数字版微调整
+#define UART_STARTFINETUNING_PLACE_ZEBRA (0x12)  // 开始对斑马线数字版微调整
 #define UART_MOVEVOLUMEUP_FLAG (0x11)
 
 typedef struct Uart

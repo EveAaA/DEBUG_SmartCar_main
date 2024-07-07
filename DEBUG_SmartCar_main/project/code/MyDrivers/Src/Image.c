@@ -1036,7 +1036,7 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W],  uint8* L_Border, uint8* R_Border, u
     }
     else if ((Break_Num_L_UP) && (Break_Num_R_UP) && (!Break_Num_L_DOWN) && (!Break_Num_R_DOWN) && (Bin_Image[10][Image_H - 10]) && (Bin_Image[130][Image_H - 10]))//只有上面两个点 0101
     {
-        if (Points_R[Total_Num_R][0] >= Image_W / 2)
+        if ((Points_R[Total_Num_R][0] +  Points_L[Total_Num_L][0])/2 >= Image_W / 2)
         {
             Image_Flag.Cross_Type = RIGHT;
         }
@@ -1226,6 +1226,7 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
     static float Curanglg = 0;
     static float Lastanglg = 0;
     static float Angle_Offest = 0;
+    uint8 Lose_Line_Point_L = 0; 
     //LeftRing.Ring_State = Enter_Ring_First;//入环中
     switch (LeftRing.Ring_State)
     {
@@ -1269,7 +1270,18 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                     }
                 }
             }
+            for (int i = Image_H/2+20; i > Image_H/2-20; i -= 1) 
+            {
+                if (L_Border[i] <= 2)
+                {
+                    Lose_Line_Point_L += 1;
+                }
+            }
 
+            if(Lose_Line_Point_L>10 && (LeftRing.Stright_Line))
+            {
+                LeftRing.Ring_Front_Flag = 2;
+            }
             //有圆环突出点, 右直线, 有左下角点
             if ((Break_Num_L_DOWN) && (LeftRing.Stright_Line) && (Salient_Point)) //  && (!Bin_Image[Image_H - 10][4]) && (!Bin_Image[Image_H - 10][Image_W - 4])
             {
@@ -1359,7 +1371,7 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
             if ((LeftRing.Enter_Ring_First_Flag) && (Salient_Point == NULL) && (Break_Num_L_UP))    //&& (Bin_Image[20][4]) && (Bin_Image[20][8]) && (Bin_Image[Image_H - 2][4]) && (Bin_Image[Image_H - 2][8])
             {
                 LeftRing.Enter_Ring_First_Flag = false;
-                LeftRing.Ring_State = Leave_Ring;//离开环
+                LeftRing.Ring_State = Leave_Ring_First;//离开环
                 Lastanglg = 0;
                 Angle_Offest = 0;
             }
@@ -1606,6 +1618,7 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
     static float Curanglg = 0;
     static float Lastanglg = 0;
     static float Angle_Offest = 0;
+    uint16 Lose_Line_Point_R = 0;
     switch (RightRing.Ring_State)
     {
         case Ring_Front:
@@ -1644,6 +1657,18 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
                         }
                     }
                 }
+            }
+            for (int i = Image_H/2+20; i > Image_H/2-20; i -= 1) 
+            {
+                if (R_Border[i] >= 144)
+                {
+                    Lose_Line_Point_R += 1;
+                }
+            }
+
+            if(Lose_Line_Point_R>=10&&RightRing.Stright_Line)
+            {
+                RightRing.Ring_Front_Flag = 2;
             }
             //下拐点，左直线，圆环突出点
             if (Break_Num_R_DOWN && RightRing.Stright_Line && Salient_Point) //  && (!Bin_Image[Image_H - 10][4]) && (!Bin_Image[Image_H - 10][Image_W - 4])
@@ -1731,7 +1756,7 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
             if (RightRing.Enter_Ring_First_Flag && Salient_Point == NULL && Break_Num_R_UP)
             {
                 RightRing.Enter_Ring_First_Flag = false;
-                RightRing.Ring_State = Leave_Ring;
+                RightRing.Ring_State = Leave_Ring_First;
                 Lastanglg = 0;
                 Angle_Offest = 0;
             }

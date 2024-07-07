@@ -28,6 +28,5 @@ bool Bufcnt(bool Cond,uint16 Cnt);
 
 extern uint16 Start;
 extern uint16 Time_Cnt;
-#define Servo_Slow
 
 #endif  

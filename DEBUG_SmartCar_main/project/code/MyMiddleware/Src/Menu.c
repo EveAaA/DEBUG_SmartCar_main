@@ -15,7 +15,7 @@
 #include "Menu.h"
 
 /* Define\Declare ------------------------------------------------------------*/
-Menu_Handle Menu_Mode = Page9;
+uint8 Menu_Mode = Page9;
 Menu_ Menu = {0,0,0};
 int Show_Mode;
 #define Exit_Dis tft180_show_string(Row_1,Line_9,"Exit")
@@ -242,7 +242,7 @@ static void Image_Page()
         tft180_draw_point(R_Border[i], i, RGB565_RED);
     }
     // tft180_show_string(Row_1,Line_4,"I_Erro:");
-    // tft180_show_float(Row_8,Line_4,Image_Erro,3,2);
+    tft180_show_float(10,100,Image_Erro,3,2);
     // tft180_show_string(Row_1,Line_5,"Ex_Time:");
     // tft180_show_uint(Row_9,Line_5,flash_union_buffer[50].uint16_type,5);//∆ÿπ‚ ±º‰
     // Exit_Dis;

@@ -15,12 +15,14 @@ typedef struct
 
 typedef struct
 {
-    volatile bool Put_Down;
-    volatile bool Put_Up;
+    volatile bool Put_Down;//机械臂放下结束
+    volatile bool Put_Up;//机械臂抬起结束
     volatile bool Put_Depot;
-    volatile bool Put_Out;
-    volatile bool Pick_End;
+    volatile bool Put_Out;//机械臂拿出结束
+    volatile bool Pick_End;//捡起结束
     volatile bool Depot_End;//转盘转动结束
+    volatile bool Open_Door;//开门
+    volatile bool Door_End;//开门结束
 }Servo_Flag_Handle;
 
 typedef enum
@@ -32,6 +34,7 @@ typedef enum
     White_Door,
     Black_Door,
     Red_Door,
+    Yellow_Door,
 }Rotaryservo_Handle;
 
 void Manipulator_Init();
@@ -41,6 +44,7 @@ void Dodge_Carmar();
 void Rotary_Switch(Rotaryservo_Handle RotaryServo,uint16 Rotary_Speed);
 void Put_Depot(int8 Card_Class);
 void Take_Card_Out();
+void Open_Door(bool Open_Or);
 
 extern Servo_Handle Raise_Servo;
 extern Servo_Handle Stretch_Servo;

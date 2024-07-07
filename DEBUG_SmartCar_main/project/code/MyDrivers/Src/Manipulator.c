@@ -21,7 +21,7 @@
 #define Set_360Servo_Angle(angle) ((float)PWM_DUTY_MAX / (1000.0 / (float)Servo_FREQ) * (0.5 + (float)(angle) / 180.0))//设置360度舵机角度转为具体占空比
 #define Electromagnet_On gpio_set_level(D27,1)
 #define Electromagnet_Off gpio_set_level(D27,0)
-uint8 Down_Angle[10]={40,37,36,35,34,33,30,30,30,30};
+uint8 Down_Angle[10]={40,37,37,37,37,33,30,30,30,30};
 
 Servo_Handle Stretch_Servo = //抬臂舵机
 {
@@ -38,16 +38,16 @@ Servo_Handle Raise_Servo = //抬手舵机
 Servo_Handle Rotary_Servo = //旋转舵机
 {
     .Pin = PWM1_MODULE3_CHB_B11,
-    .Init_Angle = 55,//角度大顺时针转,85白色在前,175黑色在前,265红色在前,355黄色在前，前三个分别代表大类123
-                     //185白色门 275黑色门 5红色门 95黄色门 
+    .Init_Angle = 32,//角度大顺时针转,85白色在前,175黑色在前,265红色在前,355黄色在前，前三个分别代表大类123
+                     //320 1门  32 2门 104 3门
     .Servo_Time = 0,
 };
 Servo_Handle Door_Servo = //门电机
 {
     .Pin = PWM2_MODULE3_CHB_D3,
-    .Init_Angle = 140,//角度小往下
+    .Init_Angle = 80,//角度小往下   140
 }; 
-Servo_Flag_Handle Servo_Flag = {false,false,false,false,false};
+Servo_Flag_Handle Servo_Flag = {false,false,false,false,false,false,false,false};
 
 /**
  ******************************************************************************
@@ -133,7 +133,7 @@ static void Manipulator_PutUp()
     switch (PutUp_State)
     {
         case 0:
-            Set_Servo_Angle(Stretch_Servo,60);//先抬大臂 120
+            Set_Servo_Angle(Stretch_Servo,70);//先抬大臂 120
             PutUp_State = 1;
         break;
         case 1:
@@ -145,6 +145,12 @@ static void Manipulator_PutUp()
         break;
         case 2:
             if(Bufcnt(true,400))
+            {
+                PutUp_State = 4;
+            }
+        break;
+        case 4:
+            if(Servo_Flag.Depot_End)
             {
                 Set_Servo_Angle(Stretch_Servo,138);//大臂直接放入 30
                 PutUp_State = 3;
@@ -237,7 +243,7 @@ void Dodge_Board()
     Set_Servo_Angle(Raise_Servo,Raise_Servo.Init_Angle - 30);
 }
 
-/**@brief   躲避卡片
+/**@brief   躲避摄像头
 -- @param   无
 -- @author  庄文标
 -- @date    2024/6/2
@@ -246,6 +252,45 @@ void Dodge_Carmar()
 {
     Set_Servo_Angle(Stretch_Servo,Stretch_Servo.Init_Angle);//抬起机械臂以免卡到卡片
     Set_Servo_Angle(Raise_Servo,Raise_Servo.Init_Angle);
+}
+
+/**@brief   开门
+-- @param   无
+-- @author  庄文标
+-- @date    2024/7/7
+**/
+void Open_Door(bool Open_Or)
+{
+    static uint16 Set_Angle = 80;
+    static uint16 Percent = 1;
+    static uint8 Open_Door_State = 0;
+    if(Servo_Flag.Door_End == false)
+    {
+        if(Open_Or)
+        {
+            switch (Open_Door_State)
+            {
+                case 0:
+                    Set_Angle = 80 + (115 - 80)*(Percent/(float)150);
+                    Percent +=1;
+                    if(Percent>=150)
+                    {
+                        Open_Door_State = 1;
+                        Percent = 1;
+                    }
+                    Set_Servo_Angle(Door_Servo,Set_Angle);
+                break;
+                case 1:
+                    if(Bufcnt(true,1000))
+                    {
+                        Set_Servo_Angle(Door_Servo,90);
+                        Servo_Flag.Door_End = true;
+                        Open_Door_State = 0;
+                    }
+                break;
+            }
+        }    
+    }
 }
 
 /**@brief   设置转盘舵机转到哪个地方
@@ -264,18 +309,18 @@ void Rotary_Switch(Rotaryservo_Handle RotaryServo,uint16 Rotary_Speed)
     {
         Tar_Depot = RotaryServo*72 + 55;
     }
-    // else if(RotaryServo == White_Door)
-    // {
-    //     Tar_Depot = 185;
-    // }
-    // else if(RotaryServo == Black_Door)
-    // {
-    //     Tar_Depot = 275;
-    // }
-    // else if(RotaryServo == Red_Door)
-    // {
-    //     Tar_Depot = 359;
-    // }
+    else if(RotaryServo == 5)
+    {
+        Tar_Depot = 320;
+    }
+    else if(RotaryServo == 6)
+    {
+        Tar_Depot = 32;
+    }
+    else if(RotaryServo == 7)
+    {
+        Tar_Depot = 104;
+    }
                       
 
     if(Tar_Depot!=Cur_Depot)
@@ -297,7 +342,7 @@ void Rotary_Switch(Rotaryservo_Handle RotaryServo,uint16 Rotary_Speed)
         Servo_Flag.Depot_End = false;
     }
 
-    if((Percent >= Rotary_Speed) && (RotaryServo <= 4))
+    if((Percent >= Rotary_Speed))
     {
         Cur_Depot = Tar_Depot;
         Percent = 1;
@@ -413,3 +458,4 @@ void Take_Card_Out()
         break;
     }
 }
+

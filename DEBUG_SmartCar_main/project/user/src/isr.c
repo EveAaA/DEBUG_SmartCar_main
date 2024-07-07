@@ -56,9 +56,8 @@ void PIT_IRQHandler(void)
         Sensor_Handler();//传感器
         Beep_Freq();
         Beep_On();//蜂鸣器
-        Rotary_Switch(MyFSM.Depot_Pos,80);
-        // UART_UnpackDataV2(&UnpackFlag);
-        // UART_ResetUnpackFlag(&UnpackFlag);
+        Open_Door(Servo_Flag.Open_Door);
+        Rotary_Switch(MyFSM.Depot_Pos,70);
         Set_Car_Speed(Car.Speed_X,Car.Speed_Y,Car.Speed_Z);//控制速度的线程
         pit_flag_clear(PIT_CH0);
     }
@@ -84,19 +83,20 @@ void PIT_IRQHandler(void)
             //         {
             //             testmode = 1;
             //         }
-            //         Car.Speed_X = 5;
-            //         Car.Speed_Y = 0;
+            //         Car.Speed_X = 0;
+            //         Car.Speed_Y = -3;
             //         Car.Speed_Z = Angle_Control(0);
             //     break;
             //     case 1:
             //         if(Bufcnt(true,1000))
             //         {
-            //             testmode = 2;
+            //             testmode = 0;
             //         }
-            //         Car.Speed_X = -5;
-            //         Car.Speed_Y = 0;
+            //         Car.Speed_X = 0;
+            //         Car.Speed_Y = 3;
             //         Car.Speed_Z = Angle_Control(0);                    
             //     break;
+            // }
             //     case 2:
             //         if(Bufcnt(true,1000))
             //         {
@@ -127,6 +127,7 @@ void PIT_IRQHandler(void)
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
             Car.Speed_Z = 0;
+            Servo_Flag.Open_Door = 0;
         }
         // else if(Start == 0)
         // {
