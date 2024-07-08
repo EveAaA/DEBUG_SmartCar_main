@@ -76,6 +76,10 @@ void PIT_IRQHandler(void)
     {
         if(Start == 1)
         {
+            // if(Servo_Flag.Put_Out==false)
+            // {
+            //     Take_Card_Out();
+            // }
             FSM_main();
         }
         else if(Start == 0)

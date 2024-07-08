@@ -3,6 +3,7 @@
 #include "zf_common_headfile.h"
 void Get_Bin_Image();
 void Image_Process();
+bool No_Get_Line();
 
 #define Image_H 80//Í¼Ïñ¸ß¶È
 #define Image_W 148//Í¼Ïñ¿í¶È
@@ -40,6 +41,7 @@ typedef struct
 	bool Zerba;
 	bool Roadblock;
 	uint8 Cross_Type;
+	bool Get_Start_Point;
 }Flag_Handle;
 
 typedef enum {
@@ -60,6 +62,7 @@ typedef struct {
 	bool Leave_Ring_First_Flag;
 	Ring_State_Handle Ring_State;
 	uint16 Clear_Time;
+	bool Lose_Line;
 }Ring_Handle;
 
 typedef struct {

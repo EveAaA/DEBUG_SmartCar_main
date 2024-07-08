@@ -130,21 +130,22 @@ static void Manipulator_PutDown()
 static void Manipulator_PutUp()
 {
     static uint8 PutUp_State = 0;
+    uint16 time = 350;
     switch (PutUp_State)
     {
         case 0:
-            Set_Servo_Angle(Stretch_Servo,70);//先抬大臂 120
+            Set_Servo_Angle(Stretch_Servo,75);//先抬大臂 120
             PutUp_State = 1;
         break;
         case 1:
-            if(Bufcnt(true,400))//这是为了留给机械臂运转的时间
+            if(Bufcnt(true,time))//这是为了留给机械臂运转的时间
             {
                 Set_Servo_Angle(Raise_Servo,128);//把卡片翻起来
                 PutUp_State = 2;
             }
         break;
         case 2:
-            if(Bufcnt(true,400))
+            if(Bufcnt(true,time))
             {
                 PutUp_State = 4;
             }
@@ -157,7 +158,7 @@ static void Manipulator_PutUp()
             }
         break;
         case 3:
-            if(Bufcnt(true,400))
+            if(Bufcnt(true,time))
             {    
                 PutUp_State = 0;
                 Electromagnet_Off;
@@ -263,32 +264,19 @@ void Open_Door(bool Open_Or)
 {
     static uint16 Set_Angle = 80;
     static uint16 Percent = 1;
-    static uint8 Open_Door_State = 0;
+    // printf("flag:%d,%d\r\n",Servo_Flag.Door_End,Set_Angle);
     if(Servo_Flag.Door_End == false)
     {
         if(Open_Or)
         {
-            switch (Open_Door_State)
+            Set_Angle = 80 + (175 - 80)*(Percent/(float)200);
+            Percent +=1;
+            if(Percent>=200)
             {
-                case 0:
-                    Set_Angle = 80 + (175 - 80)*(Percent/(float)200);
-                    Percent +=1;
-                    if(Percent>=200)
-                    {
-                        Open_Door_State = 1;
-                        Percent = 1;
-                    }
-                    Set_Servo_Angle(Door_Servo,Set_Angle);
-                break;
-                case 1:
-                    if(Bufcnt(true,500))
-                    {
-                        // Set_Servo_Angle(Door_Servo,80);
-                        Servo_Flag.Door_End = true;
-                        Open_Door_State = 0;
-                    }
-                break;
+                Percent = 1;
+                Servo_Flag.Door_End = true;
             }
+            Set_Servo_Angle(Door_Servo,Set_Angle);
         }    
     }
 }
@@ -405,16 +393,17 @@ void Put_Depot(int8 Card_Class)
 **/
 void Take_Card_Out()
 {
-    static uint8 Out_State = 4;
+    static uint8 Out_State = 0;
+    static uint16 time = 350;
     switch (Out_State)
     {
         case 0:
-            Set_Servo_Angle(Stretch_Servo,40);//140
+            Set_Servo_Angle(Stretch_Servo,100);//140
             Electromagnet_On;
             Out_State = 1;
         break;
         case 1:
-            if(Bufcnt(true,300))
+            if(Bufcnt(true,time-200))
             {
                 Set_Servo_Angle(Raise_Servo,145);
                 Out_State = 4;
@@ -426,35 +415,35 @@ void Take_Card_Out()
             Out_State = 5;           
         break;
         case 5://把卡片拿出来
-            if(Bufcnt(true,500))
+            if(Bufcnt(true,time))
             {
                 Set_Servo_Angle(Raise_Servo,135);
                 Out_State = 6;
             }            
         break;
         case 6://把卡片拿出来
-            if(Bufcnt(true,500))
+            if(Bufcnt(true,time))
             {
                 Set_Servo_Angle(Stretch_Servo,60);//120
                 Out_State = 7;
             }
         break;
         case 7://把卡片翻下来
-            if(Bufcnt(true,500))
+            if(Bufcnt(true,time))
             {
                 Set_Servo_Angle(Raise_Servo,0);
                 Out_State = 8;
             }
         break;
         case 8://把卡片放下
-            if(Bufcnt(true,375))
+            if(Bufcnt(true,time-125))
             {
                 Set_Servo_Angle(Stretch_Servo,30);//150
                 Out_State = 9;
             }
         break;
         case 9://电磁铁消磁
-            if(Bufcnt(true,375))
+            if(Bufcnt(true,time-125))
             {
                 Electromagnet_Off;
                 Out_State = 0;

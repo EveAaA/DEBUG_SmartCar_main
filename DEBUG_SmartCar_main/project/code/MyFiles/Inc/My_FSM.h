@@ -21,6 +21,7 @@ typedef enum
     Pick,//捡起卡片
     Classify,//识别分类
     Return_Line,//返回赛道
+    Finsh_Return,
     Find_Cross,//找到十字
     Ready_Find_Place,//准备找第一个位置
     Find_Place,//寻找放置位置

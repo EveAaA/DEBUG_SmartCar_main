@@ -231,18 +231,18 @@ bool Car_Put_Board()
             {
                 testmode = 1;
             }
-            Car.Speed_X = -3;
+            Car.Speed_X = -5;
             Car.Speed_Y = 0;
-            Car.Speed_Z = Angle_Control(0);
+            Car.Speed_Z = 0;
         break;
         case 1:
             if(Bufcnt(true,300))
             {
                 testmode = 2;
             }
-            Car.Speed_X = 3;
+            Car.Speed_X = 5;
             Car.Speed_Y = 0;
-            Car.Speed_Z = Angle_Control(0);                    
+            Car.Speed_Z = 0;                    
         break;
         case 2:
             Car.Speed_X = 0;
