@@ -1038,7 +1038,7 @@ void Cross_Fill(uint8(*Bin_Image)[Image_W],  uint8* L_Border, uint8* R_Border, u
     }
     else if ((Break_Num_L_UP) && (Break_Num_R_UP) && (!Break_Num_L_DOWN) && (!Break_Num_R_DOWN) && (Bin_Image[10][Image_H - 10]) && (Bin_Image[130][Image_H - 10]))//只有上面两个点 0101
     {
-        if ((Points_R[Total_Num_R][0] +  Points_L[Total_Num_L][0])/2 >= Image_W / 2)
+        if ((Points_R[Total_Num_R][0] +  Points_L[Total_Num_L - 1][0])/2 >= Image_W / 2)
         {
             Image_Flag.Cross_Type = RIGHT;
         }
@@ -2024,7 +2024,7 @@ void Roadblock_Seek(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border
     uint8 Right_Straight = 0;
     uint8 Left_Straight = 0;
     uint16 i;
-    uint16 Break_Num_L_UP = 0;//拐点
+    uint16 Break_Num_L_UP = 0;//拐点xxz
     uint16 Break_Num_R_UP = 0;
     uint16 Break_Num_L_DOWN = 0;
     uint16 Break_Num_R_DOWN = 0;

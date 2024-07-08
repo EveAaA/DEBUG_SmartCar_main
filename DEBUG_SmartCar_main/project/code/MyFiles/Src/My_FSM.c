@@ -35,6 +35,7 @@ FSM_Handle MyFSM = {
     .Unload_Count = 0,
     .Big_Pos_Count = 0,
     .Depot_Pos = White,
+    .Take_Board_Out = false,
     .Big_Pos[0] = RIGHT,
     .Big_Pos[1] = RIGHT,
     .Big_Pos[2] = RIGHT,
@@ -1644,48 +1645,52 @@ static void Unload_Fsm()
                 printf("Unload_Board:%d,%d\r\n",Servo_Flag.Depot_End,Servo_Flag.Open_Door);    
             #endif
             BIG_PLACE_DATA.Big_Place = None;
-            if(Turn.Finish==false)
+            if(!MyFSM.Take_Board_Out)
             {
-                Turn_Angle(90);
-            }
-            else
-            {
-                if(Servo_Flag.Depot_End)
+                if(Turn.Finish==false)
                 {
-                    Servo_Flag.Open_Door = true;
+                    Turn_Angle(90);
                 }
-                if(Servo_Flag.Door_End)
+                else
                 {
-                    Servo_Flag.Open_Door = false;
-                    if(Car_Put_Board())
+                    if(Servo_Flag.Depot_End)
                     {
-                        Servo_Flag.Door_End = false;
-                        MyFSM.Unload_State = Unload_Next;
-                        Turn.Finish = false;
-                        MyFSM.Static_Angle = Gyro_YawAngle_Get();
-                        Close_Door();
+                        Servo_Flag.Open_Door = true;
+                    }
+                    if(Servo_Flag.Door_End)
+                    {
+                        Servo_Flag.Open_Door = false;
+                        if(Car_Put_Board())
+                        {
+                            Servo_Flag.Door_End = false;
+                            MyFSM.Unload_State = Unload_Next;
+                            Turn.Finish = false;
+                            MyFSM.Static_Angle = Gyro_YawAngle_Get();
+                            Close_Door();
+                        }
                     }
                 }
             }
-
-
-            // if(MyFSM.Unload_Count == 0)
-            // {
-            //     MyFSM.Unload_State = Unload_Next;
-            //     Servo_Flag.Depot_End = false;
-            // }
-            // if(Servo_Flag.Depot_End)
-            // {
-            //     if(!Servo_Flag.Put_Out)
-            //     {
-            //         Take_Card_Out();
-            //     }
-            //     else
-            //     {
-            //         MyFSM.Unload_Count -=1;   
-            //         Servo_Flag.Put_Out = false;
-            //     }
-            // }
+            else
+            {
+                if(MyFSM.Unload_Count == 0)
+                {
+                    MyFSM.Unload_State = Unload_Next;
+                    Servo_Flag.Depot_End = false;
+                }
+                if(Servo_Flag.Depot_End)
+                {
+                    if(!Servo_Flag.Put_Out)
+                    {
+                        Take_Card_Out();
+                    }
+                    else
+                    {
+                        MyFSM.Unload_Count -=1;   
+                        Servo_Flag.Put_Out = false;
+                    }
+                }
+            }
         break;
         case Unload_Next:
             #ifdef debug_switch

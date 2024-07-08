@@ -75,6 +75,7 @@ typedef struct
     uint8 Ring_Dir;//圆环方向
     uint8 Pick_Count;//
 
+    bool Take_Board_Out;//终点前卸货策略
     int8 Big_Board;//卡片大类
     uint8 Big_Pos_Count;//大类次数,也就是去了几个大类的位置
     uint8 Big_Count[3];//大类每类数量
