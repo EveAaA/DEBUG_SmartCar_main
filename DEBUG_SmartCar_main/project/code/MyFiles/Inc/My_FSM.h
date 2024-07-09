@@ -51,10 +51,10 @@ typedef struct GetCard
 typedef struct 
 {
     Current_State CurState;//当前处于哪个状态机
-    uint8 Line_Board_State;//散落在赛道旁的卡片
-    uint8 Unload_State;//终点前卸货状态机
-    uint8 Cross_Board_State;//十字回环卡片
-    uint8 Ring_Board_State;//圆环卡片
+    volatile uint8 Line_Board_State;//散落在赛道旁的卡片
+    volatile uint8 Unload_State;//终点前卸货状态机
+    volatile uint8 Cross_Board_State;//十字回环卡片
+    volatile uint8 Ring_Board_State;//圆环卡片
 
     float Static_Angle;//静止的角度
     bool Stop_Flag;//停车

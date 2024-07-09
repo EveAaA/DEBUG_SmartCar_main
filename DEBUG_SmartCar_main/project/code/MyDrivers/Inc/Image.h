@@ -11,6 +11,7 @@ bool No_Get_Line();
 #define Black_Pixel 0
 #define Border_Max  Image_W-2 //边界最大值
 #define Border_Min  1   //边界最小值
+#define USE_num Image_H*3   //定义找点的数组成员个数按理说300个点能放下，但是有些特殊情况确实难顶，多定义了一点
 extern uint8 Original_Image[Image_H][Image_W];
 extern float Image_Erro;
 extern float Image_Erro_Y;
@@ -20,7 +21,10 @@ extern uint8 R_Border[Image_H];//右线数组
 extern uint8 Center_Line[Image_H];//中线数组
 extern uint8 Bin_Image[Image_H][Image_W];//二值化图像数组
 extern uint8 Hightest;//最高点
-
+extern uint16 Points_L[(uint16)USE_num][2];//左线
+extern uint16 Points_R[(uint16)USE_num][2];//右线
+extern uint16 Data_Stastics_L;//统计左边找到点的个数
+extern uint16 Data_Stastics_R;//统计右边找到点的个数
 //坐标点结构体
 typedef struct {
 	uint8 x;//横坐标

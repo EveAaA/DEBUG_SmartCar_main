@@ -48,7 +48,7 @@ Servo_Handle Door_Servo = //门电机
     .Init_Angle = 70,//角度小往下   140
 }; 
 Servo_Flag_Handle Servo_Flag = {false,false,false,false,false,false,false,false};
-#define Servo_Slow
+// #define Servo_Slow
 /**
  ******************************************************************************
  *  @defgroup 内部调用

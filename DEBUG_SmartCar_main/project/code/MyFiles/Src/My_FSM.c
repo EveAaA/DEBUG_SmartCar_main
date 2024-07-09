@@ -51,7 +51,7 @@ WareState_t smallPlaceWare =
 
 uint16 wait_time = 0;
 #define Static_Time 100 //等待静止的时间，大约0.5秒
-#define debug_switch  //是否调试
+// #define debug_switch  //是否调试
 
 /**
  ******************************************************************************
@@ -210,7 +210,7 @@ static void Line_PatrolFsm()
     {
         Image_Flag.Cross_Fill = 0;
         MyFSM.CurState = Cross_Board;//十字回环状态机
-        MyFSM.Cross_Dir = Image_Flag.Cross_Type;
+        // MyFSM.Cross_Dir = Image_Flag.Cross_Type;
         Set_Beepfreq(1);
     }
     else if((Image_Flag.Right_Ring) || (Image_Flag.Left_Ring))//圆环卡片
@@ -453,7 +453,7 @@ static void Line_BoardFsm()
         #ifdef debug_switch
             printf("Finsh_Return\r\n");
         #endif
-            if(Bufcnt(true,301))
+            if(Bufcnt(true,550))
             {
                 MyFSM.Line_Board_State = Find;
                 MyFSM.CurState = Line_Patrol;
@@ -482,6 +482,14 @@ static void Cross_BoardFsm()
             Car_run(5);
             if(Bufcnt(true,1500))
             {
+                if ((Points_R[Data_Stastics_R][0] +  Points_L[Data_Stastics_L - 1][0])/2 >= Image_W / 2)
+                {
+                    MyFSM.Cross_Dir = RIGHT;
+                }
+                else
+                {
+                    MyFSM.Cross_Dir = LEFT;
+                }
                 MyFSM.Cross_Board_State = Find;
                 Car.Image_Flag = false;
             }
@@ -650,7 +658,7 @@ static void Cross_BoardFsm()
         break;
         case Ring_First_Place://直接往前走
             #ifdef debug_switch
-                printf("Ring_First_Place\r\n");    
+                printf("Cross_First_Place\r\n");    
             #endif 
             Dodge_Carmar();
             UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE);//发送获取放置区域信息
@@ -928,6 +936,9 @@ static void Ring_BoardFsm()
             #ifdef debug_switch
                 printf("Find_Ring\r\n");    
             #endif
+            // Car.Speed_X = 0;
+            // Car.Speed_Y = 0;
+            // Car.Speed_Z = 0;
             Car_run(4);
             if(MyFSM.Ring_Dir == RIGHT)
             {
@@ -1453,7 +1464,7 @@ static void Ring_BoardFsm()
             else
             {
                 Car_run(5);
-                if(Bufcnt(true,1000))
+                if(Bufcnt(true,2000))
                 {
                     Turn.Finish = false;
                     RightRing.Ring_State = Ring_Front;
@@ -1749,10 +1760,19 @@ static void Unload_Fsm()
                 }
                 else
                 {
-                    Turn.Finish = false;
-                    Image_Flag.Zerba = false;
-                    MyFSM.Unload_State = Return_Line;
-                    Car.Image_Flag = true;
+                    if(No_Get_Line())
+                    {
+                        Car.Speed_X = 0;
+                        Car.Speed_Y = 0;
+                        Car.Speed_Z = -3;
+                    }
+                    else
+                    {
+                        Turn.Finish = false;
+                        Image_Flag.Zerba = false;
+                        MyFSM.Unload_State = Return_Line;
+                        Car.Image_Flag = true;
+                    }
                 }
             }
         break;

@@ -121,7 +121,7 @@ void User_Init()
     // dl1a_init();
     All_PID_Init();
     Flash_Init();
-    mt9v03x_set_exposure_time(Menu.Ex_Time);
+    // mt9v03x_set_exposure_time(Menu.Ex_Time);
     UART_Init();
     // seekfree_assistant_interface_init(SEEKFREE_ASSISTANT_WIRELESS_UART);
     // seekfree_assistant_camera_information_config(SEEKFREE_ASSISTANT_MT9V03X, image_copy[0], MT9V03X_W, MT9V03X_H);
@@ -150,5 +150,10 @@ void User_Loop()
     {
         Start = Receivedata.Start_Flag;
     }
+    // if ((mt9v03x_finish_flag) && (Car.Image_Flag))
+    // {
+    //     Image_Process();
+    //     mt9v03x_finish_flag = 0;
+    // }
     Menu_Display();
 }
