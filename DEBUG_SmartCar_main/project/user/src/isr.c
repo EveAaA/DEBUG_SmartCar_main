@@ -64,11 +64,11 @@ void PIT_IRQHandler(void)
     
     if(pit_flag_get(PIT_CH1))
     {
-        if ((mt9v03x_finish_flag) && (Car.Image_Flag))
-        {
-            Image_Process();
-            mt9v03x_finish_flag = 0;
-        }
+        // if ((mt9v03x_finish_flag) && (Car.Image_Flag))
+        // {
+        //     Image_Process();
+        //     mt9v03x_finish_flag = 0;
+        // }
         pit_flag_clear(PIT_CH1);
     }
     

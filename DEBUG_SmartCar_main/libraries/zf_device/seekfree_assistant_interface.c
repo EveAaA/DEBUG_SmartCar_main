@@ -114,8 +114,8 @@ ZF_WEAK void seekfree_assistant_interface_init (seekfree_assistant_transfer_devi
         
         case SEEKFREE_ASSISTANT_WIFI_SPI:
         {
-//            seekfree_assistant_transfer_callback = wifi_spi_send_buffer;
-//            seekfree_assistant_receive_callback = wifi_spi_read_buffer;
+            seekfree_assistant_transfer_callback = wifi_spi_send_buffer;
+            seekfree_assistant_receive_callback = wifi_spi_read_buffer;
         }break;
         
         case SEEKFREE_ASSISTANT_CUSTOM:

@@ -19,7 +19,7 @@
 uint16 Start = 2;
 uint16 Time_Cnt = 0;
 uint8 image_copy[MT9V03X_H][MT9V03X_W];
-
+#define Image_debug
 /**
  ******************************************************************************
  *  @defgroup 内部调用
@@ -37,7 +37,8 @@ void IMU_Init()
         system_delay_ms(1000);
     }
     system_delay_ms(100);
-    tft180_show_string(Row_0, Line_0, "IMU Init ...");
+    printf("Imu_Init\r\n");
+    // tft180_show_string(Row_0, Line_0, "IMU Init ...");
     Gyro_Offset_Init();
 }
 
@@ -52,7 +53,36 @@ void Mt9v03x_Init()
             break;
         system_delay_ms(1000); // 闪灯表示异常
     }
-    tft180_show_string(Row_0, Line_1, "Mt9v03x Init ...");
+    printf("Mt9v03x_Init\r\n");
+    // tft180_show_string(Row_0, Line_1, "Mt9v03x Init ...");
+}
+
+void WIFI_SPI_Init()
+{
+    while(wifi_spi_init(WIFI_SSID_TEST, WIFI_PASSWORD_TEST))
+    {
+		printf("\r\n connect wifi failed. \r\n");
+        system_delay_ms(100);                                                   // 初始化失败 等待 100ms
+    }
+    printf("\r\n module version:%s", wifi_spi_version);      					// 模块固件版本
+    printf("\r\n module mac    :%s", wifi_spi_mac_addr);     					// 模块 MAC 信息
+    printf("\r\n module ip     :%s", wifi_spi_ip_addr_port); 					// 模块 IP 地址
+    if(1 != WIFI_SPI_AUTO_CONNECT)                                              // 如果没有开启自动连接 就需要手动连接目标 IP
+    {
+        while(wifi_spi_socket_connect(                                          // 向指定目标 IP 的端口建立 TCP 连接
+            "TCP",                                                              // 指定使用TCP方式通讯
+            WIFI_SPI_TARGET_IP,                                                 // 指定远端的IP地址，填写上位机的IP地址
+            WIFI_SPI_TARGET_PORT,                                               // 指定远端的端口号，填写上位机的端口号，通常上位机默认是8080
+            WIFI_SPI_LOCAL_PORT))                                               // 指定本机的端口号
+        {
+            // 如果一直建立失败 考虑一下是不是没有接硬件复位
+            printf("\r\n Connect TCP Servers error, try again.");
+            system_delay_ms(100);                                               // 建立连接失败 等待 100ms
+        }
+    }
+    seekfree_assistant_interface_init(SEEKFREE_ASSISTANT_WIFI_SPI);
+    seekfree_assistant_camera_information_config(SEEKFREE_ASSISTANT_MT9V03X, image_copy[0], MT9V03X_W, MT9V03X_H);
+    seekfree_assistant_camera_boundary_config(X_BOUNDARY, MT9V03X_H, R_Border, L_Border, Center_Line, NULL, NULL ,NULL);
 }
 
 /**
@@ -106,27 +136,29 @@ bool Bufcnt(bool Cond,uint16 Cnt)
 void User_Init()
 {
     system_delay_ms(100);//延时一会等待所有外设上电
-    tft180_init();
+    // tft180_init();
+    bluetooth_ch9141_init();
     IMU_Init();
     Mt9v03x_Init();
+    #ifdef Image_debug
+    WIFI_SPI_Init();
+    #endif
     All_Encoder_Init();
-    tft180_show_string(Row_0, Line_2, "Encoder Init ...");
+    // // tft180_show_string(Row_0, Line_2, "Encoder Init ...");
     Rotary_Init();
-    bluetooth_ch9141_init();
-    tft180_show_string(Row_0, Line_3, "Rotary Init ...");
+    // // tft180_show_string(Row_0, Line_3, "Rotary Init ...");
     Manipulator_Init();
     Motor_Init();
-    tft180_show_string(Row_0, Line_4, "Motor Init ...");
+    // // tft180_show_string(Row_0, Line_4, "Motor Init ...");
     Beep_Init();
-    // dl1a_init();
+    // // dl1a_init();
     All_PID_Init();
     Flash_Init();
-    // mt9v03x_set_exposure_time(Menu.Ex_Time);
+    // // mt9v03x_set_exposure_time(Menu.Ex_Time);
     UART_Init();
-    // seekfree_assistant_interface_init(SEEKFREE_ASSISTANT_WIRELESS_UART);
-    // seekfree_assistant_camera_information_config(SEEKFREE_ASSISTANT_MT9V03X, image_copy[0], MT9V03X_W, MT9V03X_H);
-    tft180_show_string(Row_0, Line_5, "Soft Init ...");
-    tft180_clear();
+    printf("All_Init\r\n");
+    // tft180_show_string(Row_0, Line_5, "Soft Init ...");
+    // tft180_clear();
     system_delay_ms(1000);
     TIM_Init();
     // Beep(On);
@@ -140,20 +172,20 @@ void User_Init()
 **/
 void User_Loop()
 {
-    // printf("fuck\r\n");
-    // if(mt9v03x_finish_flag)
-    // {
-    //     memcpy(image_copy[0], Bin_Image[0], MT9V03X_IMAGE_SIZE);
-    //     seekfree_assistant_camera_send();
-    // }
     if(Receivedata.Start_Flag!=2)
     {
         Start = Receivedata.Start_Flag;
     }
-    // if ((mt9v03x_finish_flag) && (Car.Image_Flag))
-    // {
-    //     Image_Process();
-    //     mt9v03x_finish_flag = 0;
-    // }
-    Menu_Display();
+    if(mt9v03x_finish_flag)
+    {
+        mt9v03x_finish_flag = 0;
+        Image_Process();
+        #ifdef Image_debug
+            // 在发送前将图像备份再进行发送，这样可以避免图像出现撕裂的问题
+            memcpy(image_copy[0], Bin_Image[0], MT9V03X_IMAGE_SIZE);
+            // 发送图像
+            seekfree_assistant_camera_send();
+        #endif
+    }
+    // Menu_Display();
 }

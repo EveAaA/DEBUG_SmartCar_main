@@ -53,120 +53,103 @@
 
 #include "zf_common_typedef.h"
 
-#define WIFI_SPI_INDEX              (SPI_1)                     // 定义使用的SPI号
-#define WIFI_SPI_SPEED              (20 * 1000 * 1000)          // 硬件 SPI 速率
-#define WIFI_SPI_SCK_PIN            (SPI1_SCK_D12)              // 定义SPI_SCK引脚
-#define WIFI_SPI_MOSI_PIN           (SPI1_MOSI_D14)             // 定义SPI_MOSI引脚
-#define WIFI_SPI_MISO_PIN           (SPI1_MISO_D15)             // 定义SPI_MISO引脚  IPS没有MISO引脚，但是这里任然需要定义，在spi的初始化时需要使用
-#define WIFI_SPI_CS_PIN             (D13)                       // 定义SPI_CS引脚 采用软件CS引脚
-#define WIFI_SPI_INT_PIN            (B17)                       // 定义中断引脚
-#define WIFI_SPI_RST_PIN            (B16)                       // 定义复位引脚
-                                
-                                
-#define WIFI_SPI_BUFFER_SIZE        (1024)                      // 定义SPI接收的缓冲区大小
+          
+#define WIFI_SPI_INDEX              (SPI_3)                      // 定义使用的SPI号
+#define WIFI_SPI_SPEED              (50 * 1000 * 1000)          // 硬件 SPI 速率
+#define WIFI_SPI_SCK_PIN            (SPI3_SCK_B0)              // 定义SPI_SCK引脚
+#define WIFI_SPI_MOSI_PIN           (SPI3_MOSI_B1)             // 定义SPI_MOSI引脚
+#define WIFI_SPI_MISO_PIN           (SPI3_MISO_B2)   
+// 定义SPI_MISO引脚  IPS没有MISO引脚，但是这里任然需要定义，在spi的初始化时需要使用
+#define WIFI_SPI_CS_PIN             (B3)                       // 定义SPI_CS引脚 采用软件CS引脚
+#define WIFI_SPI_INT_PIN            (C18)                       // 定义中断引脚
+#define WIFI_SPI_RST_PIN            (C19)                       // 定义复位引脚
 
-#define WIFI_SPI_AUTO_CONNECT       (0)                         // 定义是否初始化时建立TCP或者UDP连接    0-不连接  1-自动连接TCP服务器并进入透传模式  2-自动连接UDP服务器并进入透传模式
-    
+
+#define WIFI_SPI_RECVIVE_FIFO_SIZE  (1024)                      // 接收FIFO大小
+#define WIFI_SPI_READ_TRANSFER      (1)                         // 在调用wifi_spi_read_buffer 是否尝试发起SPI通讯来检测模块内是否有数据需要读取 1：发起SPI通讯 0：不发起SPI通讯，仅读取FIFO 
+                                                                // 如果应用程序中没有任何的地方调用发送函数，则WIFI_SPI_READ_TRANSFER必须设置为1
+                                                                
+#define WIFI_SPI_AUTO_CONNECT       (0)                         // 定义是否初始化时建立TCP或者UDP连接    0-不自动连接  1-自动连接TCP服务器  2-自动连接UDP
+
 #if     (WIFI_SPI_AUTO_CONNECT > 2)    
 #error "WIFI_SPI_AUTO_CONNECT 的值只能为 [0,1,2]" 
 #else   
-#define WIFI_SPI_TARGET_IP          "192.168.137.1"             // 连接目标的 IP
-#define WIFI_SPI_TARGET_PORT        "8080"                      // 连接目标的端口
-#define WIFI_SPI_LOCAL_PORT         "8080"                      // 本机端口
+#define WIFI_SPI_TARGET_IP          "192.168.43.194"              // 连接目标的 IP
+#define WIFI_SPI_TARGET_PORT        "8086"                      // 连接目标的端口
+#define WIFI_SPI_LOCAL_PORT         "6666"                      // 本机的端口 0：随机  可设置范围2048-65535  默认 6666
 #endif
+#define WIFI_SSID_TEST              "zwb"
+#define WIFI_PASSWORD_TEST          "123456789a"                // 如果需要连接的WIFI 没有密码则需要将 "12345678" 替换为 NULL
 
-#define WIFI_SPI_MAX_MULTI          (17)                        // 多地址发送，最大8个地址
+#define WIFI_SPI_RECVIVE_SIZE       (32)                        // 每次SPI传输接收的字节数 不允许修改
+#define WIFI_SPI_TRANSFER_SIZE      (4088)                      // 最大SPI传输接收的字节数 不允许修改
 
-typedef enum    
-{   
-    BUFFER_IDLE,                                                // 模块的缓冲区是空闲的
-    BUFFER_READ,                                                // 模块的缓冲区有数据需要读取
-    BUFFER_WRITE,                                               // 模块的缓冲区是可写的
-}wifi_spi_buffer_state_enum;            
+
 
 typedef enum
-{       
-    TRANSMIT_IDLE,                                              // 当前没有传输
-    TRANSMIT_WRITE_REQUEST,                                     // 给模块发送了一个传输请求
-    TRANSMIT_READ_STATE,                                        // 读取模块状态
-    TRANSMIT_READ,                                              // 正在读取模块内部数据
-    TRANSMIT_WRITE,                                             // 正在往模块写入数据
-}wifi_spi_transmit_state_enum;
-
-typedef enum    
-{   
-    WIFI_SPI_STATION,                                           // 设备模式
-    WIFI_SPI_SOFTAP,                                            // AP模式
-}wifi_spi_mode_enum;        
-        
-typedef enum        
-{       
-    WIFI_SPI_COMMAND,                                           // 使用命令的方式发送数据
-    WIFI_SPI_SERIANET,                                          // 使用透传的方式发送数据
-}wifi_spi_transfer_mode_enum;       
-        
-typedef enum        
-{       
-    WIFI_SPI_TCP_CLIENT,                                        // 模块连接TCP服务器
-    WIFI_SPI_TCP_SERVER,                                        // 模块作为TCP服务器
-    WIFI_SPI_UDP_CLIENT,                                        // 模块启用UDP连接
-}wifi_spi_connect_mode_enum;        
-        
-typedef enum        
-{       
-    WIFI_SPI_SERVER_OFF,                                        // 模块未连接服务器
-    WIFI_SPI_SERVER_ON,                                         // 模块已经连接服务器
-}wifi_spi_connect_state_enum;       
-        
-typedef struct
 {
-    uint8 reserve;
-    uint8 cmd;
-    uint8 addr;
-    uint8 dummy;
-    uint8 magic;
-    uint8 sequence;
-    uint16 length;
-}wifi_spi_buffer_struct;
+    // 主机发送的命令
+    WIFI_SPI_INVALID1               = 0x00,                     // 无效数据包
+    WIFI_SPI_RESET                  = 0x01,                     // 复位命令
+    WIFI_SPI_DATA                   = 0x02,                     // 透传数据包
+    WIFI_SPI_UDP_SEND               = 0x03,                     // UDP下立即发送命令,默认SPI接收数据后2MS未收到数据自动发送数据
+    WIFI_SPI_CLOSE_SOCKET           = 0x04,                     // 断开连接
+                
+    WIFI_SPI_SET_WIFI_INFORMATION   = 0x10,                     // 设置WIFI信息命令
+    WIFI_SPI_SET_SOCKET_INFORMATION = 0x11,                     // 设置SOCKET信息命令
+                    
+    WIFI_SPI_GET_VERSION            = 0x20,                     // 获取模块版本
+    WIFI_SPI_GET_MAC_ADDR           = 0x21,                     // 获取模块MAC地址
+    WIFI_SPI_GET_IP_ADDR            = 0x22,                     // 获取模块IP地址
+                    
+    // 从机回传的命令                  
+    WIFI_SPI_REPLY_OK               = 0x80,                     // 从机应答的正确命令
+    WIFI_SPI_REPLY_ERROR            = 0x81,                     // 从机应答的错误命令
+                    
+    WIFI_SPI_REPLY_DATA_START       = 0x90,                     // 从机回传的数据包，并且还有数据需要主机读取
+    WIFI_SPI_REPLY_DATA_END         = 0x91,                     // 从机回传的数据包，数据已读取完毕
+                    
+    WIFI_SPI_REPLY_VERSION          = 0xA0,                     // 从机回复固件版本
+    WIFI_SPI_REPLY_MAC_ADDR         = 0xA1,                     // 从机回复本机MAC地址等信息
+    WIFI_SPI_REPLY_IP_ADDR          = 0xA2,                     // 从机回复本机IP地址、端口号
+    WIFI_SPI_INVALID2               = 0xFF                      // 无效数据包
+}wifi_spi_packets_command_enum;             
+                
+typedef enum                
+{               
+    WIFI_SPI_IDLE,                                              // 模块空闲，可以进行SPI通讯
+    WIFI_SPI_BUSY,                                              // 模块正忙，不可进行SPI通讯
+}wifi_spi_state_enum;               
+                
+                
+typedef struct              
+{               
+    uint8   command;                                            // 命令字
+    uint8   reserve;                                            // 保留
+    uint16  length;                                             // 包有效长度
+}wifi_spi_head_struct;              
+                
+                
+typedef struct              
+{               
+    wifi_spi_head_struct  head;                                 // 帧头
+    uint8 buffer[WIFI_SPI_RECVIVE_SIZE];                        // 缓冲区
+}wifi_spi_packets_struct;               
+                
+                
+extern char wifi_spi_version[12];                               // 固件版本         字符串
+extern char wifi_spi_mac_addr[20];                              // 模块MAC地址      字符串
+extern char wifi_spi_ip_addr_port[25];                          // IP地址与端口号   字符串
 
-typedef struct      
-{       
-    uint8                           version[12];                // 固件版本         字符串形式
-    uint8                           mac[20];                    // 本机 MAC 地址    字符串形式
-    uint8                           local_ip[17];               // 本机 IP 地址     字符串形式
-    uint8                           local_port[10];             // 本机端口号       字符串形式
-    uint8                           remote_ip[5][17];           // 远端 IP 地址     字符串形式
-    wifi_spi_mode_enum              mode;                       // WIFI 模式
-    wifi_spi_transfer_mode_enum     transfer_mode;              // 当前传输模式
-    wifi_spi_connect_mode_enum      connect_mode;               // 网络连接模式
-    wifi_spi_connect_state_enum     connect_state;              // 服务器连接情况
-}wifi_spi_information_struct;
+uint8   wifi_spi_wifi_connect       (char *wifi_ssid, char *pass_word);
+uint8   wifi_spi_socket_connect     (char *transport_type, char *ip_addr, char *port, char *local_port);
+uint8   wifi_spi_socket_disconnect  (void);
+uint8   wifi_spi_udp_send_now       (void);
+uint32  wifi_spi_send_buffer        (const uint8 *buff, uint32 length);
+void    wifi_spi_send_string        (const char *string);
+uint32  wifi_spi_read_buffer        (uint8 *buffer, uint32 length);
 
-typedef struct
-{
-    uint8  *source[WIFI_SPI_MAX_MULTI];
-    uint16 length[WIFI_SPI_MAX_MULTI];
-}wifi_spi_send_multi_struct;
-
-extern wifi_spi_information_struct wifi_spi_information;
-
-
-uint8   wifi_spi_disconnected_wifi         (void);                                                                      // 断开 WIFI 连接
-uint8   wifi_spi_entry_serianet            (void);                                                                      // 打开透传模式
-uint8   wifi_spi_exit_serianet             (void);                                                                      // 关闭透传模式
-    
-uint8   wifi_spi_connect_tcp_servers       (char *ip, char *port, wifi_spi_transfer_mode_enum mode);                    // 连接 TCP Server
-uint8   wifi_spi_connect_udp_client        (char *ip, char *port, char *local_port, wifi_spi_transfer_mode_enum mode);  // 建立 UDP 传输
-uint8   wifi_spi_disconnect_link           (void);                                                                      // 断开连接 TCP Server 使用本接口将会断开所有连接
-
-uint32  wifi_spi_send_byte                 (uint8 data);                                                                // WIFI 模块发送字节函数
-uint32  wifi_spi_send_buffer               (const uint8 *buff, uint32 length);                                          // WIFI 模块发送缓冲区函数
-uint32  wifi_spi_send_buffer_multi         (wifi_spi_send_multi_struct *multi_buffer);                                  // WIFI 模块发送多缓冲区函数
-uint32  wifi_spi_send_string               (const char *str);                                                           // WIFI 模块发送字符串函数
-
-uint32  wifi_spi_read_buffer               (uint8 *buff, uint32 len);                                                   // WIFI 模块数据接收函数
-    
-uint8   wifi_spi_init                      (char *wifi_ssid, char *pass_word, wifi_spi_mode_enum wifi_mode);            // WIFI 模块初始化函数
+uint8  wifi_spi_init                (char *wifi_ssid, char *pass_word);
 
 #endif
 
