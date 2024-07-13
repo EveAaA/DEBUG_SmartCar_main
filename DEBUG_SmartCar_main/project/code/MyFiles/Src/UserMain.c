@@ -162,7 +162,7 @@ void User_Init()
     Motor_Init();
     // // tft180_show_string(Row_0, Line_4, "Motor Init ...");
     Beep_Init();
-    // // dl1a_init();
+    dl1a_init();
     All_PID_Init();
 //    Flash_Init();
     // // mt9v03x_set_exposure_time(Menu.Ex_Time);
@@ -171,13 +171,14 @@ void User_Init()
     printf("All_Init\r\n");
     #endif
     #ifndef Image_debug
-    tft180_show_string(Row_0, Line_5, "All Init ...");
+    tft180_show_string(Row_0, Line_2, "All Init ...");
     #endif
     tft180_clear();
     system_delay_ms(1000);
     TIM_Init();
 	interrupt_global_enable(0);
 }
+extern void Ramp_Find();
 /**@brief   所有主循环内容
 -- @param   无
 -- @author  庄文标
@@ -209,7 +210,9 @@ void User_Loop()
     //     tft180_draw_point(L_Border[i], i, RGB565_BLUE);
     //     tft180_draw_point(R_Border[i], i, RGB565_RED);
     // }
-    
+    // printf("%f,%f,%f,%f,%f\r\n",Get_Y_Speed(),Encoer_Speed[0],Encoer_Speed[1],Encoer_Speed[2],Encoer_Speed[3]);
+    // Ramp_Find();
+    // printf("dis:%d,pitchAngle:%f,flae:%d\r\n",dl1a_distance_mm,Gyro_PitchAngle_Get(),Image_Flag.Ramp);
 #ifndef Image_debug
     if(Start!=1)
     {
