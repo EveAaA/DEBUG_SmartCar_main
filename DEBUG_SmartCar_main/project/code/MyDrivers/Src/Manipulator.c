@@ -32,7 +32,7 @@ Servo_Handle Stretch_Servo = //抬臂舵机
 Servo_Handle Raise_Servo = //抬手舵机
 {
     .Pin = PWM2_MODULE3_CHA_D2,
-    .Init_Angle = 120,//角度小往下150
+    .Init_Angle = 120,//角度小往下150 
     .Servo_Time = 0,
 };
 Servo_Handle Rotary_Servo = //旋转舵机
@@ -45,8 +45,8 @@ Servo_Handle Rotary_Servo = //旋转舵机
 Servo_Handle Door_Servo = //门电机
 {
     .Pin = PWM2_MODULE3_CHB_D3,
-    .Init_Angle = 70,//角度小往下   140
-}; 
+    .Init_Angle = 55,//角度小往下   140
+};  
 Servo_Flag_Handle Servo_Flag = {false,false,false,false,false,false,false,false};
 // #define Servo_Slow
 /**
@@ -191,6 +191,7 @@ void Manipulator_Init()
     pwm_init(Rotary_Servo.Pin,Servo_FREQ,Set_360Servo_Angle(Rotary_Servo.Init_Angle));
     pwm_init(Door_Servo.Pin,Servo_FREQ,Set_180Servo_Angle(Door_Servo.Init_Angle));
     gpio_init(D27,GPO,0,GPO_PUSH_PULL);
+    gpio_init(D1,GPO,0,GPO_PUSH_PULL);
 }
 
 
@@ -262,14 +263,14 @@ void Dodge_Carmar()
 **/
 void Open_Door(bool Open_Or)
 {
-    static uint16 Set_Angle = 80;
+    static uint16 Set_Angle = 55;
     static uint16 Percent = 1;
     // printf("flag:%d,%d\r\n",Servo_Flag.Door_End,Set_Angle);
     if(Servo_Flag.Door_End == false)
     {
         if(Open_Or)
         {
-            Set_Angle = 80 + (175 - 80)*(Percent/(float)200);
+            Set_Angle = 55 + (160 - 55)*(Percent/(float)200);
             Percent +=1;
             if(Percent>=200)
             {
@@ -432,7 +433,7 @@ void Take_Card_Out()
             if(Bufcnt(true,time))
             {
                 Set_Servo_Angle(Raise_Servo,0);
-                Out_State = 8;
+                Out_State = 9;
             }
         break;
         case 8://把卡片放下

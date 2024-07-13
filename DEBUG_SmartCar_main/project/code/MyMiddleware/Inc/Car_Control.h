@@ -19,6 +19,7 @@ typedef struct
     float Speed_Y;//小车Y轴速度
     float Speed_Z;//小车Z轴速度
     bool Image_Flag;//是否进行图像处理
+    bool Speed;
 }Car_Handle;
 
 typedef struct 

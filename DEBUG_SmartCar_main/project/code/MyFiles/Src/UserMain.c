@@ -19,7 +19,7 @@
 uint16 Start = 2;
 uint16 Time_Cnt = 0;
 uint8 image_copy[MT9V03X_H][MT9V03X_W];
-#define Image_debug
+// #define Image_debug
 /**
  ******************************************************************************
  *  @defgroup 内部调用
@@ -37,8 +37,12 @@ void IMU_Init()
         system_delay_ms(1000);
     }
     system_delay_ms(100);
+    #ifdef Image_debug
     printf("Imu_Init\r\n");
-    // tft180_show_string(Row_0, Line_0, "IMU Init ...");
+    #endif
+    #ifndef Image_debug
+    tft180_show_string(Row_0, Line_0, "IMU Init ...");
+    #endif
     Gyro_Offset_Init();
 }
 
@@ -53,8 +57,13 @@ void Mt9v03x_Init()
             break;
         system_delay_ms(1000); // 闪灯表示异常
     }
+    #ifdef Image_debug
     printf("Mt9v03x_Init\r\n");
-    // tft180_show_string(Row_0, Line_1, "Mt9v03x Init ...");
+    #endif
+    #ifndef Image_debug
+    tft180_show_string(Row_0, Line_1, "Mt9v03x Init ...");
+    #endif
+
 }
 
 void WIFI_SPI_Init()
@@ -136,7 +145,9 @@ bool Bufcnt(bool Cond,uint16 Cnt)
 void User_Init()
 {
     system_delay_ms(100);//延时一会等待所有外设上电
-    // tft180_init();
+    #ifndef Image_debug
+    tft180_init();
+    #endif
     bluetooth_ch9141_init();
     IMU_Init();
     Mt9v03x_Init();
@@ -153,16 +164,18 @@ void User_Init()
     Beep_Init();
     // // dl1a_init();
     All_PID_Init();
-    Flash_Init();
+//    Flash_Init();
     // // mt9v03x_set_exposure_time(Menu.Ex_Time);
     UART_Init();
+    #ifdef Image_debug
     printf("All_Init\r\n");
-    // tft180_show_string(Row_0, Line_5, "Soft Init ...");
-    // tft180_clear();
+    #endif
+    #ifndef Image_debug
+    tft180_show_string(Row_0, Line_5, "All Init ...");
+    #endif
+    tft180_clear();
     system_delay_ms(1000);
     TIM_Init();
-    // Beep(On);
-    // Beep(Off);
 	interrupt_global_enable(0);
 }
 /**@brief   所有主循环内容
@@ -172,11 +185,12 @@ void User_Init()
 **/
 void User_Loop()
 {
+    Get_Button_Value(0);
     if(Receivedata.Start_Flag!=2)
     {
         Start = Receivedata.Start_Flag;
     }
-    if(mt9v03x_finish_flag)
+    if(mt9v03x_finish_flag && Car.Image_Flag)
     {
         mt9v03x_finish_flag = 0;
         Image_Process();
@@ -187,5 +201,19 @@ void User_Loop()
             seekfree_assistant_camera_send();
         #endif
     }
-    // Menu_Display();
+    // tft180_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,MT9V03X_W,MT9V03X_H,0);
+    // tft180_show_float(10,100,Image_Erro,3,2);
+    // for (int i = Hightest; i < Image_H-1; i++)
+    // {
+    //     tft180_draw_point(Center_Line[i], i, RGB565_BLACK);
+    //     tft180_draw_point(L_Border[i], i, RGB565_BLUE);
+    //     tft180_draw_point(R_Border[i], i, RGB565_RED);
+    // }
+    
+#ifndef Image_debug
+    if(Start!=1)
+    {
+        Menu_Display();
+    }
+#endif
 }

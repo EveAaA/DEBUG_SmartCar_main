@@ -21,7 +21,7 @@ typedef enum
     Pick,//捡起卡片
     Classify,//识别分类
     Return_Line,//返回赛道
-    Finsh_Return,
+    Finsh_Return,//返回赛道结束
     Find_Cross,//找到十字
     Ready_Find_Place,//准备找第一个位置
     Find_Place,//寻找放置位置
@@ -30,6 +30,7 @@ typedef enum
     Wait_PlaceData,//等待放置区域微调数据
     Move_Place,//移动到放置区域
     Classify_Place,//识别小类放置区域
+    Adjust_Line,//根据赛道调整
     Ready_Find_Next,//准备寻找下一个小类放置区域
     No_Board_Return,//没有卡片返回赛道
     No_Board_Ring,

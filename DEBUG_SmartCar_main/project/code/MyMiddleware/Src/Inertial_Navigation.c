@@ -28,9 +28,9 @@ Pid_TypeDef DistanceX_PID =
 
 Pid_TypeDef DistanceY_PID = 
 {
-    .Kp = 0.03f,
+    .Kp = 0.15f,
     .Ki = 0.0f,
-    .Kd = 0.08f,
+    .Kd = 0.0f,
     .OutputMax = 4,
     .OutputMin = -4,
 };

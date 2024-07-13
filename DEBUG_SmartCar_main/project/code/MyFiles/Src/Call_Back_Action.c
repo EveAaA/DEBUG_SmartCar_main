@@ -34,11 +34,10 @@
 **/
 void TIM_Init()
 {
-    pit_ms_init(Sensor_CH, 5); // 初始化 PIT_CH0 为周期中断 5ms 周期
-    interrupt_set_priority(Sensor_PRIORITY, 0);
-    pit_ms_init(PIT_CH1, 10); // 初始化 PIT_CH1 为周期中断 10ms 周期
-    pit_ms_init(PIT_CH2, 15); // 初始化 PIT_CH2 为周期中断 15ms 周期
-    pit_ms_init(PIT_CH3, 1);  // 初始化 PIT_CH3 为周期中断 1ms 周期
+  pit_ms_init(Sensor_CH, 5); // 初始化 PIT_CH0 为周期中断 5ms 周期
+  interrupt_set_priority(Sensor_PRIORITY, 0);
+  pit_ms_init(PIT_CH2, 15); // 初始化 PIT_CH2 为周期中断 15ms 周期
+  pit_ms_init(PIT_CH3, 1);  // 初始化 PIT_CH3 为周期中断 1ms 周期
 }
 
 /**@brief   传感器中断函数
@@ -48,8 +47,8 @@ void TIM_Init()
 **/
 void Sensor_Handler()
 {
-    Gyro_Get_All_Angles();
-    Encoder_Process();
+  Gyro_Get_All_Angles();
+  Encoder_Process();
 }
 
 /**@brief   找目标板openart串口
@@ -107,20 +106,20 @@ void Uart_Findborder_Receive(void)
       _UART_FINDBORDER.index = 0;
     }
   }
-  else if(_UART_FINDBORDER.get_data == 0x7e && tailLastData == 0xfe)
+  else if (_UART_FINDBORDER.get_data == 0x7e && tailLastData == 0xfe)
   {
-    //printf("index: %d\n", _UART_FINDBORDER.index);
+    // printf("index: %d\n", _UART_FINDBORDER.index);
     if (_UART_FINDBORDER.index == 5)
     {
-    //       printf("+++++++++++++++++\n");
-    // printf("index: %d\n", _UART_FINDBORDER.index);
-    // for (uint32_t i = 0; i < _UART_FINDBORDER.index; i++)
-    // {
-    //   printf("%x ", _UART_FINDBORDER.fifo_get_data[i]);
-    // }
-    // printf("\n");
-    // printf("%x  \n", _UART_FINDBORDER.get_data);
-    // printf("+++++++++++++++++\n");
+      //       printf("+++++++++++++++++\n");
+      // printf("index: %d\n", _UART_FINDBORDER.index);
+      // for (uint32_t i = 0; i < _UART_FINDBORDER.index; i++)
+      // {
+      //   printf("%x ", _UART_FINDBORDER.fifo_get_data[i]);
+      // }
+      // printf("\n");
+      // printf("%x  \n", _UART_FINDBORDER.get_data);
+      // printf("+++++++++++++++++\n");
       if (_UART_FINDBORDER.fifo_get_data[0] == 0x01)
       {
         FINDBORDER_DATA.FINDBIGPLACE_FLAG = true;
@@ -169,11 +168,11 @@ void Uart_Fine_Tuning_Receive(void)
       // printf("%x  \n", _UART_FINE_TUNING.get_data);
       // 两字节转浮点数
       UnpackFlag.FINETUNING_DATA_FLAG = true;
-      
+
       FINETUNING_DATA.dx = (float)((_UART_FINE_TUNING.fifo_get_data[1] >> 7) == 0) ? ((_UART_FINE_TUNING.fifo_get_data[0] + (_UART_FINE_TUNING.fifo_get_data[1] << 8))) : (-(65536 - (_UART_FINE_TUNING.fifo_get_data[0] + (_UART_FINE_TUNING.fifo_get_data[1] << 8))));
       FINETUNING_DATA.dy = (float)((_UART_FINE_TUNING.fifo_get_data[3] >> 7) == 0) ? ((_UART_FINE_TUNING.fifo_get_data[2] + (_UART_FINE_TUNING.fifo_get_data[3] << 8))) : (-(65536 - (_UART_FINE_TUNING.fifo_get_data[2] + (_UART_FINE_TUNING.fifo_get_data[3] << 8))));
       FINETUNING_DATA.FINETUNING_FINISH_FLAG = _UART_FINE_TUNING.fifo_get_data[4];
-      //printf("dx: %f dy: %f \r\n", FINETUNING_DATA.dx, FINETUNING_DATA.dy);
+      // printf("dx: %f dy: %f \r\n", FINETUNING_DATA.dx, FINETUNING_DATA.dy);
       if (FINETUNING_DATA.dx != -999 && FINETUNING_DATA.dy != -999)
       {
         FINETUNING_DATA.IS_BORDER_ALIVE = true;
@@ -286,16 +285,17 @@ void Uart_Fine_Tuning_Receive(void)
     }
     else
     {
+      SMALL_PLACE_DATA.IS_PLACE = false;
       memset(_UART_FINE_TUNING.fifo_get_data, 0, sizeof(_UART_FINE_TUNING.fifo_get_data));
       _UART_FINE_TUNING.index = 0;
     }
   }
-  if (_UART_FINE_TUNING.get_data == 0xfa && lastData == 0xfb)
+  else if (_UART_FINE_TUNING.get_data == 0xfa && lastData == 0xfb)
   {
     if (_UART_FINE_TUNING.index == 4)
     {
-      VOLUMEUP_DATA.AngleErr  = (float)(_UART_FINE_TUNING.fifo_get_data[0] >> 7 == 0) ? (_UART_FINE_TUNING.fifo_get_data[0]) : (-(256 -_UART_FINE_TUNING.fifo_get_data[0]));
-      VOLUMEUP_DATA.HeightErr = (float)(_UART_FINE_TUNING.fifo_get_data[1] >> 7 == 0) ? (_UART_FINE_TUNING.fifo_get_data[1]) : (-(256 -_UART_FINE_TUNING.fifo_get_data[1]));
+      VOLUMEUP_DATA.AngleErr = (float)(_UART_FINE_TUNING.fifo_get_data[0] >> 7 == 0) ? (_UART_FINE_TUNING.fifo_get_data[0]) : (-(256 - _UART_FINE_TUNING.fifo_get_data[0]));
+      VOLUMEUP_DATA.HeightErr = (float)(_UART_FINE_TUNING.fifo_get_data[1] >> 7 == 0) ? (_UART_FINE_TUNING.fifo_get_data[1]) : (-(256 - _UART_FINE_TUNING.fifo_get_data[1]));
       // printf("AngleErr: %f HeightErr: %f\n", VOLUMEUP_DATA.AngleErr, VOLUMEUP_DATA.HeightErr);
       memset(_UART_FINE_TUNING.fifo_get_data, 0, sizeof(_UART_FINE_TUNING.fifo_get_data));
       _UART_FINE_TUNING.index = 0;

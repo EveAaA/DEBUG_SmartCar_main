@@ -16,7 +16,11 @@
 
 /* Define\Declare ------------------------------------------------------------*/
 uint8 Menu_Mode = Page9;
-Menu_ Menu = {0,0,0};
+Menu_ Menu = 
+{
+    .Set_Line = 9,
+    .Image_Show = true,
+};
 int Show_Mode;
 #define Exit_Dis tft180_show_string(Row_1,Line_9,"Exit")
 #define FLASH_SECTION_INDEX (127)// 存储数据用的扇区 倒数第一个扇区
@@ -86,7 +90,8 @@ static void Page_Select_Mode()
 {
     Line_Change();//行切换
     Arrow_Display(Menu.Set_Line);//箭头显示
-    tft180_show_string(Row_1,Line_0,"Page0");
+    tft180_show_string(Row_1,Line_0,"Car_Go:");
+    tft180_show_uint(Row_9,Line_0,Start,1);
     tft180_show_string(Row_1,Line_1,"Page1"); 
     tft180_show_string(Row_1,Line_2,"Page2"); 
     tft180_show_string(Row_1,Line_3,"Page3"); 
@@ -101,11 +106,17 @@ static void Page_Select_Mode()
         Rotary.Press = 0;
         Menu_Mode = Menu.Set_Line;
         Menu.Set_Line = 0;
+        if(Menu_Mode==0)
+        {
+            Start = 1;
+            tft180_clear();
+            Set_Beepfreq(1);
+        }
         if(Menu_Mode==9)
         {
             Menu.Set_Line = 9;
             Menu.Image_Show = true;
-            flash_read_page_to_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
+            // flash_read_page_to_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
         }
         tft180_clear();
     }   
@@ -117,7 +128,7 @@ static void Page_Select_Mode()
 -- @author   庄文标
 -- @date     2024/2/16
 **/
-static void Page0_Mode()
+static void Page1_Mode()
 {
     Line_Change();//行切换
     Arrow_Display(Menu.Set_Line);//箭头显示
@@ -153,7 +164,7 @@ static void Page0_Mode()
 -- @author  庄文标
 -- @date    2024/2/18
 **/
-static void Page1_Mode()
+static void Page2_Mode()
 {
     flash_read_page_to_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
     tft180_show_string(Row_1,Line_0,"XKP:");
@@ -226,26 +237,26 @@ static void Page1_Mode()
 **/
 static void Image_Page()
 {
-    // if(mt9v03x_finish_flag)
-    // {
-    //     mt9v03x_finish_flag = 0;
-    //     Get_Bin_Image();
-    //     tft180_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,128,60,0);
-    // }
-    // tft180_set_dir(TFT180_CROSSWISE);
-    tft180_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,148,80,0);
-    // tft180_show_gray_image(0,0,(uint8*)mt9v03x_image,MT9V03X_W,MT9V03X_H,148,80,0);
-    for (int i = Hightest; i < Image_H-1; i++)
+    if(mt9v03x_finish_flag)
     {
-        tft180_draw_point(Center_Line[i], i, RGB565_BLACK);
-        tft180_draw_point(L_Border[i], i, RGB565_BLUE);
-        tft180_draw_point(R_Border[i], i, RGB565_RED);
+        mt9v03x_finish_flag = 0;
+        Get_Bin_Image();
+        tft180_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,128,60,0);
     }
+    // tft180_set_dir(TFT180_CROSSWISE);
+    // tft180_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,148,80,0);
+    // tft180_show_gray_image(0,0,(uint8*)mt9v03x_image,MT9V03X_W,MT9V03X_H,148,80,0);
+    // for (int i = Hightest; i < Image_H-1; i++)
+    // {
+    //     tft180_draw_point(Center_Line[i], i, RGB565_BLACK);
+    //     tft180_draw_point(L_Border[i], i, RGB565_BLUE);
+    //     tft180_draw_point(R_Border[i], i, RGB565_RED);
+    // }
     // tft180_show_string(Row_1,Line_4,"I_Erro:");
-    tft180_show_float(10,100,Image_Erro,3,2);
+    // tft180_show_float(10,100,Image_Erro,3,2);
     // tft180_show_string(Row_1,Line_5,"Ex_Time:");
     // tft180_show_uint(Row_9,Line_5,flash_union_buffer[50].uint16_type,5);//曝光时间
-    // Exit_Dis;
+    Exit_Dis;
     if((Menu.Set_Line == 9) && (Rotary.Press))//退出
     {
         Rotary.Press = 0;
@@ -304,7 +315,7 @@ static void Image_Page()
         Menu.Ex_Time = flash_union_buffer[50].uint16_type;
         flash_write_page_from_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
     }
-    // Arrow_Display(Menu.Set_Line);//箭头显示
+    Arrow_Display(Menu.Set_Line);//箭头显示
 }
 
 /**
@@ -357,15 +368,15 @@ void Menu_Display()
 {
     switch(Menu_Mode)
     {
-        // case Page_Select:
-        //     Page_Select_Mode();
-        // break;
-        // case Page0:
-        //     Page0_Mode();
-        // break;
-        // case Page1:
-        //     Page1_Mode();
-        // break;
+        case Page_Select:
+            Page_Select_Mode();
+        break;
+        case Page1:
+            Page1_Mode();
+        break;
+        case Page2:
+            Page2_Mode();
+        break;
         case Page9:
             Image_Page();
         break;

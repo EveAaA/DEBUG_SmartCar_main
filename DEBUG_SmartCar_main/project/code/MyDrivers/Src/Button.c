@@ -12,10 +12,10 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "Button.h"
-
+#include "Rotary.h"
 /* Define\Declare ------------------------------------------------------------*/
 int8 Button_Value[5] = {0,0,0,0,0};//键值
-int8 Button[5] = {B11,B15,B14,B9,B10};
+int8 Button[5] = {Rotary_D,B15,B14,B9,B10};
 int8 Button_Temp[5] = {0,0,0,0,0};
 int8 Switch_Button_Value[2] = {0,0};
 uint16 Key_Time[5] = {0,0,0,0,0};
@@ -117,7 +117,10 @@ void Get_Button_Value(int8 KeyNum)
             if(gpio_get_level(Button[KeyNum]) == 1)//如果按键抬起
             {
                 Button_Temp[KeyNum] = 0;//进入等待释放或长按计时
-                Button_Value[KeyNum] = 2;//判断为短按               
+                Button_Value[KeyNum] = 2;//判断为短按      
+                Rotary.Press = 1;
+                Rotary.Clockwise = 0;
+                Rotary.Anticlockwise = 0;         
             }
 
             if((Key_Time[KeyNum] > Key_Sleep_Time*100) && (gpio_get_level(Button[KeyNum]) == 0))//大于长按时间

@@ -29,6 +29,8 @@ Pid_TypeDef Gyroz_Pid;
 Pid_TypeDef Foward_PID;
 Pid_TypeDef AngleControl_PID;
 Pid_TypeDef Angle_PID;
+Pid_TypeDef Line_GyroZ_PID;
+Pid_TypeDef Line_Double_PID;
 //串口获取的像素偏差
 float Direction_Err = 0.0;
 float Forward_Speed = 5.0f;
@@ -39,7 +41,8 @@ Car_Handle Car =
     .Speed_X = 0,
     .Speed_Y = 0,
     .Speed_Z = 0,
-    .Image_Flag = true,
+    .Image_Flag = false,
+    .Speed = true,
 };
 Turn_Handle Turn = 
 {
@@ -69,15 +72,20 @@ void All_PID_Init()
     Incremental_PID_Init(&LMotor_B_Speed,0.7f,0.23f,0.5f,40,-40);//0.7f,0.23f,0.5f,40,-40
     Incremental_PID_Init(&RMotor_B_Speed,0.76f,0.10f,0.36f,40,-40);//0.5f,0.22f,0.5f,40,-40
     PIDInit(&Angle_PID,0.44f,0,2,1.5f,-1.5f);
-    PIDInit(&Image_PID,3.8f,0,0.5f,2.5f,-2.5f);
+    // PIDInit(&Image_PID,3.8f,0,0.5f,2.5f,-2.5f);
+    PIDInit(&Image_PID,3.7f,0,1.56f,6.5f,-6.5f);
+
     PIDInit(&ImageX_PID,0.060f,0, 0.0f,3.0f,-3.0f);
     PIDInit(&ImageF_PID,0.090f,0,0.2f,5.0f,-5.0f);
     PIDInit(&BorderPlace_PID,2.1f,0,0,1.5f,-1.5f);
     PIDInit(&Foward_PID,2.1f,0,0,1.5f,-1.5f);
-    PIDInit(&Turn_PID,2.55f,0,0.6f,5,-5);   
+    PIDInit(&Turn_PID,3.55f,0,0.6f,5,-5);   
     PIDInit(&Gyroz_PID,1.75f,0,0.25f,5,-5);
-    PIDInit(&Gyroz_Pid,0.65f,0,0.25f,5,-5);
+    PIDInit(&Gyroz_Pid,2.65f,0,0.25f,5,-5);
     PIDInit(&AngleControl_PID,0.18f,0,0.5,3.0f,-3.0f);
+    
+    PIDInit(&Line_GyroZ_PID,0,0,0.8f,3.0f,-3.0f);
+    PIDInit(&Line_Double_PID,0.24f,0,0,3.0f,-3.0f);
 }
 
 
@@ -94,23 +102,21 @@ void Set_Car_Speed(float Speed_X,float Speed_Y,float Speed_Z)
     float LF_Speed,LB_Speed,RF_Spped,RB_Speed;
 
 //运动解算
-    LF_Speed = Speed_Y + Speed_X + Speed_Z;
-    LB_Speed = Speed_Y - Speed_X + Speed_Z;
-    RF_Spped = Speed_Y - Speed_X - Speed_Z;
-    RB_Speed = Speed_Y + Speed_X - Speed_Z;
+    if(Car.Speed)
+    {
+        LF_Speed = Speed_Y + Speed_X + Speed_Z;
+        LB_Speed = Speed_Y - Speed_X + (0.3f * Speed_Z);
+        RF_Spped = Speed_Y - Speed_X - Speed_Z;
+        RB_Speed = Speed_Y + Speed_X - (0.3f*Speed_Z);
+    }
+    else
+    {
+        LF_Speed = Speed_Y + Speed_X + Speed_Z;
+        LB_Speed = Speed_Y - Speed_X + Speed_Z;
+        RF_Spped = Speed_Y - Speed_X - Speed_Z;
+        RB_Speed = Speed_Y + Speed_X - Speed_Z;
+    }
 
-    if(Receivedata.I_Data!=0)
-    {
-        RMotor_B_Speed.Ki = Receivedata.I_Data;
-    }
-    if(Receivedata.P_Data!=0)
-    {
-        RMotor_B_Speed.Kp = Receivedata.P_Data;
-    }
-    if(Receivedata.D_Data!=0)
-    {
-        RMotor_B_Speed.Kd = Receivedata.D_Data;
-    }
 //速度环
     Set_Motor_Speed(LMotor_F,Get_Incremental_PID_Value(&LMotor_F_Speed,LF_Speed-Encoer_Speed[0]));
     Set_Motor_Speed(LMotor_B,Get_Incremental_PID_Value(&LMotor_B_Speed,LB_Speed-Encoer_Speed[2]));
@@ -140,7 +146,7 @@ void Turn_Angle(float Target_Angle)
     
     if(Target_Angle - Turn.Offset >= 2.5f)
     {
-        Yaw_Erro = 2 + GetPIDValue(&Turn_PID,Offset_Erro);
+        Yaw_Erro = 4 + GetPIDValue(&Turn_PID,Offset_Erro);
         Car.Speed_X = 0;
         Car.Speed_Y = 0;
         Car.Speed_Z = GetPIDValue(&Gyroz_Pid,Yaw_Erro - IMU_Data.gyro_z);
@@ -148,7 +154,7 @@ void Turn_Angle(float Target_Angle)
     }
     else if(Target_Angle - Turn.Offset <= -2.5f)
     {
-        Yaw_Erro = -2 + GetPIDValue(&Turn_PID,Offset_Erro);
+        Yaw_Erro = -4 + GetPIDValue(&Turn_PID,Offset_Erro);
         Car.Speed_X = 0;
         Car.Speed_Y = 0;
         Car.Speed_Z = GetPIDValue(&Gyroz_Pid,Yaw_Erro - IMU_Data.gyro_z);
@@ -201,10 +207,11 @@ float Get_Image_Errox()
 **/
 void Car_run(float Speed)
 {
-    float Image_Erro_ = GetPIDValue(&Image_PID,(70 - Image_Erro)*0.03f);
+    float Pid_Err = (74 - Image_Erro)*0.03f;
+    float Image_Erro_ = GetPIDValue(&Image_PID,Pid_Err);
     Car.Speed_X = 0;
     Car.Speed_Y = Speed;
-    Car.Speed_Z = -Image_Erro_;
+    Car.Speed_Z = -Image_Erro_ + GetPIDValue(&Line_GyroZ_PID,(0 - IMU_Data.gyro_z)) - GetPIDValue(&Line_Double_PID,fabs(Pid_Err)*Pid_Err);
 }
 
 /**@brief   横向巡线

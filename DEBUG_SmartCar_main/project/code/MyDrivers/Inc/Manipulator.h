@@ -2,6 +2,8 @@
 #define _MANIPULATOR_H
 
 #include "zf_common_headfile.h"
+#define Light_On gpio_set_level(D1,1)
+#define Light_Off gpio_set_level(D1,0)
 
 typedef struct 
 {

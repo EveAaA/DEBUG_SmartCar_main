@@ -4,6 +4,7 @@
 void Get_Bin_Image();
 void Image_Process();
 bool No_Get_Line();
+bool All_Stright();
 
 #define Image_H 80//Í¼Ïñ¸ß¶È
 #define Image_W 148//Í¼Ïñ¿í¶È
@@ -45,6 +46,7 @@ typedef struct
 	bool Zerba;
 	bool Roadblock;
 	uint8 Cross_Type;
+	uint8 Ramp;
 	bool Get_Start_Point;
 }Flag_Handle;
 

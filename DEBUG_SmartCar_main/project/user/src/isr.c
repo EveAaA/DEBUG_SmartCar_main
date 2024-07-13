@@ -49,6 +49,7 @@ void CSI_IRQHandler(void)
 }
 
 uint8 testmode = 0;
+float Speed = 8;
 void PIT_IRQHandler(void)
 {
     if(pit_flag_get(PIT_CH0))
@@ -57,6 +58,7 @@ void PIT_IRQHandler(void)
         Beep_Freq();
         Beep_On();//蜂鸣器
         Open_Door(Servo_Flag.Open_Door);
+        Key_Delay();
         Rotary_Switch(MyFSM.Depot_Pos,70);
         Set_Car_Speed(Car.Speed_X,Car.Speed_Y,Car.Speed_Z);//控制速度的线程
         pit_flag_clear(PIT_CH0);
@@ -64,11 +66,6 @@ void PIT_IRQHandler(void)
     
     if(pit_flag_get(PIT_CH1))
     {
-        // if ((mt9v03x_finish_flag) && (Car.Image_Flag))
-        // {
-        //     Image_Process();
-        //     mt9v03x_finish_flag = 0;
-        // }
         pit_flag_clear(PIT_CH1);
     }
     
@@ -76,14 +73,11 @@ void PIT_IRQHandler(void)
     {
         if(Start == 1)
         {
-            // if(Servo_Flag.Put_Out==false)
-            // {
-            //     Take_Card_Out();
-            // }
             FSM_main();
         }
         else if(Start == 0)
         {
+            Servo_Flag.Put_Out=false;
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
             Car.Speed_Z = 0;
@@ -269,13 +263,13 @@ void GPIO2_Combined_16_31_IRQHandler(void)
     
     if(exti_flag_get(Rotary_D))
     {
-        system_delay_ms(20);
-        if(gpio_get_level(Rotary_D) == 1)
-        {
-            Rotary.Press = 1;
-            Rotary.Clockwise = 0;
-            Rotary.Anticlockwise = 0;
-        }
+        // system_delay_ms(20);
+        // if(gpio_get_level(Rotary_D) == 1)
+        // {
+        //     Rotary.Press = 1;
+        //     Rotary.Clockwise = 0;
+        //     Rotary.Anticlockwise = 0;
+        // }
         exti_flag_clear(Rotary_D); // 清除中断标志位
     }
 }
