@@ -69,7 +69,7 @@ void UART_init(UART *uart, IRQn_Type UART_PRIORITY, uart_index_enum UART_INDEX)
 		uart_rx_interrupt(UART_INDEX, ZF_ENABLE); // 开启 UART_INDEX 的接收中断        
 		break;
     case UART_RECOGNIZE_PLACE:
-        uart_init(UART_INDEX, UART_BAUDRATE, UART5_TX_C28, UART5_RX_C29);
+        uart_init(UART_INDEX, UART_BAUDRATE, UART4_TX_C16, UART4_RX_C17);
         interrupt_set_priority(UART_PRIORITY, 1); // 设置对应 UART_INDEX 的中断优先级为 0
 		uart_rx_interrupt(UART_INDEX, ZF_ENABLE); // 开启 UART_INDEX 的接收中断   
         break;

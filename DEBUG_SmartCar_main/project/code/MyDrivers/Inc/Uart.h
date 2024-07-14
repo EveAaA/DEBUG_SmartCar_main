@@ -8,7 +8,7 @@
 #define UART_RECOGNIZE_PLACE_CREW (LPUART5_IRQn)
 #define UART_FINDBORDER  (UART_1)
 #define UART_FINE_TUNING (UART_2)
-#define UART_RECOGNIZE_PLACE (UART_5)
+#define UART_RECOGNIZE_PLACE (UART_4)
 #define START_FINETUNING (0x05) // 开始获取微调信息的数据
 #define START_FINETUNING_BESIDE (0x04) // 开始获取微调信息的数据赛道旁
 #define UART_CLASSIFY_PIC (0x06) // 开始识别分类的图像
