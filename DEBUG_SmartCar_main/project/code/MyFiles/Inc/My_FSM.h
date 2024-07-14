@@ -38,6 +38,9 @@ typedef enum
     Ready_Ring,//准备
     Find_Zebra,//找到斑马线
     Wait_Big_Data,//等待大类放置区域数据
+    Wait_Big_Data_Left,//等待大类左边放置区域数据
+    Wait_Left_Data,//等待微调数据
+    Diff_Dir_Unload,//存在不同方向的卸货地点
     Unload_Next,//前往下一个卸货点
     Unload_Board,//卸货
 }Fsm_State_Handle;
