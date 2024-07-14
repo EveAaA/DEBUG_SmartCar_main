@@ -27,7 +27,8 @@ CLASSIFYtypeDef   CLASSIFY_DATA    = {false, nil, None};
 PLACEtypeDef      SMALL_PLACE_DATA = {false, nil, None};
 PLACEtypeDef      BIG_PLACE_DATA   = {false, nil, None};
 FINETUNINGtypeDef FINETUNING_DATA  = {0, false, 0.0f, 0.0f, 0.0f};
-FINDBORDERtypeDef FINDBORDER_DATA  = {false, 0.0f, STRAIGHT};  
+FINDBORDERtypeDef FINDBORDER_DATA  = {false, 0.0f, STRAIGHT};
+FINDBORDERtypeDef HARDBORDER_DATA  = {false, 0.0f, STRAIGHT};
 UnpackDataTypeDef UnpackFlag       = {false, false, false}; // 判断帧头帧尾是否到达
 VOLUMEUPTypeDef   VOLUMEUP_DATA    = {0.0f, 0.0f};
 
@@ -69,6 +70,8 @@ void UART_init(UART *uart, IRQn_Type UART_PRIORITY, uart_index_enum UART_INDEX)
 		break;
     case UART_RECOGNIZE_PLACE:
         uart_init(UART_INDEX, UART_BAUDRATE, UART5_TX_C28, UART5_RX_C29);
+        interrupt_set_priority(UART_PRIORITY, 1); // 设置对应 UART_INDEX 的中断优先级为 0
+		uart_rx_interrupt(UART_INDEX, ZF_ENABLE); // 开启 UART_INDEX 的接收中断   
         break;
     default:
         break;

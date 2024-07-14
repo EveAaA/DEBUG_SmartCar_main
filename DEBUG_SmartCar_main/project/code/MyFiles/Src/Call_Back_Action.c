@@ -51,6 +51,59 @@ void Sensor_Handler()
   Encoder_Process();
 }
 
+void Uart_Findborder_Hard_Receive(void)
+{
+  static uint8_t tailLastData;
+  uart_query_byte(UART_5, &_UART_RECOGNIZE_PLACE.get_data);
+  _UART_RECOGNIZE_PLACE.fifo_get_data[_UART_RECOGNIZE_PLACE.index] = _UART_RECOGNIZE_PLACE.get_data;
+  _UART_RECOGNIZE_PLACE.index++;
+  // fifo_write_buffer(&_UART_FINDBORDER.uart_data_fifo, &_UART_FINDBORDER.get_data, 1);
+  if (_UART_RECOGNIZE_PLACE.get_data == 0x8f && tailLastData == 0x7f)
+  {
+    // UnpackFlag.FINDBORDER_DATA_FLAG = true;
+    if (_UART_RECOGNIZE_PLACE.index == 5)
+    {
+      // printf("+++++++++++++++++\n");
+      // printf("index: %d\n", _UART_FINDBORDER.index);
+      // for (uint32_t i = 0; i < _UART_FINDBORDER.index; i++)
+      // {
+      //   printf("%x ", _UART_FINDBORDER.fifo_get_data[i]);
+      // }
+      // printf("\n");
+      // printf("%x  \n", _UART_FINDBORDER.get_data);
+      // printf("+++++++++++++++++\n");
+      // 两字节转浮点数
+      if (_UART_RECOGNIZE_PLACE.fifo_get_data[0] == 0x01)
+      {
+        HARDBORDER_DATA.FINDBORDER_FLAG = true;
+      }
+      else if (_UART_RECOGNIZE_PLACE.fifo_get_data[0] == 0x00)
+      {
+        HARDBORDER_DATA.FINDBORDER_FLAG = false;
+      }
+      FINDBORDER_DATA.dx = (float)_UART_FINDBORDER.fifo_get_data[1];
+      if (_UART_RECOGNIZE_PLACE.fifo_get_data[2] == 0x10)
+      {
+        HARDBORDER_DATA.dir = LEFT;
+      }
+      else if (_UART_RECOGNIZE_PLACE.fifo_get_data[2] == 0x11)
+      {
+        HARDBORDER_DATA.dir = RIGHT;
+      }
+      else if (_UART_RECOGNIZE_PLACE.fifo_get_data[2] == 0x12)
+      {
+        HARDBORDER_DATA.dir = STRAIGHT;
+      }
+    }
+    else
+    {
+      memset(_UART_RECOGNIZE_PLACE.fifo_get_data, 0, sizeof(_UART_RECOGNIZE_PLACE.fifo_get_data));
+      _UART_RECOGNIZE_PLACE.index = 0;
+    }
+  }
+  tailLastData = _UART_RECOGNIZE_PLACE.get_data;
+}
+
 /**@brief   找目标板openart串口
 -- @param   无
 -- @author  戴骐阳
