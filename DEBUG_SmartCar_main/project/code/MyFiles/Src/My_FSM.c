@@ -195,7 +195,7 @@ static void Line_PatrolFsm()
 #ifdef debug_switch
     printf("Line_Patrol\r\n");
 #endif
-    if (FINDBORDER_DATA.FINDBORDER_FLAG == true && !Image_Flag.Roadblock && !Image_Flag.Ramp)
+    if (HARDBORDER_DATA.FINDBORDER_FLAG == true && !Image_Flag.Roadblock && !Image_Flag.Ramp)
     {
         Forward_Speed = 4;
     }
@@ -256,9 +256,9 @@ static void Line_PatrolFsm()
         MyFSM.CurState = Unload; // ж��
         Set_Beepfreq(3);
     }
-    else if (((FINDBORDER_DATA.dir == LEFT) || (FINDBORDER_DATA.dir == RIGHT)) && !Image_Flag.Roadblock && !Image_Flag.Ramp) // ɢ�俨Ƭ
+    else if (((HARDBORDER_DATA.dir == LEFT) || (HARDBORDER_DATA.dir == RIGHT)) && !Image_Flag.Roadblock && !Image_Flag.Ramp) // ɢ�俨Ƭ
     {
-        MyFSM.Board_Dir = FINDBORDER_DATA.dir;
+        MyFSM.Board_Dir = HARDBORDER_DATA.dir;
         Car.Speed = false;
         Car.Image_Flag = false;
         MyFSM.CurState = Line_Board; // ɢ�俨Ƭ

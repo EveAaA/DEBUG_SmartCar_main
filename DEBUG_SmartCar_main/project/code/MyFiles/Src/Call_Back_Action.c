@@ -63,15 +63,15 @@ void Uart_Findborder_Hard_Receive(void)
     // UnpackFlag.FINDBORDER_DATA_FLAG = true;
     if (_UART_RECOGNIZE_PLACE.index == 5)
     {
-      printf("+++++++++++++++++\n");
-      // printf("index: %d\n", _UART_RECOGNIZE_PLACE.index);
-      for (uint32_t i = 0; i < _UART_RECOGNIZE_PLACE.index; i++)
-      {
-        printf("%x ", _UART_RECOGNIZE_PLACE.fifo_get_data[i]);
-      }
-      printf("\n");
-      // printf("%x  \n", _UART_RECOGNIZE_PLACE.get_data);
-      printf("+++++++++++++++++\n");
+      // printf("+++++++++++++++++\n");
+      // // printf("index: %d\n", _UART_RECOGNIZE_PLACE.index);
+      // for (uint32_t i = 0; i < _UART_RECOGNIZE_PLACE.index; i++)
+      // {
+      //   printf("%x ", _UART_RECOGNIZE_PLACE.fifo_get_data[i]);
+      // }
+      // printf("\n");
+      // // printf("%x  \n", _UART_RECOGNIZE_PLACE.get_data);
+      // printf("+++++++++++++++++\n");
       // 两字节转浮点数
       if (_UART_RECOGNIZE_PLACE.fifo_get_data[0] == 0x01)
       {

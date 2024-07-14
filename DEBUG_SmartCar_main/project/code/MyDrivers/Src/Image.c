@@ -872,11 +872,11 @@ uint8 Lose_Line(void)
     {
         return 1;
     }
-    else if ((Lose_Line_Point_L >= 18))
+    else if ((Lose_Line_Point_L >= 10))
     {
         return 2;
     }
-    else if ((Lose_Line_Point_R >= 18))
+    else if ((Lose_Line_Point_R >= 10))
     {
         return 3;
     }
@@ -2116,19 +2116,7 @@ void Roadblock_Seek(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border
     Left_Straight = Straight_Line_Judge(L_Border, Total_Num_L - 10, LeftLine);//判断左边是否为长直线
     if (Right_Straight)//先找一条直线
     {
-        for (i = 3; i < Image_H / 2; i++)//寻找左上拐点
-        {
-            if (abs(L_Border[i - 1] - L_Border[i - 2] <= 5)
-                && (abs(L_Border[i - 2] - L_Border[i - 3]) <= 5)
-                && (abs(L_Border[i - 3] - L_Border[i - 4]) <= 5)
-                && (L_Border[i] - L_Border[i - 2] >= 7))
-            {
-                Break_Num_L_UP = i;//传递y坐标
-                break;
-            }
-        }
-
-        for (i = Image_H - 5; i > Image_H / 2 - 5; i--)//寻找左下拐点
+        for (i = Image_H - 5; i > Hightest; i--)//寻找左下拐点
         {
             if (abs(L_Border[i + 1] - L_Border[i + 2] <= 5)
                 && (abs(L_Border[i + 2] - L_Border[i + 3]) <= 5)
@@ -2141,7 +2129,8 @@ void Roadblock_Seek(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border
         }
 
         if ((Break_Num_L_DOWN)
-            && (!Bin_Image[Break_Num_L_DOWN - 10][L_Border[Break_Num_L_DOWN]]))
+            && (!Bin_Image[Break_Num_L_DOWN - 10][L_Border[Break_Num_L_DOWN]])
+            && (Lose_Line() == false))
         {
             Image_Flag.Roadblock = true;
             Get_K_b(Break_Num_L_DOWN, L_Border[Break_Num_L_DOWN], 2, Image_W / 2 + 20, &slope_l_rate, &intercept_l);
@@ -2151,8 +2140,7 @@ void Roadblock_Seek(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border
                 L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
             }
         }
-        else if ((!Break_Num_L_UP)
-            && (!Break_Num_L_DOWN)
+        else if ((!Break_Num_L_DOWN)
             && (!Lose_Line())
             && (All_Stright()))
         {
@@ -2161,19 +2149,7 @@ void Roadblock_Seek(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border
     }
     else if (Left_Straight)
     {
-        for (i = 3; i < Image_H/2; i++)//寻找右上拐点
-        {
-            if (abs(R_Border[i - 1] - R_Border[i - 2] <= 5)
-                && (abs(R_Border[i - 2] - R_Border[i - 3]) <= 5)
-                && (abs(R_Border[i - 3] - R_Border[i - 4]) <= 5)//连续
-                && (R_Border[i - 2] - R_Border[i] >= 7))//断裂
-            {
-                Break_Num_R_UP = i;//传递y坐标
-                break;
-            }
-        }
-
-        for (i = Image_H - 5; i > Image_H / 2 - 5; i--)//寻找右下拐点
+        for (i = Image_H - 5; i > Hightest; i--)//寻找右下拐点
         {
             //printf("R_Border[%d] = %d\r\n", i, R_Border[i]);
             if (abs(R_Border[i + 1] - R_Border[i + 2] <= 5)
@@ -2186,7 +2162,8 @@ void Roadblock_Seek(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border
             }
         }
         if ((Break_Num_R_DOWN) 
-            &&(!Bin_Image[Break_Num_R_DOWN - 10][R_Border[Break_Num_R_DOWN]]))
+            &&(!Bin_Image[Break_Num_R_DOWN - 10][R_Border[Break_Num_R_DOWN]])
+            && (Lose_Line() == false))
         {
             Image_Flag.Roadblock = true;
             Get_K_b(Break_Num_R_DOWN,R_Border[Break_Num_R_DOWN],2,Image_W/2-20,&slope_l_rate, &intercept_l);
@@ -2196,8 +2173,7 @@ void Roadblock_Seek(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border
                 R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
             }
         }
-        else if ((!Break_Num_R_UP)
-            && (!Break_Num_R_DOWN)
+        else if ((!Break_Num_R_DOWN)
             && (!Lose_Line())
             && (All_Stright()))
         {
@@ -2210,7 +2186,11 @@ void Roadblock_Seek(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border
     }
 }
 
-
+/**@brief   坡道识别
+-- @param   无
+-- @author  庄文标
+-- @date    2024/7/13
+**/
 void Ramp_Find(void)
 {
     if((dl1a_distance_mm < 550) 
@@ -2228,7 +2208,7 @@ void Ramp_Find(void)
 
     if(Image_Flag.Ramp == 2 && Gyro_PitchAngle_Get()>-2 && dl1a_distance_mm > 550)
     {
-        Image_Flag.Ramp = 0;//正在下坡
+        Image_Flag.Ramp = 0;
     }
 }
 
