@@ -1617,7 +1617,7 @@ uint16_t findCircleOutPoint_R(uint8* R_Border)
             && R_Border[next] < Border_Max - 5 
             && i < Image_H - 20)
         {
-            printf("找到突出点\r\n");
+            // printf("找到突出点\r\n");
             return i;
         }
         //imshow("原图像", resizeFrame);
@@ -2064,7 +2064,7 @@ void Zebra_Seek(uint8(*Bin_Image)[Image_W],uint8* L_Border, uint8* R_Border, uin
 
     for(uint8 i = 50;i <= 120;i++)
     {
-        if(Bin_Image[30][i] == Black_Pixel && Bin_Image[30][i+1] == White_Pixel)
+        if(Bin_Image[25][i] == Black_Pixel && Bin_Image[25][i+1] == White_Pixel)
         {
             total ++;
         }
@@ -2100,42 +2100,42 @@ void Roadblock_Seek(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border
 
     Right_Straight = Straight_Line_Judge(R_Border, Total_Num_R - 10, RightLine);//判断右边是否为长直线
     Left_Straight = Straight_Line_Judge(L_Border, Total_Num_L - 10, LeftLine);//判断左边是否为长直线
-    if (Right_Straight)//先找一条直线
-    {
-        for (i = Image_H - 5; i > 2; i--)//寻找左下拐点
-        {
-            if (abs(L_Border[i + 1] - L_Border[i + 2] <= 5)
-                && (abs(L_Border[i + 2] - L_Border[i + 3]) <= 5)
-                && (abs(L_Border[i + 3] - L_Border[i + 4]) <= 5)
-                && (L_Border[i] - L_Border[i + 2] >= 7))
-            {
-                Break_Num_L_DOWN = i;//传递y坐标
-                break;
-            }
-        }
+    // if (Right_Straight)//先找一条直线
+    // {
+    //     // for (i = Image_H - 5; i > 2; i--)//寻找左下拐点
+    //     // {
+    //     //     if (abs(L_Border[i + 1] - L_Border[i + 2] <= 5)
+    //     //         && (abs(L_Border[i + 2] - L_Border[i + 3]) <= 5)
+    //     //         && (abs(L_Border[i + 3] - L_Border[i + 4]) <= 5)
+    //     //         && (L_Border[i] - L_Border[i + 2] >= 7))
+    //     //     {
+    //     //         Break_Num_L_DOWN = i;//传递y坐标
+    //     //         break;
+    //     //     }
+    //     // }
 
-        if ((Break_Num_L_DOWN)
-            && (!Bin_Image[Break_Num_L_DOWN - 10][L_Border[Break_Num_L_DOWN]])
-            && (Lose_Line() == false))
-        {
-            Image_Flag.Roadblock = true;
-            // printf("障碍\r\n");
-            Get_K_b(Break_Num_L_DOWN, L_Border[Break_Num_L_DOWN], 2, Image_W / 2 + 20, &slope_l_rate, &intercept_l);
-            for (i = Image_H - 2; i >= 2; i-=1)
-            {
-                L_Border[i] = slope_l_rate * (i)+intercept_l + 65;;//y = kx+b
-                L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
-            }
-        }
-        else if ((!Break_Num_L_DOWN)
-            && (!Lose_Line())
-            && (All_Stright()))
-        {
-            Image_Flag.Roadblock = false;
-            // printf("不是障碍\r\n");
-        }
-    }
-    else if (Left_Straight)
+    //     // if ((Break_Num_L_DOWN)
+    //     //     && (!Bin_Image[Break_Num_L_DOWN - 10][L_Border[Break_Num_L_DOWN]])
+    //     //     && (Lose_Line() == false))
+    //     // {
+    //     //     Image_Flag.Roadblock = true;
+    //     //     // printf("障碍\r\n");
+    //     //     // Get_K_b(Break_Num_L_DOWN, L_Border[Break_Num_L_DOWN], 2, Image_W / 2 + 20, &slope_l_rate, &intercept_l);
+    //     //     // for (i = Image_H - 2; i >= 2; i--)
+    //     //     // {
+    //     //     //     L_Border[i] = slope_l_rate * (i)+intercept_l + 65;;//y = kx+b
+    //     //     //     L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
+    //     //     // }
+    //     // }
+    //     // else if ((!Break_Num_L_DOWN)
+    //     //     && (!Lose_Line())
+    //     //     && (All_Stright()))
+    //     // {
+    //     //     Image_Flag.Roadblock = false;
+    //     //     // printf("不是障碍\r\n");
+    //     // }
+    // }
+    if (Left_Straight)
     {
         for (i = Image_H - 5; i > 2; i--)//寻找右下拐点
         {
@@ -2291,14 +2291,14 @@ void Image_Process(void)
         Get_Left(Data_Stastics_L);
         Get_Right(Data_Stastics_R);
 
-        if(MyFSM.CurState == Unload || MyFSM.CurState == Line_Patrol)
+        if(MyFSM.CurState == Unload || MyFSM.CurState == Line_Patrol || MyFSM.Line_Board_State == Finsh_Return)
         {
             Zebra_Seek(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R);
         }
-        if(MyFSM.CurState == Line_Patrol)
-        {
-            Roadblock_Seek(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R);
-        }
+        // if(MyFSM.CurState == Line_Patrol)
+        // {
+        //     Roadblock_Seek(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R);
+        // }
 
         // if(MyFSM.CurState == Line_Patrol)
         // {

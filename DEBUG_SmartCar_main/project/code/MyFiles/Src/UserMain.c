@@ -148,24 +148,24 @@ void User_Init()
     #ifndef Image_debug
     tft180_init();
     #endif
-    bluetooth_ch9141_init();
+    // bluetooth_ch9141_init();
     IMU_Init();
     Mt9v03x_Init();
     #ifdef Image_debug
     WIFI_SPI_Init();
     #endif
     All_Encoder_Init();
-    // // tft180_show_string(Row_0, Line_2, "Encoder Init ...");
+    // tft180_show_string(Row_0, Line_2, "Encoder Init ...");
     Rotary_Init();
-    // // tft180_show_string(Row_0, Line_3, "Rotary Init ...");
+    // tft180_show_string(Row_0, Line_3, "Rotary Init ...");
     Manipulator_Init();
     Motor_Init();
-    // // tft180_show_string(Row_0, Line_4, "Motor Init ...");
+    // tft180_show_string(Row_0, Line_4, "Motor Init ...");
     Beep_Init();
     // dl1a_init();
     All_PID_Init();
-//    Flash_Init();
-    // // mt9v03x_set_exposure_time(Menu.Ex_Time);
+    // Flash_Init();
+    // mt9v03x_set_exposure_time(Menu.Ex_Time);
     UART_Init();
     #ifdef Image_debug
     printf("All_Init\r\n");
@@ -178,7 +178,7 @@ void User_Init()
     TIM_Init();
 	interrupt_global_enable(0);
 }
-extern void Ramp_Find();
+
 /**@brief   所有主循环内容
 -- @param   无
 -- @author  庄文标
@@ -187,10 +187,10 @@ extern void Ramp_Find();
 void User_Loop()
 {
     Get_Button_Value(0);
-    if(Receivedata.Start_Flag!=2)
-    {
-        Start = Receivedata.Start_Flag;
-    }
+    // if(Receivedata.Start_Flag!=2)
+    // {
+    //     Start = Receivedata.Start_Flag;
+    // }
     if(mt9v03x_finish_flag && Car.Image_Flag)
     {
         mt9v03x_finish_flag = 0;
@@ -210,9 +210,6 @@ void User_Loop()
     //     tft180_draw_point(L_Border[i], i, RGB565_BLUE);
     //     tft180_draw_point(R_Border[i], i, RGB565_RED);
     // }
-    // printf("%f,%f,%f,%f,%f\r\n",Get_Y_Speed(),Encoer_Speed[0],Encoer_Speed[1],Encoer_Speed[2],Encoer_Speed[3]);
-    // Ramp_Find();
-    // printf("dis:%d,pitchAngle:%f,flae:%d\r\n",dl1a_distance_mm,Gyro_PitchAngle_Get(),Image_Flag.Ramp);
 #ifndef Image_debug
     if(Start!=1)
     {

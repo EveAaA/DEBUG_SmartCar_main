@@ -74,10 +74,12 @@ void PIT_IRQHandler(void)
         if(Start == 1)
         {
             FSM_main();
+            // Car.Speed_X = 0;
+            // Car.Speed_Y = 8;
+            // Car.Speed_Z = 0;
         }
         else if(Start == 0)
         {
-            Servo_Flag.Put_Out=false;
             Car.Speed_X = 0;
             Car.Speed_Y = 0;
             Car.Speed_Z = 0;
@@ -151,7 +153,8 @@ void LPUART4_IRQHandler(void)
     if(kLPUART_RxDataRegFullFlag & LPUART_GetStatusFlags(LPUART4))
     {
         // 接收中断 
-		// Uart_Fine_Tuning_Receive();
+        Uart_Findborder_Hard_Receive();
+			// Uart_Fine_Tuning_Receive();
     }
         
     LPUART_ClearStatusFlags(LPUART4, kLPUART_RxOverrunFlag);    // 不允许删除
@@ -185,7 +188,7 @@ void LPUART8_IRQHandler(void)
     {
         // 接收中断
         wireless_module_uart_handler();
-	    Get_Message();
+	    // Get_Message();
     }
         
     LPUART_ClearStatusFlags(LPUART8, kLPUART_RxOverrunFlag);    // 不允许删除

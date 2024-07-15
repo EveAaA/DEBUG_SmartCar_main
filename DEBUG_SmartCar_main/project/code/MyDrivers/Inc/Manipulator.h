@@ -29,6 +29,7 @@ typedef struct
 
 typedef enum
 {
+    No_Depot = 8,
     White = 0,
     Black = 1,
     Red = 2,

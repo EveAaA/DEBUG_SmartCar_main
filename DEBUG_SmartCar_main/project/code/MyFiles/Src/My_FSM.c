@@ -41,6 +41,8 @@ FSM_Handle MyFSM = {
     .Big_Pos[2] = RIGHT,
 };
 
+ATB_t BigWare[3];
+uint8 After_Big[10] = {0,0,0};
 WareState_t smallPlaceWare =
     {
         .isSame = false,
@@ -48,11 +50,13 @@ WareState_t smallPlaceWare =
         .notEmptyNum = 0,
         .isWareUsed = {false, false, false, false, false},
 };
+GetCard_t *currCard;
 
 uint16 wait_time = 0;
 #define Static_Time 100 // 等待静止的时间，大约0.5秒
 // #define debug_switch  //是否调试
-#define Classify_debug //是否查看分类
+// #define Classify_debug //是否查看分类
+// #define Final_Change //是否放置区域在道路两边
 /**
  ******************************************************************************
  *  @defgroup 内部调用
@@ -142,7 +146,7 @@ void putCardIntoWare(WareState_t *Ware, Place_t place, Rotaryservo_Handle *Depot
  * @param place
  * @return Rotaryservo_Handle
  */
-Rotaryservo_Handle takeOutFromWare(WareState_t *ware, Place_t place, uint8 *num)
+Rotaryservo_Handle takeOutFromWare(WareState_t *ware, Place_t place, uint8 *num, GetCard_t* currWare)
 {
     *num = 0;
     for (uint8 i = 0; i < 5; i++)
@@ -150,10 +154,41 @@ Rotaryservo_Handle takeOutFromWare(WareState_t *ware, Place_t place, uint8 *num)
         if (place == ware->list[i].CardName)
         {
             *num = ware->list[i].cardNum;
+            currWare = &(ware->list[i]);
             return ware->list[i].WareIndex;
         }
     }
     return 0;
+}
+
+void checkBigPlaceWare(WareState_t *ware)
+{
+    for (uint8_t i = 0; i < 5; ++i)
+    {
+        switch (ware->list[i].WareIndex)
+        {
+        case 0:
+            if (ware->list[i].cardNum != 0)
+            {
+                BigWare[0].cardNum = ware->list[i].cardNum;
+            }
+            break;
+        case 1:
+            if (ware->list[i].cardNum != 0)
+            {
+                BigWare[1].cardNum = ware->list[i].cardNum;
+            }
+            break;
+        case 2:
+            if (ware->list[i].cardNum != 0)
+            {
+                BigWare[2].cardNum = ware->list[i].cardNum;
+            }
+            break;
+        default:
+            break;
+        }
+    }
 }
 
 /**@brief   发车状态机
@@ -387,6 +422,7 @@ static void Line_BoardFsm()
                 if (Bufcnt(true, 5000))
                 {
                     MyFSM.Line_Board_State = Return_Line;//超时
+                    Light_Off;//关灯
                 }
             }
             Car.Speed_X = 0;
@@ -614,6 +650,7 @@ static void Cross_BoardFsm()
                     Dodge_Board();
                     MyFSM.Cross_Board_State = Pick;                                          // 捡起卡片
                     putCardIntoWare(&smallPlaceWare, CLASSIFY_DATA.place, &MyFSM.Depot_Pos); // 将卡片放入对应仓库
+                    After_Big[MyFSM.Depot_Pos] += 1;
                     #ifdef Classify_debug
                     printf("Cross=%s\r\n", PLACE_TABLE_STR[CLASSIFY_DATA.place]);
                     #endif
@@ -749,7 +786,7 @@ static void Cross_BoardFsm()
                 Dodge_Board();
                 Light_Off;//开灯
                 Servo_Flag.Depot_End = true;
-                MyFSM.Depot_Pos = takeOutFromWare(&smallPlaceWare, SMALL_PLACE_DATA.place, &MyFSM.Small_Count);
+                MyFSM.Depot_Pos = takeOutFromWare(&smallPlaceWare, SMALL_PLACE_DATA.place, &MyFSM.Small_Count, currCard);
                 Set_Beepfreq(1);
                 SMALL_PLACE_DATA.place = nil;
                 if (MyFSM.Small_Count != 0)
@@ -788,6 +825,9 @@ static void Cross_BoardFsm()
                 {
                     Servo_Flag.Put_Out = false;
                     MyFSM.Small_Count -= 1;
+                    After_Big[MyFSM.Depot_Pos] -= 1;
+                    // printf("Place: %s\r\n", PLACE_TABLE_STR[currCard->CardName]);
+                    // printf("Num: %d\r\n", currCard->cardNum);
                     if ((MyFSM.Small_Count == 0) && (MyFSM.Unload_Count < 5)) // 卡片卸完且不到五个卸货点
                     {
                         MyFSM.Cross_Board_State = Ready_Find_Next;
@@ -902,14 +942,27 @@ static void Cross_BoardFsm()
             }
         break;
         case Adjust_Line://调整
-            Car.Speed_X = 3;
+            if(MyFSM.Cross_Dir == RIGHT)
+            {
+                Car.Speed_X = 3;
+            }
+            else
+            {
+                Car.Speed_X = -3;
+            }
             Car.Speed_Y = 0;
             Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
-            if(Bufcnt(true,2100
-            ))
+            if(Bufcnt(true,2100))
             {
                 MyFSM.Static_Angle = Gyro_YawAngle_Get();
                 MyFSM.Cross_Board_State = Return_Line;
+                // checkBigPlaceWare(&smallPlaceWare);
+                MyFSM.Big_Count[0] += After_Big[0];
+                MyFSM.Big_Count[1] += After_Big[1];
+                MyFSM.Big_Count[2] += After_Big[2];
+                After_Big[0] = 0;
+                After_Big[1] = 0;
+                After_Big[2] = 0;
             }
         break;
         case Return_Line:
@@ -1213,6 +1266,7 @@ static void Ring_BoardFsm()
                     Dodge_Board();
                     MyFSM.Ring_Board_State = Pick;// 捡起卡片
                     putCardIntoWare(&smallPlaceWare, CLASSIFY_DATA.place, &MyFSM.Depot_Pos); // 将卡片放入对应仓库
+                    After_Big[MyFSM.Depot_Pos] += 1;
                     #ifdef Classify_debug
                     printf("ring=%s\r\n", PLACE_TABLE_STR[CLASSIFY_DATA.place]);
                     #endif
@@ -1347,7 +1401,7 @@ static void Ring_BoardFsm()
                 MyFSM.Unload_Count += 1;
                 Dodge_Board();
                 Servo_Flag.Depot_End = true;
-                MyFSM.Depot_Pos = takeOutFromWare(&smallPlaceWare, SMALL_PLACE_DATA.place, &MyFSM.Small_Count);
+                MyFSM.Depot_Pos = takeOutFromWare(&smallPlaceWare, SMALL_PLACE_DATA.place, &MyFSM.Small_Count, currCard);
                 Set_Beepfreq(1);
                 SMALL_PLACE_DATA.place = nil;
                 SMALL_PLACE_DATA.IS_PLACE = false;
@@ -1393,6 +1447,7 @@ static void Ring_BoardFsm()
                 {
                     Servo_Flag.Put_Out = false;
                     MyFSM.Small_Count -= 1;
+                    After_Big[MyFSM.Depot_Pos] -= 1;
                     if ((MyFSM.Small_Count == 0) && (MyFSM.Unload_Count < 5) && (MyFSM.Unload_Count > 1)) // 卡片卸完且不是一、五个卸货点
                     {
                         MyFSM.Ring_Board_State = Ready_Find_Next;
@@ -1681,6 +1736,12 @@ static void Ring_BoardFsm()
                 Image_Flag.Left_Ring = false;
                 UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBORDER); // 继续获取道路旁卡片
                 FINDBORDER_DATA.FINDBORDER_FLAG = false;
+                MyFSM.Big_Count[0]+=After_Big[0];
+                MyFSM.Big_Count[1]+=After_Big[1];
+                MyFSM.Big_Count[2]+=After_Big[2];
+                After_Big[0] = 0;
+                After_Big[1] = 0;
+                After_Big[2] = 0;
             }
         break;
         case No_Board_Return: // 元素里没有卡片直接走
@@ -1777,11 +1838,13 @@ static void Unload_Fsm()
                 MyFSM.Big_Pos[0] = RIGHT;
                 Light_On;//开灯
             }
-            
-            if(Bufcnt(true,1500))
+
+#ifdef Final_Change
+            if(Bufcnt(true,1500)) 
             {
                 MyFSM.Unload_State = Diff_Dir_Unload;//找不到右边的放置区域
             }
+#endif
             Car.Speed_X = 3;
             Car.Speed_Y = 0;
             Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
@@ -1798,16 +1861,50 @@ static void Unload_Fsm()
                 {
                     MyFSM.Big_Pos[0] = LEFT;
                 }
-                MyFSM.Unload_State = Wait_Data;
+                MyFSM.Unload_State = Wait_Big_Data_Left;
                 MyFSM.Static_Angle = Gyro_YawAngle_Get();
+                Light_On;//开灯
             }
+        break;
+        case Wait_Big_Data_Left:
+            UART_SendByte(&_UART_FINE_TUNING, 0x13); // 发送对数字板微调信息
+            if (UnpackFlag.FINETUNING_DATA_FLAG)
+            {
+                UnpackFlag.FINETUNING_DATA_FLAG = false;
+                if (FINETUNING_DATA.IS_BORDER_ALIVE)
+                {
+                    if (Bufcnt(true, 600))
+                    {
+                        MyFSM.Unload_State = Move; // 开始移动到卡片前面
+                        MyFSM.Target_Pos_X = FINETUNING_DATA.dx / 10.0f;
+                        MyFSM.Target_Pos_Y = FINETUNING_DATA.dy / 10.0f;
+                    }
+                    Car.Speed_X = 0;
+                    Car.Speed_Y = 0;
+                    Car.Speed_Z = 0;
+                }
+            }
+            Car.Speed_X = 0;
+            Car.Speed_Y = 3;
+            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
         break;
         case Wait_Data:
     #ifdef debug_switch
             printf("Wait_Data\r\n");
     #endif
             Dodge_Carmar();
-            UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE_ZEBRA); // 发送对数字板微调信息
+            if(MyFSM.Take_Board_Out)
+            {
+                #ifdef Final_Change
+                    UART_SendByte(&_UART_FINE_TUNING, 0x13); // 发送对数字板微调信息
+                #else
+                    UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE); // 发送对数字板微调信息
+                #endif
+            }
+            else
+            {
+                UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE_ZEBRA); // 发送对数字板微调信息
+            }
             if (UnpackFlag.FINETUNING_DATA_FLAG)
             {
                 UnpackFlag.FINETUNING_DATA_FLAG = false;
@@ -1840,6 +1937,7 @@ static void Unload_Fsm()
                     Car.Speed_Y = 0;
                     Car.Speed_Z = 0;
                 }
+#ifdef Final_Change
                 else if(!FINETUNING_DATA.IS_BORDER_ALIVE && MyFSM.Big_Pos_Count!=0)//卡片不存在
                 {
                     if(MyFSM.Big_Pos_Count == 1 && MyFSM.Big_Pos[0] == LEFT)
@@ -1852,17 +1950,18 @@ static void Unload_Fsm()
                         MyFSM.Big_Pos[1] = LEFT;
                         MyFSM.Unload_State = Diff_Dir_Unload;
                     }
-                    else if(MyFSM.Big_Pos_Count == 2 && MyFSM.Big_Pos[1] == RIGHT)//卡片不存在且当前已经去过二个卸货点了且第二个点是左边的
-                    {
-                        MyFSM.Big_Pos[2] = RIGHT;
-                        MyFSM.Unload_State = Diff_Dir_Unload;
-                    }
                     else if(MyFSM.Big_Pos_Count == 2 && MyFSM.Big_Pos[1] == RIGHT)//卡片不存在且当前已经去过二个卸货点了且第二个点是右边的
                     {
                         MyFSM.Big_Pos[2] = LEFT;
                         MyFSM.Unload_State = Diff_Dir_Unload;
                     }
+                    else if(MyFSM.Big_Pos_Count == 2 && MyFSM.Big_Pos[1] == LEFT)//卡片不存在且当前已经去过二个卸货点了且第二个点是右边的
+                    {
+                        MyFSM.Big_Pos[2] = RIGHT;
+                        MyFSM.Unload_State = Diff_Dir_Unload;
+                    }
                 }
+#endif
             }
             Car.Speed_X = 0;
             if (MyFSM.Big_Pos_Count == 0)
@@ -1887,7 +1986,11 @@ static void Unload_Fsm()
             }
             else
             {
-                UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE); // 发送对数字板微调信息
+                #ifdef Final_Change
+                UART_SendByte(&_UART_FINE_TUNING, 0x13); // 发送对数字板微调信息
+                #else
+                UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE); // 发送对数字板微调信息    
+                #endif
             }
 
             if (Navigation.Finish_Flag == false)
@@ -2029,7 +2132,14 @@ static void Unload_Fsm()
                 {
                     if (Navigation.Finish_Flag == false)
                     {
-                        Navigation_Process(60, 0);
+                        if(MyFSM.Big_Pos[MyFSM.Big_Pos_Count-1] == RIGHT)
+                        {
+                            Navigation_Process(60, -10);
+                        }
+                        else
+                        {
+                            Navigation_Process(-60, -10);
+                        }
                     }
                     else
                     {

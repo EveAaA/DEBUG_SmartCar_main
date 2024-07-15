@@ -97,6 +97,11 @@ typedef struct WareState
     bool isWareUsed[5];    // 判别有哪一个仓库未被使用
 }WareState_t;
 
+typedef struct afterTakeOutSmallBigWare
+{
+    uint8_t cardNum;
+}ATB_t;
+
 extern FSM_Handle MyFSM;
 void FSM_main();
 
