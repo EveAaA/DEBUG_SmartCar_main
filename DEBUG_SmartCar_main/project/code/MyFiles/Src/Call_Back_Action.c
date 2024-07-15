@@ -94,6 +94,8 @@ void Uart_Findborder_Hard_Receive(void)
       {
         HARDBORDER_DATA.dir = STRAIGHT;
       }
+      memset(_UART_RECOGNIZE_PLACE.fifo_get_data, 0, sizeof(_UART_RECOGNIZE_PLACE.fifo_get_data));
+      _UART_RECOGNIZE_PLACE.index = 0;
     }
     else
     {
@@ -152,6 +154,8 @@ void Uart_Findborder_Receive(void)
       {
         FINDBORDER_DATA.dir = STRAIGHT;
       }
+      memset(_UART_FINDBORDER.fifo_get_data, 0, sizeof(_UART_FINDBORDER.fifo_get_data));
+      _UART_FINDBORDER.index = 0;
     }
     else
     {
@@ -181,6 +185,8 @@ void Uart_Findborder_Receive(void)
       {
         FINDBORDER_DATA.FINDBIGPLACE_FLAG = false;
       }
+      memset(_UART_FINDBORDER.fifo_get_data, 0, sizeof(_UART_FINDBORDER.fifo_get_data));
+      _UART_FINDBORDER.index = 0;
     }
     else
     {

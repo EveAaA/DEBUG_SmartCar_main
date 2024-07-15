@@ -60,17 +60,17 @@ void UART_init(UART *uart, IRQn_Type UART_PRIORITY, uart_index_enum UART_INDEX)
     {
     case UART_FINDBORDER:
         uart_init(UART_INDEX, UART_BAUDRATE, UART1_TX_B12, UART1_RX_B13); // 初始化串口引脚
-		interrupt_set_priority(UART_PRIORITY, 0); // 设置对应 UART_INDEX 的中断优先级为 0
+		interrupt_set_priority(UART_PRIORITY, 1); // 设置对应 UART_INDEX 的中断优先级为 0
 		uart_rx_interrupt(UART_INDEX, ZF_ENABLE); // 开启 UART_INDEX 的接收中断
         break;
     case UART_FINE_TUNING:
         uart_init(UART_INDEX, UART_BAUDRATE, UART2_TX_B18, UART2_RX_B19);
-		interrupt_set_priority(UART_PRIORITY, 1); // 设置对应 UART_INDEX 的中断优先级为 0
+		interrupt_set_priority(UART_PRIORITY, 2); // 设置对应 UART_INDEX 的中断优先级为 0
 		uart_rx_interrupt(UART_INDEX, ZF_ENABLE); // 开启 UART_INDEX 的接收中断        
 		break;
     case UART_RECOGNIZE_PLACE:
         uart_init(UART_INDEX, UART_BAUDRATE, UART4_TX_C16, UART4_RX_C17);
-        interrupt_set_priority(UART_PRIORITY, 1); // 设置对应 UART_INDEX 的中断优先级为 0
+        interrupt_set_priority(UART_PRIORITY, 3); // 设置对应 UART_INDEX 的中断优先级为 0
 		uart_rx_interrupt(UART_INDEX, ZF_ENABLE); // 开启 UART_INDEX 的接收中断   
         break;
     default:

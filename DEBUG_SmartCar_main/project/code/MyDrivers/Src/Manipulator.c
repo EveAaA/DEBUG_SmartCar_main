@@ -270,7 +270,7 @@ void Open_Door(bool Open_Or)
     {
         if(Open_Or)
         {
-            Set_Angle = 55 + (160 - 55)*(Percent/(float)200);
+            Set_Angle = 55 + (175 - 55)*(Percent/(float)200);
             Percent +=1;
             if(Percent>=200)
             {

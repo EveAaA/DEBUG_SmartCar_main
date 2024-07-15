@@ -48,6 +48,8 @@ typedef struct
 	uint8 Cross_Type;
 	uint8 Ramp;
 	bool Get_Start_Point;
+	bool L_Find;
+	bool R_Find;
 }Flag_Handle;
 
 typedef enum {
