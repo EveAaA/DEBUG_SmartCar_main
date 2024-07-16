@@ -164,8 +164,8 @@ void User_Init()
     Beep_Init();
     // dl1a_init();
     All_PID_Init();
-    // Flash_Init();
-    // mt9v03x_set_exposure_time(Menu.Ex_Time);
+    Flash_Init();
+    mt9v03x_set_exposure_time(Menu.Ex_Time);
     UART_Init();
     #ifdef Image_debug
     printf("All_Init\r\n");

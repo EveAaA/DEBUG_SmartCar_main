@@ -35,10 +35,11 @@ FSM_Handle MyFSM = {
     .Unload_Count = 0,
     .Big_Pos_Count = 0,
     .Depot_Pos = White,
-    .Take_Board_Out = true,
+    .Take_Board_Out = true,//true为逐张拿出方案
     .Big_Pos[0] = RIGHT,
     .Big_Pos[1] = RIGHT,
     .Big_Pos[2] = RIGHT,
+    .Ring_Flag = false,
 };
 
 ATB_t BigWare[3];
@@ -1734,6 +1735,7 @@ static void Ring_BoardFsm()
                 MyFSM.CurState = Line_Patrol;
                 Image_Flag.Right_Ring = false;
                 Image_Flag.Left_Ring = false;
+                // MyFSM.Ring_Flag = true;
                 UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBORDER); // 继续获取道路旁卡片
                 FINDBORDER_DATA.FINDBORDER_FLAG = false;
                 MyFSM.Big_Count[0]+=After_Big[0];

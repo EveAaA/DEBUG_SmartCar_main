@@ -230,6 +230,7 @@ static void Page2_Mode()
     Arrow_Display(Menu.Set_Line);//箭头显示
 }
 
+uint8 Bin_Image_Flag = 0;
 /**@brief   图像显示以及相关参数
 -- @param   无
 -- @author  庄文标
@@ -241,7 +242,14 @@ static void Image_Page()
     {
         mt9v03x_finish_flag = 0;
         Get_Bin_Image();
-        tft180_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,128,60,0);
+        if(Bin_Image_Flag)
+        {
+            tft180_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,128,60,0);
+        }
+        else
+        {
+            tft180_show_gray_image(0,0,(uint8*)mt9v03x_image,MT9V03X_W,MT9V03X_H,128,60,0);
+        }
     }
     // tft180_set_dir(TFT180_CROSSWISE);
     // tft180_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,148,80,0);
@@ -252,26 +260,28 @@ static void Image_Page()
     //     tft180_draw_point(L_Border[i], i, RGB565_BLUE);
     //     tft180_draw_point(R_Border[i], i, RGB565_RED);
     // }
-    // tft180_show_string(Row_1,Line_4,"I_Erro:");
-    // tft180_show_float(10,100,Image_Erro,3,2);
-    // tft180_show_string(Row_1,Line_5,"Ex_Time:");
-    // tft180_show_uint(Row_9,Line_5,flash_union_buffer[50].uint16_type,5);//曝光时间
+    tft180_show_string(Row_1,Line_4,"Bin:");
+    tft180_show_uint(Row_6,Line_4,Bin_Image_Flag,2);
+    tft180_show_string(Row_1,Line_5,"Ex_Time:");
+    tft180_show_uint(Row_9,Line_5,flash_union_buffer[50].uint16_type,5);//曝光时间
+    tft180_show_string(Row_1,Line_6,"T_P:");
+    tft180_show_uint(Row_6,Line_6,flash_union_buffer[51].uint16_type,5);//曝光时间
     Exit_Dis;
-    if((Menu.Set_Line == 9) && (Rotary.Press))//退出
-    {
-        Rotary.Press = 0;
-        Menu_Mode = Page_Select;
-        Menu.Image_Show = false;
-        Menu.Set_Line = 0;
-        tft180_clear();
-    }
+    // if((Menu.Set_Line == 9) && (Rotary.Press))//退出
+    // {
+    //     Rotary.Press = 0;
+    //     Menu_Mode = Page_Select;
+    //     Menu.Image_Show = false;
+    //     Menu.Set_Line = 0;
+    //     tft180_clear();
+    // }
 
-    if((Menu.Set_Line == 4) && (Rotary.Press))//退出
-    {
-        Rotary.Press = 0;
-        Menu.Image_Show = true;
-        tft180_clear();
-    }
+    // if((Menu.Set_Line == 4) && (Rotary.Press))//退出
+    // {
+    //     Rotary.Press = 0;
+    //     Menu.Image_Show = true;
+    //     tft180_clear();
+    // }
 
     if(Menu.Set_Mode == Normal_Mode)
     {
@@ -280,6 +290,7 @@ static void Image_Page()
             Rotary.Press = 0;
             Menu_Mode = Page_Select;//退出到第一页
             Menu.Set_Line = 0;
+            flash_buffer_clear();
             tft180_clear();
         }
         else if((Menu.Set_Line == 5) && (Rotary.Press))
@@ -287,19 +298,40 @@ static void Image_Page()
             Rotary.Press = 0;
             Menu.Set_Mode = Flash_Mode;
         } 
+        else if((Menu.Set_Line == 6) && (Rotary.Press))
+        {
+            Rotary.Press = 0;
+            Menu.Set_Mode = Flash_Mode;
+        } 
+        else if((Menu.Set_Line == 4) && (Rotary.Press))
+        {
+            Rotary.Press = 0;
+            Bin_Image_Flag = 1;
+            tft180_clear();
+        } 
         Line_Change();//行切换
     }
     else if(Menu.Set_Mode == Flash_Mode)//设置参数
     {
-        if(Rotary.Clockwise)//顺时针转
+        if((Rotary.Clockwise)&&(Menu.Set_Line == 5))//顺时针转
         {
             Rotary.Clockwise = 0;
             flash_union_buffer[50].uint16_type+=10;
         }
-        else if(Rotary.Anticlockwise)//逆时针转
+        else if((Rotary.Anticlockwise)&&(Menu.Set_Line == 5))//逆时针转
         {
             Rotary.Anticlockwise = 0;
             flash_union_buffer[50].uint16_type-=10;
+        }
+        if((Rotary.Clockwise)&&(Menu.Set_Line == 6))//顺时针转
+        {
+            Rotary.Clockwise = 0;
+            flash_union_buffer[51].uint16_type+=1;
+        }
+        else if((Rotary.Anticlockwise)&&(Menu.Set_Line == 6))//逆时针转
+        {
+            Rotary.Anticlockwise = 0;
+            flash_union_buffer[51].uint16_type-=1;
         }
         else if(Rotary.Press)//调参结束
         {
@@ -313,6 +345,7 @@ static void Image_Page()
     {
         Menu.Flash_Set = 0;
         Menu.Ex_Time = flash_union_buffer[50].uint16_type;
+        Menu.Turn_Point = flash_union_buffer[51].uint16_type;
         flash_write_page_from_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
     }
     Arrow_Display(Menu.Set_Line);//箭头显示
@@ -335,27 +368,28 @@ void Flash_Init()
     flash_init();//逐飞flash初始化
     if(!flash_check(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX))//判断是否有数据，如果没有数据
     {
-        flash_union_buffer[0].float_type = 0.15f;//微调X轴P
-        flash_union_buffer[1].float_type = 0.28f;//微调Y轴P
-        flash_union_buffer[2].float_type = 0.20f;//微调X轴D
-        flash_union_buffer[3].float_type = 0.0f;//微调Y轴D
-        flash_union_buffer[4].float_type = 0.13f;//角度环P
-        flash_union_buffer[5].float_type = 0.5f;//角度环D
+        // flash_union_buffer[0].float_type = 0.15f;//微调X轴P
+        // flash_union_buffer[1].float_type = 0.28f;//微调Y轴P
+        // flash_union_buffer[2].float_type = 0.20f;//微调X轴D
+        // flash_union_buffer[3].float_type = 0.0f;//微调Y轴D
+        // flash_union_buffer[4].float_type = 0.13f;//角度环P
+        // flash_union_buffer[5].float_type = 0.5f;//角度环D
         flash_union_buffer[50].uint16_type = 150;//曝光时间
+        flash_union_buffer[51].uint16_type = 16;//曝光时间
         flash_write_page_from_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
         flash_buffer_clear();
     }
     else
     {
         flash_read_page_to_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
-        DistanceX_PID.Kp = flash_union_buffer[0].float_type;
-        DistanceY_PID.Kp = flash_union_buffer[1].float_type;
-        DistanceX_PID.Kd = flash_union_buffer[2].float_type;
-        DistanceY_PID.Kd = flash_union_buffer[3].float_type;
-        AngleControl_PID.Kp = flash_union_buffer[4].float_type;
-        AngleControl_PID.Kd = flash_union_buffer[5].float_type;
+        // DistanceX_PID.Kp = flash_union_buffer[0].float_type;
+        // DistanceY_PID.Kp = flash_union_buffer[1].float_type;
+        // DistanceX_PID.Kd = flash_union_buffer[2].float_type;
+        // DistanceY_PID.Kd = flash_union_buffer[3].float_type;
+        // AngleControl_PID.Kp = flash_union_buffer[4].float_type;
+        // AngleControl_PID.Kd = flash_union_buffer[5].float_type;
+        Menu.Turn_Point = flash_union_buffer[51].uint16_type;
         Menu.Ex_Time = flash_union_buffer[50].uint16_type;
-        flash_buffer_clear();
     }
 }
 

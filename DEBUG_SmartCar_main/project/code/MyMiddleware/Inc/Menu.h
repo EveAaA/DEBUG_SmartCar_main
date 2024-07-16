@@ -64,6 +64,7 @@ typedef struct
 	Mode_Handle Set_Mode;
 	bool  Image_Show;//是否为图像显示
 	uint16 Ex_Time;//曝光时间
+	uint8 Turn_Point;
 }Menu_;
 
 extern int Show_Mode;

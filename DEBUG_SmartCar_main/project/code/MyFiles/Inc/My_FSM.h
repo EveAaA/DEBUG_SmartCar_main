@@ -86,6 +86,8 @@ typedef struct
     uint8 Unload_Count;//卸货次数
     Rotaryservo_Handle Depot_Pos;//仓库的位置
     uint8 Big_Pos[3];//大类的位置
+
+    bool Ring_Flag;
 }FSM_Handle;
 
 typedef struct WareState

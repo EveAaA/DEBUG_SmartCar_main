@@ -2222,7 +2222,7 @@ bool No_Get_Line()
         Start_Point+=1;
     }
 
-    if((Start_Point >= 16))
+    if((Start_Point >= Menu.Turn_Point))
     {
         Start_Point = 0;
         return false;
@@ -2323,7 +2323,8 @@ void Image_Process(void)
         && ((MyFSM.CurState == Line_Patrol) || (MyFSM.CurState == Ring_Board))
         && (MyFSM.Ring_Board_State != Return_Line)
         && (MyFSM.Ring_Board_State != Finsh_Return)
-        && (!Image_Flag.Ramp))
+        && (!Image_Flag.Ramp)
+        && (MyFSM.Ring_Flag == false))
         {
             Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
         }
@@ -2335,7 +2336,8 @@ void Image_Process(void)
         && ((MyFSM.CurState == Line_Patrol) || (MyFSM.CurState == Ring_Board))
         && (MyFSM.Ring_Board_State != Return_Line)
         && (MyFSM.Ring_Board_State != Finsh_Return)
-        && (!Image_Flag.Ramp))
+        && (!Image_Flag.Ramp)
+        && (MyFSM.Ring_Flag == false))
         {
             Right_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
         }
