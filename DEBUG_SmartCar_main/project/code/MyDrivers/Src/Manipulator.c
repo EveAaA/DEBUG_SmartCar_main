@@ -16,12 +16,11 @@
 #include "My_FSM.h"
 /* Define\Declare ------------------------------------------------------------*/
 #define Servo_FREQ 330
-
 #define Set_180Servo_Angle(angle) ((float)PWM_DUTY_MAX / (1000.0 / (float)Servo_FREQ) * (0.5 + (float)(angle) / 90.0))//设置180度舵机角度转为具体占空比
 #define Set_360Servo_Angle(angle) ((float)PWM_DUTY_MAX / (1000.0 / (float)Servo_FREQ) * (0.5 + (float)(angle) / 180.0))//设置360度舵机角度转为具体占空比
 #define Electromagnet_On gpio_set_level(D27,1)
 #define Electromagnet_Off gpio_set_level(D27,0)
-uint8 Down_Angle[10]={40,37,37,37,35,33,30,30,30,30};
+uint8 Down_Angle[10]={37,37,37,37,35,33,30,30,30,30};
 
 Servo_Handle Stretch_Servo = //抬臂舵机
 {

@@ -40,6 +40,7 @@ FSM_Handle MyFSM = {
     .Big_Pos[1] = RIGHT,
     .Big_Pos[2] = RIGHT,
     .Ring_Flag = false,
+    .Simple_Flag = 1,
 };
 
 ATB_t BigWare[3];
@@ -264,13 +265,13 @@ static void Line_PatrolFsm()
     Car_run(Forward_Speed);
     Dodge_Carmar();
 
-    if (Image_Flag.Cross_Fill == 2) // 十字回环
+    if ((Image_Flag.Cross_Fill == 2) && (MyFSM.Simple_Flag !=0)) // 十字回环
     {
         MyFSM.CurState = Cross_Board; // 十字回环状态机
         Car.Speed = false;
         Set_Beepfreq(1);
     }
-    else if ((Image_Flag.Right_Ring) || (Image_Flag.Left_Ring)) // 圆环卡片
+    else if (((Image_Flag.Right_Ring) || (Image_Flag.Left_Ring)) && (MyFSM.Simple_Flag !=0)) // 圆环卡片
     {
         MyFSM.CurState = Ring_Board; // 圆环状态机
         Car.Speed = false;

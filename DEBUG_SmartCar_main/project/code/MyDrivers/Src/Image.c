@@ -2324,7 +2324,8 @@ void Image_Process(void)
         && (MyFSM.Ring_Board_State != Return_Line)
         && (MyFSM.Ring_Board_State != Finsh_Return)
         && (!Image_Flag.Ramp)
-        && (MyFSM.Ring_Flag == false))
+        && (MyFSM.Ring_Flag == false)
+        && (MyFSM.Simple_Flag!=0))
         {
             Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
         }
@@ -2337,7 +2338,8 @@ void Image_Process(void)
         && (MyFSM.Ring_Board_State != Return_Line)
         && (MyFSM.Ring_Board_State != Finsh_Return)
         && (!Image_Flag.Ramp)
-        && (MyFSM.Ring_Flag == false))
+        && (MyFSM.Ring_Flag == false)
+        && (MyFSM.Simple_Flag!=0))
         {
             Right_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
         }

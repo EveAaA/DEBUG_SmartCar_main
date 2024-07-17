@@ -54,4 +54,5 @@ extern Servo_Handle Raise_Servo;
 extern Servo_Handle Stretch_Servo;
 extern Servo_Handle Rotary_Servo;
 extern Servo_Flag_Handle Servo_Flag;
+extern uint8 Down_Angle[10];
 #endif

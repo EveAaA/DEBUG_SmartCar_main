@@ -13,7 +13,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "Menu.h"
-
+#include "My_FSM.h"
 /* Define\Declare ------------------------------------------------------------*/
 uint8 Menu_Mode = Page9;
 Menu_ Menu = 
@@ -265,7 +265,11 @@ static void Image_Page()
     tft180_show_string(Row_1,Line_5,"Ex_Time:");
     tft180_show_uint(Row_9,Line_5,flash_union_buffer[50].uint16_type,5);//曝光时间
     tft180_show_string(Row_1,Line_6,"T_P:");
-    tft180_show_uint(Row_6,Line_6,flash_union_buffer[51].uint16_type,5);//曝光时间
+    tft180_show_uint(Row_6,Line_6,flash_union_buffer[51].uint16_type,5);//判断回到赛道的点
+    tft180_show_string(Row_1,Line_7,"Simple:");
+    tft180_show_uint(Row_9,Line_7,flash_union_buffer[52].uint16_type,5);//是否只捡道路的卡片
+    tft180_show_string(Row_1,Line_8,"ANGLE:");
+    tft180_show_uint(Row_8,Line_8,flash_union_buffer[53].uint16_type,5);//是否只捡道路的卡片
     Exit_Dis;
     // if((Menu.Set_Line == 9) && (Rotary.Press))//退出
     // {
@@ -303,6 +307,16 @@ static void Image_Page()
             Rotary.Press = 0;
             Menu.Set_Mode = Flash_Mode;
         } 
+        else if((Menu.Set_Line == 7) && (Rotary.Press))
+        {
+            Rotary.Press = 0;
+            Menu.Set_Mode = Flash_Mode;
+        } 
+        else if((Menu.Set_Line == 8) && (Rotary.Press))
+        {
+            Rotary.Press = 0;
+            Menu.Set_Mode = Flash_Mode;
+        } 
         else if((Menu.Set_Line == 4) && (Rotary.Press))
         {
             Rotary.Press = 0;
@@ -323,6 +337,13 @@ static void Image_Page()
             Rotary.Anticlockwise = 0;
             flash_union_buffer[50].uint16_type-=10;
         }
+        else if(Rotary.Press)//调参结束
+        {
+            Rotary.Press = 0;
+            Menu.Set_Mode = Normal_Mode;
+            Menu.Flash_Set = 1;
+        }
+
         if((Rotary.Clockwise)&&(Menu.Set_Line == 6))//顺时针转
         {
             Rotary.Clockwise = 0;
@@ -339,6 +360,41 @@ static void Image_Page()
             Menu.Set_Mode = Normal_Mode;
             Menu.Flash_Set = 1;
         }
+
+        if((Rotary.Clockwise)&&(Menu.Set_Line == 7))//顺时针转
+        {
+            Rotary.Clockwise = 0;
+            flash_union_buffer[52].uint16_type+=1;
+        }
+        else if((Rotary.Anticlockwise)&&(Menu.Set_Line == 7))//逆时针转
+        {
+            Rotary.Anticlockwise = 0;
+            flash_union_buffer[52].uint16_type-=1;
+        }
+        else if(Rotary.Press)//调参结束
+        {
+            Rotary.Press = 0;
+            Menu.Set_Mode = Normal_Mode;
+            Menu.Flash_Set = 1;
+        }
+
+
+        if((Rotary.Clockwise)&&(Menu.Set_Line == 8))//顺时针转
+        {
+            Rotary.Clockwise = 0;
+            flash_union_buffer[53].uint16_type+=1;
+        }
+        else if((Rotary.Anticlockwise)&&(Menu.Set_Line == 8))//逆时针转
+        {
+            Rotary.Anticlockwise = 0;
+            flash_union_buffer[53].uint16_type-=1;
+        }
+        else if(Rotary.Press)//调参结束
+        {
+            Rotary.Press = 0;
+            Menu.Set_Mode = Normal_Mode;
+            Menu.Flash_Set = 1;
+        }
     }
 
     if(Menu.Flash_Set)//调参结束
@@ -346,6 +402,8 @@ static void Image_Page()
         Menu.Flash_Set = 0;
         Menu.Ex_Time = flash_union_buffer[50].uint16_type;
         Menu.Turn_Point = flash_union_buffer[51].uint16_type;
+        MyFSM.Simple_Flag = flash_union_buffer[52].uint16_type;
+        Down_Angle[0] = flash_union_buffer[53].uint16_type;
         flash_write_page_from_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
     }
     Arrow_Display(Menu.Set_Line);//箭头显示
@@ -357,7 +415,7 @@ static void Image_Page()
  *  @brief
  *
 **/
-
+uint8 Servo_Angle = 40;
 /**@brief   Flash初始化
 -- @param   无
 -- @author  庄文标
@@ -376,6 +434,8 @@ void Flash_Init()
         // flash_union_buffer[5].float_type = 0.5f;//角度环D
         flash_union_buffer[50].uint16_type = 150;//曝光时间
         flash_union_buffer[51].uint16_type = 16;//曝光时间
+        flash_union_buffer[52].uint16_type = 1;
+        flash_union_buffer[53].uint16_type = 40;
         flash_write_page_from_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
         flash_buffer_clear();
     }
@@ -390,6 +450,8 @@ void Flash_Init()
         // AngleControl_PID.Kd = flash_union_buffer[5].float_type;
         Menu.Turn_Point = flash_union_buffer[51].uint16_type;
         Menu.Ex_Time = flash_union_buffer[50].uint16_type;
+        MyFSM.Simple_Flag = flash_union_buffer[52].uint16_type;
+        Down_Angle[0] = flash_union_buffer[53].uint16_type;
     }
 }
 

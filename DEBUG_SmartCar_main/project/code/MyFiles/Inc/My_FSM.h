@@ -88,6 +88,7 @@ typedef struct
     uint8 Big_Pos[3];//大类的位置
 
     bool Ring_Flag;
+    uint8 Simple_Flag;//只捡道路旁的卡片
 }FSM_Handle;
 
 typedef struct WareState
