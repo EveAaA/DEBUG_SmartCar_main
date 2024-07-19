@@ -2316,25 +2316,25 @@ void Image_Process(void)
         }
 
         // м╛ио
-        if ((!Image_Flag.Cross_Fill) 
-        && (!Image_Flag.Right_Ring) 
-        && (!Image_Flag.Zerba) 
-        && (!Image_Flag.Roadblock) 
-        && ((MyFSM.CurState == Line_Patrol) || (MyFSM.CurState == Ring_Board))
-        && (MyFSM.Ring_Board_State != Return_Line)
-        && (MyFSM.Ring_Board_State != Finsh_Return)
-        && (!Image_Flag.Ramp)
-        && (MyFSM.Ring_Flag == false)
-        && (MyFSM.Simple_Flag!=0))
-        {
-            Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
-        }
+        // if ((!Image_Flag.Cross_Fill) 
+        // && (!Image_Flag.Right_Ring) 
+        // && (!Image_Flag.Zerba) 
+        // && (!Image_Flag.Roadblock) 
+        // && ((MyFSM.CurState == Line_Patrol) || (MyFSM.CurState == Ring_Board))
+        // && (MyFSM.Ring_Board_State != Return_Line)
+        // && (MyFSM.Ring_Board_State != Finsh_Return)
+        // && (!Image_Flag.Ramp)
+        // && (MyFSM.Ring_Flag == false)
+        // && (MyFSM.Simple_Flag!=0))
+        // {
+        //     Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
+        // }
 
         if ((!Image_Flag.Cross_Fill) 
         && (!Image_Flag.Left_Ring) 
         && (!Image_Flag.Zerba) 
         && (!Image_Flag.Roadblock) 
-        && ((MyFSM.CurState == Line_Patrol) || (MyFSM.CurState == Ring_Board))
+        && ((MyFSM.CurState == Line_Patrol) || (MyFSM.CurState == Ring_Board) || (MyFSM.Line_Board_State == Finsh_Return))
         && (MyFSM.Ring_Board_State != Return_Line)
         && (MyFSM.Ring_Board_State != Finsh_Return)
         && (!Image_Flag.Ramp)

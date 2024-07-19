@@ -35,7 +35,7 @@ FSM_Handle MyFSM = {
     .Unload_Count = 0,
     .Big_Pos_Count = 0,
     .Depot_Pos = White,
-    .Take_Board_Out = true,//true为逐张拿出方案
+    .Take_Board_Out = false,//true为逐张拿出方案
     .Big_Pos[0] = RIGHT,
     .Big_Pos[1] = RIGHT,
     .Big_Pos[2] = RIGHT,
@@ -1727,7 +1727,7 @@ static void Ring_BoardFsm()
         break;
         case Finsh_Return:
             Car_run(5);
-            if (Bufcnt(true, 1800))
+            if (Bufcnt(true, 800))
             {
                 Turn.Finish = false;
                 RightRing.Ring_State = Ring_Front;
