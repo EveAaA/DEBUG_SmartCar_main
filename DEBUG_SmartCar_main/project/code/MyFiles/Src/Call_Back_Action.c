@@ -188,6 +188,32 @@ void Uart_Findborder_Receive(void)
       memset(_UART_FINDBORDER.fifo_get_data, 0, sizeof(_UART_FINDBORDER.fifo_get_data));
       _UART_FINDBORDER.index = 0;
     }
+    else if (_UART_FINDBORDER.get_data == 0xbf && tailLastData == 0xfc)
+    {
+      if (_UART_FINDBORDER.index == 7)
+      {
+        UnpackFlag.FINETUNING_DATA_FLAG = true;
+        FINETUNING_DATA.dx = (float)((_UART_FINDBORDER.fifo_get_data[1] >> 7) == 0) ? ((_UART_FINDBORDER.fifo_get_data[0] + (_UART_FINDBORDER.fifo_get_data[1] << 8))) : (-(65536 - (_UART_FINDBORDER.fifo_get_data[0] + (_UART_FINDBORDER.fifo_get_data[1] << 8))));
+        FINETUNING_DATA.dy = (float)((_UART_FINDBORDER.fifo_get_data[3] >> 7) == 0) ? ((_UART_FINDBORDER.fifo_get_data[2] + (_UART_FINDBORDER.fifo_get_data[3] << 8))) : (-(65536 - (_UART_FINDBORDER.fifo_get_data[2] + (_UART_FINDBORDER.fifo_get_data[3] << 8))));
+        FINETUNING_DATA.FINETUNING_FINISH_FLAG = _UART_FINDBORDER.fifo_get_data[4];
+        // printf("dx: %f dy: %f \r\n", FINETUNING_DATA.dx, FINETUNING_DATA.dy);
+        if (FINETUNING_DATA.dx != -999 && FINETUNING_DATA.dy != -999)
+        {
+          FINETUNING_DATA.IS_BORDER_ALIVE = true;
+        }
+        else
+        {
+          FINETUNING_DATA.IS_BORDER_ALIVE = false;
+        }
+        memset(_UART_FINDBORDER.fifo_get_data, 0, sizeof(_UART_FINDBORDER.fifo_get_data));
+        _UART_FINDBORDER.index = 0;
+      }
+      else
+      {
+        memset(_UART_FINDBORDER.fifo_get_data, 0, sizeof(_UART_FINDBORDER.fifo_get_data));
+        _UART_FINDBORDER.index = 0;
+      }
+    }
     else
     {
       memset(_UART_FINDBORDER.fifo_get_data, 0, sizeof(_UART_FINDBORDER.fifo_get_data));

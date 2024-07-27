@@ -20,6 +20,7 @@
 #define UART_STARTFINETUNING_PLACE (0x10)  // 开始对数字版微调整
 #define UART_STARTFINETUNING_PLACE_ZEBRA (0x12)  // 开始对斑马线数字版微调整
 #define UART_MOVEVOLUMEUP_FLAG (0x11)
+#define UART_SLEEP_FLAG (0x21) // 微调摄像头进入待机模式
 
 typedef struct Uart
 {
