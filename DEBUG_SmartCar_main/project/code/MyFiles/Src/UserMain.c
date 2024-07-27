@@ -210,6 +210,9 @@ void User_Loop()
     //     tft180_draw_point(L_Border[i], i, RGB565_BLUE);
     //     tft180_draw_point(R_Border[i], i, RGB565_RED);
     // }
+    // printf("%f,%f,%f,%f,%f\r\n",Get_Y_Speed(),Encoer_Speed[0],Encoer_Speed[1],Encoer_Speed[2],Encoer_Speed[3]);
+    // Ramp_Find();
+    // printf("dis:%d,pitchAngle:%f,flae:%d\r\n",dl1a_distance_mm,Gyro_PitchAngle_Get(),Image_Flag.Ramp);
 #ifndef Image_debug
     if(Start!=1)
     {

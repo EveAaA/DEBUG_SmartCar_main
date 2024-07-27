@@ -343,7 +343,7 @@ static void Line_BoardFsm()
         //  printf("Wait_Data\r\n");
         //  printf("%f,%f\r\n",FINETUNING_DATA.dx,FINETUNING_DATA.dy);
     #endif
-            UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING_BESIDE); // 发送数据
+            UART_SendByte(&_UART_FINDBORDER, START_FINETUNING_BESIDE); // 发送数据
             if (UnpackFlag.FINETUNING_DATA_FLAG)
             {
                 UnpackFlag.FINETUNING_DATA_FLAG = false;
@@ -379,13 +379,14 @@ static void Line_BoardFsm()
     #ifdef debug_switch
             printf("%f,%f\r\n", FINETUNING_DATA.dx / 10.f, FINETUNING_DATA.dy / 10.f);
     #endif
-            UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING_BESIDE); // 发送数据
+            UART_SendByte(&_UART_FINDBORDER, START_FINETUNING_BESIDE); //发送数据
             if (Navigation.Finish_Flag == false)
             {
                 Navigation_Process_Image(MyFSM.Target_Pos_X, MyFSM.Target_Pos_Y); // 移动
             }
             else
             {
+                UART_SendByte(&_UART_FINDBORDER, UART_SLEEP_FLAG); //发送数据
                 Set_Beeptime(200);
                 Navigation.Finish_Flag = false;
                 FINETUNING_DATA.dx = 0;
@@ -400,6 +401,7 @@ static void Line_BoardFsm()
     #ifdef debug_switch
             printf("Classify\r\n");
     #endif
+            UART_SendByte(&_UART_FINDBORDER, UART_SLEEP_FLAG); //发送数据
             if (CLASSIFY_DATA.type != None) // 识别到了分类
             {
                 // Dodge_Board();
@@ -583,7 +585,7 @@ static void Cross_BoardFsm()
             printf("cross1:%d,%d\r\n", UnpackFlag.FINETUNING_DATA_FLAG, FINETUNING_DATA.IS_BORDER_ALIVE);
     #endif
             Light_On;//开灯
-            UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING); // 发送数据
+            UART_SendByte(&_UART_FINDBORDER, START_FINETUNING); // 发送数据
             if (UnpackFlag.FINETUNING_DATA_FLAG)
             {
                 UnpackFlag.FINETUNING_DATA_FLAG = false;
@@ -622,7 +624,7 @@ static void Cross_BoardFsm()
     #ifdef debug_switch
             printf("Cross_Move:%f,%d\r\n", FINETUNING_DATA.dx / 10.f, FINETUNING_DATA.FINETUNING_FINISH_FLAG);
     #endif
-            UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING); // 发送数据
+            UART_SendByte(&_UART_FINDBORDER, START_FINETUNING); // 发送数据
             if (Navigation.Finish_Flag == false)
             {
                 Navigation_Process_Image(MyFSM.Target_Pos_X, MyFSM.Target_Pos_Y); // 移动
@@ -638,12 +640,14 @@ static void Cross_BoardFsm()
                 MyFSM.Cross_Board_State = Classify; // 识别
                 CLASSIFY_DATA.IS_CLASSIFY = true;
                 MyFSM.Pick_Count = 0;
+                UART_SendByte(&_UART_FINDBORDER, UART_SLEEP_FLAG); //发送数据
             }
         break;
         case Classify:
     #ifdef debug_switch
             // printf("Cross_Classify\r\n");
     #endif
+            UART_SendByte(&_UART_FINDBORDER, UART_SLEEP_FLAG); //发送数据
             if (UnpackFlag.FINETUNING_DATA_FLAG) // 接收到数据了
             {
                 UnpackFlag.FINETUNING_DATA_FLAG = false;
@@ -735,7 +739,7 @@ static void Cross_BoardFsm()
     #endif
             Dodge_Carmar();
             Light_On;//开灯
-            UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE); // 发送获取放置区域信息
+            UART_SendByte(&_UART_FINDBORDER, UART_STARTFINETUNING_PLACE); // 发送获取放置区域信息
             if (UnpackFlag.FINETUNING_DATA_FLAG)
             {
                 UnpackFlag.FINETUNING_DATA_FLAG = false;
@@ -761,7 +765,7 @@ static void Cross_BoardFsm()
         //  printf("Move\r\n");
         //  printf("Cross_Place:%f,%f\r\n",FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f);
         #endif
-            UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE); // 发送获取放置区域信息
+            UART_SendByte(&_UART_FINDBORDER, UART_STARTFINETUNING_PLACE); // 发送获取放置区域信息
             if (Navigation.Finish_Flag == false)
             {
                 Navigation_Process_Image(MyFSM.Target_Pos_X, MyFSM.Target_Pos_Y); // 移动
@@ -773,12 +777,14 @@ static void Cross_BoardFsm()
                 FINETUNING_DATA.dx = 0;
                 FINETUNING_DATA.dy = 0;
                 MyFSM.Cross_Board_State = Classify_Place; // 识别放置区域
+                UART_SendByte(&_UART_FINDBORDER, UART_SLEEP_FLAG); //发送数据
             }
         break;
         case Classify_Place:
     #ifdef debug_switch
             // printf("Classify_Place\r\n");
     #endif
+            UART_SendByte(&_UART_FINDBORDER, UART_SLEEP_FLAG); //发送数据
             if (SMALL_PLACE_DATA.place != nil) // 识别到了分类
             {
                 #ifdef Classify_debug
@@ -922,7 +928,7 @@ static void Cross_BoardFsm()
     #endif
             FINDBORDER_DATA.FINDBIGPLACE_FLAG = false;
             Dodge_Carmar();
-            UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE); // 发送获取放置区域信息
+            UART_SendByte(&_UART_FINDBORDER, UART_STARTFINETUNING_PLACE); // 发送获取放置区域信息
             if (UnpackFlag.FINETUNING_DATA_FLAG)
             {
                 if (Bufcnt(true, 500))
@@ -1045,7 +1051,6 @@ static void Cross_BoardFsm()
             Car_run(5);
             if (Bufcnt(true,1800))
             {
-                UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBORDER); // 继续获取道路旁卡片
                 FINDBORDER_DATA.FINDBORDER_FLAG = false;
                 Turn.Finish = false;
                 MyFSM.Cross_Board_State = Find_Cross;
@@ -1074,7 +1079,6 @@ static void Cross_BoardFsm()
                     MyFSM.Cross_Flag_ = true;
                     if (Bufcnt(MyFSM.Cross_Flag_, 2000))
                     {
-                        UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBORDER); // 继续获取道路旁卡片
                         FINDBORDER_DATA.FINDBORDER_FLAG = false;
                         MyFSM.Cross_Flag_ = false;
                         Turn.Finish = false;
@@ -1086,7 +1090,6 @@ static void Cross_BoardFsm()
                 {
                     if (Bufcnt(MyFSM.Cross_Flag_, 10000))//超时退出
                     {
-                        UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBORDER); // 继续获取道路旁卡片
                         FINDBORDER_DATA.FINDBORDER_FLAG = false;
                         MyFSM.Cross_Flag_ = false;
                         Turn.Finish = false;
@@ -1117,14 +1120,6 @@ static void Ring_BoardFsm()
     #endif
             Car.Speed = false;
             Car_run(4);
-            if (MyFSM.Ring_Dir == RIGHT)
-            {
-                UART_SendByte(&_UART_FINDBORDER, 0X23); // 发送数据
-            }
-            else
-            {
-                UART_SendByte(&_UART_FINDBORDER, 0X22); // 发送数据
-            }
 
             if (RightRing.Ring_State == Leave_Ring_First)
             {
@@ -1154,20 +1149,13 @@ static void Ring_BoardFsm()
     #ifdef debug_switch
             printf("Ready_Ring\r\n");
     #endif
-            if (MyFSM.Ring_Dir == RIGHT)
-            {
-                UART_SendByte(&_UART_FINDBORDER, 0X23); // 发送数据
-            }
-            else
-            {
-                UART_SendByte(&_UART_FINDBORDER, 0X22); // 发送数据
-            }
             Car_run(3);
             if ((FINDBORDER_DATA.dir == LEFT) || (FINDBORDER_DATA.dir == RIGHT))
             {
                 MyFSM.Ring_Board_State = Find;
                 Car.Image_Flag = false;
             }
+
             if (Bufcnt(true, 700))
             {
                 MyFSM.Ring_Board_State = Find;
@@ -1202,7 +1190,7 @@ static void Ring_BoardFsm()
     #ifdef debug_switch
             printf("Ring_Wait_Data\r\n");
     #endif
-            UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING); // 发送数据
+            UART_SendByte(&_UART_FINDBORDER, START_FINETUNING); // 发送数据
             if (UnpackFlag.FINETUNING_DATA_FLAG)                 // 接收到串口数据
             {
                 UnpackFlag.FINETUNING_DATA_FLAG = false;
@@ -1238,7 +1226,7 @@ static void Ring_BoardFsm()
     #endif
             CLASSIFY_DATA.place = nil;
             CLASSIFY_DATA.type = None;
-            UART_SendByte(&_UART_FINE_TUNING, START_FINETUNING); // 发送数据
+            UART_SendByte(&_UART_FINDBORDER, START_FINETUNING); // 发送数据
             if (Navigation.Finish_Flag == false)
             {
                 Navigation_Process_Image(MyFSM.Target_Pos_X, MyFSM.Target_Pos_Y); // 移动
@@ -1254,12 +1242,14 @@ static void Ring_BoardFsm()
                 MyFSM.Pick_Count = 0;
                 UnpackFlag.FINETUNING_DATA_FLAG = false;
                 MyFSM.Ring_Board_State = Classify; // 识别
+                UART_SendByte(&_UART_FINDBORDER, UART_SLEEP_FLAG); //发送数据
             }
             break;
         case Classify:
     #ifdef debug_switch
             printf("Ring_Classify\r\n");
     #endif
+            UART_SendByte(&_UART_FINDBORDER, UART_SLEEP_FLAG); //发送数据
             if (UnpackFlag.FINETUNING_DATA_FLAG) // 接收到数据了
             {
                 UnpackFlag.FINETUNING_DATA_FLAG = false;
@@ -1352,7 +1342,7 @@ static void Ring_BoardFsm()
             printf("Ring_First_Place\r\n");
     #endif
             Dodge_Carmar();
-            UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE); // 发送获取放置区域信息
+            UART_SendByte(&_UART_FINDBORDER, UART_STARTFINETUNING_PLACE); // 发送获取放置区域信息
             if (UnpackFlag.FINETUNING_DATA_FLAG)
             {
                 UnpackFlag.FINETUNING_DATA_FLAG = false;
@@ -1375,7 +1365,7 @@ static void Ring_BoardFsm()
         break;
         case Move_Place:// 移动到放置区域前面
             Light_On;//开灯
-            UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE); // 发送获取放置区域信息
+            UART_SendByte(&_UART_FINDBORDER, UART_STARTFINETUNING_PLACE); // 发送获取放置区域信息
             if (Navigation.Finish_Flag == false)
             {
                 Navigation_Process_Image(MyFSM.Target_Pos_X, MyFSM.Target_Pos_Y); // 移动
@@ -1388,12 +1378,14 @@ static void Ring_BoardFsm()
                 FINETUNING_DATA.dy = 0;
                 MyFSM.Ring_Board_State = Classify_Place; // 识别放置区域
                 Light_On;//开灯
+                UART_SendByte(&_UART_FINDBORDER, UART_SLEEP_FLAG); //发送数据
             }
         break;
         case Classify_Place: // 识别放置区域
     #ifdef debug_switch
         //  printf("RingClassify_Place\r\n");
     #endif
+            UART_SendByte(&_UART_FINDBORDER, UART_SLEEP_FLAG); //发送数据
             if (SMALL_PLACE_DATA.place != nil && SMALL_PLACE_DATA.IS_PLACE) // 识别到了分类
             {
                 #ifdef Classify_debug
@@ -1567,7 +1559,7 @@ static void Ring_BoardFsm()
     #endif
             FINDBORDER_DATA.FINDBIGPLACE_FLAG = false;
             Dodge_Carmar();
-            UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE); // 发送获取放置区域信息
+            UART_SendByte(&_UART_FINDBORDER, UART_STARTFINETUNING_PLACE); // 发送获取放置区域信息
             if (UnpackFlag.FINETUNING_DATA_FLAG)
             {
                 if (Bufcnt(true, 300))
@@ -1593,7 +1585,7 @@ static void Ring_BoardFsm()
             printf("Ready_Find_Next\r\n");
     #endif
             SMALL_PLACE_DATA.place = nil;
-            if (MyFSM.Unload_Count == 2)
+            if (MyFSM.Unload_Count == 2)//第二个放置点
             {
                 if (Navigation.Finish_Flag == false)
                 {
@@ -1737,7 +1729,6 @@ static void Ring_BoardFsm()
                 Image_Flag.Right_Ring = false;
                 Image_Flag.Left_Ring = false;
                 // MyFSM.Ring_Flag = true;
-                UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBORDER); // 继续获取道路旁卡片
                 FINDBORDER_DATA.FINDBORDER_FLAG = false;
                 MyFSM.Big_Count[0]+=After_Big[0];
                 MyFSM.Big_Count[1]+=After_Big[1];
@@ -1778,7 +1769,7 @@ static void Ring_BoardFsm()
         break;
         case No_Board_Ring:
             Car_run(5);
-            UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBORDER); // 继续获取道路旁卡片
+            // UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBORDER); // 继续获取道路旁卡片
             if (MyFSM.Ring_Dir == RIGHT)
             {
                 if (Image_Flag.Right_Ring == false)
@@ -1870,7 +1861,7 @@ static void Unload_Fsm()
             }
         break;
         case Wait_Big_Data_Left:
-            UART_SendByte(&_UART_FINE_TUNING, 0x13); // 发送对数字板微调信息
+            UART_SendByte(&_UART_FINDBORDER, 0x13); // 发送对数字板微调信息
             if (UnpackFlag.FINETUNING_DATA_FLAG)
             {
                 UnpackFlag.FINETUNING_DATA_FLAG = false;
@@ -1899,14 +1890,14 @@ static void Unload_Fsm()
             if(MyFSM.Take_Board_Out)
             {
                 #ifdef Final_Change
-                    UART_SendByte(&_UART_FINE_TUNING, 0x13); // 发送对数字板微调信息
+                    UART_SendByte(&_UART_FINDBORDER, 0x13); // 发送对数字板微调信息
                 #else
-                    UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE); // 发送对数字板微调信息
+                    UART_SendByte(&_UART_FINDBORDER, UART_STARTFINETUNING_PLACE); // 发送对数字板微调信息
                 #endif
             }
             else
             {
-                UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE_ZEBRA); // 发送对数字板微调信息
+                UART_SendByte(&_UART_FINDBORDER, UART_STARTFINETUNING_PLACE_ZEBRA); // 发送对数字板微调信息
             }
             if (UnpackFlag.FINETUNING_DATA_FLAG)
             {
@@ -1985,14 +1976,14 @@ static void Unload_Fsm()
     #endif
             if (!MyFSM.Take_Board_Out)
             {
-                UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE_ZEBRA); // 发送对数字板微调信息
+                UART_SendByte(&_UART_FINDBORDER, UART_STARTFINETUNING_PLACE_ZEBRA); // 发送对数字板微调信息
             }
             else
             {
                 #ifdef Final_Change
-                UART_SendByte(&_UART_FINE_TUNING, 0x13); // 发送对数字板微调信息
+                UART_SendByte(&_UART_FINDBORDER, 0x13); // 发送对数字板微调信息
                 #else
-                UART_SendByte(&_UART_FINE_TUNING, UART_STARTFINETUNING_PLACE); // 发送对数字板微调信息    
+                UART_SendByte(&_UART_FINDBORDER, UART_STARTFINETUNING_PLACE); // 发送对数字板微调信息    
                 #endif
             }
 
@@ -2006,12 +1997,14 @@ static void Unload_Fsm()
                 FINETUNING_DATA.dx = 0;
                 FINETUNING_DATA.dy = 0;
                 MyFSM.Unload_State = Classify; // 识别
+                UART_SendByte(&_UART_FINDBORDER, UART_SLEEP_FLAG); //发送数据
             }
         break;
         case Classify:
     #ifdef debug_switch
             printf("Classify\r\n");
     #endif
+            UART_SendByte(&_UART_FINDBORDER, UART_SLEEP_FLAG); //发送数据
             if (BIG_PLACE_DATA.Big_Place != None) // 识别到了分类
             {
                 Servo_Flag.Depot_End = true;

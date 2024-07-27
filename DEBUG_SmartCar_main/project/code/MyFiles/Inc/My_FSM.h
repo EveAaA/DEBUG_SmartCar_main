@@ -63,8 +63,8 @@ typedef struct
     float Static_Angle;//静止的角度
     bool Stop_Flag;//停车
     int8 Board_Dir;//散落在赛道的哪一边
-    float Target_Pos_X;
-    float Target_Pos_Y;
+    float Target_Pos_X;//目标板的X
+    float Target_Pos_Y;//目标板的y
 
     bool Cross_Flag_;
     uint8 Cross_Dir;//十字方向
@@ -73,7 +73,7 @@ typedef struct
     int8 Small_Depot_Count;//小类卡片仓库的索引
     uint8 Small_Count;//小类卡片张数
     int8 Small_Type;//具体是哪小类
-    uint8 Same_Type;//
+    uint8 Same_Type;//同样种类的卡片
     bool Same_Board_Flag;//出现了相同类别
 
     uint8 Ring_Dir;//圆环方向
@@ -87,7 +87,7 @@ typedef struct
     Rotaryservo_Handle Depot_Pos;//仓库的位置
     uint8 Big_Pos[3];//大类的位置
 
-    bool Ring_Flag;
+    bool Ring_Flag;//是否开启圆环卡片
     uint8 Simple_Flag;//只捡道路旁的卡片
 }FSM_Handle;
 
