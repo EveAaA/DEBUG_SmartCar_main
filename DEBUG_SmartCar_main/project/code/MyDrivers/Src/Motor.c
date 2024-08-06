@@ -100,36 +100,36 @@ void Set_Motor_Speed(MotorHandle Motor, float PWMDuty)
             if(Forward)
             {
                 pwm_set_duty(Motor_RB,(uint32)Pwm_Set);
-                gpio_set_level(Motor_Dir_RB,1);
+                gpio_set_level(Motor_Dir_RB,0);
             }
             else if(!Forward)
             {
                 pwm_set_duty(Motor_RB,(uint32)Pwm_Set);
-                gpio_set_level(Motor_Dir_RB,0);
+                gpio_set_level(Motor_Dir_RB,1);
             }
         break;
         case RMotor_F:
             if(Forward)
             {
                 pwm_set_duty(Motor_RF,(uint32)Pwm_Set);
-                gpio_set_level(Motor_Dir_RF,0);
+                gpio_set_level(Motor_Dir_RF,1);
             }
             else if(!Forward)
             {
                 pwm_set_duty(Motor_RF,(uint32)Pwm_Set);
-                gpio_set_level(Motor_Dir_RF,1);
+                gpio_set_level(Motor_Dir_RF,0);
             }
         break;
         case LMotor_B:
             if(Forward)
             {
                 pwm_set_duty(Motor_LB,(uint32)Pwm_Set);
-                gpio_set_level(Motor_Dir_LB,0);
+                gpio_set_level(Motor_Dir_LB,1);
             }
             else if(!Forward)
             {
                 pwm_set_duty(Motor_LB,(uint32)Pwm_Set);
-                gpio_set_level(Motor_Dir_LB,1);
+                gpio_set_level(Motor_Dir_LB,0);
             }
         break;
         default:

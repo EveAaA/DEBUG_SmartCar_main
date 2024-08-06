@@ -41,7 +41,7 @@ void IMU_Init()
     printf("Imu_Init\r\n");
     #endif
     #ifndef Image_debug
-    tft180_show_string(Row_0, Line_0, "IMU Init ...");
+    // tft180_show_string(Row_0, Line_0, "IMU Init ...");
     #endif
     Gyro_Offset_Init();
 }
@@ -61,7 +61,7 @@ void Mt9v03x_Init()
     printf("Mt9v03x_Init\r\n");
     #endif
     #ifndef Image_debug
-    tft180_show_string(Row_0, Line_1, "Mt9v03x Init ...");
+    // tft180_show_string(Row_0, Line_1, "Mt9v03x Init ...");
     #endif
 
 }
@@ -148,7 +148,7 @@ void User_Init()
     #ifndef Image_debug
     tft180_init();
     #endif
-    // bluetooth_ch9141_init();
+    bluetooth_ch9141_init();
     IMU_Init();
     Mt9v03x_Init();
     #ifdef Image_debug
@@ -165,18 +165,19 @@ void User_Init()
     // dl1a_init();
     All_PID_Init();
     Flash_Init();
-    mt9v03x_set_exposure_time(Menu.Ex_Time);
+    mt9v03x_set_exposure_time(100);
     UART_Init();
     #ifdef Image_debug
     printf("All_Init\r\n");
     #endif
     #ifndef Image_debug
-    tft180_show_string(Row_0, Line_2, "All Init ...");
+    // tft180_show_string(Row_0, Line_2, "All Init ...");
     #endif
-    tft180_clear();
+    // tft180_clear();
     system_delay_ms(1000);
     TIM_Init();
 	interrupt_global_enable(0);
+    printf("All_Init");
 }
 
 /**@brief   所有主循环内容
@@ -186,11 +187,11 @@ void User_Init()
 **/
 void User_Loop()
 {
-    Get_Button_Value(0);
-    // if(Receivedata.Start_Flag!=2)
-    // {
-    //     Start = Receivedata.Start_Flag;
-    // }
+    // Get_Button_Value(0);
+    if(Receivedata.Start_Flag!=2)
+    {
+        Start = Receivedata.Start_Flag;
+    }
     if(mt9v03x_finish_flag && Car.Image_Flag)
     {
         mt9v03x_finish_flag = 0;
@@ -202,6 +203,7 @@ void User_Loop()
             seekfree_assistant_camera_send();
         #endif
     }
+    // printf("Image_Erro:%f\r\n",Image_Erro);
     // tft180_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,MT9V03X_W,MT9V03X_H,0);
     // tft180_show_float(10,100,Image_Erro,3,2);
     // for (int i = Hightest; i < Image_H-1; i++)
@@ -210,13 +212,11 @@ void User_Loop()
     //     tft180_draw_point(L_Border[i], i, RGB565_BLUE);
     //     tft180_draw_point(R_Border[i], i, RGB565_RED);
     // }
-    // printf("%f,%f,%f,%f,%f\r\n",Get_Y_Speed(),Encoer_Speed[0],Encoer_Speed[1],Encoer_Speed[2],Encoer_Speed[3]);
-    // Ramp_Find();
-    // printf("dis:%d,pitchAngle:%f,flae:%d\r\n",dl1a_distance_mm,Gyro_PitchAngle_Get(),Image_Flag.Ramp);
+    // printf("%f,%f,%f,%f\r\n",Encoer_Speed[0],Encoer_Speed[1],Encoer_Speed[2],Encoer_Speed[3]);
 #ifndef Image_debug
-    if(Start!=1)
-    {
-        Menu_Display();
-    }
+    // if(Start!=1)
+    // {
+    //     Menu_Display();
+    // }
 #endif
 }

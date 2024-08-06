@@ -23,6 +23,7 @@ typedef enum
     Return_Line,//返回赛道
     Finsh_Return,//返回赛道结束
     Find_Cross,//找到十字
+    Forward_,//前进一小段距离
     Ready_Find_Place,//准备找第一个位置
     Find_Place,//寻找放置位置
     Ring_First_Place,//圆环第一个放置区域

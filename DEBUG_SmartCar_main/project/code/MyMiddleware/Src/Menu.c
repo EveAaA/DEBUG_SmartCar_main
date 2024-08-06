@@ -432,10 +432,10 @@ void Flash_Init()
         // flash_union_buffer[3].float_type = 0.0f;//微调Y轴D
         // flash_union_buffer[4].float_type = 0.13f;//角度环P
         // flash_union_buffer[5].float_type = 0.5f;//角度环D
-        flash_union_buffer[50].uint16_type = 150;//曝光时间
-        flash_union_buffer[51].uint16_type = 16;//曝光时间
+        flash_union_buffer[50].uint16_type = 100;//曝光时间
+        flash_union_buffer[51].uint16_type = 14;//曝光时间
         flash_union_buffer[52].uint16_type = 1;
-        flash_union_buffer[53].uint16_type = 40;
+        flash_union_buffer[53].uint16_type = 38;
         flash_write_page_from_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
         flash_buffer_clear();
     }
@@ -448,10 +448,11 @@ void Flash_Init()
         // DistanceY_PID.Kd = flash_union_buffer[3].float_type;
         // AngleControl_PID.Kp = flash_union_buffer[4].float_type;
         // AngleControl_PID.Kd = flash_union_buffer[5].float_type;
-        Menu.Turn_Point = flash_union_buffer[51].uint16_type;
+        // Menu.Turn_Point = flash_union_buffer[51].uint16_type;
+        Menu.Turn_Point = 16;
         Menu.Ex_Time = flash_union_buffer[50].uint16_type;
         MyFSM.Simple_Flag = flash_union_buffer[52].uint16_type;
-        Down_Angle[0] = flash_union_buffer[53].uint16_type;
+        // Down_Angle[0] = flash_union_buffer[53].uint16_type;
     }
 }
 

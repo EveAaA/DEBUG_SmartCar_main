@@ -41,7 +41,7 @@ Car_Handle Car =
     .Speed_X = 0,
     .Speed_Y = 0,
     .Speed_Z = 0,
-    .Image_Flag = false,
+    .Image_Flag = true,
     .Speed = true,
 };
 Turn_Handle Turn = 
@@ -67,7 +67,7 @@ Turn_Handle Turn =
 void All_PID_Init()
 {
     //速度环
-    Incremental_PID_Init(&LMotor_F_Speed,0.6f,0.2f,0.4f,40,-40);//0.6f,0.2f,0.4f,40,-40
+    Incremental_PID_Init(&LMotor_F_Speed,0.8f,0.1f,0.5f,40,-40);//0.6f,0.2f,0.4f,40,-40
     Incremental_PID_Init(&RMotor_F_Speed,0.75f,0.15f,0.29f,40,-40);//0.3f,0.25f,0.35f,40,-40
     Incremental_PID_Init(&LMotor_B_Speed,0.7f,0.23f,0.5f,40,-40);//0.7f,0.23f,0.5f,40,-40
     Incremental_PID_Init(&RMotor_B_Speed,0.76f,0.10f,0.36f,40,-40);//0.5f,0.22f,0.5f,40,-40
@@ -76,7 +76,7 @@ void All_PID_Init()
     PIDInit(&Image_PID,3.7f,0,1.56f,6.5f,-6.5f);
 
     PIDInit(&ImageX_PID,0.060f,0, 0.0f,3.0f,-3.0f);
-    PIDInit(&ImageF_PID,0.090f,0,0.2f,5.0f,-5.0f);
+    PIDInit(&ImageF_PID,0.065f,0,0.3f,3.0f,-3.0f);
     PIDInit(&BorderPlace_PID,2.1f,0,0,1.5f,-1.5f);
     PIDInit(&Foward_PID,2.1f,0,0,1.5f,-1.5f);
     PIDInit(&Turn_PID,3.55f,0,0.6f,5,-5);   
@@ -210,8 +210,8 @@ void Car_run(float Speed)
     float Pid_Err = (74 - Image_Erro)*0.03f;
     float Image_Erro_ = GetPIDValue(&Image_PID,Pid_Err);
     Car.Speed_X = 0;
-    Car.Speed_Y = Speed;
-    Car.Speed_Z = -Image_Erro_ + GetPIDValue(&Line_GyroZ_PID,(0 - IMU_Data.gyro_z)) - GetPIDValue(&Line_Double_PID,fabs(Pid_Err)*Pid_Err);
+    Car.Speed_Y = Speed;// + GetPIDValue(&Line_GyroZ_PID,(0 - IMU_Data.gyro_z)) - GetPIDValue(&Line_Double_PID,fabs(Pid_Err)*Pid_Err)
+    Car.Speed_Z = -Image_Erro_;
 }
 
 /**@brief   横向巡线
@@ -222,7 +222,7 @@ void Car_run(float Speed)
 void Car_run_X(float Speed)
 {
     UART_SendByte(&_UART_FINE_TUNING, UART_MOVEVOLUMEUP_FLAG);
-    float Image_ErroF_ = GetPIDValue(&ImageF_PID, -20 - (VOLUMEUP_DATA.HeightErr));
+    float Image_ErroF_ = GetPIDValue(&ImageF_PID, 0 - (VOLUMEUP_DATA.HeightErr));
     Car.Speed_X = Speed;
     Car.Speed_Y = Image_ErroF_;
     Car.Speed_Z = Get_Image_Errox();

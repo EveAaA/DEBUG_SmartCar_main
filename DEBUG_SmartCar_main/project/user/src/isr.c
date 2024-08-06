@@ -75,7 +75,7 @@ void PIT_IRQHandler(void)
         {
             FSM_main();
             // Car.Speed_X = 0;
-            // Car.Speed_Y = 8;
+            // Car.Speed_Y = 5;
             // Car.Speed_Z = 0;
         }
         else if(Start == 0)
@@ -188,7 +188,7 @@ void LPUART8_IRQHandler(void)
     {
         // 接收中断
         wireless_module_uart_handler();
-	    // Get_Message();
+	    Get_Message();
     }
         
     LPUART_ClearStatusFlags(LPUART8, kLPUART_RxOverrunFlag);    // 不允许删除

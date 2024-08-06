@@ -1287,6 +1287,25 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                 }
             }
 
+            if(LeftRing.Stright_Line)
+            {
+                for (int i = Image_H/2+20; i > Image_H/2-20; i -= 1) 
+                {
+                    if (L_Border[i] <= 2)
+                    {
+                        Lose_Line_Point_L += 1;
+                    }
+                }
+
+                if(Lose_Line_Point_L >= 30)
+                {
+                    LeftRing.Ring_Front_Flag = 2;
+                }
+            } 
+            else
+            {
+                Lose_Line_Point_L = 0;
+            }
             //有圆环突出点, 右直线, 有左下角点
             if ((Break_Num_L_DOWN) && (LeftRing.Stright_Line) && (Salient_Point)) //  && (!Bin_Image[Image_H - 10][4]) && (!Bin_Image[Image_H - 10][Image_W - 4])
             {
@@ -1337,6 +1356,7 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                 Image_Flag.Left_Ring = true;
                 LeftRing.Ring_State = Enter_Ring_First;//入环中 Enter_Ring_First
                 LeftRing.Clear_Time = 0;
+                Lose_Line_Point_L = 0;
             }
             //imshow("原图像", frame);
             // waitKey(200);
@@ -1670,27 +1690,28 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
             Salient_Point = findCircleOutPoint_R(R_Border);
             if(RightRing.Stright_Line)
             {
-                // for (i = Image_H - 5; i > Image_H / 2 - 5; i--)//寻找右下拐点
-                // {
-                //     //printf("R_Border[%d] = %d\r\n", i, R_Border[i]);
-                //     if (abs(R_Border[i] - R_Border[i + 1] <= 5)
-                //         && (abs(R_Border[i + 1] - R_Border[i + 2]) <= 5)
-                //         && (abs(R_Border[i + 2] - R_Border[i + 3]) <= 5)
-                //         && (R_Border[i - 2] - R_Border[i] >= 7))
-                //     {
-                //         Break_Num_R_DOWN = i;//传递y坐标
-                //         break;
-                //     }
-                // }
-                for (uint8_t i = Image_H - 2; i > 10; --i)
+                for (i = Image_H - 5; i > Image_H / 2 - 5; i--)//寻找右下拐点
                 {
-                    if (R_Border[i] - R_Border[i - 1] < -10)
+                    //printf("R_Border[%d] = %d\r\n", i, R_Border[i]);
+                    if (abs(R_Border[i] - R_Border[i + 1] <= 5)
+                        && (abs(R_Border[i + 1] - R_Border[i + 2]) <= 5)
+                        && (abs(R_Border[i + 2] - R_Border[i + 3]) <= 5)
+                        && (R_Border[i - 2] - R_Border[i] >= 7))
                     {
                         hashKey[offset] = i;
                         offset++;
                         break;
                     }
                 }
+                // for (uint8_t i = Image_H - 2; i > 10; --i)
+                // {
+                //     if (R_Border[i] - R_Border[i - 1] < -10)
+                //     {
+                //         hashKey[offset] = i;
+                //         offset++;
+                //         break;
+                //     }
+                // }
             }
 
             if (offset > 0)
@@ -1855,7 +1876,7 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
                 Lose_Salient_Point_Count = 0;
             }
 
-            if (RightRing.Enter_Ring_First_Flag && Lose_Salient_Point_Count>=10 && (RightRing.Lose_Line || Break_Num_L_UP))
+            if (RightRing.Enter_Ring_First_Flag && Lose_Salient_Point_Count>=10 && (Break_Num_L_UP || RightRing.Lose_Line))
             {
                 Lose_Salient_Point_Count = 0;
                 RightRing.Lose_Line = false;
@@ -2316,19 +2337,19 @@ void Image_Process(void)
         }
 
         // 同上
-        // if ((!Image_Flag.Cross_Fill) 
-        // && (!Image_Flag.Right_Ring) 
-        // && (!Image_Flag.Zerba) 
-        // && (!Image_Flag.Roadblock) 
-        // && ((MyFSM.CurState == Line_Patrol) || (MyFSM.CurState == Ring_Board) || (MyFSM.Line_Board_State == Finsh_Return))
-        // && (MyFSM.Ring_Board_State != Return_Line)
-        // && (MyFSM.Ring_Board_State != Finsh_Return)
-        // && (!Image_Flag.Ramp)
-        // && (MyFSM.Ring_Flag == false)
-        // && (MyFSM.Simple_Flag!=0))
-        // {
-        //     Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
-        // }
+        if ((!Image_Flag.Cross_Fill) 
+        && (!Image_Flag.Right_Ring) 
+        && (!Image_Flag.Zerba) 
+        && (!Image_Flag.Roadblock) 
+        && ((MyFSM.CurState == Line_Patrol) || (MyFSM.CurState == Ring_Board) || (MyFSM.Line_Board_State == Finsh_Return))
+        && (MyFSM.Ring_Board_State != Return_Line)
+        && (MyFSM.Ring_Board_State != Finsh_Return)
+        && (!Image_Flag.Ramp)
+        && (MyFSM.Ring_Flag == false)
+        && (MyFSM.Simple_Flag!=0))
+        {
+            Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
+        }
 
         if ((!Image_Flag.Cross_Fill) 
         && (!Image_Flag.Left_Ring) 
