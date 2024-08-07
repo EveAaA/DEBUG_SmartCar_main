@@ -46,7 +46,7 @@ Servo_Handle Door_Servo = //门电机
     .Pin = PWM2_MODULE3_CHB_D3,
     .Init_Angle = 55,//角度小往下   140
 };  
-Servo_Flag_Handle Servo_Flag = {false,false,false,false,false,false,false,false};
+Servo_Flag_Handle Servo_Flag = {false,false,false,false,false,false,false,false,false};
 // #define Servo_Slow
 /**
  ******************************************************************************
@@ -129,7 +129,7 @@ static void Manipulator_PutDown()
 static void Manipulator_PutUp()
 {
     static uint8 PutUp_State = 0;
-    uint16 time = 350;
+    uint16 time = 249;
     switch (PutUp_State)
     {
         case 0:
@@ -190,7 +190,7 @@ void Manipulator_Init()
     pwm_init(Rotary_Servo.Pin,Servo_FREQ,Set_360Servo_Angle(Rotary_Servo.Init_Angle));
     pwm_init(Door_Servo.Pin,Servo_FREQ,Set_180Servo_Angle(Door_Servo.Init_Angle));
     gpio_init(D27,GPO,0,GPO_PUSH_PULL);
-    gpio_init(D1,GPO,0,GPO_PUSH_PULL);
+    // gpio_init(D1,GPO,0,GPO_PUSH_PULL);
 }
 
 
@@ -216,6 +216,7 @@ void Pick_Card()
                 if(Bufcnt(true,500))
                 {
                     Pickup_State = 1;
+                    Servo_Flag.Put_Down_End = true;
                 }
             }
         break;

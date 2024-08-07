@@ -866,7 +866,7 @@ uint8 Lose_Line(void)
             Lose_Line_Point_L += 1;
         }
 
-        if (R_Border[i] >= 184)
+        if (R_Border[i] >= 144)
         {
             Lose_Line_Point_R += 1;
         }
@@ -1115,8 +1115,8 @@ bool Straight_Line_Judge(uint8* Border, uint16 Total_Num, lineTypeDef lineMode)
         {
             if ((Border[i] - Border[i - 1] >= 0) 
             && (Border[i] - Border[i - 1] < 2) 
-            && (Border[i] < 184) 
-            && (Border[i - 1] < 184) 
+            && (Border[i] < 144) 
+            && (Border[i - 1] < 144) 
             && (Border[i] > Image_W/2) 
             && (Border[i - 1] > Image_W/2))
             {
@@ -1250,8 +1250,7 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                         && (abs(L_Border[i + 2] - L_Border[i + 3]) <= 5)
                         && (L_Border[i] - L_Border[i - 2] >= 7))
                     {
-                        hashKey[offset] = i;
-                        offset++;
+                        Break_Num_L_DOWN = i;//传递y坐标
                         break;
                     }
                 }
@@ -1742,7 +1741,7 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
 
             // for (int i = Image_H/2+20; i > Image_H/2-20; i -= 1) 
             // {
-            //     if (R_Border[i] >= 184)
+            //     if (R_Border[i] >= 144)
             //     {
             //         Lose_Line_Point_R += 1;
             //     }
@@ -1857,7 +1856,7 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
 
             for (int i = Image_H - 2; i > 2; i -= 1) 
             {
-                if (R_Border[i] >= 184)
+                if (R_Border[i] >= 144)
                 {
                     Lose_Line_Point_R += 1;
                 }
@@ -2033,7 +2032,7 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
 
                 for (int i = Image_H/2+20; i > Image_H/2-20; i -= 1) 
                 {
-                    if (R_Border[i] >= 184)
+                    if (R_Border[i] >= 144)
                     {
                         Lose_Line_Point_R += 1;
                     }
@@ -2083,16 +2082,21 @@ void Zebra_Seek(uint8(*Bin_Image)[Image_W],uint8* L_Border, uint8* R_Border, uin
     uint8 total = 0;
     uint16 Right_Straight = 0;
     uint16 Left_Straight = 0;
+    Right_Straight = Straight_Line_Judge(R_Border, Total_Num_R - 10, RightLine);//判断右边是否为长直线
+    Left_Straight = Straight_Line_Judge(L_Border, Total_Num_L - 10, LeftLine);//判断左边是否为长直线
 
-    for(uint8 i = 50;i <= 120;i++)
+    if(Left_Straight || Right_Straight)
     {
-        if(Bin_Image[55][i] == Black_Pixel && Bin_Image[55][i+1] == White_Pixel)
+        for(uint8 i = 50;i <= 120;i++)
         {
-            total ++;
+            if(Bin_Image[35][i] == Black_Pixel && Bin_Image[35][i+1] == White_Pixel)
+            {
+                total ++;
+            }
         }
     }
 
-    if((total >= 5 ))
+    if((total >= 5))
     {
         total = 0;
         Image_Flag.Zerba = true;
@@ -2244,7 +2248,7 @@ bool No_Get_Line()
         Start_Point+=1;
     }
 
-    if((Start_Point >= Menu.Turn_Point))
+    if((Start_Point >= 16))
     {
         Start_Point = 0;
         return false;
@@ -2331,7 +2335,7 @@ void Image_Process(void)
         && (!Image_Flag.Left_Ring) 
         && (!Image_Flag.Zerba) 
         && (!Image_Flag.Roadblock) 
-        && ((MyFSM.CurState == Line_Patrol) || (MyFSM.CurState == Cross_Board))
+        && ((MyFSM.CurState == Line_Patrol) || (MyFSM.CurState == Cross_Board) || (MyFSM.Line_Board_State == Finsh_Return))
         && (!Image_Flag.Ramp))
         {
             Cross_Fill(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);//十字补线
@@ -2371,5 +2375,5 @@ void Image_Process(void)
     {
         Center_Line[i] = (L_Border[i] + R_Border[i]) >> 1;//求中线
     }
-    Image_Erro = (Center_Line[100])*0.375f + (Center_Line[101])*0.5f + (Center_Line[102])*0.1f;
+    Image_Erro = (Center_Line[69])*0.375f + (Center_Line[70])*0.5f + (Center_Line[71])*0.1f;
 }

@@ -18,6 +18,7 @@ typedef struct
 typedef struct
 {
     volatile bool Put_Down;//机械臂放下结束
+    volatile bool Put_Down_End;//机械臂放下结束
     volatile bool Put_Up;//机械臂抬起结束
     volatile bool Put_Depot;
     volatile bool Put_Out;//机械臂拿出结束

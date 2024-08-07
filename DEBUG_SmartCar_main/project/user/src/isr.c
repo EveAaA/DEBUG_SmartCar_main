@@ -59,7 +59,7 @@ void PIT_IRQHandler(void)
         Beep_On();//蜂鸣器
         Open_Door(Servo_Flag.Open_Door);
         Key_Delay();
-        Rotary_Switch(MyFSM.Depot_Pos,70);
+        Rotary_Switch(MyFSM.Depot_Pos,50);
         Set_Car_Speed(Car.Speed_X,Car.Speed_Y,Car.Speed_Z);//控制速度的线程
         pit_flag_clear(PIT_CH0);
     }
@@ -230,11 +230,13 @@ void GPIO1_Combined_16_31_IRQHandler(void)
             {
                 Rotary.Anticlockwise = 0;
                 Rotary.Clockwise = 1;
+                Rotary.Press = 0;
             }
             if (CW_1 == 0 && CW_2 == 0) 
             {
                 Rotary.Clockwise = 0;
                 Rotary.Anticlockwise = 1;
+                Rotary.Press = 0;
             }
             flag = 0;
         }

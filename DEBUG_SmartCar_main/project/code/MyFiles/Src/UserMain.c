@@ -210,7 +210,7 @@ void User_Loop()
     // printf("Image_Erro:%f\r\n",Image_Erro);
     // printf("%f,%f,%f,%f\r\n",Encoer_Speed[0],Encoer_Speed[1],Encoer_Speed[2],Encoer_Speed[3]);
 #ifndef Image_debug
-    if(Start!=1)
+    if(Start!=1 || Receivedata.Start_Flag == 1)
     {
         Menu_Display();
     }

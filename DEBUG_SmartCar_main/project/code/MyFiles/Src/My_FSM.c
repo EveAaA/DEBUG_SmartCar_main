@@ -35,7 +35,7 @@ FSM_Handle MyFSM = {
     .Unload_Count = 0,
     .Big_Pos_Count = 0,
     .Depot_Pos = White,
-    .Take_Board_Out = false,//true为逐张拿出方案
+    .Take_Board_Out = true,//true为逐张拿出方案
     .Big_Pos[0] = RIGHT,
     .Big_Pos[1] = RIGHT,
     .Big_Pos[2] = RIGHT,
@@ -46,18 +46,18 @@ FSM_Handle MyFSM = {
 ATB_t BigWare[3];
 uint8 After_Big[10] = {0,0,0};
 WareState_t smallPlaceWare =
-    {
-        .isSame = false,
-        .currWareNum = 0,
-        .notEmptyNum = 0,
-        .isWareUsed = {false, false, false, false, false},
+{
+    .isSame = false,
+    .currWareNum = 0,
+    .notEmptyNum = 0,
+    .isWareUsed = {false, false, false, false, false},
 };
 GetCard_t *currCard;
 
 uint16 wait_time = 0;
 #define Static_Time 100 // 等待静止的时间，大约0.5秒
 // #define debug_switch  //是否调试
-// #define Classify_debug //是否查看分类
+#define Classify_debug //是否查看分类
 // #define Final_Change //是否放置区域在道路两边
 /**
  ******************************************************************************
@@ -313,6 +313,7 @@ static void Line_PatrolFsm()
 **/
 static void Line_BoardFsm()
 {
+    static bool Return_End = false;
     switch (MyFSM.Line_Board_State)
     {
         case Find: // 找到卡片
@@ -409,6 +410,7 @@ static void Line_BoardFsm()
                 // Dodge_Board();
                 Light_Off;//关灯
                 MyFSM.Line_Board_State = Pick; // 捡起卡片
+                Servo_Flag.Put_Down_End = false;
                 MyFSM.Pick_Count = 9;
                 Servo_Flag.Depot_End = true;
                 MyFSM.Big_Board = CLASSIFY_DATA.type; // 记录分类
@@ -444,17 +446,57 @@ static void Line_BoardFsm()
             if (Servo_Flag.Pick_End == false)
             {
                 Pick_Card();
+                Car.Speed_X = 0;
+                Car.Speed_Y = 0;
+                Car.Speed_Z = 0;
             }
-            else
+            // else
+            // {
+            //     Servo_Flag.Put_Up = false;
+            //     Servo_Flag.Put_Down = false;
+            //     // Servo_Flag.Pick_End = false;
+            //     // MyFSM.Line_Board_State = Return_Line; // 返回赛道
+            // }
+
+            if(Servo_Flag.Put_Down_End)
+            {
+                FINETUNING_DATA.dx = 0;
+                FINETUNING_DATA.dy = 0;
+                MyFSM.Pick_Count = 0;
+                if (Turn.Finish == false)
+                {
+                    if (MyFSM.Board_Dir == LEFT)
+                    {
+                        Turn_Angle(80);
+                    }
+                    else if (MyFSM.Board_Dir == RIGHT)
+                    {
+                        Turn_Angle(-80);
+                    }
+                    Car.Image_Flag = true;
+                }
+                else
+                {
+                    Return_End = true;
+                    Servo_Flag.Put_Down_End = false;
+                    Car.Speed_X = 0;
+                    Car.Speed_Y = 0;
+                    Car.Speed_Z = 0;
+                }
+            }
+
+            if(Return_End && Servo_Flag.Pick_End)
             {
                 Servo_Flag.Put_Up = false;
                 Servo_Flag.Put_Down = false;
+                Servo_Flag.Put_Down_End = false;
+                Turn.Finish = false;
+                Return_End = false;
                 Servo_Flag.Pick_End = false;
-                MyFSM.Line_Board_State = Return_Line; // 返回赛道
+                RightRing.Ring_State = Ring_Front;
+                RightRing.Ring_Front_Flag = 0; 
+                MyFSM.Line_Board_State = Return_Line;
             }
-            Car.Speed_X = 0;
-            Car.Speed_Y = 0;
-            Car.Speed_Z = 0;
         break;
         case Return_Line: // 返回赛道
     #ifdef debug_switch
@@ -463,64 +505,45 @@ static void Line_BoardFsm()
             FINETUNING_DATA.dx = 0;
             FINETUNING_DATA.dy = 0;
             MyFSM.Pick_Count = 0;
-            if (Turn.Finish == false)
+            if (MyFSM.Board_Dir == LEFT)
             {
-                if (MyFSM.Board_Dir == LEFT)
+                if (No_Get_Line() && (!Return_End))
                 {
-                    Turn_Angle(80);
+                    Car.Speed_X = 0;
+                    Car.Speed_Y = 0;
+                    Car.Speed_Z = 3;
                 }
-                else if (MyFSM.Board_Dir == RIGHT)
+                else
                 {
-                    Turn_Angle(-80);
+                    Car.Speed_X = 0;
+                    Car.Speed_Y = 0;
+                    Car.Speed_Z = 0;
+                    MyFSM.Line_Board_State = Finsh_Return;
                 }
-                Car.Image_Flag = true;
             }
-            else
-            {
-                if (MyFSM.Board_Dir == LEFT)
-                {
-                    if (No_Get_Line())
-                    {
-                        Car.Speed_X = 0;
-                        Car.Speed_Y = 0;
-                        Car.Speed_Z = 3;
-                    }
-                    else
-                    {
-                        Car.Speed_X = 0;
-                        Car.Speed_Y = 0;
-                        Car.Speed_Z = 0;
-                        Turn.Finish = false;
-                        MyFSM.Line_Board_State = Finsh_Return;
-                    }
-                }
 
-                if (MyFSM.Board_Dir == RIGHT)
+            if (MyFSM.Board_Dir == RIGHT)
+            {
+                if (No_Get_Line() && (!Return_End))
                 {
-                    if (No_Get_Line())
-                    {
-                        Car.Speed_X = 0;
-                        Car.Speed_Y = 0;
-                        Car.Speed_Z = -3;
-                    }
-                    else
-                    {
-                        Car.Speed_X = 0;
-                        Car.Speed_Y = 0;
-                        Car.Speed_Z = 0;
-                        Turn.Finish = false;
-                        MyFSM.Line_Board_State = Finsh_Return;
-                    }
+                    Car.Speed_X = 0;
+                    Car.Speed_Y = 0;
+                    Car.Speed_Z = -3;
+                }
+                else
+                {
+                    Car.Speed_X = 0;
+                    Car.Speed_Y = 0;
+                    Car.Speed_Z = 0;
+                    MyFSM.Line_Board_State = Finsh_Return;
                 }
             }
-            RightRing.Ring_State = Ring_Front;
-            RightRing.Ring_Front_Flag = 0;
         break;
         case Finsh_Return:
     #ifdef debug_switch
             printf("Finsh_Return\r\n");
     #endif
-            if (Bufcnt(true,1000))
+            if (Bufcnt(true,100))
             {
                 MyFSM.Line_Board_State = Find;
                 MyFSM.CurState = Line_Patrol;
@@ -789,7 +812,6 @@ static void Cross_BoardFsm()
         //  printf("Move\r\n");
         //  printf("Cross_Place:%f,%f\r\n",FINETUNING_DATA.dx/10.f,FINETUNING_DATA.dy/10.f);
         #endif
-            printf("Cross_Place:%f,%f\r\n",FINETUNING_DATA.dx/5.0f,FINETUNING_DATA.dy/5.0f);
             UART_SendByte(&_UART_FINDBORDER, UART_STARTFINETUNING_PLACE); // 发送获取放置区域信息
             if (Navigation.Finish_Flag == false)
             {
@@ -885,7 +907,6 @@ static void Cross_BoardFsm()
         #ifdef debug_switch
                 printf("Ready_Find_Next_First\r\n");
         #endif
-            printf("Ready_Find_Next_First\r\n");
             MyFSM.Depot_Pos = 0;
             SMALL_PLACE_DATA.place = nil;
             if (Bufcnt(true, 800))
@@ -942,7 +963,6 @@ static void Cross_BoardFsm()
         #endif
             MyFSM.Depot_Pos = 0;
             Light_On;//开灯
-            printf("Angle_Offest=%f,%d\r\n",Angle_Offest,FINDBORDER_DATA.FINDBIGPLACE_FLAG);
             SMALL_PLACE_DATA.place = nil;
             UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETSMALLPLACE); // 获取小类放置区域
             Dodge_Carmar();
@@ -954,11 +974,11 @@ static void Cross_BoardFsm()
             Angle_Offest += (Curanglg - Lastanglg);
             if (MyFSM.Cross_Dir == RIGHT)
             {
-                Car_run_X(2);
+                Car_run_X(3);
             }
             else
             {
-                Car_run_X(-2);
+                Car_run_X(-3);
             }
             Lastanglg = Curanglg;
             if (MyFSM.Unload_Count == 0 && FINDBORDER_DATA.FINDBIGPLACE_FLAG == true)
@@ -1014,15 +1034,15 @@ static void Cross_BoardFsm()
         case Adjust_Line://调整
             if(MyFSM.Cross_Dir == RIGHT)
             {
-                Car.Speed_X = 3;
+                Car.Speed_X = 5;
             }
             else
             {
-                Car.Speed_X = -3;
+                Car.Speed_X = -5;
             }
             Car.Speed_Y = 0;
             Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
-            if(Bufcnt(true,2100))
+            if(Bufcnt(true,1260))
             {
                 MyFSM.Static_Angle = Gyro_YawAngle_Get();
                 MyFSM.Cross_Board_State = Return_Line;
@@ -1111,7 +1131,7 @@ static void Cross_BoardFsm()
         break;
         case Finsh_Return: 
             Car_run(5);
-            if (Bufcnt(true,1800))
+            if (Bufcnt(true,1000))
             {
                 FINDBORDER_DATA.FINDBORDER_FLAG = false;
                 Turn.Finish = false;
@@ -1408,7 +1428,7 @@ static void Ring_BoardFsm()
             if (UnpackFlag.FINETUNING_DATA_FLAG)
             {
                 UnpackFlag.FINETUNING_DATA_FLAG = false;
-                if (Bufcnt(true, 300))
+                if (Bufcnt(true,500))
                 {
                     MyFSM.Ring_Board_State = Move_Place; // 开始移动到放置区域前面
                     MyFSM.Target_Pos_X = FINETUNING_DATA.dx / 10.0f;
@@ -1541,7 +1561,14 @@ static void Ring_BoardFsm()
                     Car.Speed_Y = 0;
                     Car.Speed_Z = 0;
                 }
-                Car.Speed_X = 0;
+                if(MyFSM.Ring_Dir == RIGHT)
+                {
+                    Car.Speed_X = -2;
+                }
+                else
+                {
+                    Car.Speed_X = 2; 
+                }
                 Car.Speed_Y = -5;
                 Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
             }
@@ -1583,11 +1610,11 @@ static void Ring_BoardFsm()
             Angle_Offest += (Curanglg - Lastanglg);
             if (MyFSM.Ring_Dir == RIGHT)
             {
-                Car_run_X(-2);
+                Car_run_X(-3);
             }
             else
             {
-                Car_run_X(2);
+                Car_run_X(3);
             }
             Lastanglg = Curanglg;
             if (MyFSM.Unload_Count == 1 && FINDBORDER_DATA.FINDBIGPLACE_FLAG == true)
@@ -1777,7 +1804,7 @@ static void Ring_BoardFsm()
         break;
         case Finsh_Return:
             Car_run(5);
-            if (Bufcnt(true, 200))
+            if (Bufcnt(true, 500))
             {
                 Turn.Finish = false;
                 RightRing.Ring_State = Ring_Front;
@@ -1868,14 +1895,17 @@ static void Unload_Fsm()
             {
                 if (MyFSM.Big_Pos[0] == RIGHT)
                 {
-                    Turn_Angle(90);
+                    Turn_Angle(77);
                 }
             }
             else
             {
-                Turn.Finish = false;
-                MyFSM.Static_Angle = Gyro_YawAngle_Get();
-                MyFSM.Unload_State = Wait_Big_Data;
+                if(Bufcnt(true,200))
+                {
+                    Turn.Finish = false;
+                    MyFSM.Static_Angle = Gyro_YawAngle_Get();
+                    MyFSM.Unload_State = Wait_Big_Data;
+                }
             }
         break;
         case Wait_Big_Data:
@@ -1897,7 +1927,7 @@ static void Unload_Fsm()
                 MyFSM.Unload_State = Diff_Dir_Unload;//找不到右边的放置区域
             }
 #endif
-            Car.Speed_X = 3;
+            Car.Speed_X = 4;
             Car.Speed_Y = 0;
             Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
         break;
@@ -2032,6 +2062,8 @@ static void Unload_Fsm()
                 //  printf("Move\r\n");
             printf("%f,%d\r\n", FINETUNING_DATA.dx / 10.f, FINETUNING_DATA.FINETUNING_FINISH_FLAG);
     #endif
+            BIG_PLACE_DATA.Big_Place = None;
+            BIG_PLACE_DATA.place = nil;
             if (!MyFSM.Take_Board_Out)
             {
                 UART_SendByte(&_UART_FINDBORDER, UART_STARTFINETUNING_PLACE_ZEBRA); // 发送对数字板微调信息
@@ -2278,7 +2310,7 @@ static void Unload_Fsm()
             else
             {
                 Car.Speed = true;
-                Car_run(5);
+                Car_run(8);
             }
         break;
     }
