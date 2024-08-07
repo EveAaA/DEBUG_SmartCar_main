@@ -18,11 +18,11 @@
 uint8 Menu_Mode = Page9;
 Menu_ Menu = 
 {
-    .Set_Line = 9,
+    .Set_Line = 16,
     .Image_Show = true,
 };
 int Show_Mode;
-#define Exit_Dis tft180_show_string(Row_1,Line_9,"Exit")
+#define Exit_Dis ips200_show_string(Row_1,Line_16,"Exit")
 #define FLASH_SECTION_INDEX (127)// 存储数据用的扇区 倒数第一个扇区
 #define FLASH_PAGE_INDEX (FLASH_PAGE_3)// 存储数据用的页码 倒数第一个页码
 
@@ -40,21 +40,21 @@ int Show_Mode;
 **/
 static void Arrow_Display(int Line)
 {
-    for(int Line_Num = 0;Line_Num <= 9;Line_Num++)
+    for(int Line_Num = 0;Line_Num <= 16;Line_Num++)
     {
         if(Line == Line_Num)
         {
-            tft180_show_string(Row_0,Line_Num*16,">");
+            ips200_show_string(Row_0,Line_Num*16,">");
         }
         else
         {
             if(!Menu.Image_Show)
             {
-                tft180_show_string(Row_0,Line_Num*16," ");
+                ips200_show_string(Row_0,Line_Num*16," ");
             }
-            else if(Line_Num >=4)
+            else if(Line_Num >=8 && Menu.Image_Show)
             {
-                tft180_show_string(Row_0,Line_Num*16," ");
+                ips200_show_string(Row_0,Line_Num*16," ");
             }
         }
 
@@ -68,7 +68,7 @@ static void Arrow_Display(int Line)
 **/
 static void Line_Change()
 {
-    if((Rotary.Clockwise) && (Menu.Set_Line < 9))//顺时针转
+    if((Rotary.Clockwise) && (Menu.Set_Line < 16))//顺时针转
     {
         Rotary.Clockwise = 0;
         Menu.Set_Line++;
@@ -90,17 +90,17 @@ static void Page_Select_Mode()
 {
     Line_Change();//行切换
     Arrow_Display(Menu.Set_Line);//箭头显示
-    tft180_show_string(Row_1,Line_0,"Car_Go:");
-    tft180_show_uint(Row_9,Line_0,Start,1);
-    tft180_show_string(Row_1,Line_1,"Page1"); 
-    tft180_show_string(Row_1,Line_2,"Page2"); 
-    tft180_show_string(Row_1,Line_3,"Page3"); 
-    tft180_show_string(Row_1,Line_4,"Page4"); 
-    tft180_show_string(Row_1,Line_5,"Page5");
-    tft180_show_string(Row_1,Line_6,"Page6");
-    tft180_show_string(Row_1,Line_7,"Page7");
-    tft180_show_string(Row_1,Line_8,"Page8");
-    tft180_show_string(Row_1,Line_9,"Page9");
+    ips200_show_string(Row_1,Line_0,"Car_Go:");
+    ips200_show_uint(Row_9,Line_0,Start,1);
+    ips200_show_string(Row_1,Line_1,"Page1"); 
+    ips200_show_string(Row_1,Line_2,"Page2"); 
+    ips200_show_string(Row_1,Line_3,"Page3"); 
+    ips200_show_string(Row_1,Line_4,"Page4"); 
+    ips200_show_string(Row_1,Line_5,"Page5");
+    ips200_show_string(Row_1,Line_6,"Page6");
+    ips200_show_string(Row_1,Line_7,"Page7");
+    ips200_show_string(Row_1,Line_8,"Page8");
+    ips200_show_string(Row_1,Line_9,"Page9");
     if(Rotary.Press)//按键按下
     {
         Rotary.Press = 0;
@@ -109,7 +109,7 @@ static void Page_Select_Mode()
         if(Menu_Mode==0)
         {
             Start = 1;
-            tft180_clear();
+            ips200_clear();
             Set_Beepfreq(1);
         }
         if(Menu_Mode==9)
@@ -118,7 +118,7 @@ static void Page_Select_Mode()
             Menu.Image_Show = true;
             // flash_read_page_to_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
         }
-        tft180_clear();
+        ips200_clear();
     }   
 }
 
@@ -134,10 +134,10 @@ static void Page1_Mode()
     Arrow_Display(Menu.Set_Line);//箭头显示
     if(!Menu.Image_Show)
     {
-        tft180_show_string(Row_1,Line_0,"Yaw:");
-        tft180_show_float(Row_5,Line_0,Gyro_YawAngle_Get(),3,1);
-        tft180_show_string(Row_1,Line_1,"Car_Go:");
-        tft180_show_int(Row_8,Line_1,Start,2);
+        ips200_show_string(Row_1,Line_0,"Yaw:");
+        ips200_show_float(Row_5,Line_0,Gyro_YawAngle_Get(),3,1);
+        ips200_show_string(Row_1,Line_1,"Car_Go:");
+        ips200_show_int(Row_8,Line_1,Start,2);
     }
 
     Exit_Dis;
@@ -148,7 +148,7 @@ static void Page1_Mode()
         Menu_Mode = Page_Select;
         Menu.Set_Line = 0;
         Menu.Image_Show = false;
-        tft180_clear();
+        ips200_clear();
     } 
 
     if((Menu.Set_Line == 1) && (Rotary.Press))//发车
@@ -167,18 +167,18 @@ static void Page1_Mode()
 static void Page2_Mode()
 {
     flash_read_page_to_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
-    tft180_show_string(Row_1,Line_0,"XKP:");
-    tft180_show_float(Row_5,Line_0,flash_union_buffer[0].float_type,2,2);
-    tft180_show_string(Row_1,Line_1,"YKP:");
-    tft180_show_float(Row_5,Line_1,flash_union_buffer[1].float_type,2,2);
-    tft180_show_string(Row_1,Line_2,"XKD:");
-    tft180_show_float(Row_5,Line_2,flash_union_buffer[2].float_type,2,2);
-    tft180_show_string(Row_1,Line_3,"YKD:");
-    tft180_show_float(Row_5,Line_3,flash_union_buffer[3].float_type,2,2);
-    tft180_show_string(Row_1,Line_4,"AngleP:");
-    tft180_show_float(Row_8,Line_4,flash_union_buffer[4].float_type,2,2);
-    tft180_show_string(Row_1,Line_5,"AngleD:");
-    tft180_show_float(Row_8,Line_5,flash_union_buffer[5].float_type,2,2);
+    ips200_show_string(Row_1,Line_0,"XKP:");
+    ips200_show_float(Row_5,Line_0,flash_union_buffer[0].float_type,2,2);
+    ips200_show_string(Row_1,Line_1,"YKP:");
+    ips200_show_float(Row_5,Line_1,flash_union_buffer[1].float_type,2,2);
+    ips200_show_string(Row_1,Line_2,"XKD:");
+    ips200_show_float(Row_5,Line_2,flash_union_buffer[2].float_type,2,2);
+    ips200_show_string(Row_1,Line_3,"YKD:");
+    ips200_show_float(Row_5,Line_3,flash_union_buffer[3].float_type,2,2);
+    ips200_show_string(Row_1,Line_4,"AngleP:");
+    ips200_show_float(Row_8,Line_4,flash_union_buffer[4].float_type,2,2);
+    ips200_show_string(Row_1,Line_5,"AngleD:");
+    ips200_show_float(Row_8,Line_5,flash_union_buffer[5].float_type,2,2);
     Exit_Dis;
     if(Menu.Set_Mode == Normal_Mode)
     {
@@ -187,7 +187,7 @@ static void Page2_Mode()
             Rotary.Press = 0;
             Menu_Mode = Page_Select;//退出到第一页
             Menu.Set_Line = 0;
-            tft180_clear();
+            ips200_clear();
         }
         else if((Menu.Set_Line != 7) && (Rotary.Press))
         {
@@ -238,76 +238,100 @@ uint8 Bin_Image_Flag = 0;
 **/
 static void Image_Page()
 {
-    if(mt9v03x_finish_flag)
+    if(Car.Image_Flag == false)
     {
-        mt9v03x_finish_flag = 0;
-        Get_Bin_Image();
-        if(Bin_Image_Flag)
+        if(mt9v03x_finish_flag)
         {
-            tft180_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,128,60,0);
-        }
-        else
-        {
-            tft180_show_gray_image(0,0,(uint8*)mt9v03x_image,MT9V03X_W,MT9V03X_H,128,60,0);
+            mt9v03x_finish_flag = 0;
+            Get_Bin_Image();
+            if((Bin_Image_Flag))
+            {
+                ips200_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,MT9V03X_W,MT9V03X_H,0);
+            }
+            else
+            {
+                ips200_show_gray_image(0,0,(uint8*)mt9v03x_image,MT9V03X_W,MT9V03X_H,MT9V03X_W,MT9V03X_H,0);
+            }
         }
     }
-    // tft180_set_dir(TFT180_CROSSWISE);
-    // tft180_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,148,80,0);
-    // tft180_show_gray_image(0,0,(uint8*)mt9v03x_image,MT9V03X_W,MT9V03X_H,148,80,0);
+    // ips200_set_dir(ips200_CROSSWISE);
+    // ips200_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,148,80,0);
+    // ips200_show_gray_image(0,0,(uint8*)mt9v03x_image,MT9V03X_W,MT9V03X_H,148,80,0);
     // for (int i = Hightest; i < Image_H-1; i++)
     // {
-    //     tft180_draw_point(Center_Line[i], i, RGB565_BLACK);
-    //     tft180_draw_point(L_Border[i], i, RGB565_BLUE);
-    //     tft180_draw_point(R_Border[i], i, RGB565_RED);
+    //     ips200_draw_point(Center_Line[i], i, RGB565_BLACK);
+    //     ips200_draw_point(L_Border[i], i, RGB565_BLUE);
+    //     ips200_draw_point(R_Border[i], i, RGB565_RED);
     // }
-    tft180_show_string(Row_1,Line_4,"Bin:");
-    tft180_show_uint(Row_6,Line_4,Bin_Image_Flag,2);
-    tft180_show_string(Row_1,Line_5,"Ex_Time:");
-    tft180_show_uint(Row_9,Line_5,flash_union_buffer[50].uint16_type,5);//曝光时间
-    tft180_show_string(Row_1,Line_6,"T_P:");
-    tft180_show_uint(Row_6,Line_6,flash_union_buffer[51].uint16_type,5);//判断回到赛道的点
-    tft180_show_string(Row_1,Line_7,"Simple:");
-    tft180_show_uint(Row_9,Line_7,flash_union_buffer[52].uint16_type,5);//是否只捡道路的卡片
-    tft180_show_string(Row_1,Line_8,"ANGLE:");
-    tft180_show_uint(Row_8,Line_8,flash_union_buffer[53].uint16_type,5);//是否只捡道路的卡片
+    ips200_show_string(Row_1,Line_8,"Bin:");
+    ips200_show_uint(Row_6,Line_8,Bin_Image_Flag,2);
+    ips200_show_string(Row_1,Line_9,"Ex_Time:");
+    ips200_show_uint(Row_9,Line_9,flash_union_buffer[50].uint16_type,5);//曝光时间
+    ips200_show_string(Row_1,Line_10,"T_P:");
+    ips200_show_uint(Row_6,Line_10,flash_union_buffer[51].uint16_type,5);//判断回到赛道的点
+    ips200_show_string(Row_1,Line_11,"Simple:");
+    ips200_show_uint(Row_9,Line_11,flash_union_buffer[52].uint16_type,5);//是否只捡道路的卡片
+    ips200_show_string(Row_1,Line_12,"Angle:");
+    ips200_show_uint(Row_8,Line_12,flash_union_buffer[53].uint16_type,5);//舵机放下去的角度
+    ips200_show_string(Row_1,Line_13,"Image_Flag:");
+    ips200_show_uint(Row_12,Line_13,Car.Image_Flag,5);//图像调试用
     Exit_Dis;
+
+    if(Car.Image_Flag)
+    {
+        for (int i = Hightest; i < Image_H-1; i++)
+        {
+            ips200_draw_point(Center_Line[i], i, RGB565_BLACK);
+            ips200_draw_point(L_Border[i], i, RGB565_BLUE);
+            ips200_draw_point(R_Border[i], i, RGB565_RED);
+        }
+        ips200_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,MT9V03X_W,MT9V03X_H,0);
+        ips200_show_string(Row_1,Line_14,"Image_Erro:");
+        ips200_show_float(Row_12,Line_14,Image_Erro,3,3);//图像调试用
+    }
     // if((Menu.Set_Line == 9) && (Rotary.Press))//退出
     // {
     //     Rotary.Press = 0;
     //     Menu_Mode = Page_Select;
     //     Menu.Image_Show = false;
     //     Menu.Set_Line = 0;
-    //     tft180_clear();
+    //     ips200_clear();
     // }
 
     // if((Menu.Set_Line == 4) && (Rotary.Press))//退出
     // {
     //     Rotary.Press = 0;
     //     Menu.Image_Show = true;
-    //     tft180_clear();
+    //     ips200_clear();
     // }
 
     if(Menu.Set_Mode == Normal_Mode)
     {
-        if((Menu.Set_Line == 9) && (Rotary.Press))//退出
+        if((Menu.Set_Line == 16) && (Rotary.Press))//退出
         {
             Rotary.Press = 0;
             Menu_Mode = Page_Select;//退出到第一页
             Menu.Set_Line = 0;
+            Menu.Image_Show = false;
             flash_buffer_clear();
-            tft180_clear();
+            ips200_clear();
         }
-        else if((Menu.Set_Line == 5) && (Rotary.Press))
+        else if((Menu.Set_Line == 9) && (Rotary.Press))
         {
             Rotary.Press = 0;
             Menu.Set_Mode = Flash_Mode;
         } 
-        else if((Menu.Set_Line == 6) && (Rotary.Press))
+        else if((Menu.Set_Line == 10) && (Rotary.Press))
         {
             Rotary.Press = 0;
             Menu.Set_Mode = Flash_Mode;
         } 
-        else if((Menu.Set_Line == 7) && (Rotary.Press))
+        else if((Menu.Set_Line == 11) && (Rotary.Press))
+        {
+            Rotary.Press = 0;
+            Menu.Set_Mode = Flash_Mode;
+        } 
+        else if((Menu.Set_Line == 12) && (Rotary.Press))
         {
             Rotary.Press = 0;
             Menu.Set_Mode = Flash_Mode;
@@ -315,24 +339,25 @@ static void Image_Page()
         else if((Menu.Set_Line == 8) && (Rotary.Press))
         {
             Rotary.Press = 0;
-            Menu.Set_Mode = Flash_Mode;
+            Bin_Image_Flag = 1;
+            ips200_clear();
         } 
-        else if((Menu.Set_Line == 4) && (Rotary.Press))
+        else if((Menu.Set_Line == 13) && (Rotary.Press))
         {
             Rotary.Press = 0;
-            Bin_Image_Flag = 1;
-            tft180_clear();
+            Car.Image_Flag = 1;
+            ips200_clear();
         } 
         Line_Change();//行切换
     }
     else if(Menu.Set_Mode == Flash_Mode)//设置参数
     {
-        if((Rotary.Clockwise)&&(Menu.Set_Line == 5))//顺时针转
+        if((Rotary.Clockwise)&&(Menu.Set_Line == 9))//顺时针转
         {
             Rotary.Clockwise = 0;
             flash_union_buffer[50].uint16_type+=10;
         }
-        else if((Rotary.Anticlockwise)&&(Menu.Set_Line == 5))//逆时针转
+        else if((Rotary.Anticlockwise)&&(Menu.Set_Line == 9))//逆时针转
         {
             Rotary.Anticlockwise = 0;
             flash_union_buffer[50].uint16_type-=10;
@@ -344,12 +369,12 @@ static void Image_Page()
             Menu.Flash_Set = 1;
         }
 
-        if((Rotary.Clockwise)&&(Menu.Set_Line == 6))//顺时针转
+        if((Rotary.Clockwise)&&(Menu.Set_Line == 10))//顺时针转
         {
             Rotary.Clockwise = 0;
             flash_union_buffer[51].uint16_type+=1;
         }
-        else if((Rotary.Anticlockwise)&&(Menu.Set_Line == 6))//逆时针转
+        else if((Rotary.Anticlockwise)&&(Menu.Set_Line == 10))//逆时针转
         {
             Rotary.Anticlockwise = 0;
             flash_union_buffer[51].uint16_type-=1;
@@ -361,12 +386,12 @@ static void Image_Page()
             Menu.Flash_Set = 1;
         }
 
-        if((Rotary.Clockwise)&&(Menu.Set_Line == 7))//顺时针转
+        if((Rotary.Clockwise)&&(Menu.Set_Line == 11))//顺时针转
         {
             Rotary.Clockwise = 0;
             flash_union_buffer[52].uint16_type+=1;
         }
-        else if((Rotary.Anticlockwise)&&(Menu.Set_Line == 7))//逆时针转
+        else if((Rotary.Anticlockwise)&&(Menu.Set_Line == 11))//逆时针转
         {
             Rotary.Anticlockwise = 0;
             flash_union_buffer[52].uint16_type-=1;
@@ -379,12 +404,12 @@ static void Image_Page()
         }
 
 
-        if((Rotary.Clockwise)&&(Menu.Set_Line == 8))//顺时针转
+        if((Rotary.Clockwise)&&(Menu.Set_Line == 12))//顺时针转
         {
             Rotary.Clockwise = 0;
             flash_union_buffer[53].uint16_type+=1;
         }
-        else if((Rotary.Anticlockwise)&&(Menu.Set_Line == 8))//逆时针转
+        else if((Rotary.Anticlockwise)&&(Menu.Set_Line == 12))//逆时针转
         {
             Rotary.Anticlockwise = 0;
             flash_union_buffer[53].uint16_type-=1;

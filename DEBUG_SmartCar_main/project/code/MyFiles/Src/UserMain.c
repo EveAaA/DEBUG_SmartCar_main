@@ -41,7 +41,7 @@ void IMU_Init()
     printf("Imu_Init\r\n");
     #endif
     #ifndef Image_debug
-    // tft180_show_string(Row_0, Line_0, "IMU Init ...");
+    ips200_show_string(Row_0, Line_0, "IMU Init ...");
     #endif
     Gyro_Offset_Init();
 }
@@ -52,7 +52,7 @@ void Mt9v03x_Init()
     {
         if (mt9v03x_init())
             system_delay_ms(1000);
-            // tft180_show_string(0, 16, "mt9v03x reinit.");
+            // ips200_show_string(0, 16, "mt9v03x reinit.");
         else
             break;
         system_delay_ms(1000); // 闪灯表示异常
@@ -61,7 +61,7 @@ void Mt9v03x_Init()
     printf("Mt9v03x_Init\r\n");
     #endif
     #ifndef Image_debug
-    // tft180_show_string(Row_0, Line_1, "Mt9v03x Init ...");
+    ips200_show_string(Row_0, Line_1, "Mt9v03x Init ...");
     #endif
 
 }
@@ -146,7 +146,7 @@ void User_Init()
 {
     system_delay_ms(100);//延时一会等待所有外设上电
     #ifndef Image_debug
-    tft180_init();
+    ips200_init(IPS200_TYPE_SPI);
     #endif
     bluetooth_ch9141_init();
     IMU_Init();
@@ -155,29 +155,29 @@ void User_Init()
     WIFI_SPI_Init();
     #endif
     All_Encoder_Init();
-    // tft180_show_string(Row_0, Line_2, "Encoder Init ...");
+    // ips200_show_string(Row_0, Line_2, "Encoder Init ...");
     Rotary_Init();
-    // tft180_show_string(Row_0, Line_3, "Rotary Init ...");
+    // ips200_show_string(Row_0, Line_3, "Rotary Init ...");
     Manipulator_Init();
     Motor_Init();
-    // tft180_show_string(Row_0, Line_4, "Motor Init ...");
+    // ips200_show_string(Row_0, Line_4, "Motor Init ...");
     Beep_Init();
     // dl1a_init();
     All_PID_Init();
     Flash_Init();
-    mt9v03x_set_exposure_time(100);
+    // mt9v03x_set_exposure_time(100);
     UART_Init();
     #ifdef Image_debug
     printf("All_Init\r\n");
     #endif
     #ifndef Image_debug
-    // tft180_show_string(Row_0, Line_2, "All Init ...");
+    ips200_show_string(Row_0, Line_2, "All Init ...");
     #endif
-    // tft180_clear();
+    timer_init(GPT_TIM_1,TIMER_US);
+    ips200_clear();
     system_delay_ms(1000);
     TIM_Init();
 	interrupt_global_enable(0);
-    printf("All_Init");
 }
 
 /**@brief   所有主循环内容
@@ -187,7 +187,7 @@ void User_Init()
 **/
 void User_Loop()
 {
-    // Get_Button_Value(0);
+    Get_Button_Value(0);
     if(Receivedata.Start_Flag!=2)
     {
         Start = Receivedata.Start_Flag;
@@ -195,7 +195,11 @@ void User_Loop()
     if(mt9v03x_finish_flag && Car.Image_Flag)
     {
         mt9v03x_finish_flag = 0;
+        // timer_start(GPT_TIM_1);
         Image_Process();
+        // timer_stop(GPT_TIM_1);
+        // printf("time = %d\r\n",timer_get(GPT_TIM_1));
+        // timer_clear(GPT_TIM_1);
         #ifdef Image_debug
             // 在发送前将图像备份再进行发送，这样可以避免图像出现撕裂的问题
             memcpy(image_copy[0], Bin_Image[0], MT9V03X_IMAGE_SIZE);
@@ -204,19 +208,11 @@ void User_Loop()
         #endif
     }
     // printf("Image_Erro:%f\r\n",Image_Erro);
-    // tft180_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,MT9V03X_W,MT9V03X_H,0);
-    // tft180_show_float(10,100,Image_Erro,3,2);
-    // for (int i = Hightest; i < Image_H-1; i++)
-    // {
-    //     tft180_draw_point(Center_Line[i], i, RGB565_BLACK);
-    //     tft180_draw_point(L_Border[i], i, RGB565_BLUE);
-    //     tft180_draw_point(R_Border[i], i, RGB565_RED);
-    // }
     // printf("%f,%f,%f,%f\r\n",Encoer_Speed[0],Encoer_Speed[1],Encoer_Speed[2],Encoer_Speed[3]);
 #ifndef Image_debug
-    // if(Start!=1)
-    // {
-    //     Menu_Display();
-    // }
+    if(Start!=1)
+    {
+        Menu_Display();
+    }
 #endif
 }

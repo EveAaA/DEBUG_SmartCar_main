@@ -17,6 +17,12 @@ void Flash_Init();
 #define Line_8 (16*8)//第八行
 #define Line_9 (16*9)//第九行
 #define Line_10 (16*10)//第十行
+#define Line_11 (16*11)//第十一行
+#define Line_12 (16*12)//第十二行
+#define Line_13 (16*13)//第十三行
+#define Line_14 (16*14)//第十四行
+#define Line_15 (16*15)//第十五行
+#define Line_16 (16*16)//第十六行
 //列的宏定义
 #define Row_0 (8*0)//第零列
 #define Row_1 (8*1)//第一列

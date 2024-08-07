@@ -41,7 +41,7 @@ Car_Handle Car =
     .Speed_X = 0,
     .Speed_Y = 0,
     .Speed_Z = 0,
-    .Image_Flag = true,
+    .Image_Flag = false,
     .Speed = true,
 };
 Turn_Handle Turn = 

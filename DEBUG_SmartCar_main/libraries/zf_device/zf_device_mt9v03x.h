@@ -60,7 +60,7 @@
 #define MT9V03X_COF_UART_TX     (UART5_RX_C29)                                  // 总钻风 UART-TX 引脚 要接在单片机 RX 上
 #define MT9V03X_COF_UART_RX     (UART5_TX_C28)                                  // 总钻风 UART-RX 引脚 要接在单片机 TX 上
 
-#define MT9V03X_COF_IIC_DELAY   (4000)                                           // 总钻风 IIC 延时
+#define MT9V03X_COF_IIC_DELAY   (10000)                                           // 总钻风 IIC 延时
 #define MT9V03X_COF_IIC_SCL     (C29)                                           // 总钻风 IIC-SCL 引脚
 #define MT9V03X_COF_IIC_SDA     (C28)                                           // 总钻风 IIC-SDA 引脚
 
@@ -74,8 +74,8 @@
 //--------------------------------------------------------------------------------------------------
 // 摄像头默认参数配置 在此修改摄像头配置
 //--------------------------------------------------------------------------------------------------
-#define MT9V03X_W               (148)                                           // 图像宽度     范围 [1-752]
-#define MT9V03X_H               (80)                                           // 图像高度     范围 [1-480]
+#define MT9V03X_W               (188)                                           // 图像宽度     范围 [1-752]
+#define MT9V03X_H               (120)                                           // 图像高度     范围 [1-480]
 #define MT9V03X_IMAGE_SIZE      (MT9V03X_W * MT9V03X_H)                         // 
 
 #define MT9V03X_AUTO_EXP_DEF    (0  )                                           // 自动曝光设置     默认不开启自动曝光设置  范围 [0-63] 0为关闭

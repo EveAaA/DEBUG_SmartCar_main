@@ -6,8 +6,8 @@ void Image_Process();
 bool No_Get_Line();
 bool All_Stright();
 
-#define Image_H 80//图像高度
-#define Image_W 148//图像宽度
+#define Image_H 120//图像高度
+#define Image_W 188//图像宽度
 #define White_Pixel 255
 #define Black_Pixel 0
 #define Border_Max  Image_W-2 //边界最大值

@@ -866,7 +866,7 @@ uint8 Lose_Line(void)
             Lose_Line_Point_L += 1;
         }
 
-        if (R_Border[i] >= 144)
+        if (R_Border[i] >= 184)
         {
             Lose_Line_Point_R += 1;
         }
@@ -1115,8 +1115,8 @@ bool Straight_Line_Judge(uint8* Border, uint16 Total_Num, lineTypeDef lineMode)
         {
             if ((Border[i] - Border[i - 1] >= 0) 
             && (Border[i] - Border[i - 1] < 2) 
-            && (Border[i] < 144) 
-            && (Border[i - 1] < 144) 
+            && (Border[i] < 184) 
+            && (Border[i - 1] < 184) 
             && (Border[i] > Image_W/2) 
             && (Border[i - 1] > Image_W/2))
             {
@@ -1242,28 +1242,29 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
             // tft180_Draw_ColorCircle(L_Border[Salient_Point],Salient_Point,5,RGB565_RED);
             if(LeftRing.Stright_Line)
             {
-                // for (i = Image_H - 5; i > Image_H / 2 - 5; i--)//寻找左下拐点
-                // {
-                //     //printf("L_Board[%d] = %d\r\n", i, L_Border[i]);
-                //     if (abs(L_Border[i] - L_Border[i + 1] <= 5)
-                //         && (abs(L_Border[i + 1] - L_Border[i + 2]) <= 5)
-                //         && (abs(L_Border[i + 2] - L_Border[i + 3]) <= 5)
-                //         && (L_Border[i] - L_Border[i - 2] >= 7))
-                //     {
-                //         Break_Num_L_DOWN = i;//传递y坐标
-                //         break;
-                //     }
-                // }
-                for (uint8 i = Image_H - 2; i > 10; --i)
+                for (i = Image_H - 5; i > Image_H / 2 - 5; i--)//寻找左下拐点
                 {
-                    // 断裂区域横坐标相差很大
-                    if (L_Border[i] - L_Border[i - 1] > 10)
+                    //printf("L_Board[%d] = %d\r\n", i, L_Border[i]);
+                    if (abs(L_Border[i] - L_Border[i + 1] <= 5)
+                        && (abs(L_Border[i + 1] - L_Border[i + 2]) <= 5)
+                        && (abs(L_Border[i + 2] - L_Border[i + 3]) <= 5)
+                        && (L_Border[i] - L_Border[i - 2] >= 7))
                     {
                         hashKey[offset] = i;
                         offset++;
                         break;
                     }
                 }
+                // for (uint8 i = Image_H - 2; i > 10; --i)
+                // {
+                //     // 断裂区域横坐标相差很大
+                //     if (L_Border[i] - L_Border[i - 1] > 10)
+                //     {
+                //         hashKey[offset] = i;
+                //         offset++;
+                //         break;
+                //     }
+                // }
             }
 
             if (offset > 0)
@@ -1741,7 +1742,7 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
 
             // for (int i = Image_H/2+20; i > Image_H/2-20; i -= 1) 
             // {
-            //     if (R_Border[i] >= 144)
+            //     if (R_Border[i] >= 184)
             //     {
             //         Lose_Line_Point_R += 1;
             //     }
@@ -1856,7 +1857,7 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
 
             for (int i = Image_H - 2; i > 2; i -= 1) 
             {
-                if (R_Border[i] >= 144)
+                if (R_Border[i] >= 184)
                 {
                     Lose_Line_Point_R += 1;
                 }
@@ -2032,7 +2033,7 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
 
                 for (int i = Image_H/2+20; i > Image_H/2-20; i -= 1) 
                 {
-                    if (R_Border[i] >= 144)
+                    if (R_Border[i] >= 184)
                     {
                         Lose_Line_Point_R += 1;
                     }
@@ -2085,7 +2086,7 @@ void Zebra_Seek(uint8(*Bin_Image)[Image_W],uint8* L_Border, uint8* R_Border, uin
 
     for(uint8 i = 50;i <= 120;i++)
     {
-        if(Bin_Image[25][i] == Black_Pixel && Bin_Image[25][i+1] == White_Pixel)
+        if(Bin_Image[55][i] == Black_Pixel && Bin_Image[55][i+1] == White_Pixel)
         {
             total ++;
         }
@@ -2370,5 +2371,5 @@ void Image_Process(void)
     {
         Center_Line[i] = (L_Border[i] + R_Border[i]) >> 1;//求中线
     }
-    Image_Erro = (Center_Line[69])*0.375f + (Center_Line[70])*0.5f + (Center_Line[71])*0.1f;
+    Image_Erro = (Center_Line[100])*0.375f + (Center_Line[101])*0.5f + (Center_Line[102])*0.1f;
 }
