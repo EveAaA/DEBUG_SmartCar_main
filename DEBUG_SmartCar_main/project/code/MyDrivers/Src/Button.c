@@ -14,11 +14,11 @@
 #include "Button.h"
 #include "Rotary.h"
 /* Define\Declare ------------------------------------------------------------*/
-int8 Button_Value[5] = {0,0,0,0,0};//键值
-int8 Button[5] = {Rotary_D,B15,B14,B9,B10};
-int8 Button_Temp[5] = {0,0,0,0,0};
+int8 Button_Value[4] = {0,0,0};//键值
+int8 Button[4] = {B23,C26,B14};
+int8 Button_Temp[4] = {0,0,0};
 int8 Switch_Button_Value[2] = {0,0};
-uint16 Key_Time[5] = {0,0,0,0,0};
+uint16 Key_Time[4] = {0,0,0};
 #define Key_Sleep_Time 4
 //按键管脚定义
 #define Switch_Button_0 B16
@@ -38,13 +38,13 @@ uint16 Key_Time[5] = {0,0,0,0,0};
 **/
 void All_Button_Init()
 {
-    gpio_init(Button[0],GPI,0,GPI_PULL_UP);
-    gpio_init(Button[1],GPI,0,GPI_PULL_UP);
-    gpio_init(Button[2],GPI,0,GPI_PULL_UP);
-    gpio_init(Button[3],GPI,0,GPI_PULL_UP);
-    gpio_init(Button[4],GPI,0,GPI_PULL_UP);
-    gpio_init(Switch_Button_0,GPI,0,GPI_PULL_UP);
-    gpio_init(Switch_Button_1,GPI,0,GPI_PULL_UP);
+    gpio_init(B23,GPI,0,GPI_PULL_UP);
+    gpio_init(C26,GPI,0,GPI_PULL_UP);
+    gpio_init(B14,GPI,0,GPI_PULL_UP);
+    // gpio_init(Button[3],GPI,0,GPI_PULL_UP);
+    // gpio_init(Button[4],GPI,0,GPI_PULL_UP);
+    // gpio_init(Switch_Button_0,GPI,0,GPI_PULL_UP);
+    // gpio_init(Switch_Button_1,GPI,0,GPI_PULL_UP);
 }
 
 /**@brief    所有按键扫描
@@ -56,15 +56,15 @@ void All_Button_Init()
 **/
 void All_Button_Scan()
 {
-    for(int Button_Num = 0;Button_Num <= 4;Button_Num++)
+    for(int Button_Num = 0;Button_Num <= 3;Button_Num++)
     {
         Get_Button_Value(Button_Num);
     }
 
-    for(int Switch_Button_Num = 0;Switch_Button_Num <= 1;Switch_Button_Num++)
-    {
-        Get_Switch_Button_Value(Switch_Button_Num);
-    }
+    // for(int Switch_Button_Num = 0;Switch_Button_Num <= 1;Switch_Button_Num++)
+    // {
+    //     Get_Switch_Button_Value(Switch_Button_Num);
+    // }
 }
 
 /**@brief   所有按键消抖
@@ -74,7 +74,7 @@ void All_Button_Scan()
 **/
 void Key_Delay()
 {
-    for(uint8 Num = 0;Num<=4;Num++)
+    for(uint8 Num = 0;Num<=3;Num++)
     {
         if(Key_Time[Num] != 0)
         {
@@ -117,10 +117,7 @@ void Get_Button_Value(int8 KeyNum)
             if(gpio_get_level(Button[KeyNum]) == 1)//如果按键抬起
             {
                 Button_Temp[KeyNum] = 0;//进入等待释放或长按计时
-                Button_Value[KeyNum] = 2;//判断为短按      
-                Rotary.Press = 1;
-                Rotary.Clockwise = 0;
-                Rotary.Anticlockwise = 0;         
+                Button_Value[KeyNum] = 2;//判断为短按           
             }
 
             if((Key_Time[KeyNum] > Key_Sleep_Time*100) && (gpio_get_level(Button[KeyNum]) == 0))//大于长按时间
@@ -132,6 +129,7 @@ void Get_Button_Value(int8 KeyNum)
         case 3://等待释放
             if(gpio_get_level(Button[KeyNum]) == 1)
             {
+                Key_Time[KeyNum] = 0;
                 Button_Temp[KeyNum] = 0;//进入等待释放或长按计时
                 Button_Value[KeyNum] = 0;               
             }

@@ -89,6 +89,7 @@ void PIT_IRQHandler(void)
     
     if(pit_flag_get(PIT_CH3))
     {
+        All_Button_Scan();
         if((Time_Cnt > 0) && (Time_Cnt < 60000))//Bufunt¼ÆÊ±ÓÃ
         {
             Time_Cnt++;

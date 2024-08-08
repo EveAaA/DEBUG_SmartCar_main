@@ -18,11 +18,11 @@
 uint8 Menu_Mode = Page9;
 Menu_ Menu = 
 {
-    .Set_Line = 16,
+    .Set_Line = 14,
     .Image_Show = true,
 };
 int Show_Mode;
-#define Exit_Dis ips200_show_string(Row_1,Line_16,"Exit")
+#define Exit_Dis ips200_show_string(Row_1,Line_14,"Exit")
 #define FLASH_SECTION_INDEX (127)// 存储数据用的扇区 倒数第一个扇区
 #define FLASH_PAGE_INDEX (FLASH_PAGE_3)// 存储数据用的页码 倒数第一个页码
 
@@ -40,7 +40,7 @@ int Show_Mode;
 **/
 static void Arrow_Display(int Line)
 {
-    for(int Line_Num = 0;Line_Num <= 16;Line_Num++)
+    for(int Line_Num = 0;Line_Num <= 14;Line_Num++)
     {
         if(Line == Line_Num)
         {
@@ -52,7 +52,7 @@ static void Arrow_Display(int Line)
             {
                 ips200_show_string(Row_0,Line_Num*16," ");
             }
-            else if(Line_Num >=8 && Menu.Image_Show)
+            else if(Line_Num >=6 && Menu.Image_Show)
             {
                 ips200_show_string(Row_0,Line_Num*16," ");
             }
@@ -68,14 +68,14 @@ static void Arrow_Display(int Line)
 **/
 static void Line_Change()
 {
-    if((Rotary.Clockwise) && (Menu.Set_Line < 16))//顺时针转
+    if((Button_Value[2] == 2) && (Menu.Set_Line < 14))//顺时针转
     {
-        Rotary.Clockwise = 0;
+        Button_Value[2] = 0;
         Menu.Set_Line++;
     }
-    else if((Rotary.Anticlockwise) && (Menu.Set_Line > 0))//逆时针转
+    else if((Button_Value[0] == 2) && (Menu.Set_Line > 0))//逆时针转
     {
-        Rotary.Anticlockwise = 0;
+        Button_Value[0] = 0;
         Menu.Set_Line--;
     }
 }
@@ -101,9 +101,9 @@ static void Page_Select_Mode()
     ips200_show_string(Row_1,Line_7,"Page7");
     ips200_show_string(Row_1,Line_8,"Page8");
     ips200_show_string(Row_1,Line_9,"Page9");
-    if(Rotary.Press)//按键按下
+    if(Button_Value[1] == 2)//按键按下
     {
-        Rotary.Press = 0;
+        Button_Value[1] = 0;
         Menu_Mode = Menu.Set_Line;
         Menu.Set_Line = 0;
         if(Menu_Mode==0)
@@ -142,18 +142,18 @@ static void Page1_Mode()
 
     Exit_Dis;
 
-    if((Menu.Set_Line == 9) && (Rotary.Press))//退出
+    if((Menu.Set_Line == 9) && (Button_Value[1] == 2))//退出
     {
-        Rotary.Press = 0;
+        Button_Value[1] = 0;
         Menu_Mode = Page_Select;
         Menu.Set_Line = 0;
         Menu.Image_Show = false;
         ips200_clear();
     } 
 
-    if((Menu.Set_Line == 1) && (Rotary.Press))//发车
+    if((Menu.Set_Line == 1) && (Button_Value[1] == 2))//发车
     {
-        Rotary.Press = 0;
+        Button_Value[1] = 0;
         Start = 1;
     }
 }
@@ -182,35 +182,35 @@ static void Page2_Mode()
     Exit_Dis;
     if(Menu.Set_Mode == Normal_Mode)
     {
-        if((Menu.Set_Line == 7) && (Rotary.Press))//退出
+        if((Menu.Set_Line == 7) && (Button_Value[1] == 2))//退出
         {
-            Rotary.Press = 0;
+            Button_Value[1] = 0;
             Menu_Mode = Page_Select;//退出到第一页
             Menu.Set_Line = 0;
             ips200_clear();
         }
-        else if((Menu.Set_Line != 7) && (Rotary.Press))
+        else if((Menu.Set_Line != 7) && (Button_Value[1] == 2))
         {
-            Rotary.Press = 0;
+            Button_Value[1] = 0;
             Menu.Set_Mode = Flash_Mode;
         } 
         Line_Change();//行切换
     }
     else if(Menu.Set_Mode == Flash_Mode)//设置参数
     {
-        if(Rotary.Clockwise)//顺时针转
+        if(Button_Value[0] == 2)//顺时针转
         {
-            Rotary.Clockwise = 0;
+            Button_Value[0] = 0;
             flash_union_buffer[Menu.Set_Line].float_type+=0.01;
         }
-        else if(Rotary.Anticlockwise)//逆时针转
+        else if(Button_Value[2] == 2)//逆时针转
         {
-            Rotary.Anticlockwise = 0;
+            Button_Value[2] = 0;
             flash_union_buffer[Menu.Set_Line].float_type-=0.01;
         }
-        else if(Rotary.Press)//调参结束
+        else if(Button_Value[1] == 2)//调参结束
         {
-            Rotary.Press = 0;
+            Button_Value[1] = 0;
             Menu.Set_Mode = Normal_Mode;
             Menu.Flash_Set = 1;
         }
@@ -263,18 +263,18 @@ static void Image_Page()
     //     ips200_draw_point(L_Border[i], i, RGB565_BLUE);
     //     ips200_draw_point(R_Border[i], i, RGB565_RED);
     // }
-    ips200_show_string(Row_1,Line_8,"Bin:");
-    ips200_show_uint(Row_6,Line_8,Bin_Image_Flag,2);
-    ips200_show_string(Row_1,Line_9,"Ex_Time:");
-    ips200_show_uint(Row_9,Line_9,flash_union_buffer[50].uint16_type,5);//曝光时间
-    ips200_show_string(Row_1,Line_10,"T_P:");
-    ips200_show_uint(Row_6,Line_10,flash_union_buffer[51].uint16_type,5);//判断回到赛道的点
-    ips200_show_string(Row_1,Line_11,"Simple:");
-    ips200_show_uint(Row_9,Line_11,flash_union_buffer[52].uint16_type,5);//是否只捡道路的卡片
-    ips200_show_string(Row_1,Line_12,"Angle:");
-    ips200_show_uint(Row_8,Line_12,flash_union_buffer[53].uint16_type,5);//舵机放下去的角度
-    ips200_show_string(Row_1,Line_13,"Image_Flag:");
-    ips200_show_uint(Row_12,Line_13,Car.Image_Flag,5);//图像调试用
+    ips200_show_string(Row_1,Line_6,"Bin:");
+    ips200_show_uint(Row_6,Line_6,Bin_Image_Flag,2);
+    ips200_show_string(Row_1,Line_7,"Ex_Time:");
+    ips200_show_uint(Row_9,Line_7,flash_union_buffer[50].uint16_type,5);//曝光时间
+    ips200_show_string(Row_1,Line_8,"T_P:");
+    ips200_show_uint(Row_6,Line_8,flash_union_buffer[51].uint16_type,5);//判断回到赛道的点
+    ips200_show_string(Row_1,Line_9,"Simple:");
+    ips200_show_uint(Row_9,Line_9,flash_union_buffer[52].uint16_type,5);//是否只捡道路的卡片
+    ips200_show_string(Row_1,Line_10,"Angle:");
+    ips200_show_uint(Row_8,Line_10,flash_union_buffer[53].uint16_type,5);//舵机放下去的角度
+    ips200_show_string(Row_1,Line_11,"Image_Flag:");
+    ips200_show_uint(Row_12,Line_11,Car.Image_Flag,5);//图像调试用
     Exit_Dis;
 
     if(Car.Image_Flag)
@@ -286,65 +286,65 @@ static void Image_Page()
             ips200_draw_point(R_Border[i], i, RGB565_RED);
         }
         ips200_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,MT9V03X_W,MT9V03X_H,0);
-        ips200_show_string(Row_1,Line_14,"Image_Erro:");
-        ips200_show_float(Row_12,Line_14,Image_Erro,3,3);//图像调试用
+        ips200_show_string(Row_1,Line_12,"Image_Erro:");
+        ips200_show_float(Row_12,Line_12,Image_Erro,3,3);//图像调试用
     }
-    // if((Menu.Set_Line == 9) && (Rotary.Press))//退出
+    // if((Menu.Set_Line == 9) && (Button_Value[1] == 2))//退出
     // {
-    //     Rotary.Press = 0;
+    //     Button_Value[1] = 0;
     //     Menu_Mode = Page_Select;
     //     Menu.Image_Show = false;
     //     Menu.Set_Line = 0;
     //     ips200_clear();
     // }
 
-    // if((Menu.Set_Line == 4) && (Rotary.Press))//退出
+    // if((Menu.Set_Line == 4) && (Button_Value[1] == 2))//退出
     // {
-    //     Rotary.Press = 0;
+    //     Button_Value[1] = 0;
     //     Menu.Image_Show = true;
     //     ips200_clear();
     // }
 
     if(Menu.Set_Mode == Normal_Mode)
     {
-        if((Menu.Set_Line == 16) && (Rotary.Press))//退出
+        if((Menu.Set_Line == 14) && (Button_Value[1] == 2))//退出
         {
-            Rotary.Press = 0;
+            Button_Value[1] = 0;
             Menu_Mode = Page_Select;//退出到第一页
             Menu.Set_Line = 0;
             Menu.Image_Show = false;
             flash_buffer_clear();
             ips200_clear();
         }
-        else if((Menu.Set_Line == 9) && (Rotary.Press))
+        else if((Menu.Set_Line == 7) && (Button_Value[1] == 2))
         {
-            Rotary.Press = 0;
+            Button_Value[1] = 0;
             Menu.Set_Mode = Flash_Mode;
         } 
-        else if((Menu.Set_Line == 10) && (Rotary.Press))
+        else if((Menu.Set_Line == 8) && (Button_Value[1] == 2))
         {
-            Rotary.Press = 0;
+            Button_Value[1] = 0;
             Menu.Set_Mode = Flash_Mode;
         } 
-        else if((Menu.Set_Line == 11) && (Rotary.Press))
+        else if((Menu.Set_Line == 9) && (Button_Value[1] == 2))
         {
-            Rotary.Press = 0;
+            Button_Value[1] = 0;
             Menu.Set_Mode = Flash_Mode;
         } 
-        else if((Menu.Set_Line == 12) && (Rotary.Press))
+        else if((Menu.Set_Line == 10) && (Button_Value[1] == 2))
         {
-            Rotary.Press = 0;
+            Button_Value[1] = 0;
             Menu.Set_Mode = Flash_Mode;
         } 
-        else if((Menu.Set_Line == 8) && (Rotary.Press))
+        else if((Menu.Set_Line == 6) && (Button_Value[1] == 2))
         {
-            Rotary.Press = 0;
+            Button_Value[1] = 0;
             Bin_Image_Flag = 1;
             ips200_clear();
         } 
-        else if((Menu.Set_Line == 13) && (Rotary.Press))
+        else if((Menu.Set_Line == 11) && (Button_Value[1] == 2))
         {
-            Rotary.Press = 0;
+            Button_Value[1] = 0;
             Car.Image_Flag = 1;
             ips200_clear();
         } 
@@ -352,71 +352,71 @@ static void Image_Page()
     }
     else if(Menu.Set_Mode == Flash_Mode)//设置参数
     {
-        if((Rotary.Clockwise)&&(Menu.Set_Line == 9))//顺时针转
+        if((Button_Value[0] == 2)&&(Menu.Set_Line == 7))//顺时针转
         {
-            Rotary.Clockwise = 0;
+            Button_Value[0] = 0;
             flash_union_buffer[50].uint16_type+=10;
         }
-        else if((Rotary.Anticlockwise)&&(Menu.Set_Line == 9))//逆时针转
+        else if((Button_Value[2] == 2)&&(Menu.Set_Line == 7))//逆时针转
         {
-            Rotary.Anticlockwise = 0;
+            Button_Value[2] = 0;
             flash_union_buffer[50].uint16_type-=10;
         }
-        else if(Rotary.Press)//调参结束
+        else if(Button_Value[1] == 2)//调参结束
         {
-            Rotary.Press = 0;
+            Button_Value[1] = 0;
             Menu.Set_Mode = Normal_Mode;
             Menu.Flash_Set = 1;
         }
 
-        if((Rotary.Clockwise)&&(Menu.Set_Line == 10))//顺时针转
+        if((Button_Value[0] == 2)&&(Menu.Set_Line == 8))//顺时针转
         {
-            Rotary.Clockwise = 0;
+            Button_Value[0] = 0;
             flash_union_buffer[51].uint16_type+=1;
         }
-        else if((Rotary.Anticlockwise)&&(Menu.Set_Line == 10))//逆时针转
+        else if((Button_Value[2] == 2)&&(Menu.Set_Line == 8))//逆时针转
         {
-            Rotary.Anticlockwise = 0;
+            Button_Value[2] = 0;
             flash_union_buffer[51].uint16_type-=1;
         }
-        else if(Rotary.Press)//调参结束
+        else if(Button_Value[1] == 2)//调参结束
         {
-            Rotary.Press = 0;
+            Button_Value[1] = 0;
             Menu.Set_Mode = Normal_Mode;
             Menu.Flash_Set = 1;
         }
 
-        if((Rotary.Clockwise)&&(Menu.Set_Line == 11))//顺时针转
+        if((Button_Value[0] == 2)&&(Menu.Set_Line == 9))//顺时针转
         {
-            Rotary.Clockwise = 0;
+            Button_Value[0] = 0;
             flash_union_buffer[52].uint16_type+=1;
         }
-        else if((Rotary.Anticlockwise)&&(Menu.Set_Line == 11))//逆时针转
+        else if((Button_Value[2] == 2)&&(Menu.Set_Line == 9))//逆时针转
         {
-            Rotary.Anticlockwise = 0;
+            Button_Value[2] = 0;
             flash_union_buffer[52].uint16_type-=1;
         }
-        else if(Rotary.Press)//调参结束
+        else if(Button_Value[1] == 2)//调参结束
         {
-            Rotary.Press = 0;
+            Button_Value[1] = 0;
             Menu.Set_Mode = Normal_Mode;
             Menu.Flash_Set = 1;
         }
 
 
-        if((Rotary.Clockwise)&&(Menu.Set_Line == 12))//顺时针转
+        if((Button_Value[0] == 2)&&(Menu.Set_Line == 10))//顺时针转
         {
-            Rotary.Clockwise = 0;
+            Button_Value[0] = 0;
             flash_union_buffer[53].uint16_type+=1;
         }
-        else if((Rotary.Anticlockwise)&&(Menu.Set_Line == 12))//逆时针转
+        else if((Button_Value[2] == 2)&&(Menu.Set_Line == 10))//逆时针转
         {
-            Rotary.Anticlockwise = 0;
+            Button_Value[2] = 0;
             flash_union_buffer[53].uint16_type-=1;
         }
-        else if(Rotary.Press)//调参结束
+        else if(Button_Value[1] == 2)//调参结束
         {
-            Rotary.Press = 0;
+            Button_Value[1] = 0;
             Menu.Set_Mode = Normal_Mode;
             Menu.Flash_Set = 1;
         }
@@ -451,7 +451,7 @@ void Flash_Init()
     flash_init();//逐飞flash初始化
     if(!flash_check(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX))//判断是否有数据，如果没有数据
     {
-        // flash_union_buffer[0].float_type = 0.15f;//微调X轴P
+        // flash_union_buffer[0].float_type = 0.14f;//微调X轴P
         // flash_union_buffer[1].float_type = 0.28f;//微调Y轴P
         // flash_union_buffer[2].float_type = 0.20f;//微调X轴D
         // flash_union_buffer[3].float_type = 0.0f;//微调Y轴D

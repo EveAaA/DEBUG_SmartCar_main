@@ -156,7 +156,7 @@ void User_Init()
     #endif
     All_Encoder_Init();
     // ips200_show_string(Row_0, Line_2, "Encoder Init ...");
-    Rotary_Init();
+    All_Button_Init();
     // ips200_show_string(Row_0, Line_3, "Rotary Init ...");
     Manipulator_Init();
     Motor_Init();
@@ -180,6 +180,7 @@ void User_Init()
 	interrupt_global_enable(0);
 }
 
+int test =0;
 /**@brief   所有主循环内容
 -- @param   无
 -- @author  庄文标
@@ -187,7 +188,6 @@ void User_Init()
 **/
 void User_Loop()
 {
-    Get_Button_Value(0);
     if(Receivedata.Start_Flag!=2)
     {
         Start = Receivedata.Start_Flag;
