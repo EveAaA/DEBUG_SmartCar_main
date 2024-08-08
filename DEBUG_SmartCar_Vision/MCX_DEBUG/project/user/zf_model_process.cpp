@@ -95,6 +95,11 @@ Center_t UartSendDiff = {
     .y = 0,
 };
 
+Center_t UnloadCenter = {
+    .x = 160,
+    .y = 120,
+};
+
 tensor_dims_t inputDims;
 tensor_type_t inputType;
 uint8_t *inputData;
@@ -395,6 +400,7 @@ void MENU_SHOW(SetMode_t *Mode, uint16_t ArrayPlace, bool CxCyFlag)
         ips200_show_string(10, 55, "SET_EXPOSURE");
         ips200_show_string(10, 70, "RUN");
         ips200_show_string(10, 85, "SET_TWOLINES");
+        ips200_show_string(10, 100, "SET_UNLOAD_CENTER");
         break;
     case SET_EXPOSURE:
         ips200_show_string(10, 10, "BRIGHTNESS:");
@@ -458,15 +464,32 @@ void MENU_SHOW(SetMode_t *Mode, uint16_t ArrayPlace, bool CxCyFlag)
         ips200_show_int(120, 25, RIGHTLINE);
         if (!CxCyFlag)
         {
-            ips200_show_string(10, 50, "change LEFT");
+            ips200_show_string(10, 50, "change LEFT RED");
         }
         else
         {
-            ips200_show_string(10, 50, "change RIGHT");
+            ips200_show_string(10, 50, "change RIGHT GREEN");
         }
         ips200_show_string(10, 65, "LINES");
         ips200_draw_line(LEFTLINE, 0, LEFTLINE, 240, RGB565_RED);
         ips200_draw_line(RIGHTLINE, 0, RIGHTLINE, 240, RGB565_GREEN);
+        break;
+    case SET_UNLOAD_CENTER:
+        ips200_show_string(10, 10, "cx:");
+        ips200_show_int(30, 10, UnloadCenter.x);
+        ips200_show_string(10, 25, "cy:");
+        ips200_show_int(30, 25, UnloadCenter.y);
+        if (!CxCyFlag)
+        {
+            ips200_show_string(10, 50, "change cx");
+        }
+        else
+        {
+            ips200_show_string(10, 50, "change cy");
+        }
+        ips200_show_string(10, 65, "Unload");
+        ips200_draw_line(0, UnloadCenter.y, 320, UnloadCenter.y, RGB565_RED);
+        ips200_draw_line(UnloadCenter.x, 0, UnloadCenter.x, 240, RGB565_GREEN);
         break;
     default:
         break;
@@ -489,6 +512,8 @@ SetMode_t GetSelectMode(int8_t ArrayPlace)
         return RUN;
     case 85:
         return SET_TWOLINES; 
+    case 100:
+        return SET_UNLOAD_CENTER;
     default:
         return NONE_SET;
     }
@@ -507,13 +532,13 @@ void UPDATE_SETMODE(SetMode_t *Mode)
             ArrayPlace -= 15;
             if (ArrayPlace < 10)
             {
-                ArrayPlace = 85;
+                ArrayPlace = 100;
             }
         }
         else if (Key_2 == PRESS)
         {
             ArrayPlace += 15;
-            if (ArrayPlace > 85)
+            if (ArrayPlace > 100)
             {
                 ArrayPlace = 10;
             }
@@ -693,6 +718,42 @@ void UPDATE_SETMODE(SetMode_t *Mode)
             changeCxCyFlag = !changeCxCyFlag;
         }
         break;
+    case SET_UNLOAD_CENTER:
+        if (Key_1 == PRESS)
+        {
+            if (!changeCxCyFlag)
+            {
+                UnloadCenter.x -= 5;
+            }
+            else
+            {
+                UnloadCenter.y -= 5;
+            }
+        }
+        else if (Key_2 == PRESS)
+        {
+            if (!changeCxCyFlag)
+            {
+                UnloadCenter.x += 5;
+            }
+            else
+            {
+                UnloadCenter.y += 5;
+            }
+        }
+        if (Key_2 == LONG_PRESS)
+        {
+            *Mode = NONE_SET;
+            ArrayPlace = 10;
+            // 将cx,cy写入SD卡未实现
+            sd_write_data(UnloadCenter.x, ADDRESS(9));
+            sd_write_data(UnloadCenter.y, ADDRESS(10));
+        }
+        else if (Key_1 == LONG_PRESS)
+        {
+            changeCxCyFlag = !changeCxCyFlag;
+        }
+        break;
     }
     MENU_SHOW(Mode, ArrayPlace, changeCxCyFlag);
 }
@@ -713,13 +774,13 @@ void getSendDiff(Mode_t *Mode, int16_t cx, int16_t cy, Center_t *UartSendDiff)
         UartSendDiff->x = cx - SmallPlaceCenter.x;
         UartSendDiff->y = SmallPlaceCenter.y - cy;
         break;
-    case TUNING_UNLOAD:
-        UartSendDiff->x = cx - BigPlaceCenter.x;
-        UartSendDiff->y = BigPlaceCenter.y - cy;
-        break;
     case TUNING_BIGPLACE:
         UartSendDiff->x = cx - BigPlaceCenter.x;
         UartSendDiff->y = BigPlaceCenter.y - cy;
+        break;
+    case TUNING_UNLOAD:
+        UartSendDiff->x = cx - UnloadCenter.x;
+        UartSendDiff->y = UnloadCenter.y - cy;
         break;
     default:
         break;
@@ -790,8 +851,9 @@ void zf_model_run(void)
                 buffer[3] = dy_high_8bit;
                 s_odretcnt++;
                 ///////////////////////元素内目标板//////////////////////////////////
-                if (currMode == TUNING_INELEMETS || currMode == FIND_BIG_PLACE || currMode == TUNING_BIGPLACE)
+                if (currMode == TUNING_INELEMETS || currMode == TUNING_BIGPLACE || currMode == TUNING_UNLOAD)
                 {
+                    LED_BLUE(LED_ON);
                     IS_ALIVE_FLAG = true;
                     isBorderNotAliveTime = 0;
                     user_uart_write_buffer(buffer, sizeof(buffer));
@@ -799,17 +861,17 @@ void zf_model_run(void)
                 //////////////////////粗定位字母板，数字板///////////////////////////
                 else if (currMode == FIND_SMALL_PLACE || currMode == FIND_BIG_PLACE)
                 {
-                    if (cx <= RIGHTLINE && cx >= LEFTLINE)
+                    if (cx <= RIGHTLINE && cx >= LEFTLINE && cy <= 120)
                     {
                         LED_RED(LED_OFF);
                         uint8_t UartBuffer[5] = {0x01, 0x00, 0x00, 0xfe, 0x7e};
-                        LED_BLUE(LED_ON);
+                        LED_GREEN(LED_ON);
                         user_uart_write_buffer(UartBuffer, sizeof(UartBuffer));
                         system_delay_ms(10);
                         user_uart_write_buffer(UartBuffer, sizeof(UartBuffer));
                         system_delay_ms(10);
                         user_uart_write_buffer(UartBuffer, sizeof(UartBuffer));
-                        LED_BLUE(LED_OFF);
+                        LED_GREEN(LED_OFF);
                     }
                     else
                     {
@@ -833,11 +895,16 @@ void zf_model_run(void)
                 {
                     user_uart_write_buffer(buffer, sizeof(buffer));
                 }
+                /////////////////////微调一次性放置///////////////////////////////////////////
+                else if(currMode == TUNING_UNLOAD)
+                {
+                    user_uart_write_buffer(buffer, sizeof(buffer));
+                }
                 break;
             }
         }
         ////////////////////////////////处在元素内卡片判断并且判断为没有卡片//////////////////////
-        if ((currMode == TUNING_INELEMETS || currMode == TUNING_BIGPLACE)
+        if ((currMode == TUNING_INELEMETS || currMode == TUNING_BIGPLACE || currMode == TUNING_UNLOAD)
              && !IS_ALIVE_FLAG && isBorderNotAliveTime > 15)
         {
             int16_t cx = -999;
@@ -872,7 +939,11 @@ void zf_model_run(void)
             LED_RED(LED_ON);
             isBorderNotAliveTime += 1;
         }
-
+        else if(currMode == TUNING_UNLOAD && !IS_ALIVE_FLAG && isBorderNotAliveTime <= 15)
+        {
+            LED_RED(LED_ON);
+            isBorderNotAliveTime += 1;
+        }
         // *****
 #if IS_UART_OUTPUT_ODRESULT
         if (s_odretcnt > 0)

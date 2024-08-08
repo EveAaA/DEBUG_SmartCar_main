@@ -92,7 +92,7 @@ void UART5_IRQHandler(uint8 data) {
     case UART_STARTFINETUNING_BESIDEROAD: 
         currMode = TUNING_BESIDEROAD;
         break;
-    case UART_STARTFINETUNING_INELEMENTS:
+    case UART_STARTFINETUNING_INELEMENTS: // 在接收到开始微调命令后， 把目标板是否存在标志位设置为false
         IS_ALIVE_FLAG = false;
         currMode = TUNING_INELEMETS;
         break;
@@ -100,6 +100,7 @@ void UART5_IRQHandler(uint8 data) {
         currMode = TUNING_PLACE;
         break;
     case UART_UNLOAD_FLAG:
+        IS_ALIVE_FLAG = false;
         currMode = TUNING_UNLOAD;
         break;
     case UART_FINETUNING_BIGPLACE:
@@ -116,7 +117,7 @@ void UART5_IRQHandler(uint8 data) {
         IS_ALIVE_FLAG = false;
         currMode = FIND_SMALL_PLACE;
         break;
-    case FIND_BIG_PLACE:
+    case UART_FIND_BIGPLACE:
         currMode = FIND_BIG_PLACE;
         break;
     default:

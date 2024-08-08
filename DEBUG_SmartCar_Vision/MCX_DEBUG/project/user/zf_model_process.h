@@ -49,6 +49,7 @@ extern "C" {
 #define UART_FINETUNING_BIGPLACE        (0x13)   // 逐个放置微调大字母板标志位
 #define UART_WAITING                    (0xee)   // 待机状态命令 
 #define UART_START_RUN                  (0xce)   // 开始运行状态命令
+#define UART_FIND_BIGPLACE              (0x19)   // 开始寻找大字母板
 #define UART_GET_SMALLPLACE             (0x20)   // 开始寻找字母板
 
 
@@ -71,6 +72,7 @@ typedef enum{
     SET_BIGPLACE_CENTER,
     SET_EXPOSURE,
     SET_TWOLINES,
+    SET_UNLOAD_CENTER,
     RUN,
 }SetMode_t;
 
@@ -95,6 +97,7 @@ extern Center_t BorderCenter;
 extern Center_t SmallPlaceCenter;
 extern Center_t BigPlaceCenter;
 extern Center_t UartSendDiff;
+extern Center_t UnloadCenter;
 extern int16_t Brightness;
 extern uint8_t LEFTLINE;
 extern uint8_t RIGHTLINE;
