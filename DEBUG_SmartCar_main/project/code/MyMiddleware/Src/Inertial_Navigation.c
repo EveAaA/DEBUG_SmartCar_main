@@ -355,7 +355,7 @@ void Navigation_Process_Image(float Target_Pos_X,float Target_Pos_Y)
 
             if(fabs(Navigation.Cur_Position_X) <= 3)
             {
-                DistanceX_PID.Ki = 0.0013f;
+                DistanceX_PID.Ki = 0.0009f;
             }
             else
             {
@@ -365,7 +365,7 @@ void Navigation_Process_Image(float Target_Pos_X,float Target_Pos_Y)
 
             if(fabs(Navigation.Cur_Position_Y)<=2.5f)
             {
-                DistanceY_PID.Ki = 0.0012f;
+                DistanceY_PID.Ki = 0.0008f;
             }
             else
             {

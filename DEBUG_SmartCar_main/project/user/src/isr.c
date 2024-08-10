@@ -48,8 +48,6 @@ void CSI_IRQHandler(void)
     __DSB();                    // 数据同步隔离
 }
 
-uint8 testmode = 0;
-float Speed = 8;
 void PIT_IRQHandler(void)
 {
     if(pit_flag_get(PIT_CH0))
@@ -59,7 +57,7 @@ void PIT_IRQHandler(void)
         Beep_On();//蜂鸣器
         Open_Door(Servo_Flag.Open_Door);
         Key_Delay();
-        Rotary_Switch(MyFSM.Depot_Pos,50);
+        Rotary_Switch(MyFSM.Depot_Pos,70);
         Set_Car_Speed(Car.Speed_X,Car.Speed_Y,Car.Speed_Z);//控制速度的线程
         pit_flag_clear(PIT_CH0);
     }

@@ -180,7 +180,6 @@ void User_Init()
 	interrupt_global_enable(0);
 }
 
-int test =0;
 /**@brief   所有主循环内容
 -- @param   无
 -- @author  庄文标
@@ -207,7 +206,6 @@ void User_Loop()
             seekfree_assistant_camera_send();
         #endif
     }
-    // printf("Image_Erro:%f\r\n",Image_Erro);
     // printf("%f,%f,%f,%f\r\n",Encoer_Speed[0],Encoer_Speed[1],Encoer_Speed[2],Encoer_Speed[3]);
 #ifndef Image_debug
     if(Start!=1 || Receivedata.Start_Flag == 1)

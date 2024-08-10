@@ -382,6 +382,8 @@ static void Line_BoardFsm()
     #ifdef debug_switch
             printf("%f,%f\r\n", FINETUNING_DATA.dx / 10.f, FINETUNING_DATA.dy / 10.f);
     #endif
+            CLASSIFY_DATA.type = None;
+            CLASSIFY_DATA.place = nil;
             UART_SendByte(&_UART_FINDBORDER, START_FINETUNING_BESIDE); //·¢ËÍÊý¾Ý
             if (Navigation.Finish_Flag == false)
             {
@@ -495,6 +497,8 @@ static void Line_BoardFsm()
                 Servo_Flag.Pick_End = false;
                 RightRing.Ring_State = Ring_Front;
                 RightRing.Ring_Front_Flag = 0; 
+                LeftRing.Ring_State = Ring_Front;
+                LeftRing.Ring_Front_Flag = 0; 
                 MyFSM.Line_Board_State = Return_Line;
             }
         break;
@@ -543,7 +547,7 @@ static void Line_BoardFsm()
     #ifdef debug_switch
             printf("Finsh_Return\r\n");
     #endif
-            if (Bufcnt(true,100))
+            if (Bufcnt(true,500))
             {
                 MyFSM.Line_Board_State = Find;
                 MyFSM.CurState = Line_Patrol;
@@ -573,7 +577,7 @@ static void Cross_BoardFsm()
         #endif
             Car.Speed = false;
             Car_run(5);
-            if (Bufcnt((Image_Flag.Cross_Fill == false), 1400))
+            if (Bufcnt((Image_Flag.Cross_Fill == false), 1000))
             {
                 if ((Points_R[Data_Stastics_R][0] + Points_L[Data_Stastics_L - 1][0]) / 2 >= Image_W / 2)
                 {
@@ -1684,7 +1688,7 @@ static void Ring_BoardFsm()
                             Car.Speed_Z = 0;
                         }
                         Car.Speed_X = -0.5;
-                        Car.Speed_Y = -3;
+                        Car.Speed_Y = -3.5;
                         Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
                     }
                     else if (MyFSM.Ring_Dir == LEFT)
@@ -1697,7 +1701,7 @@ static void Ring_BoardFsm()
                             Car.Speed_Z = 0;
                         }
                         Car.Speed_X = 0.5;
-                        Car.Speed_Y = -3;
+                        Car.Speed_Y = -3.5;
                         Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
                     }
                 }

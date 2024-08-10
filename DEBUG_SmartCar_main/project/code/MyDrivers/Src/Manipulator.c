@@ -416,7 +416,7 @@ void Take_Card_Out()
             Out_State = 5;           
         break;
         case 5://°Ñ¿¨Æ¬ÄÃ³öÀ´
-            if(Bufcnt(true,time))
+            if(Bufcnt(true,time+120))
             {
                 Set_Servo_Angle(Raise_Servo,135);
                 Out_State = 6;
