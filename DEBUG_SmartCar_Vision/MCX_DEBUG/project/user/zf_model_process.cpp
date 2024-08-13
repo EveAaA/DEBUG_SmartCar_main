@@ -580,22 +580,22 @@ void UPDATE_SETMODE(SetMode_t *Mode)
         {
             if (!changeCxCyFlag)
             {
-                BorderCenter.x -= 5;
+                BorderCenter.x -= 1;
             }
             else
             {
-                BorderCenter.y -= 5;
+                BorderCenter.y -= 1;
             }
         }
         else if (Key_2 == PRESS)
         {
             if (!changeCxCyFlag)
             {
-                BorderCenter.x += 5;
+                BorderCenter.x += 1;
             }
             else
             {
-                BorderCenter.y += 5;
+                BorderCenter.y += 1;
             }
         }
         if (Key_2 == LONG_PRESS)
@@ -951,7 +951,7 @@ void zf_model_run(void)
             zf_model_odresult_out(s_odrets, s_odretcnt);
         }
 #endif
-#if IS_SHOW_SCC8660
+#if IS_SHOW_SCC8660 
         if (s_odretcnt)
         {
             ips200_show_string(10, 10, "OBJ");
