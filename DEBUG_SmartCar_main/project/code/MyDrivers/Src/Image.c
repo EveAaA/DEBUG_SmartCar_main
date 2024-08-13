@@ -23,7 +23,7 @@
 
 Ring_Handle LeftRing = { false, false, 0 };
 Ring_Handle RightRing = { false, false, 0 };
-Flag_Handle Image_Flag = {false,false,false,false};//元素标志位
+Flag_Handle Image_Flag = {false,false,false,false,false,false,false};//元素标志位
 /* Define\Declare ------------------------------------------------------------*/
 #define use_num     1   //1就是不压缩，2就是压缩一倍
 uint8 Original_Image[Image_H][Image_W];//原始图像数组
@@ -1239,21 +1239,8 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
             //cout << "入环前" << endl;
             LeftRing.Stright_Line = Straight_Line_Judge(R_Border, Total_Num_R - 10, RightLine);//判断右边是否为长直线
             Salient_Point = findCircleOutPoint(L_Border);
-            // tft180_Draw_ColorCircle(L_Border[Salient_Point],Salient_Point,5,RGB565_RED);
             if(LeftRing.Stright_Line)
             {
-                // for (i = Image_H - 5; i > Image_H / 2 - 5; i--)//寻找左下拐点
-                // {
-                //     //printf("L_Board[%d] = %d\r\n", i, L_Border[i]);
-                //     if (abs(L_Border[i] - L_Border[i + 1] <= 5)
-                //         && (abs(L_Border[i + 1] - L_Border[i + 2]) <= 5)
-                //         && (abs(L_Border[i + 2] - L_Border[i + 3]) <= 5)
-                //         && (L_Border[i] - L_Border[i - 2] >= 7))
-                //     {
-                //         Break_Num_L_DOWN = i;//传递y坐标
-                //         break;
-                //     }
-                // }
                 for (uint8 i = Image_H - 2; i > 10; --i)
                 {
                     // 断裂区域横坐标相差很大
@@ -1287,9 +1274,9 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                 }
             }
 
-            if(LeftRing.Stright_Line && Bin_Image[Image_H - 5][2])
+            if((LeftRing.Stright_Line) && (Bin_Image[Image_H - 5][2]) && (Image_Flag.Lose_Line_L))
             {
-                for (int i = Image_H/2; i <= Image_H - 2; i += 1) 
+                for (uint16 i = Image_H/2; i <= Image_H - 2; i += 1) 
                 {
                     if (L_Border[i] <= 2)
                     {
@@ -1329,16 +1316,6 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                 }
                 LeftRing.Ring_Front_Flag = 2;
             }
-            // else if (Salient_Point && LeftRing.Stright_Line && Lose_Line_Point_L>=30) // 判断是否有圆环突出点并且左侧直线
-            // {
-            //     // line(resizeFrame, Point(R_Border[Salient_Point], Salient_Point), Point(Image_W, Image_H - 1), Scalar(255, 0, 0));
-            //     Get_K_b(Salient_Point, L_Border[Salient_Point], Image_H - 2, Image_W - 2, &slope_l_rate, &intercept_l);
-            //     for (i = Image_H - 1; i > 1; i--)
-            //     {
-            //         L_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
-            //         L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
-            //     }
-            // }
 
             if((LeftRing.Ring_Front_Flag == 2) && (Salient_Point))
             {
@@ -1690,19 +1667,6 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
             Salient_Point = findCircleOutPoint_R(R_Border);
             if(RightRing.Stright_Line)
             {
-                // for (i = Image_H - 5; i > Image_H / 2 - 5; i--)//寻找右下拐点
-                // {
-                //     //printf("R_Border[%d] = %d\r\n", i, R_Border[i]);
-                //     if (abs(R_Border[i] - R_Border[i + 1] <= 5)
-                //         && (abs(R_Border[i + 1] - R_Border[i + 2]) <= 5)
-                //         && (abs(R_Border[i + 2] - R_Border[i + 3]) <= 5)
-                //         && (R_Border[i - 2] - R_Border[i] >= 7))
-                //     {
-                //         hashKey[offset] = i;
-                //         offset++;
-                //         break;
-                //     }
-                // }
                 for (uint8_t i = Image_H - 2; i > 10; --i)
                 {
                     if (R_Border[i] - R_Border[i - 1] < -10)
@@ -1731,33 +1695,35 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
                             && Points_R[j][0] < Border_Max - 5)
                         {
                             Break_Num_R_DOWN = j;
-                            // tft180_Draw_ColorCircle(Points_R[Break_Num_R_DOWN][0],Points_R[Break_Num_R_DOWN][1],5,RGB565_BLUE);
                             // printf("找到拐点\r\n");
                             break;
                         }
                     }
                 }
             }
-            // if(RightRing.Stright_Line && Bin_Image[Image_H - 5][Image_W - 5])
-            // {
-            //     for ((int i = Image_H/2; i <= Image_H - 2; i += 1)) 
-            //     {
-            //         if (R_Border[i] >= 144)
-            //         {
-            //             Lose_Line_Point_R += 1;
-            //         }
-            //     }
-            // }
-            // else
-            // {
-            //     LeftRing.Ring_Front_Flag = 0;
-            // }
 
-            // if(Lose_Line_Point_R>=30&&RightRing.Stright_Line)
-            // {
-            //     RightRing.Ring_Front_Flag = 2;
-            //     // printf("右边丢线\r\n");
-            // }
+            if((RightRing.Stright_Line) && (Bin_Image[Image_H - 5][Image_W - 5]) && (Image_Flag.Lose_Line_R))
+            {
+                for (uint16 i = Image_H/2; i <= Image_H - 2; i += 1)
+                {
+                    if (R_Border[i] >= 144)
+                    {
+                        Lose_Line_Point_R += 1;
+                    }
+                }
+
+                if(Lose_Line_Point_R>=30)
+                {
+                    RightRing.Ring_Front_Flag = 2;
+                    // printf("右边丢线\r\n");
+                }
+            }
+            else
+            {
+                LeftRing.Ring_Front_Flag = 0;
+            }
+
+
             //下拐点，左直线，圆环突出点
             if (Break_Num_R_DOWN && RightRing.Stright_Line && Salient_Point) //  && (!Bin_Image[Image_H - 10][4]) && (!Bin_Image[Image_H - 10][Image_W - 4])
             {
@@ -1782,18 +1748,7 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
                 }
                 RightRing.Ring_Front_Flag = 2;
             }
-            
-            // else if (Salient_Point && RightRing.Stright_Line && Lose_Line_Point_R>=30) // 判断是否有圆环突出点并且左侧直线
-            // {
-            //     // line(resizeFrame, Point(R_Border[Salient_Point], Salient_Point), Point(Image_W, Image_H - 1), Scalar(255, 0, 0));
-            //     Get_K_b(Salient_Point, R_Border[Salient_Point], Image_H - 2, Image_W - 2, &slope_l_rate, &intercept_l);
-            //     for (i = Image_H - 1; i > 1; i--)
-            //     {
-            //         R_Border[i] = slope_l_rate * (i)+intercept_l;//y = kx+b
-            //         R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
-            //     }
-            //     RightRing.Enter_Ring_First_Flag = true;
-            // }
+
             if((RightRing.Ring_Front_Flag == 2) && Salient_Point)
             {
                 RightRing.Ring_Front_Flag = 1;
@@ -2092,7 +2047,7 @@ void Zebra_Seek(uint8(*Bin_Image)[Image_W],uint8* L_Border, uint8* R_Border, uin
     {
         for(uint8 i = 50;i <= 120;i++)
         {
-            if(Bin_Image[35][i] == Black_Pixel && Bin_Image[35][i+1] == White_Pixel)
+            if(Bin_Image[45][i] == Black_Pixel && Bin_Image[45][i+1] == White_Pixel)
             {
                 total ++;
             }
@@ -2119,7 +2074,7 @@ void Roadblock_Seek(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border
 {
     uint8 Right_Straight = 0;
     uint8 Left_Straight = 0;
-    uint16 i;
+    uint16 i = 0;
     uint16 Break_Num_L_UP = 0;//拐点xxz
     uint16 Break_Num_R_UP = 0;
     uint16 Break_Num_L_DOWN = 0;
@@ -2129,46 +2084,39 @@ void Roadblock_Seek(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border
 
     Right_Straight = Straight_Line_Judge(R_Border, Total_Num_R - 10, RightLine);//判断右边是否为长直线
     Left_Straight = Straight_Line_Judge(L_Border, Total_Num_L - 10, LeftLine);//判断左边是否为长直线
-    // if (Right_Straight)//先找一条直线
-    // {
-    //     // for (i = Image_H - 5; i > 2; i--)//寻找左下拐点
-    //     // {
-    //     //     if (abs(L_Border[i + 1] - L_Border[i + 2] <= 5)
-    //     //         && (abs(L_Border[i + 2] - L_Border[i + 3]) <= 5)
-    //     //         && (abs(L_Border[i + 3] - L_Border[i + 4]) <= 5)
-    //     //         && (L_Border[i] - L_Border[i + 2] >= 7))
-    //     //     {
-    //     //         Break_Num_L_DOWN = i;//传递y坐标
-    //     //         break;
-    //     //     }
-    //     // }
-
-    //     // if ((Break_Num_L_DOWN)
-    //     //     && (!Bin_Image[Break_Num_L_DOWN - 10][L_Border[Break_Num_L_DOWN]])
-    //     //     && (Lose_Line() == false))
-    //     // {
-    //     //     Image_Flag.Roadblock = true;
-    //     //     // printf("障碍\r\n");
-    //     //     // Get_K_b(Break_Num_L_DOWN, L_Border[Break_Num_L_DOWN], 2, Image_W / 2 + 20, &slope_l_rate, &intercept_l);
-    //     //     // for (i = Image_H - 2; i >= 2; i--)
-    //     //     // {
-    //     //     //     L_Border[i] = slope_l_rate * (i)+intercept_l + 65;;//y = kx+b
-    //     //     //     L_Border[i] = Limit_a_b(L_Border[i], Border_Min, Border_Max);//限幅
-    //     //     // }
-    //     // }
-    //     // else if ((!Break_Num_L_DOWN)
-    //     //     && (!Lose_Line())
-    //     //     && (All_Stright()))
-    //     // {
-    //     //     Image_Flag.Roadblock = false;
-    //     //     // printf("不是障碍\r\n");
-    //     // }
-    // }
-    if (Left_Straight)
+    if (Right_Straight)//先找一条直线
     {
-        for (i = Image_H - 5; i > 2; i--)//寻找右下拐点
+        for (i = Image_H - 5; i > Image_H/2; i--)//寻找左下拐点
         {
-            //printf("R_Border[%d] = %d\r\n", i, R_Border[i]);
+            if (abs(L_Border[i + 1] - L_Border[i + 2] <= 5)
+                && (abs(L_Border[i + 2] - L_Border[i + 3]) <= 5)
+                && (abs(L_Border[i + 3] - L_Border[i + 4]) <= 5)
+                && (L_Border[i] - L_Border[i + 2] >= 7))
+            {
+                Break_Num_L_DOWN = i;//传递y坐标
+                break;
+            }
+        }
+
+        if ((Break_Num_L_DOWN)
+            && (!Bin_Image[Break_Num_L_DOWN - 10][L_Border[Break_Num_L_DOWN]])
+            && (Lose_Line() == false))
+        {
+            Image_Flag.Roadblock = true;
+            printf("左障碍\r\n");
+        }
+        else if ((!Break_Num_L_DOWN)
+            && (!Lose_Line())
+            && (All_Stright()))
+        {
+            Image_Flag.Roadblock = false;
+            // printf("不是障碍\r\n");
+        }
+    }
+    else if (Left_Straight)
+    {
+        for (i = Image_H - 5; i > Image_H/2; i--)//寻找右下拐点
+        {
             if (abs(R_Border[i + 1] - R_Border[i + 2] <= 5)
                 && (abs(R_Border[i + 2] - R_Border[i + 3]) <= 5)
                 && (abs(R_Border[i + 3] - R_Border[i + 4]) <= 5)
@@ -2182,14 +2130,8 @@ void Roadblock_Seek(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border
             &&(!Bin_Image[Break_Num_R_DOWN - 10][R_Border[Break_Num_R_DOWN]])
             && (Lose_Line() == false))
         {
-            // printf("右边障碍\r\n");
+            printf("右障碍\r\n");
             Image_Flag.Roadblock = true;
-            Get_K_b(Break_Num_R_DOWN,R_Border[Break_Num_R_DOWN],2,Image_W/2-20,&slope_l_rate, &intercept_l);
-            for (i = Image_H - 2; i >= 2; i--)
-            {
-                R_Border[i] = slope_l_rate * (i)+intercept_l - 65;//y = kx+b
-                R_Border[i] = Limit_a_b(R_Border[i], Border_Min, Border_Max);//限幅
-            }
         }
         else if ((!Break_Num_R_DOWN)
             && (!Lose_Line())
@@ -2212,8 +2154,8 @@ void Roadblock_Seek(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border
 **/
 void Ramp_Find(void)
 {
-    if((dl1a_distance_mm < 550) 
-    &&(dl1a_distance_mm > 80)
+    if((dl1b_distance_mm < 550) 
+    &&(dl1b_distance_mm > 80)
     &&(Gyro_PitchAngle_Get()>2)
     &&(Image_Flag.Ramp==0))
     {
@@ -2225,7 +2167,7 @@ void Ramp_Find(void)
         Image_Flag.Ramp = 2;//正在下坡
     }
 
-    if(Image_Flag.Ramp == 2 && Gyro_PitchAngle_Get()>-2 && dl1a_distance_mm > 550)
+    if(Image_Flag.Ramp == 2 && Gyro_PitchAngle_Get()>-2 && dl1b_distance_mm > 550)
     {
         Image_Flag.Ramp = 0;
     }
@@ -2251,7 +2193,7 @@ bool No_Get_Line()
         Start_Point+=1;
     }
 
-    if((Start_Point >= 14))
+    if((Start_Point >= Menu.Turn_Point))
     {
         Start_Point = 0;
         return false;
@@ -2324,7 +2266,11 @@ void Image_Process(void)
         {
             Zebra_Seek(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R);
         }
-        // if(MyFSM.CurState == Line_Patrol)
+
+        // if((MyFSM.CurState == Line_Patrol)
+        // &&(!Image_Flag.Right_Ring)
+        // &&(!Image_Flag.Left_Ring)
+        // &&(!Image_Flag.Cross_Fill))
         // {
         //     Roadblock_Seek(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R);
         // }

@@ -74,7 +74,7 @@
 
 #define DL1B_INT_ENABLE             ( 1 )                                       // 是否启用 INT 引脚 启用则会自动更新数据
 #if DL1B_INT_ENABLE
-#define DL1B_INT_PIN                ( C20 )
+#define DL1B_INT_PIN                ( B15 )
 #endif
 
 #define DL1B_TIMEOUT_COUNT          ( 1000 )                                    // DL1B 超时计数
