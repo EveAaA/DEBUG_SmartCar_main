@@ -73,7 +73,7 @@ void All_PID_Init()
     Incremental_PID_Init(&RMotor_B_Speed,0.76f,0.10f,0.36f,40,-40);//0.5f,0.22f,0.5f,40,-40
     PIDInit(&Angle_PID,0.44f,0,2,1.5f,-1.5f);
     // PIDInit(&Image_PID,3.8f,0,0.5f,2.5f,-2.5f);
-    PIDInit(&Image_PID,3.7f,0,1.56f,6.5f,-6.5f);
+    PIDInit(&Image_PID,4.5f,0,1.56f,6.5f,-6.5f);
 
     PIDInit(&ImageX_PID,0.060f,0, 0.0f,3.0f,-3.0f);
     PIDInit(&ImageF_PID,0.065f,0,0.3f,3.0f,-3.0f);

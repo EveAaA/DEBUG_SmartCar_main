@@ -2267,13 +2267,13 @@ void Image_Process(void)
             Zebra_Seek(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R);
         }
 
-        // if((MyFSM.CurState == Line_Patrol)
-        // &&(!Image_Flag.Right_Ring)
-        // &&(!Image_Flag.Left_Ring)
-        // &&(!Image_Flag.Cross_Fill))
-        // {
-        //     Roadblock_Seek(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R);
-        // }
+        if((MyFSM.CurState == Line_Patrol)
+        &&(!Image_Flag.Right_Ring)
+        &&(!Image_Flag.Left_Ring)
+        &&(!Image_Flag.Cross_Fill))
+        {
+            Roadblock_Seek(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R);
+        }
 
         // if(MyFSM.CurState == Line_Patrol)
         // {

@@ -576,7 +576,7 @@ static void Cross_BoardFsm()
         #endif
             Car.Speed = false;
             Car_run(5);
-            if (Bufcnt((Image_Flag.Cross_Fill == false), 1000))
+            if (Bufcnt((Image_Flag.Cross_Fill == false), 1400))
             {
                 if ((Points_R[Data_Stastics_R][0] + Points_L[Data_Stastics_L - 1][0]) / 2 >= Image_W / 2)
                 {
@@ -912,7 +912,7 @@ static void Cross_BoardFsm()
         #endif
             MyFSM.Depot_Pos = 0;
             SMALL_PLACE_DATA.place = nil;
-            if (Bufcnt(true, 800))
+            if (Bufcnt(true, 850))
             {
                 if (MyFSM.Unload_Count >= 5)
                 {
@@ -935,7 +935,7 @@ static void Cross_BoardFsm()
             {
                 Car.Speed_X = -3;
             }
-            Car.Speed_Y = -3;
+            Car.Speed_Y = -3.5;
             Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
         break;
         case Ready_Find_Next:
@@ -1431,7 +1431,7 @@ static void Ring_BoardFsm()
             if (UnpackFlag.FINETUNING_DATA_FLAG)
             {
                 UnpackFlag.FINETUNING_DATA_FLAG = false;
-                if (Bufcnt(true,500))
+                if (Bufcnt(true,650))
                 {
                     MyFSM.Ring_Board_State = Move_Place; // 开始移动到放置区域前面
                     MyFSM.Target_Pos_X = FINETUNING_DATA.dx / 10.0f;
@@ -1760,7 +1760,7 @@ static void Ring_BoardFsm()
                         Car.Speed_Z = 0;
                     }     
                     Car.Speed_X = -3;
-                    Car.Speed_Y = 0;
+                    Car.Speed_Y = 1;
                     Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
                 }
                 else
@@ -1773,7 +1773,7 @@ static void Ring_BoardFsm()
                         Car.Speed_Z = 0;
                     }     
                     Car.Speed_X = 3;
-                    Car.Speed_Y = 0;
+                    Car.Speed_Y = 1;
                     Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);          
                 }
                 Car.Image_Flag = true;
@@ -2223,12 +2223,29 @@ static void Unload_Fsm()
                     {
                         if(MyFSM.Big_Pos[MyFSM.Big_Pos_Count-1] == RIGHT)
                         {
-                            Navigation_Process(60, -10);
+                            Car.Speed_X = 6;
+                            Car.Speed_Y = 0;
+                            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
+                            if (Bufcnt(true, 1000))
+                            {
+                                Car.Speed_X = 0;
+                                Car.Speed_Y = 0;
+                                Car.Speed_Z = 0;
+                                Navigation.Finish_Flag = true;
+                            }
                         }
                         else
                         {
-                            Navigation_Process(-60, -10);
-                        }
+                            Car.Speed_X = -6;
+                            Car.Speed_Y = 0;
+                            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
+                            if (Bufcnt(true, 1000))
+                            {
+                                Car.Speed_X = 0;
+                                Car.Speed_Y = 0;
+                                Car.Speed_Z = 0;
+                                Navigation.Finish_Flag = true;
+                            }                        }
                     }
                     else
                     {

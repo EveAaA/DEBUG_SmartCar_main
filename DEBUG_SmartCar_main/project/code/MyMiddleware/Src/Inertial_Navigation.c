@@ -389,6 +389,10 @@ void Navigation_Process_Image(float Target_Pos_X,float Target_Pos_Y)
                     DistanceX_PID.I_Out = 0;
                 }
             }
+            else if(fabs(Navigation.Cur_Position_X) >=2.5f || fabs(Navigation.Cur_Position_Y) > 2.5f)
+            {
+                Wait_Time = 0;
+            }
 
             Car.Speed_X = GetPIDValue(&DistanceX_PID,(Navigation.Cur_Position_X));
             Car.Speed_Y = GetPIDValue(&DistanceY_PID,(Navigation.Cur_Position_Y));
