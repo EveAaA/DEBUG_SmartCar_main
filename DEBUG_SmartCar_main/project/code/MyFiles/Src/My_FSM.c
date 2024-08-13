@@ -344,7 +344,6 @@ static void Line_BoardFsm()
         case Wait_Data: // 等待串口数据回传
     #ifdef debug_switch
         //  printf("Wait_Data\r\n");
-        //  printf("%f,%f\r\n",FINETUNING_DATA.dx,FINETUNING_DATA.dy);
     #endif
             UART_SendByte(&_UART_FINDBORDER, START_FINETUNING_BESIDE); // 发送数据
             if (UnpackFlag.FINETUNING_DATA_FLAG)

@@ -200,7 +200,7 @@ void GPIO1_Combined_0_15_IRQHandler(void)
     {
         exti_flag_clear(B0);// 清除中断标志位
     }
-    dl1a_int_handler();
+    dl1b_int_handler();
 }
 
 int8 flag = 0;

@@ -41,6 +41,8 @@ typedef enum {
 typedef struct
 {
     uint8 Cross_Fill;//十字标志位
+	uint8 Lose_Line_R;//丢线判断右圆环
+	uint8 Lose_Line_L;//丢线判断左圆环
 	bool Left_Ring;
 	bool Right_Ring;
 	bool Zerba;
