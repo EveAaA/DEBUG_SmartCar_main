@@ -74,6 +74,7 @@ int16_t Brightness = 2000;
 uint8_t LEFTLINE = 150;
 uint8_t RIGHTLINE = 170;
 SetMode_t setMode = NONE_SET;
+volatile bool BIG_PLACE_FIND = false;
 // 目标板预设定中心位置
 Center_t BorderCenter = {
     .x = 160,
@@ -851,7 +852,7 @@ void zf_model_run(void)
                 buffer[3] = dy_high_8bit;
                 s_odretcnt++;
                 ///////////////////////元素内目标板//////////////////////////////////
-                if (currMode == TUNING_INELEMETS || currMode == TUNING_BIGPLACE || currMode == TUNING_UNLOAD)
+                if (currMode == TUNING_INELEMETS)
                 {
                     LED_BLUE(LED_ON);
                     IS_ALIVE_FLAG = true;
@@ -872,10 +873,18 @@ void zf_model_run(void)
                         system_delay_ms(10);
                         user_uart_write_buffer(UartBuffer, sizeof(UartBuffer));
                         LED_GREEN(LED_OFF);
+                        if (currMode == FIND_BIG_PLACE)
+                        {
+                            BIG_PLACE_FIND = true;
+                        }
                     }
                     else
                     {
                         LED_RED(LED_ON);
+                        if (currMode == FIND_BIG_PLACE)
+                        {
+                            BIG_PLACE_FIND = false;
+                        }
                         uint8_t UartBuffer[5] = {0x00, 0x00, 0x00, 0xfe, 0x7e};
                         user_uart_write_buffer(UartBuffer, sizeof(UartBuffer));
                     }
@@ -891,9 +900,14 @@ void zf_model_run(void)
                     user_uart_write_buffer(buffer, sizeof(buffer));
                 }
                 ////////////////////微调数字板//////////////////////////////////////////////
-                else if(currMode == TUNING_BIGPLACE)
+                else if(currMode == TUNING_BIGPLACE || currMode == TUNING_UNLOAD)
                 {
-                    user_uart_write_buffer(buffer, sizeof(buffer));
+                    if (BIG_PLACE_FIND == true)
+                    {
+                        LED_BLUE(LED_ON);
+                        user_uart_write_buffer(buffer, sizeof(buffer));
+                        LED_BLUE(LED_OFF);
+                    }
                 }
                 /////////////////////微调一次性放置///////////////////////////////////////////
                 else if(currMode == TUNING_UNLOAD)
