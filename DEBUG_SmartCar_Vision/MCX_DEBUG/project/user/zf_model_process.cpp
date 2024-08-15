@@ -70,11 +70,12 @@ gpio_struct gpio_led_white = {GPIO2, 11u};
 
 Press_t Key_1 = RELEASE; // 按键初始状态都是释放状态
 Press_t Key_2 = RELEASE;
-int16_t Brightness = 2000;
+int16_t Brightness = 2000;              // 亮度调节
 uint8_t LEFTLINE = 150;
-uint8_t RIGHTLINE = 170;
-SetMode_t setMode = NONE_SET;
-volatile bool BIG_PLACE_FIND = false;
+uint8_t RIGHTLINE = 170;                // 左右边界线
+SetMode_t setMode = NONE_SET;          // 模式选择
+volatile bool SHOW_SCREEN = false;    // 是否显示屏幕, 只在RUN模式下生效
+volatile bool BIG_PLACE_FIND = false; // 数字板是否找到标志位
 // 目标板预设定中心位置
 Center_t BorderCenter = {
     .x = 160,
@@ -95,7 +96,7 @@ Center_t UartSendDiff = {
     .x = 0,
     .y = 0,
 };
-
+// 一键卸货中心位置
 Center_t UnloadCenter = {
     .x = 160,
     .y = 120,
@@ -402,6 +403,7 @@ void MENU_SHOW(SetMode_t *Mode, uint16_t ArrayPlace, bool CxCyFlag)
         ips200_show_string(10, 70, "RUN");
         ips200_show_string(10, 85, "SET_TWOLINES");
         ips200_show_string(10, 100, "SET_UNLOAD_CENTER");
+        ips200_show_string(10, 115, "SET_SCREEN_SHOW");
         break;
     case SET_EXPOSURE:
         ips200_show_string(10, 10, "BRIGHTNESS:");
@@ -492,6 +494,17 @@ void MENU_SHOW(SetMode_t *Mode, uint16_t ArrayPlace, bool CxCyFlag)
         ips200_draw_line(0, UnloadCenter.y, 320, UnloadCenter.y, RGB565_RED);
         ips200_draw_line(UnloadCenter.x, 0, UnloadCenter.x, 240, RGB565_GREEN);
         break;
+    case SET_SCREEN_SHOW:
+        ips200_show_string(10, 10, "SCRENN_SHOW:");
+        if (SHOW_SCREEN)
+        {
+            ips200_show_string(10, 25, "TRUE");
+        }
+        else
+        {
+            ips200_show_string(10, 25, "FALSE");
+        }
+        break;
     default:
         break;
     }
@@ -515,6 +528,8 @@ SetMode_t GetSelectMode(int8_t ArrayPlace)
         return SET_TWOLINES; 
     case 100:
         return SET_UNLOAD_CENTER;
+    case 115:
+        return SET_SCREEN_SHOW;
     default:
         return NONE_SET;
     }
@@ -527,19 +542,20 @@ void UPDATE_SETMODE(SetMode_t *Mode)
     static bool changeCxCyFlag = false;
     switch (*Mode)
     {
+    /////////////菜单模式////////////////////////
     case NONE_SET:
         if (Key_1 == PRESS)
         {
             ArrayPlace -= 15;
             if (ArrayPlace < 10)
             {
-                ArrayPlace = 100;
+                ArrayPlace = 115;
             }
         }
         else if (Key_2 == PRESS)
         {
             ArrayPlace += 15;
-            if (ArrayPlace > 100)
+            if (ArrayPlace > 115)
             {
                 ArrayPlace = 10;
             }
@@ -549,6 +565,7 @@ void UPDATE_SETMODE(SetMode_t *Mode)
             *Mode = GetSelectMode(ArrayPlace);
         }
         break;
+    ///////////////设置亮度///////////////////
     case SET_EXPOSURE:
         if (Key_1 == PRESS)
         {
@@ -573,9 +590,9 @@ void UPDATE_SETMODE(SetMode_t *Mode)
             *Mode = NONE_SET;
             ArrayPlace = 10;
             sd_write_data(Brightness, ADDRESS(0));
-            // 将亮度写入SD卡未实现
         }
         break;
+    ///////////////设置目标板中心/////////
     case SET_BORDER_CENTER:
         if (Key_1 == PRESS)
         {
@@ -612,6 +629,7 @@ void UPDATE_SETMODE(SetMode_t *Mode)
             changeCxCyFlag = !changeCxCyFlag;
         }
         break;
+    ///////////设置字母板中心//////////
     case SET_SMALLPLACE_CENTER:
         if (Key_1 == PRESS)
         {
@@ -648,6 +666,7 @@ void UPDATE_SETMODE(SetMode_t *Mode)
             changeCxCyFlag = !changeCxCyFlag;
         }
         break;
+    ///////////设置数字板中心//////////
     case SET_BIGPLACE_CENTER:
         if (Key_1 == PRESS)
         {
@@ -684,6 +703,7 @@ void UPDATE_SETMODE(SetMode_t *Mode)
             changeCxCyFlag = !changeCxCyFlag;
         }
         break;
+    /////////////设置两线///////////////////////
     case SET_TWOLINES:
         if (Key_1 == PRESS)
         {
@@ -719,6 +739,7 @@ void UPDATE_SETMODE(SetMode_t *Mode)
             changeCxCyFlag = !changeCxCyFlag;
         }
         break;
+    ///////////设置卸货中心//////////////////////
     case SET_UNLOAD_CENTER:
         if (Key_1 == PRESS)
         {
@@ -754,6 +775,22 @@ void UPDATE_SETMODE(SetMode_t *Mode)
         {
             changeCxCyFlag = !changeCxCyFlag;
         }
+        break;
+    /////////////设置屏幕显示/////////////////////////    
+    case SET_SCREEN_SHOW:
+        if (Key_1 == PRESS)
+        {
+            SHOW_SCREEN = !SHOW_SCREEN;
+        }
+        if (Key_2 == LONG_PRESS)
+        {
+            *Mode = NONE_SET;
+            ArrayPlace = 10;
+            sd_write_data(SHOW_SCREEN, ADDRESS(11));
+        }
+        break;
+    /////////////运行目标检测////////////////////////
+    case RUN:
         break;
     }
     MENU_SHOW(Mode, ArrayPlace, changeCxCyFlag);
@@ -839,9 +876,12 @@ void zf_model_run(void)
                 int16_t cy = (s_odrets[s_odretcnt].y1 + s_odrets[s_odretcnt].y2) / 2;
                 // 获取待发送图像误差
                 getSendDiff(&currMode, cx, cy, &UartSendDiff);
-                ips200_show_string(10, 25, "dx");
-                ips200_show_float(10, 40, cx);
-                ips200_show_float(10, 55, s_odrets[s_odretcnt].score);
+                if (SHOW_SCREEN)
+                {
+                    ips200_show_string(10, 25, "cy");
+                    ips200_show_float(10, 40, cy);
+                    ips200_show_float(10, 55, s_odrets[s_odretcnt].score);
+                }
                 uint8_t dx_high_8bit = UartSendDiff.x >> 8;
                 uint8_t dx_low_8bit = UartSendDiff.x & 0xff;
                 uint8_t dy_high_8bit = UartSendDiff.y >> 8;
@@ -862,7 +902,7 @@ void zf_model_run(void)
                 //////////////////////粗定位字母板，数字板///////////////////////////
                 else if (currMode == FIND_SMALL_PLACE || currMode == FIND_BIG_PLACE)
                 {
-                    if (cx <= RIGHTLINE && cx >= LEFTLINE && cy <= 120)
+                    if (cx <= RIGHTLINE && cx >= LEFTLINE && cy <= 120 && currMode != FIND_BIG_PLACE)
                     {
                         LED_RED(LED_OFF);
                         uint8_t UartBuffer[5] = {0x01, 0x00, 0x00, 0xfe, 0x7e};
@@ -873,10 +913,33 @@ void zf_model_run(void)
                         system_delay_ms(10);
                         user_uart_write_buffer(UartBuffer, sizeof(UartBuffer));
                         LED_GREEN(LED_OFF);
-                        if (currMode == FIND_BIG_PLACE)
+                    }
+                    else if (currMode == FIND_BIG_PLACE && cy <= 120 && cx <= RIGHTLINE)
+                    {
+                        LED_RED(LED_OFF);
+                        uint8_t UartBuffer[5] = {0x01, 0x00, 0x00, 0xfe, 0x7e};
+                        LED_GREEN(LED_ON);
+                        user_uart_write_buffer(UartBuffer, sizeof(UartBuffer));
+                        system_delay_ms(10);
+                        user_uart_write_buffer(UartBuffer, sizeof(UartBuffer));
+                        system_delay_ms(10);
+                        user_uart_write_buffer(UartBuffer, sizeof(UartBuffer));
+                        LED_GREEN(LED_OFF);
+                        if (FIND_BIG_PLACE)
                         {
                             BIG_PLACE_FIND = true;
-                        }
+                        }  
+                    }
+                    else if (BIG_PLACE_FIND == true)
+                    {
+                        uint8_t UartBuffer[5] = {0x01, 0x00, 0x00, 0xfe, 0x7e};
+                        LED_GREEN(LED_ON);
+                        user_uart_write_buffer(UartBuffer, sizeof(UartBuffer));
+                        system_delay_ms(10);
+                        user_uart_write_buffer(UartBuffer, sizeof(UartBuffer));
+                        system_delay_ms(10);
+                        user_uart_write_buffer(UartBuffer, sizeof(UartBuffer));
+                        LED_GREEN(LED_OFF);
                     }
                     else
                     {
@@ -902,12 +965,11 @@ void zf_model_run(void)
                 ////////////////////微调数字板//////////////////////////////////////////////
                 else if(currMode == TUNING_BIGPLACE || currMode == TUNING_UNLOAD)
                 {
-                    if (BIG_PLACE_FIND == true)
-                    {
-                        LED_BLUE(LED_ON);
-                        user_uart_write_buffer(buffer, sizeof(buffer));
-                        LED_BLUE(LED_OFF);
-                    }
+                    LED_BLUE(LED_ON);
+                    user_uart_write_buffer(buffer, sizeof(buffer));
+                    BIG_PLACE_FIND = false;
+                    LED_BLUE(LED_OFF);
+
                 }
                 /////////////////////微调一次性放置///////////////////////////////////////////
                 else if(currMode == TUNING_UNLOAD)
@@ -918,7 +980,7 @@ void zf_model_run(void)
             }
         }
         ////////////////////////////////处在元素内卡片判断并且判断为没有卡片//////////////////////
-        if ((currMode == TUNING_INELEMETS || currMode == TUNING_BIGPLACE || currMode == TUNING_UNLOAD)
+        if ((currMode == TUNING_INELEMETS)
              && !IS_ALIVE_FLAG && isBorderNotAliveTime > 15)
         {
             int16_t cx = -999;
@@ -965,17 +1027,20 @@ void zf_model_run(void)
             zf_model_odresult_out(s_odrets, s_odretcnt);
         }
 #endif
-#if IS_SHOW_SCC8660 
-        if (s_odretcnt)
+#if IS_SHOW_SCC8660
+        if (SHOW_SCREEN)
         {
-            ips200_show_string(10, 10, "OBJ");
-            draw_rect_on_slice_buffer((scc8660_image), SCC8660_W, 0, 1, s_odrets, s_odretcnt, SCC8660_H);
+            if (s_odretcnt)
+            {
+                ips200_show_string(10, 10, "OBJ");
+                draw_rect_on_slice_buffer((scc8660_image), SCC8660_W, 0, 1, s_odrets, s_odretcnt, SCC8660_H);
+            }
+            else
+            {
+                ips200_show_string(10, 10, "NO OBJ");
+            }
+            ips200_show_scc8660(scc8660_image);
         }
-        else
-        {
-            ips200_show_string(10, 10, "NO OBJ");
-        }
-        ips200_show_scc8660(scc8660_image);
 #endif
     }
 }
