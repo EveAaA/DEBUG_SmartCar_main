@@ -190,7 +190,7 @@ void Manipulator_Init()
     pwm_init(Rotary_Servo.Pin,Servo_FREQ,Set_360Servo_Angle(Rotary_Servo.Init_Angle));
     pwm_init(Door_Servo.Pin,Servo_FREQ,Set_180Servo_Angle(Door_Servo.Init_Angle));
     gpio_init(D27,GPO,0,GPO_PUSH_PULL);
-    // gpio_init(D1,GPO,0,GPO_PUSH_PULL);
+    gpio_init(D1,GPO,0,GPO_PUSH_PULL);
 }
 
 
@@ -241,7 +241,7 @@ void Pick_Card()
 **/
 void Dodge_Board()
 {
-    Set_Servo_Angle(Stretch_Servo,Stretch_Servo.Init_Angle - 30);//抬起机械臂以免卡到卡片
+    Set_Servo_Angle(Stretch_Servo,Stretch_Servo.Init_Angle);//抬起机械臂以免卡到卡片
     Set_Servo_Angle(Raise_Servo,Raise_Servo.Init_Angle - 30);
 }
 
