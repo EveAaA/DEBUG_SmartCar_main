@@ -38,6 +38,8 @@ typedef enum
     Find_Ring,//找到圆环
     Ready_Ring,//准备
     Find_Zebra,//找到斑马线
+    Find_First_Point_R,//寻找右边第一个卸货点
+    No_Board_Next,//没有卸货目标板，去往下一个点
     Wait_Big_Data,//等待大类放置区域数据
     Wait_Big_Data_Left,//等待大类左边放置区域数据
     Wait_Left_Data,//等待微调数据
@@ -87,6 +89,7 @@ typedef struct
     uint8 Unload_Count;//卸货次数
     Rotaryservo_Handle Depot_Pos;//仓库的位置
     uint8 Big_Pos[3];//大类的位置
+    uint8 Big_Point;//卸货点，总共六个
 
     bool Ring_Flag;//是否开启圆环卡片
     uint8 Simple_Flag;//只捡道路旁的卡片

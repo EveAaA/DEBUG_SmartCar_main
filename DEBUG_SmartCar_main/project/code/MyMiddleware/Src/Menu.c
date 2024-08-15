@@ -202,34 +202,32 @@ static void Page1_Mode()
 **/
 static void Page2_Mode()
 {
-    flash_read_page_to_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
-    ips200_show_string(Row_1,Line_0,"XKP:");
-    ips200_show_float(Row_5,Line_0,flash_union_buffer[0].float_type,2,2);
-    ips200_show_string(Row_1,Line_1,"YKP:");
-    ips200_show_float(Row_5,Line_1,flash_union_buffer[1].float_type,2,2);
-    ips200_show_string(Row_1,Line_2,"XKD:");
-    ips200_show_float(Row_5,Line_2,flash_union_buffer[2].float_type,2,2);
-    ips200_show_string(Row_1,Line_3,"YKD:");
-    ips200_show_float(Row_5,Line_3,flash_union_buffer[3].float_type,2,2);
-    ips200_show_string(Row_1,Line_4,"AngleP:");
-    ips200_show_float(Row_8,Line_4,flash_union_buffer[4].float_type,2,2);
-    ips200_show_string(Row_1,Line_5,"AngleD:");
-    ips200_show_float(Row_8,Line_5,flash_union_buffer[5].float_type,2,2);
+    ips200_show_string(Row_1,Line_0,"Yaw_Angle:");
+    ips200_show_float(Row_12,Line_0,Gyro_YawAngle_Get(),3,1);
+    ips200_show_string(Row_1,Line_1,"LF_Speed:");
+    ips200_show_float(Row_11,Line_1,Encoer_Speed[0],3,1);
+    ips200_show_string(Row_1,Line_2,"RF_Speed:");
+    ips200_show_float(Row_11,Line_2,Encoer_Speed[1],3,1);
+    ips200_show_string(Row_1,Line_3,"LB_Speed:");
+    ips200_show_float(Row_11,Line_3,Encoer_Speed[2],3,1);
+    ips200_show_string(Row_1,Line_4,"RB_Speed:");
+    ips200_show_float(Row_11,Line_4,Encoer_Speed[3],3,1);
     Exit_Dis;
+    
     if(Menu.Set_Mode == Normal_Mode)
     {
-        if((Menu.Set_Line == 7) && (Button_Value[1] == 2))//退出
+        if((Menu.Set_Line == 14) && (Button_Value[1] == 2))//退出
         {
             Button_Value[1] = 0;
             Menu_Mode = Page_Select;//退出到第一页
             Menu.Set_Line = 0;
             ips200_clear();
         }
-        else if((Menu.Set_Line != 7) && (Button_Value[1] == 2))
-        {
-            Button_Value[1] = 0;
-            Menu.Set_Mode = Flash_Mode;
-        } 
+        // else if((Menu.Set_Line != 14) && (Button_Value[1] == 2))
+        // {
+        //     Button_Value[1] = 0;
+        //     Menu.Set_Mode = Flash_Mode;
+        // } 
         Line_Change();//行切换
     }
     else if(Menu.Set_Mode == Flash_Mode)//设置参数
@@ -237,12 +235,12 @@ static void Page2_Mode()
         if(Button_Value[0] == 2)//顺时针转
         {
             Button_Value[0] = 0;
-            flash_union_buffer[Menu.Set_Line].float_type+=0.01;
+            flash_union_buffer[Menu.Set_Line].uint16_type+=1;
         }
         else if(Button_Value[2] == 2)//逆时针转
         {
             Button_Value[2] = 0;
-            flash_union_buffer[Menu.Set_Line].float_type-=0.01;
+            flash_union_buffer[Menu.Set_Line].uint16_type-=1;
         }
         else if(Button_Value[1] == 2)//调参结束
         {
@@ -251,22 +249,15 @@ static void Page2_Mode()
             Menu.Flash_Set = 1;
         }
     }
-
     if(Menu.Flash_Set)//调参结束
     {
         Menu.Flash_Set = 0;
-        DistanceX_PID.Kp = flash_union_buffer[0].float_type;
-		DistanceY_PID.Kp = flash_union_buffer[1].float_type;
-        DistanceX_PID.Kd = flash_union_buffer[2].float_type;
-		DistanceY_PID.Kd = flash_union_buffer[3].float_type;
-        AngleControl_PID.Kp =  flash_union_buffer[4].float_type;
-        AngleControl_PID.Kd =  flash_union_buffer[5].float_type;
         flash_write_page_from_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
     }
     Arrow_Display(Menu.Set_Line);//箭头显示
 }
 
-uint8 Bin_Image_Flag = 0;
+
 /**@brief   图像显示以及相关参数
 -- @param   无
 -- @author  庄文标
@@ -274,6 +265,7 @@ uint8 Bin_Image_Flag = 0;
 **/
 static void Image_Page()
 {
+    static uint8 Bin_Image_Flag = 0;
     if(Car.Image_Flag == false)
     {
         if(mt9v03x_finish_flag)
@@ -290,15 +282,7 @@ static void Image_Page()
             }
         }
     }
-    // ips200_set_dir(ips200_CROSSWISE);
-    // ips200_show_gray_image(0,0,(uint8*)Bin_Image,MT9V03X_W,MT9V03X_H,148,80,0);
-    // ips200_show_gray_image(0,0,(uint8*)mt9v03x_image,MT9V03X_W,MT9V03X_H,148,80,0);
-    // for (int i = Hightest; i < Image_H-1; i++)
-    // {
-    //     ips200_draw_point(Center_Line[i], i, RGB565_BLACK);
-    //     ips200_draw_point(L_Border[i], i, RGB565_BLUE);
-    //     ips200_draw_point(R_Border[i], i, RGB565_RED);
-    // }
+
     ips200_show_string(Row_1,Line_6,"Bin:");
     ips200_show_uint(Row_6,Line_6,Bin_Image_Flag,2);
 
@@ -481,7 +465,8 @@ static void Image_Page()
         Menu.Ex_Time = flash_union_buffer[50].uint16_type;
         Menu.Turn_Point = flash_union_buffer[51].uint16_type;
         MyFSM.Simple_Flag = flash_union_buffer[52].uint16_type;
-        Down_Angle[0] = flash_union_buffer[53].uint16_type;
+        Image_Flag.Lose_Line_L = flash_union_buffer[53].uint16_type;
+        Image_Flag.Lose_Line_R = flash_union_buffer[54].uint16_type;
         flash_write_page_from_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
     }
     Arrow_Display(Menu.Set_Line);//箭头显示
@@ -493,7 +478,7 @@ static void Image_Page()
  *  @brief
  *
 **/
-uint8 Servo_Angle = 40;
+
 /**@brief   Flash初始化
 -- @param   无
 -- @author  庄文标
@@ -552,9 +537,9 @@ void Menu_Display()
         case Page1:
             Page1_Mode();
         break;
-        // case Page2:
-        //     Page2_Mode();
-        // break;
+        case Page2:
+            Page2_Mode();
+        break;
         case Page9:
             Image_Page();
         break;

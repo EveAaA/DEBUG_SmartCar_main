@@ -72,9 +72,6 @@ void PIT_IRQHandler(void)
         if(Start == 1)
         {
             FSM_main();
-            // Car.Speed_X = 0;
-            // Car.Speed_Y = 5;
-            // Car.Speed_Z = 0;
         }
         else if(Start == 0)
         {
@@ -141,7 +138,6 @@ void LPUART3_IRQHandler(void)
     if(kLPUART_RxDataRegFullFlag & LPUART_GetStatusFlags(LPUART3))
     {
         // 接收中断
-        
     }
         
     LPUART_ClearStatusFlags(LPUART3, kLPUART_RxOverrunFlag);    // 不允许删除
@@ -200,12 +196,10 @@ void GPIO1_Combined_0_15_IRQHandler(void)
     {
         exti_flag_clear(B0);// 清除中断标志位
     }
-    dl1b_int_handler();
+    // dl1b_int_handler();
 }
 
-int8 flag = 0;
-int8 CW_1 = 0;
-int8 CW_2 = 0;
+
 void GPIO1_Combined_16_31_IRQHandler(void)
 {
     wireless_module_spi_handler();
@@ -215,30 +209,6 @@ void GPIO1_Combined_16_31_IRQHandler(void)
     }
     if(exti_flag_get(Rotary_A))
     {
-        int8 alv = gpio_get_level(Rotary_A);
-        int8 blv = gpio_get_level(Rotary_B);
-        if((flag == 0) && (alv == 0))
-        {
-            CW_1 = blv;
-            flag = 1;
-        }
-        if(flag && alv)
-        {
-            CW_2 = !blv;
-            if (CW_1 && CW_2) 
-            {
-                Rotary.Anticlockwise = 0;
-                Rotary.Clockwise = 1;
-                Rotary.Press = 0;
-            }
-            if (CW_1 == 0 && CW_2 == 0) 
-            {
-                Rotary.Clockwise = 0;
-                Rotary.Anticlockwise = 1;
-                Rotary.Press = 0;
-            }
-            flag = 0;
-        }
         exti_flag_clear(Rotary_A); // 清除中断标志位
     }
 }
@@ -267,13 +237,6 @@ void GPIO2_Combined_16_31_IRQHandler(void)
     
     if(exti_flag_get(Rotary_D))
     {
-        // system_delay_ms(20);
-        // if(gpio_get_level(Rotary_D) == 1)
-        // {
-        //     Rotary.Press = 1;
-        //     Rotary.Clockwise = 0;
-        //     Rotary.Anticlockwise = 0;
-        // }
         exti_flag_clear(Rotary_D); // 清除中断标志位
     }
 }
