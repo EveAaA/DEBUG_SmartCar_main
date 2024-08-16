@@ -31,7 +31,7 @@ red.on()
 SmallPlaceLabels = [line.rstrip("\n") for line in open("/sd/label.txt")] + ["none"]
 BigPlaceLabels = [line.rstrip("\n") for line in open("/sd/number.txt")] + ["none"]
 BigPlaceModel = tf.load(BigPlaceModel, load_to_fb=True)
-SmallPlaceModel = tf.load(SmallPlaceModel)
+SmallPlaceModel = tf.load(SmallPlaceModel, load_to_fb = True)
 model = tf.load(classifyModel, load_to_fb=True)
 net = tf.load(findBorderModel)
 uart = UART(2, 115200)
@@ -400,61 +400,13 @@ def getImage(isPlace = False):
             noObject += 1
         if noObject >= 2:
             return [None, None]
-#        else:
-#            corners = []
-#            minRect = None
-#            inputImage = sensor.alloc_extra_fb(160, 120, sensor.GRAYSCALE)
-#            inputImage.draw_image(img, 0, 0,x_scale=0.5, y_scale=0.5)
-#            his = inputImage.get_histogram()
-#            inputImage.binary([[his.get_threshold().value(), 255]], invert = False) # 突出图像特征
-#            # img.draw_image(inputImage, 1, 1)
-
-#            # rect = inputImage.find_rects(threshold = 2000, roi = (0, 0, 160, 120))
-#            Blob = inputImage.find_blobs([(230, 255)], roi = (0, 0, 160, 70), area_threshold = 200, merge = True)
-#            # print(rect)
-#            maxRect = find_max(Blob)
-##            if maxRect:
-##                img.draw_line(maxRect.major_axis_line(), color = (0, 0, 0))
-##                img.draw_line(maxRect.minor_axis_line(), color = (0, 0, 0))
-#            if maxRect:
-##                corners = [(int(maxRect.rect()[0] * 2), int(maxRect.rect()[1] * 2)),
-##                           (int(maxRect.rect()[0] * 2) + int(maxRect.rect()[2] * 2), int(maxRect.rect()[1] * 2)),
-##                           (int(maxRect.rect()[0] * 2) + int(maxRect.rect()[2] * 2), int(maxRect.rect()[1] * 2) + int(maxRect.rect()[3] * 2)),
-##                           (int(maxRect.rect()[0] * 2), int(maxRect.rect()[1] * 2) + int(maxRect.rect()[3] * 2))]
-##                img.draw_rectangle([int(maxRect.rect()[0] * 2), int(maxRect.rect()[1] * 2), int(maxRect.rect()[2] * 2), int(maxRect.rect()[3] * 2)], color = (0, 255, 0))
-##                print(maxRect.density())
-##                if maxRect.density() < 0.40:
-##                corners = resizeCorner(list(maxRect.corners()), rate_x = 2, rate_y = 2)
-##                else:
-#                corners = getMinRect(list(maxRect.major_axis_line()), list(maxRect.minor_axis_line()), rate_x = 2, rate_y = 2)
-##                for c in corners:
-##                    img.draw_circle(c[0], c[1], 5)
-#                # corners = resizeCorner(list(maxRect.corners()), rate_x = 2, rate_y = 2)
-#                # img.rotation_corr(corners = corners)
-#            sensor.dealloc_extra_fb()
-#            minRect = corners
-#            return [img, minRect]
-
-
 
 # 分类图像
-def classify(img, minRect = [(123, 144), (123 + 71, 144), (123 + 71, 144 + 68), (123, 144 + 68)]):
+def classify(img, minRect = [105, 120, 85, 85]):
     # print(minRect)
     img1 = img.copy(1, 1, minRect)
     img.draw_rectangle(minRect)
-    #img.crop(roi = minRect, hint = image.BICUBI
-    #cimg.draw_image(img1, 1, 1)
-    # img.crop(roi = minRect, hint = image.BILINEAR)
-    # img.rotation_corr(corners=minRect[0:4])
-#    img1 = img.copy(1, 1, minRect)
-    #print(model)
-    # img1 = img.copy(1, 1, x_scale =0.4, y_scale = 0.53)
-    # clock.tick()
     obj = tf.classify(model, img1, min_scale=1.0, scale_mul=0.5, x_overlap=0.0, y_overlap=0.0)[0]
-    # obj = tf.classify(model, img1)[0]  # 输入图像为img1则Debug_Vision.tflite分类模型, 输入图像为inputImage 则为Debug_VisionClassify的模型
-    #print(clock.avg())
-    # print("time:"+str(clock.avg())+"ms")
-    # tf.free_from_fb()
     res = obj.output()
     #print(res)
     m = max(res)
@@ -464,17 +416,14 @@ def classify(img, minRect = [(123, 144), (123 + 71, 144), (123 + 71, 144 + 68), 
         img.draw_string(10, 10, SmallPlaceLabels[result_index], (255, 0, 0), 5)
         img.draw_string(10, 60, str(m), (255, 0, 0), 3)
         uart.write(result_index.to_bytes(1, "little") + UART_SEND_CLASSIFY)
-        # print("%s: %f" % (SmallPlaceLabels[result_index], m))
-    # resetSensor(700)
-    # img.draw_image(inputImage, 0, 0)
 
 # 分类小类目标板
-def classifySmallPlace(img, minRect):
+def classifySmallPlace(img, minRect = [105, 120, 85, 85]):
     # inputImage = img.copy(1, 1, minRect)
     #img.rotation_corr(corners=minRect[0:4])
     img1 = img.copy(1, 1, minRect)
     img.draw_rectangle(minRect)
-#    inputImage = sensor.alloc_extra_fb(128, 128, sensor.GRAYSCALE)
+    # inputImage = sensor.alloc_extra_fb(128, 128, sensor.GRAYSCALE)
 #    inputImage.draw_image(img1, 0, 0, x_scale=(128 / 100), y_scale= (128 / 100))
 #    inputImage.invert()
 #    inputImage.morph(1, sharpen_kernel, 1)
@@ -498,7 +447,7 @@ def classifySmallPlace(img, minRect):
     else:
         print("Unknow!")
     # img.draw_image(inputImage, 0, 0)
-    sensor.dealloc_extra_fb()
+    # sensor.dealloc_extra_fb()
 
 # 分类大类目标板
 def classifyBigPlace(img, minRect):

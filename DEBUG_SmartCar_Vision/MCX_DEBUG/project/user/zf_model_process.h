@@ -67,6 +67,7 @@ typedef enum{
 
 typedef enum{
     NONE_SET,
+    SET_SCREEN_SHOW,
     SET_BORDER_CENTER,
     SET_SMALLPLACE_CENTER,
     SET_BIGPLACE_CENTER,
@@ -106,7 +107,7 @@ extern gpio_struct gpio_led_green;
 extern gpio_struct gpio_led_blue;
 extern gpio_struct gpio_led_white;
 extern volatile bool IS_ALIVE_FLAG;
-
+extern volatile bool SHOW_SCREEN;
 
 void ezh_copy_slice_to_model_input(uint32_t idx, uint32_t cam_slice_buffer, uint32_t cam_slice_width, uint32_t cam_slice_height, uint32_t max_idx);
 void zf_model_init(void);

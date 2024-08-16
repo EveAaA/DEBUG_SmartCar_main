@@ -166,6 +166,9 @@ void PARAM_init(void)
     BigPlaceCenter.y   = sd_read_data(ADDRESS(6));
     LEFTLINE           = sd_read_data(ADDRESS(7));
     RIGHTLINE          = sd_read_data(ADDRESS(8));
+    UnloadCenter.x     = sd_read_data(ADDRESS(9));
+    UnloadCenter.y     = sd_read_data(ADDRESS(10));
+    SHOW_SCREEN        = sd_read_data(ADDRESS(11));
 }
 
 
