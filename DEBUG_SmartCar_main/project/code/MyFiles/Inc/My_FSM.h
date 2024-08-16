@@ -20,6 +20,7 @@ typedef enum
     Move,//移动到卡片前面
     Pick,//捡起卡片
     Classify,//识别分类
+    Time_Out,//超时
     Return_Line,//返回赛道
     Finsh_Return,//返回赛道结束
     Find_Cross,//找到十字

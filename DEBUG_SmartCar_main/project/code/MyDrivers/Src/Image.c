@@ -2103,7 +2103,7 @@ void Roadblock_Seek(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border
             && (Lose_Line() == false))
         {
             Image_Flag.Roadblock = true;
-            printf("◊Û’œ∞≠\r\n");
+            // printf("◊Û’œ∞≠\r\n");
         }
         else if ((!Break_Num_L_DOWN)
             && (!Lose_Line())
@@ -2130,7 +2130,7 @@ void Roadblock_Seek(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border
             &&(!Bin_Image[Break_Num_R_DOWN - 10][R_Border[Break_Num_R_DOWN]])
             && (Lose_Line() == false))
         {
-            printf("”“’œ∞≠\r\n");
+            // printf("”“’œ∞≠\r\n");
             Image_Flag.Roadblock = true;
         }
         else if ((!Break_Num_R_DOWN)

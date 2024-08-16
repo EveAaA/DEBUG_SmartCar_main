@@ -58,7 +58,7 @@ GetCard_t *currCard;
 uint16 wait_time = 0;
 #define Static_Time 100 // 等待静止的时间，大约0.5秒
 // #define debug_switch  //是否调试
-#define Classify_debug //是否查看分类
+// #define Classify_debug //是否查看分类
 // #define Final_Change //是否放置区域在道路两边
 /**
  ******************************************************************************
@@ -288,7 +288,7 @@ static void Line_PatrolFsm()
         }
         Set_Beepfreq(2);
     }
-    else if (Bufcnt(Image_Flag.Zerba, 200)) // 终点前卸货
+    else if (Bufcnt(Image_Flag.Zerba, 100)) // 终点前卸货
     {
         Car.Image_Flag = false;
         Car.Speed = false;
@@ -431,7 +431,7 @@ static void Line_BoardFsm()
                 UART_SendByte(&_UART_FINE_TUNING, UART_CLASSIFY_PIC); // 发送数据，接收分类数据
                 if (Bufcnt(true, 5000))
                 {
-                    MyFSM.Line_Board_State = Return_Line;//超时
+                    MyFSM.Line_Board_State = Time_Out;//超时
                     Light_Off;//关灯
                 }
             }
@@ -501,6 +501,25 @@ static void Line_BoardFsm()
                 LeftRing.Ring_Front_Flag = 0; 
                 MyFSM.Line_Board_State = Return_Line;
             }
+        break;
+        case Time_Out:
+            if (Turn.Finish == false)
+            {
+                if (MyFSM.Board_Dir == LEFT)
+                {
+                    Turn_Angle(80);
+                }
+                else if (MyFSM.Board_Dir == RIGHT)
+                {
+                    Turn_Angle(-80);
+                }
+                Car.Image_Flag = true;
+            }
+            else
+            {
+                Turn.Finish = false;
+                MyFSM.Line_Board_State = Return_Line;
+            }            
         break;
         case Return_Line: // 返回赛道
     #ifdef debug_switch
@@ -794,7 +813,7 @@ static void Cross_BoardFsm()
             if (UnpackFlag.FINETUNING_DATA_FLAG)
             {
                 UnpackFlag.FINETUNING_DATA_FLAG = false;
-                if (Bufcnt(true,500))
+                if (Bufcnt(true,700))
                 {
                     MyFSM.Cross_Board_State = Move_Place; // 开始移动到放置区域前面
                     MyFSM.Target_Pos_X = FINETUNING_DATA.dx / 10.0f;
@@ -1242,7 +1261,7 @@ static void Ring_BoardFsm()
                 Car.Image_Flag = false;
             }
 
-            if (Bufcnt(true, 700))
+            if (Bufcnt(true,1200))
             {
                 MyFSM.Ring_Board_State = Find;
                 Car.Image_Flag = false;
@@ -1426,13 +1445,13 @@ static void Ring_BoardFsm()
     #ifdef debug_switch
             printf("Ring_First_Place\r\n");
     #endif
-            MyFSM.Depot_Pos = 0;
+            // MyFSM.Depot_Pos = 0;
             Dodge_Carmar();
             UART_SendByte(&_UART_FINDBORDER, UART_STARTFINETUNING_PLACE); // 发送获取放置区域信息
             if (UnpackFlag.FINETUNING_DATA_FLAG)
             {
                 UnpackFlag.FINETUNING_DATA_FLAG = false;
-                if (Bufcnt(true,650))
+                if (Bufcnt(true,450))
                 {
                     MyFSM.Ring_Board_State = Move_Place; // 开始移动到放置区域前面
                     MyFSM.Target_Pos_X = FINETUNING_DATA.dx / 10.0f;
@@ -1554,7 +1573,7 @@ static void Ring_BoardFsm()
     #ifdef debug_switch
             printf("Ready_Find_Next_First\r\n");
     #endif
-            MyFSM.Depot_Pos = 0;
+            // MyFSM.Depot_Pos = 0;
             SMALL_PLACE_DATA.place = nil;
             if (Navigation.Finish_Flag == false)
             {
@@ -1888,6 +1907,7 @@ static void Ring_BoardFsm()
 **/
 static void Unload_Fsm()
 {
+    static bool MOVE_Flag = false;
     switch (MyFSM.Unload_State)
     {
         case Find_Zebra:
@@ -1910,37 +1930,55 @@ static void Unload_Fsm()
             }
         break;
         case Find_First_Point_R://找第一个点
-            if(Bufcnt(true,1000))
+            if(Bufcnt(true,700))
             {
                 MyFSM.Unload_State = Wait_Big_Data;
+                // MyFSM.Unload_State = Wait_Big_Data_Left;
             }
-            Car.Speed_X = 6;
+            UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBIGPLACE); // 获取大类放置区域
+            Car_run_X(6);
+            // Car.Speed_X = 6;
+            // Car.Speed_Y = 0;
+            // Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
+        break;
+        case Wait_Big_Data_Left:
+            Car.Speed_X = 0;
             Car.Speed_Y = 0;
-            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
+            Car.Speed_Z = 0;
         break;
         case Wait_Big_Data:
     #ifdef debug_switch
             printf("Wait_Big_Data\r\n");
     #endif
             UART_SendByte(&_UART_FINDBORDER, UART_FINDBORDER_GETBIGPLACE); // 获取大类放置区域
-            if (FINDBORDER_DATA.FINDBIGPLACE_FLAG == true)
+            if(Bufcnt(true,500))
             {
-                MyFSM.Big_Point+=1;
-                UnpackFlag.FINETUNING_DATA_FLAG = false;
-                MyFSM.Big_Pos[0] = RIGHT;
-                Light_On;//开灯
-                MyFSM.Unload_State = Wait_Data;
+                MOVE_Flag = 1;
             }
-            else
+            if(MOVE_Flag)
             {
-                MyFSM.Big_Point+=1;
-                if(MyFSM.Big_Point<3)
+                if (FINDBORDER_DATA.FINDBIGPLACE_FLAG)
                 {
-                    MyFSM.Unload_State = No_Board_Next;
+                    MyFSM.Big_Point+=1;
+                    FINDBORDER_DATA.FINDBIGPLACE_FLAG = false;
+                    UnpackFlag.FINETUNING_DATA_FLAG = false;
+                    MyFSM.Big_Pos[0] = RIGHT;
+                    Light_On;//开灯
+                    MyFSM.Unload_State = Wait_Data;
+                    MOVE_Flag = false;
                 }
                 else
                 {
-                    MyFSM.Unload_State = Diff_Dir_Unload;
+                    MOVE_Flag = false;
+                    MyFSM.Big_Point+=1;
+                    if(MyFSM.Big_Point!=3)
+                    {
+                        MyFSM.Unload_State = No_Board_Next;
+                    }
+                    else
+                    {
+                        MyFSM.Unload_State = Diff_Dir_Unload;
+                    }
                 }
             }
 
@@ -1949,9 +1987,10 @@ static void Unload_Fsm()
             Car.Speed_Z = 0;
         break;
         case Diff_Dir_Unload://有不同方向的卸货点
+            MyFSM.Big_Pos[2] = LEFT;
             if (Turn.Finish == false)
             {
-                Turn_Angle(180);
+                Turn_Angle(170);
             }
             else
             {
@@ -1964,12 +2003,11 @@ static void Unload_Fsm()
             }
         break;
         case No_Board_Next:
+            FINDBORDER_DATA.FINDBIGPLACE_FLAG = false;
             if(MyFSM.Big_Point < 3)
             {
-                Car.Speed_X = 6;
-                Car.Speed_Y = 0;
-                Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
-                if (Bufcnt(true, 1000))
+                Car_run_X(6);
+                if (Bufcnt(true, 1200))
                 {
                     Car.Speed_X = 0;
                     Car.Speed_Y = 0;
@@ -1979,10 +2017,8 @@ static void Unload_Fsm()
             }
             else
             {
-                Car.Speed_X = -6;
-                Car.Speed_Y = 0;
-                Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
-                if (Bufcnt(true, 1000))
+                Car_run_X(6);
+                if (Bufcnt(true, 1200))
                 {
                     Car.Speed_X = 0;
                     Car.Speed_Y = 0;
@@ -1997,13 +2033,12 @@ static void Unload_Fsm()
     #endif
             Dodge_Carmar();
             UART_SendByte(&_UART_FINDBORDER, UART_STARTFINETUNING_PLACE); // 发送对数字板微调信息
-
             if (UnpackFlag.FINETUNING_DATA_FLAG)
             {
                 UnpackFlag.FINETUNING_DATA_FLAG = false;
                 if (FINETUNING_DATA.IS_BORDER_ALIVE)
                 {
-                    if (Bufcnt(true, 300))
+                    if (Bufcnt(true,300))
                     {
                         MyFSM.Unload_State = Move; // 开始移动到卡片前面
                         MyFSM.Target_Pos_X = FINETUNING_DATA.dx / 10.0f;
@@ -2015,16 +2050,8 @@ static void Unload_Fsm()
                 }
             }
             Car.Speed_X = 0;
-            if (MyFSM.Big_Pos_Count == 0)
-            {
-                Car.Speed_Y = 3;
-                Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
-            }
-            else
-            {
-                Car.Speed_Y = 0;
-                Car.Speed_Z = 0;
-            }
+            Car.Speed_Y = 3;
+            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
         break;
         case Move: // 移动到卡片前面
     #ifdef debug_switch
@@ -2033,7 +2060,6 @@ static void Unload_Fsm()
             BIG_PLACE_DATA.Big_Place = None;
             BIG_PLACE_DATA.place = nil;
             UART_SendByte(&_UART_FINDBORDER, UART_STARTFINETUNING_PLACE); // 发送对数字板微调信息    
-
             if (Navigation.Finish_Flag == false)
             {
                 Navigation_Process_Image(MyFSM.Target_Pos_X, MyFSM.Target_Pos_Y); // 移动
@@ -2084,7 +2110,14 @@ static void Unload_Fsm()
             BIG_PLACE_DATA.place = nil;
             if (MyFSM.Unload_Count == 0)
             {
-                MyFSM.Unload_State = Unload_Next;
+                if(MyFSM.Big_Point==3)
+                {
+                    MyFSM.Unload_State = Unload_Next;
+                }
+                else
+                {
+                    MyFSM.Unload_State = Ready_Find_Next;
+                }
                 Servo_Flag.Depot_End = false;
             }
             if (Servo_Flag.Depot_End)
@@ -2100,41 +2133,44 @@ static void Unload_Fsm()
                 }
             }
         break;
+        case Ready_Find_Next:
+            if (Bufcnt(true, 800))
+            {
+                MyFSM.Unload_State = Unload_Next;
+                Car.Speed_X = 0;
+                Car.Speed_Y = 0;
+                Car.Speed_Z = 0;
+            }   
+            Car.Speed_X = 0;
+            Car.Speed_Y = -3;
+            Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
+        break;
         case Unload_Next:
     #ifdef debug_switch
             printf("Unload_Next\r\n");
     #endif
             BIG_PLACE_DATA.Big_Place = None;
             BIG_PLACE_DATA.place = nil;
+            FINDBORDER_DATA.FINDBIGPLACE_FLAG = false;
             if ((MyFSM.Big_Pos_Count < 3) && ((MyFSM.Big_Count[0] != 0) || (MyFSM.Big_Count[1] != 0) || (MyFSM.Big_Count[2] != 0)))
             {
-                if (Navigation.Finish_Flag == false)
+                if(MyFSM.Big_Point==3)
+                {
+                    MyFSM.Unload_State = Diff_Dir_Unload;
+                    MyFSM.Big_Pos[2] = LEFT;
+                }
+                else if (Navigation.Finish_Flag == false)
                 {
                     if(MyFSM.Big_Pos[MyFSM.Big_Pos_Count-1] == RIGHT)
                     {
-                        Car.Speed_X = 6;
-                        Car.Speed_Y = 0;
-                        Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
-                        if (Bufcnt(true, 1000))
+                        Car_run_X(6);
+                        if (Bufcnt(true, 1200))
                         {
                             Car.Speed_X = 0;
                             Car.Speed_Y = 0;
                             Car.Speed_Z = 0;
                             Navigation.Finish_Flag = true;
                         }
-                    }
-                    else
-                    {
-                        Car.Speed_X = -6;
-                        Car.Speed_Y = 0;
-                        Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
-                        if (Bufcnt(true, 1000))
-                        {
-                            Car.Speed_X = 0;
-                            Car.Speed_Y = 0;
-                            Car.Speed_Z = 0;
-                            Navigation.Finish_Flag = true;
-                        }                        
                     }
                 }
                 else
@@ -2149,11 +2185,11 @@ static void Unload_Fsm()
                 {
                     if(MyFSM.Big_Pos[2]==RIGHT)
                     {
-                        Turn_Angle(-100);
+                        Turn_Angle(-80);
                     }
                     else
                     {
-                        Turn_Angle(100);
+                        Turn_Angle(80);
                     }
                 }
                 else
@@ -2171,7 +2207,7 @@ static void Unload_Fsm()
             printf("Return_Line = %d %d\r\n", Image_Flag.Zerba, MyFSM.Stop_Flag);
     #endif
             Dodge_Carmar();
-            if (Bufcnt(Image_Flag.Zerba, 1700))
+            if (Bufcnt(Image_Flag.Zerba, 900))
             {
                 MyFSM.Stop_Flag = true;
             }

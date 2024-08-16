@@ -148,7 +148,7 @@ void User_Init()
     #ifndef Image_debug
     ips200_init(IPS200_TYPE_SPI);
     #endif
-    bluetooth_ch9141_init();
+    // bluetooth_ch9141_init();
     IMU_Init();
     Mt9v03x_Init();
     #ifdef Image_debug

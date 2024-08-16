@@ -168,7 +168,7 @@ void Uart_Findborder_Receive(void)
     // printf("index: %d\n", _UART_FINDBORDER.index);
     if (_UART_FINDBORDER.index == 5)
     {
-      //       printf("+++++++++++++++++\n");
+      //printf("+++++++++++++++++\n");
       // printf("index: %d\n", _UART_FINDBORDER.index);
       // for (uint32_t i = 0; i < _UART_FINDBORDER.index; i++)
       // {
@@ -177,6 +177,7 @@ void Uart_Findborder_Receive(void)
       // printf("\n");
       // printf("%x  \n", _UART_FINDBORDER.get_data);
       // printf("+++++++++++++++++\n");
+      UnpackFlag.FINETUNING_DATA_FLAG = true;
       if (_UART_FINDBORDER.fifo_get_data[0] == 0x01)
       {
         FINDBORDER_DATA.FINDBIGPLACE_FLAG = true;
