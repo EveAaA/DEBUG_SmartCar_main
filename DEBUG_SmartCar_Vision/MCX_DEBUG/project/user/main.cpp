@@ -38,7 +38,7 @@ extern "C" // mian文件是C++文件，如果需要包含C语言的头文件，就需要使用extern "C"
 #endif /* __cplusplus */ 
 #include "zf_common_headfile.h"
 
-Mode_t currMode = NONE;
+Mode_t currMode = NONE; // NONE
 volatile bool IS_ALIVE_FLAG = false;
     
 int main(void)
