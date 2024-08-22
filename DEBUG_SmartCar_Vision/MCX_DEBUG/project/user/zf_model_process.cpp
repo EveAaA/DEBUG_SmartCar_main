@@ -32,7 +32,6 @@
  * 2024-04-21        ZSY            first version
  ********************************************************************************************************************/
 #include "zf_model_process.h"
-
 #include "model.h"
 #include "yolo_post_processing.h"
 
@@ -67,13 +66,17 @@ gpio_struct gpio_led_red = {GPIO2, 8u};
 gpio_struct gpio_led_green = {GPIO2, 9u};
 gpio_struct gpio_led_blue = {GPIO2, 10u};
 gpio_struct gpio_led_white = {GPIO2, 11u};
-
+const Mode_t table[9] = {WAITING_START, NONE, FIND_SMALL_PLACE, FIND_BIG_PLACE, TUNING_BESIDEROAD, TUNING_INELEMETS, TUNING_PLACE, TUNING_UNLOAD, TUNING_BIGPLACE};
+uint8_t limitLine = 210; // 防止误判
 Press_t Key_1 = RELEASE; // 按键初始状态都是释放状态
 Press_t Key_2 = RELEASE;
 int16_t Brightness = 2000;              // 亮度调节
 uint8_t LEFTLINE = 150;
 uint8_t RIGHTLINE = 170;                // 左右边界线
 SetMode_t setMode = NONE_SET;          // 模式选择
+Center_t test;
+volatile Center_t TuningPlaceSend;
+volatile bool isPlaceTuning = true; 
 volatile bool SHOW_SCREEN = false;    // 是否显示屏幕, 只在RUN模式下生效
 volatile bool BIG_PLACE_FIND = false; // 数字板是否找到标志位
 // 目标板预设定中心位置
@@ -131,6 +134,45 @@ void KEY_init(void)
 {
     gpio_init(gpio_key_1, GPI, 0, PULL_UP);
     gpio_init(gpio_key_2, GPI, 0, PULL_UP);
+}
+
+int16_t myLimit(int16_t num, int16_t low, int16_t high)
+{
+    if (num < low)
+    {
+        return low;
+    }
+    else if (num > high)
+    {   
+        return high;
+    }
+    else
+    {
+        return num;
+    }
+}
+
+void draw_cross(uint16_t *pcam, int cx, int cy, int w)
+{
+    int start, end;
+    uint16_t *phorline;
+    uint32_t color = 0xffffffff;
+    int x = cx;
+    int y = cy;
+    start = myLimit(x - 10, 0, w);
+    end = myLimit(x + 10, 0, w);
+    for (int index = start; index < end; index++)
+    {
+        phorline = pcam + (w * y) + index; // ???¨??????
+        memset(phorline, color, 1);
+    } 
+    start = myLimit(y - 10, 0, w);
+    end = myLimit(y + 10, 0, w);
+    for (int index = start; index < end; index++)
+    {
+        phorline = pcam + (w * index) + x; // ???¨??????
+        memset(phorline, color, 1);
+    } 
 }
 
 void draw_rect_on_slice_buffer(uint16_t *pcam, int srcw, int cury, int stride, odresult_t *podret, int retcnt, int slice_height)
@@ -390,7 +432,7 @@ void KEY_SCAN(Press_t *Key1, Press_t *Key2)
     LastKey2State = Key2State;
 }
 
-void MENU_SHOW(SetMode_t *Mode, uint16_t ArrayPlace, bool CxCyFlag)
+void MENU_SHOW(SetMode_t *Mode, uint16_t ArrayPlace, bool CxCyFlag, int8_t index,const char strTable[])
 {
     switch (*Mode)
     {
@@ -404,6 +446,8 @@ void MENU_SHOW(SetMode_t *Mode, uint16_t ArrayPlace, bool CxCyFlag)
         ips200_show_string(10, 85, "SET_TWOLINES");
         ips200_show_string(10, 100, "SET_UNLOAD_CENTER");
         ips200_show_string(10, 115, "SET_SCREEN_SHOW");
+        ips200_show_string(10, 130, "CHANGE_MODE");
+        ips200_show_string(10, 145, "SET_LIMIT_LINE");
         break;
     case SET_EXPOSURE:
         ips200_show_string(10, 10, "BRIGHTNESS:");
@@ -505,12 +549,22 @@ void MENU_SHOW(SetMode_t *Mode, uint16_t ArrayPlace, bool CxCyFlag)
             ips200_show_string(10, 25, "FALSE");
         }
         break;
+    case CHANGE_MODEL:
+        ips200_show_string(10, 10, "CUR MODE:");
+        ips200_show_string(10, 25, strTable);
+        break;
+    case SET_LIMIT_LINE:
+        ips200_show_string(10, 10, "limitLine:");
+        ips200_show_int(10, 25, limitLine);
+        ips200_show_string(10, 65, "SET_LIMIT_LINE");
+        ips200_draw_line(0, limitLine, 320, limitLine, RGB565_RED);
+        break;
     default:
         break;
     }
 }
 
-SetMode_t GetSelectMode(int8_t ArrayPlace)
+SetMode_t GetSelectMode(int16_t ArrayPlace)
 {
     switch (ArrayPlace)
     {
@@ -530,6 +584,10 @@ SetMode_t GetSelectMode(int8_t ArrayPlace)
         return SET_UNLOAD_CENTER;
     case 115:
         return SET_SCREEN_SHOW;
+    case 130:
+        return CHANGE_MODEL;
+    case 145:
+        return SET_LIMIT_LINE;
     default:
         return NONE_SET;
     }
@@ -537,9 +595,11 @@ SetMode_t GetSelectMode(int8_t ArrayPlace)
 
 void UPDATE_SETMODE(SetMode_t *Mode)
 {
+    const char*  strTable[] = {"WAITING_START", "NONE", "FIND_SMALL_PLACE", "FIND_BIG_PLACE", "TUNING_BESIDEROAD", "TUNING_INELEMETS", "TUNING_PLACE", "TUNING_UNLOAD", "TUNING_BIGPLACE"};
     KEY_SCAN(&Key_1, &Key_2); // 按键扫描状态
-    static int8_t ArrayPlace = 10;
+    static int16_t ArrayPlace = 10;
     static bool changeCxCyFlag = false;
+    static int8_t index = 1;
     switch (*Mode)
     {
     /////////////菜单模式////////////////////////
@@ -549,13 +609,13 @@ void UPDATE_SETMODE(SetMode_t *Mode)
             ArrayPlace -= 15;
             if (ArrayPlace < 10)
             {
-                ArrayPlace = 115;
+                ArrayPlace = 145;
             }
         }
         else if (Key_2 == PRESS)
         {
             ArrayPlace += 15;
-            if (ArrayPlace > 115)
+            if (ArrayPlace > 145)
             {
                 ArrayPlace = 10;
             }
@@ -792,8 +852,50 @@ void UPDATE_SETMODE(SetMode_t *Mode)
     /////////////运行目标检测////////////////////////
     case RUN:
         break;
+    ////////////修改模式//////////////////////////////
+    case CHANGE_MODEL:
+        if (Key_1 == PRESS)
+        {
+            index -= 1;
+            if (index < 0)
+            {
+                index = 8;
+            }
+        }
+        else if (Key_2 == PRESS)
+        {
+            index += 1;
+            if (index > 8)
+            {
+                index = 0;
+            }
+        }
+        if (Key_2 == LONG_PRESS)
+        {
+            *Mode = NONE_SET;
+            currMode = table[index];
+            ArrayPlace = 10;
+        }
+        break;
+    /////////////设置目标板的下限位置///////////////////////////
+    case SET_LIMIT_LINE:
+        if (Key_1 == PRESS)
+        {
+            limitLine -= 1;
+        }
+        else if (Key_2 == PRESS)
+        {
+            limitLine += 1;
+        }
+        if (Key_2 == LONG_PRESS)
+        {
+            *Mode = NONE_SET;
+            ArrayPlace = 10;
+            sd_write_data(limitLine, ADDRESS(12));
+        }
+        break;
     }
-    MENU_SHOW(Mode, ArrayPlace, changeCxCyFlag);
+    MENU_SHOW(Mode, ArrayPlace, changeCxCyFlag, index, strTable[index]);
 }
 
 void getSendDiff(Mode_t *Mode, int16_t cx, int16_t cy, Center_t *UartSendDiff)
@@ -834,6 +936,7 @@ void getSendDiff(Mode_t *Mode, int16_t cx, int16_t cy, Center_t *UartSendDiff)
 void zf_model_run(void)
 {
     static uint8_t isBorderNotAliveTime = 0; // 卡片不存在的帧数
+    static uint16_t shortestY = 320; 
     // 数据通讯格式 X坐标(低八位, 高八位) Y坐标(低八位，高八位) 0x00, 校验帧尾(0xFC 0xBF)
     uint8 buffer[7] = {0};
     buffer[4] = (uint8)0x00; // 暂未使用
@@ -844,7 +947,6 @@ void zf_model_run(void)
     memset(inputData, 0, inputDims.data[1] * inputDims.data[2] * inputDims.data[3]);
     buf = inputData + (inputDims.data[1] - MODEL_IN_H) / 2 * MODEL_IN_W * MODEL_IN_C;
     memcpy(buf, (uint8 *)model_input_buf, MODEL_IN_W * MODEL_IN_H * MODEL_IN_C);
-
     results.clear();
     if (setMode != RUN)
     {
@@ -894,10 +996,18 @@ void zf_model_run(void)
                 ///////////////////////元素内目标板//////////////////////////////////
                 if (currMode == TUNING_INELEMETS)
                 {
-                    LED_BLUE(LED_ON);
-                    IS_ALIVE_FLAG = true;
-                    isBorderNotAliveTime = 0;
-                    user_uart_write_buffer(buffer, sizeof(buffer));
+                    if (cy <= limitLine)
+                    {
+                        LED_BLUE(LED_ON);
+                        IS_ALIVE_FLAG = true;
+                        isBorderNotAliveTime = 0;
+                        user_uart_write_buffer(buffer, sizeof(buffer));
+                        break;
+                    }
+                    else
+                    {
+                        continue;
+                    }
                 }
                 //////////////////////粗定位字母板，数字板///////////////////////////
                 else if (currMode == FIND_SMALL_PLACE || currMode == FIND_BIG_PLACE)
@@ -955,20 +1065,46 @@ void zf_model_run(void)
                 /////////////////////微调字母板////////////////////////////////////////////
                 else if (currMode == TUNING_PLACE)
                 {
-                    user_uart_write_buffer(buffer, sizeof(buffer));
+                        // user_uart_write_buffer(buffer, sizeof(buffer));
+                    if (cy < shortestY)
+                    {
+                        TuningPlaceSend.x = UartSendDiff.x;
+                        TuningPlaceSend.y = UartSendDiff.y;
+                        test.x = cx;
+                        test.y = cy;
+                        shortestY = cy;
+                        isPlaceTuning = true;
+                    }
                 }
                 ////////////////////微调路边目标板/////////////////////////////////////////
                 else if (currMode == TUNING_BESIDEROAD)
                 {
-                    user_uart_write_buffer(buffer, sizeof(buffer));
+                    if (cy <= limitLine)
+                    {
+                        user_uart_write_buffer(buffer, sizeof(buffer));
+                        break;
+                    }
+                    else
+                    {
+                        continue;
+                    }
                 }
                 ////////////////////微调数字板//////////////////////////////////////////////
                 else if(currMode == TUNING_BIGPLACE || currMode == TUNING_UNLOAD)
                 {
-                    LED_BLUE(LED_ON);
-                    user_uart_write_buffer(buffer, sizeof(buffer));
-                    BIG_PLACE_FIND = false;
-                    LED_BLUE(LED_OFF);
+                    if (cy <= limitLine)
+                    {
+                        LED_BLUE(LED_ON);
+                        user_uart_write_buffer(buffer, sizeof(buffer));
+                        BIG_PLACE_FIND = false;
+                        LED_BLUE(LED_OFF);
+                        
+                        break;
+                    }
+                    else
+                    {
+                        continue;
+                    }
 
                 }
                 /////////////////////微调一次性放置///////////////////////////////////////////
@@ -976,7 +1112,7 @@ void zf_model_run(void)
                 {
                     user_uart_write_buffer(buffer, sizeof(buffer));
                 }
-                break;
+               
             }
         }
         ////////////////////////////////处在元素内卡片判断并且判断为没有卡片//////////////////////
@@ -1020,6 +1156,24 @@ void zf_model_run(void)
             LED_RED(LED_ON);
             isBorderNotAliveTime += 1;
         }
+        else if (currMode == TUNING_PLACE && isPlaceTuning)
+        {
+            uint8_t dx_high_8bit = TuningPlaceSend.x >> 8;
+            uint8_t dx_low_8bit = TuningPlaceSend.x & 0xff;
+            uint8_t dy_high_8bit = TuningPlaceSend.y >> 8;
+            uint8_t dy_low_8bit = TuningPlaceSend.y & 0xff;
+            buffer[0] = dx_low_8bit;
+            buffer[1] = dx_high_8bit;
+            buffer[2] = dy_low_8bit;
+            buffer[3] = dy_high_8bit;
+            shortestY = 320;
+            user_uart_write_buffer(buffer, sizeof(buffer));
+            ips200_show_string(10, 90, "FIND");
+            //draw_rect_on_slice_buffer((scc8660_image), SCC8660_W, 0, 1, s_odrets, s_odretcnt, SCC8660_H);
+            //IMAGE_DrawRect(scc8660_image, test.x - 20, test.y - 20, 40, 40, 125, 125, 125, 320);
+            draw_cross(scc8660_image, test.x, test.y, 320);
+            isPlaceTuning = false;
+        }
         // *****
 #if IS_UART_OUTPUT_ODRESULT
         if (s_odretcnt > 0)
@@ -1034,6 +1188,7 @@ void zf_model_run(void)
             {
                 ips200_show_string(10, 10, "OBJ");
                 draw_rect_on_slice_buffer((scc8660_image), SCC8660_W, 0, 1, s_odrets, s_odretcnt, SCC8660_H);
+                ips200_show_int(10, 65, currMode);
             }
             else
             {

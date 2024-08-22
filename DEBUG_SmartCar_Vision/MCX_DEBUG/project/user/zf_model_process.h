@@ -74,6 +74,8 @@ typedef enum{
     SET_EXPOSURE,
     SET_TWOLINES,
     SET_UNLOAD_CENTER,
+    CHANGE_MODEL,
+    SET_LIMIT_LINE,
     RUN,
 }SetMode_t;
 
@@ -102,6 +104,7 @@ extern Center_t UnloadCenter;
 extern int16_t Brightness;
 extern uint8_t LEFTLINE;
 extern uint8_t RIGHTLINE;
+extern uint8_t limitLine;
 extern gpio_struct gpio_led_red;
 extern gpio_struct gpio_led_green;
 extern gpio_struct gpio_led_blue;
