@@ -528,6 +528,10 @@ static void Line_BoardFsm()
             FINETUNING_DATA.dx = 0;
             FINETUNING_DATA.dy = 0;
             MyFSM.Pick_Count = 0;
+            RightRing.Ring_State = Ring_Front;
+            RightRing.Ring_Front_Flag = 0; 
+            LeftRing.Ring_State = Ring_Front;
+            LeftRing.Ring_Front_Flag = 0; 
             if (MyFSM.Board_Dir == LEFT)
             {
                 if (No_Get_Line() && (!Return_End))
@@ -825,7 +829,7 @@ static void Cross_BoardFsm()
             }
             else
             {
-                Car.Speed_X = -1;
+                Car.Speed_X = 1;
                 Car.Speed_Y = 3;
                 Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
             }
@@ -932,7 +936,7 @@ static void Cross_BoardFsm()
         #endif
             MyFSM.Depot_Pos = 0;
             SMALL_PLACE_DATA.place = nil;
-            if (Bufcnt(true, 850))
+            if (Bufcnt(true, 1100))
             {
                 if (MyFSM.Unload_Count >= 5)
                 {
@@ -947,14 +951,15 @@ static void Cross_BoardFsm()
                 Car.Speed_Y = 0;
                 Car.Speed_Z = 0;
             }   
-            if(MyFSM.Cross_Dir == RIGHT)
-            {
-                Car.Speed_X = 3;
-            }
-            else
-            {
-                Car.Speed_X = -3;
-            }
+            // if(MyFSM.Cross_Dir == RIGHT)
+            // {
+            //     Car.Speed_X = 1.5;
+            // }
+            // else
+            // {
+            //     Car.Speed_X = -1.5;
+            // }
+            Car.Speed_X = 0;
             Car.Speed_Y = -3.5;
             Car.Speed_Z = Angle_Control(MyFSM.Static_Angle);
         break;
@@ -997,11 +1002,11 @@ static void Cross_BoardFsm()
             Angle_Offest += (Curanglg - Lastanglg);
             if (MyFSM.Cross_Dir == RIGHT)
             {
-                Car_run_X(3);
+                Car_run_X(2.5);
             }
             else
             {
-                Car_run_X(-3);
+                Car_run_X(-2.5);
             }
             Lastanglg = Curanglg;
             if (MyFSM.Unload_Count == 0 && FINDBORDER_DATA.FINDBIGPLACE_FLAG == true)
@@ -1310,18 +1315,18 @@ static void Ring_BoardFsm()
                         MyFSM.Ring_Board_State = Move; // 开始移动到卡片前面
                     }
                 }
-                else
-                {
-                    Light_Off;//关灯
-                    if (MyFSM.Pick_Count > 6)
-                    {
-                        MyFSM.Ring_Board_State = Ready_Find_Place;
-                    }
-                    else
-                    {
-                        MyFSM.Ring_Board_State = No_Board_Return;
-                    }
-                }
+                // else
+                // {
+                //     Light_Off;//关灯
+                //     if (MyFSM.Pick_Count > 6)
+                //     {
+                //         MyFSM.Ring_Board_State = Ready_Find_Place;
+                //     }
+                //     else
+                //     {
+                //         MyFSM.Ring_Board_State = No_Board_Return;
+                //     }
+                // }
             }
             break;
         case Move: // 移动到卡片前面
@@ -1633,11 +1638,11 @@ static void Ring_BoardFsm()
             Angle_Offest += (Curanglg - Lastanglg);
             if (MyFSM.Ring_Dir == RIGHT)
             {
-                Car_run_X(-3);
+                Car_run_X(-2.5);
             }
             else
             {
-                Car_run_X(3);
+                Car_run_X(2.5);
             }
             Lastanglg = Curanglg;
             if (MyFSM.Unload_Count == 1 && FINDBORDER_DATA.FINDBIGPLACE_FLAG == true)
@@ -1930,7 +1935,7 @@ static void Unload_Fsm()
             }
         break;
         case Find_First_Point_R://找第一个点
-            if(Bufcnt(true,700))
+            if(Bufcnt(true,Menu.Zebra_First_Dis))//原700
             {
                 MyFSM.Unload_State = Wait_Big_Data;
                 // MyFSM.Unload_State = Wait_Big_Data_Left;
@@ -2007,7 +2012,7 @@ static void Unload_Fsm()
             if(MyFSM.Big_Point < 3)
             {
                 Car_run_X(6);
-                if (Bufcnt(true, 1200))
+                if (Bufcnt(true, 900))
                 {
                     Car.Speed_X = 0;
                     Car.Speed_Y = 0;
@@ -2018,7 +2023,7 @@ static void Unload_Fsm()
             else
             {
                 Car_run_X(6);
-                if (Bufcnt(true, 1200))
+                if (Bufcnt(true, 900))
                 {
                     Car.Speed_X = 0;
                     Car.Speed_Y = 0;
@@ -2164,7 +2169,7 @@ static void Unload_Fsm()
                     if(MyFSM.Big_Pos[MyFSM.Big_Pos_Count-1] == RIGHT)
                     {
                         Car_run_X(6);
-                        if (Bufcnt(true, 1200))
+                        if (Bufcnt(true, 900))
                         {
                             Car.Speed_X = 0;
                             Car.Speed_Y = 0;

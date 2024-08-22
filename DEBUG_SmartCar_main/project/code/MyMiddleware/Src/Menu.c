@@ -15,7 +15,7 @@
 #include "Menu.h"
 #include "My_FSM.h"
 /* Define\Declare ------------------------------------------------------------*/
-uint8 Menu_Mode = Page9;
+uint8 Menu_Mode = Page3;
 Menu_ Menu = 
 {
     .Set_Line = 14,
@@ -94,7 +94,7 @@ static void Page_Select_Mode()
     ips200_show_uint(Row_9,Line_0,Start,1);
     ips200_show_string(Row_1,Line_1,"Page1"); 
     ips200_show_string(Row_1,Line_2,"Page2"); 
-    ips200_show_string(Row_1,Line_3,"Page3"); 
+    ips200_show_string(Row_1,Line_3,"Image"); 
     ips200_show_string(Row_1,Line_4,"Page4"); 
     ips200_show_string(Row_1,Line_5,"Page5");
     ips200_show_string(Row_1,Line_6,"Page6");
@@ -145,6 +145,8 @@ static void Page1_Mode()
     ips200_show_uint(Row_14,Line_4,flash_union_buffer[4].uint16_type,5);
     ips200_show_string(Row_1,Line_5,"Down_Angle6:");
     ips200_show_uint(Row_14,Line_5,flash_union_buffer[5].uint16_type,5);
+    ips200_show_string(Row_1,Line_6,"Zebra_First_Dis:");
+    ips200_show_uint(Row_18,Line_6,flash_union_buffer[6].uint16_type,5);
 
     Exit_Dis;
     if(Menu.Set_Mode == Normal_Mode)
@@ -165,15 +167,25 @@ static void Page1_Mode()
     }
     else if(Menu.Set_Mode == Flash_Mode)//设置参数
     {
-        if(Button_Value[0] == 2)//顺时针转
+        if(Button_Value[0] == 2 && Menu.Set_Line!=6)//顺时针转
         {
             Button_Value[0] = 0;
             flash_union_buffer[Menu.Set_Line].uint16_type+=1;
         }
-        else if(Button_Value[2] == 2)//逆时针转
+        else if(Button_Value[2] == 2 && Menu.Set_Line!=6)//逆时针转
         {
             Button_Value[2] = 0;
             flash_union_buffer[Menu.Set_Line].uint16_type-=1;
+        }
+        else if(Button_Value[0] == 2 && Menu.Set_Line==6)//顺时针转
+        {
+            Button_Value[0] = 0;
+            flash_union_buffer[Menu.Set_Line].uint16_type+=25;
+        }
+        else if(Button_Value[2] == 2 && Menu.Set_Line==6)//逆时针转
+        {
+            Button_Value[2] = 0;
+            flash_union_buffer[Menu.Set_Line].uint16_type-=25;
         }
         else if(Button_Value[1] == 2)//调参结束
         {
@@ -190,6 +202,7 @@ static void Page1_Mode()
         {
             Down_Angle[i] = flash_union_buffer[i].uint16_type;
         }
+        Menu.Zebra_First_Dis = flash_union_buffer[6].uint16_type;
         flash_write_page_from_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
     }
 }
@@ -212,6 +225,7 @@ static void Page2_Mode()
     ips200_show_float(Row_11,Line_3,Encoer_Speed[2],3,1);
     ips200_show_string(Row_1,Line_4,"RB_Speed:");
     ips200_show_float(Row_11,Line_4,Encoer_Speed[3],3,1);
+    ips200_show_string(Row_1,Line_5,"Light");
     Exit_Dis;
     
     if(Menu.Set_Mode == Normal_Mode)
@@ -223,24 +237,24 @@ static void Page2_Mode()
             Menu.Set_Line = 0;
             ips200_clear();
         }
-        // else if((Menu.Set_Line != 14) && (Button_Value[1] == 2))
-        // {
-        //     Button_Value[1] = 0;
-        //     Menu.Set_Mode = Flash_Mode;
-        // } 
+        else if((Menu.Set_Line != 14) && (Button_Value[1] == 2))
+        {
+            Button_Value[1] = 0;
+            Menu.Set_Mode = Flash_Mode;
+        } 
         Line_Change();//行切换
     }
     else if(Menu.Set_Mode == Flash_Mode)//设置参数
     {
-        if(Button_Value[0] == 2)//顺时针转
+        if((Button_Value[0] == 2) && (Menu.Set_Line == 5))//顺时针转
         {
             Button_Value[0] = 0;
-            flash_union_buffer[Menu.Set_Line].uint16_type+=1;
+            Light_On;
         }
-        else if(Button_Value[2] == 2)//逆时针转
+        else if(Button_Value[2] == 2 && (Menu.Set_Line == 5))//逆时针转
         {
             Button_Value[2] = 0;
-            flash_union_buffer[Menu.Set_Line].uint16_type-=1;
+            Light_Off;
         }
         else if(Button_Value[1] == 2)//调参结束
         {
@@ -495,12 +509,13 @@ void Flash_Init()
         flash_union_buffer[3].uint16_type = 33;
         flash_union_buffer[4].uint16_type = 32;
         flash_union_buffer[5].uint16_type = 31;
+        flash_union_buffer[6].uint16_type = 450;
 
         flash_union_buffer[50].uint16_type = 100;//曝光时间
-        flash_union_buffer[51].uint16_type = 14;//曝光时间
-        flash_union_buffer[52].uint16_type = 1;
-        flash_union_buffer[53].uint16_type = 0;
-        flash_union_buffer[54].uint16_type = 0;
+        flash_union_buffer[51].uint16_type = 10;//曝光时间
+        flash_union_buffer[52].uint16_type = 1;//是否不跑元素
+        flash_union_buffer[53].uint16_type = 0;//左圆环丢线判断
+        flash_union_buffer[54].uint16_type = 0;//右圆环丢线判断
         
         flash_write_page_from_buffer(FLASH_SECTION_INDEX, FLASH_PAGE_INDEX);
     }
@@ -513,6 +528,7 @@ void Flash_Init()
         Down_Angle[3] = flash_union_buffer[3].uint16_type;
         Down_Angle[4] = flash_union_buffer[4].uint16_type;
         Down_Angle[5] = flash_union_buffer[5].uint16_type;
+        Menu.Zebra_First_Dis = flash_union_buffer[6].uint16_type;
 
         Menu.Turn_Point = flash_union_buffer[51].uint16_type;
         Menu.Ex_Time = flash_union_buffer[50].uint16_type;
@@ -540,7 +556,7 @@ void Menu_Display()
         case Page2:
             Page2_Mode();
         break;
-        case Page9:
+        case Page3:
             Image_Page();
         break;
     }

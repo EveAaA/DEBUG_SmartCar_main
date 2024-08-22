@@ -1230,6 +1230,7 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
     static float Angle_Offest = 0;
     uint8 Lose_Line_Point_L = 0; 
     static uint16 Lose_Salient_Point_Count = 0;
+    static uint16 Salient_Point_Count = 0;
     static uint16 Break_Num_L_DOWN_Count = 0;
 
     switch (LeftRing.Ring_State)
@@ -1293,8 +1294,18 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
             {
                 Lose_Line_Point_L = 0;
             }
+
+            if(Salient_Point)
+            {
+                Salient_Point_Count++;
+            }
+            else
+            {
+                Salient_Point_Count = 0;
+            }
+
             //有圆环突出点, 右直线, 有左下角点
-            if ((Break_Num_L_DOWN) && (LeftRing.Stright_Line) && (Salient_Point)) //  && (!Bin_Image[Image_H - 10][4]) && (!Bin_Image[Image_H - 10][Image_W - 4])
+            if ((Break_Num_L_DOWN) && (LeftRing.Stright_Line) && (Salient_Point_Count>=10)) //  && (!Bin_Image[Image_H - 10][4]) && (!Bin_Image[Image_H - 10][Image_W - 4])
             {
                 //计算斜率,左边斜率
                 Get_K_b(Salient_Point, L_Border[Salient_Point], Points_L[Break_Num_L_DOWN][1], Points_L[Break_Num_L_DOWN][0], &slope_l_rate, &intercept_l);
@@ -1317,7 +1328,7 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
                 LeftRing.Ring_Front_Flag = 2;
             }
 
-            if((LeftRing.Ring_Front_Flag == 2) && (Salient_Point))
+            if((LeftRing.Ring_Front_Flag == 2) && (Salient_Point_Count>=10))
             {
                 LeftRing.Ring_Front_Flag = 1;
                 // Set_Beeptime(500);
@@ -1326,9 +1337,10 @@ void Left_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, uin
             // 检测到环左下角点,左下空白,左圆环突出点,右直线
             if ((LeftRing.Ring_Front_Flag == 1) &&
                 (Bin_Image[Image_H - 5][4]) && 
-                (Salient_Point) && 
+                (Salient_Point_Count>=10) && 
                 (LeftRing.Stright_Line))// (Bin_Image[Image_H - 5][4]) && (Bin_Image[Image_H - 10][8]) &&
             {
+                Salient_Point_Count = 0;
                 LeftRing.Ring_Front_Flag = false;
                 Image_Flag.Left_Ring = true;
                 LeftRing.Ring_State = Enter_Ring_First;//入环中 Enter_Ring_First
@@ -1658,6 +1670,7 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
     static float Lastanglg = 0;
     static float Angle_Offest = 0;
     uint16 Lose_Line_Point_R = 0;
+    static uint16 Salient_Point_Count = 0;
     static uint16 Lose_Salient_Point_Count = 0;
     static uint16 Break_Num_R_DOWN_Count = 0;
     switch (RightRing.Ring_State)
@@ -1723,9 +1736,16 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
                 LeftRing.Ring_Front_Flag = 0;
             }
 
-
+            if(Salient_Point)
+            {
+                Salient_Point_Count++;
+            }
+            else
+            {
+                Salient_Point_Count = 0;
+            }
             //下拐点，左直线，圆环突出点
-            if (Break_Num_R_DOWN && RightRing.Stright_Line && Salient_Point) //  && (!Bin_Image[Image_H - 10][4]) && (!Bin_Image[Image_H - 10][Image_W - 4])
+            if (Break_Num_R_DOWN && RightRing.Stright_Line && Salient_Point_Count>=10) //  && (!Bin_Image[Image_H - 10][4]) && (!Bin_Image[Image_H - 10][Image_W - 4])
             {
                 //计算斜率,左边斜率
                 Get_K_b(Salient_Point, L_Border[Salient_Point], Points_R[Break_Num_R_DOWN][1], Points_R[Break_Num_R_DOWN][0], &slope_l_rate, &intercept_l);
@@ -1749,7 +1769,7 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
                 RightRing.Ring_Front_Flag = 2;
             }
 
-            if((RightRing.Ring_Front_Flag == 2) && Salient_Point)
+            if((RightRing.Ring_Front_Flag == 2) && Salient_Point_Count>=10)
             {
                 RightRing.Ring_Front_Flag = 1;
                 // Set_Beeptime(500);
@@ -1767,10 +1787,11 @@ void Right_Ring(uint8(*Bin_Image)[Image_W], uint8* L_Border, uint8* R_Border, ui
             }
             if ((RightRing.Ring_Front_Flag == 1) 
                 && (Bin_Image[Image_H - 5][Image_W - 4])
-                && (Salient_Point)
+                && (Salient_Point_Count>=10)
                 && (RightRing.Stright_Line))
             {
                 RightRing.Ring_Front_Flag = 0;
+                Salient_Point_Count=0;
                 Image_Flag.Right_Ring = true;
                 RightRing.Ring_State = Enter_Ring_First;
                 RightRing.Clear_Time = 0;
@@ -2291,19 +2312,19 @@ void Image_Process(void)
         }
 
         // 同上
-        if ((!Image_Flag.Cross_Fill) 
-        && (!Image_Flag.Right_Ring) 
-        && (!Image_Flag.Zerba) 
-        && (!Image_Flag.Roadblock) 
-        && ((MyFSM.CurState == Line_Patrol) || (MyFSM.CurState == Ring_Board) || (MyFSM.Line_Board_State == Finsh_Return))
-        && (MyFSM.Ring_Board_State != Return_Line)
-        && (MyFSM.Ring_Board_State != Finsh_Return)
-        && (!Image_Flag.Ramp)
-        && (MyFSM.Ring_Flag == false)
-        && (MyFSM.Simple_Flag!=0))
-        {
-            Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
-        }
+        // if ((!Image_Flag.Cross_Fill) 
+        // && (!Image_Flag.Right_Ring) 
+        // && (!Image_Flag.Zerba) 
+        // && (!Image_Flag.Roadblock) 
+        // && ((MyFSM.CurState == Line_Patrol) || (MyFSM.CurState == Ring_Board) || (MyFSM.Line_Board_State == Finsh_Return))
+        // && (MyFSM.Ring_Board_State != Return_Line)
+        // && (MyFSM.Ring_Board_State != Finsh_Return)
+        // && (!Image_Flag.Ramp)
+        // && (MyFSM.Ring_Flag == false)
+        // && (MyFSM.Simple_Flag!=0))
+        // {
+        //     Left_Ring(Bin_Image, L_Border, R_Border, Data_Stastics_L, Data_Stastics_R, Dir_L, Dir_R, Points_L, Points_R);
+        // }
 
         if ((!Image_Flag.Cross_Fill) 
         && (!Image_Flag.Left_Ring) 

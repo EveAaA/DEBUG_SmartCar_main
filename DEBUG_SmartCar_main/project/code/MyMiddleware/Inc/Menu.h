@@ -41,7 +41,8 @@ void Flash_Init();
 #define Row_14 (8*14)//第十四列
 #define Row_15 (8*15)//第十五列
 #define Row_16 (8*16)//第十六列
-
+#define Row_17 (8*17)//第十五列
+#define Row_18 (8*18)//第十六列
 typedef enum
 {
 	Page0 = 0,
@@ -71,6 +72,7 @@ typedef struct
 	bool  Image_Show;//是否为图像显示
 	uint16 Ex_Time;//曝光时间
 	uint8 Turn_Point;
+	uint16 Zebra_First_Dis;//斑马前距离
 }Menu_;
 
 extern int Show_Mode;
